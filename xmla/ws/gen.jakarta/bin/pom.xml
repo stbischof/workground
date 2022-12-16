@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.daanse</groupId>
+		<artifactId>org.eclipse.daanse.xmla</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<artifactId>org.eclipse.daanse.xmla.ws.jakarta</artifactId>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId> com.sun.xml.ws</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>4.0.0-M4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<verbose>true</verbose>
+							<wsdlDirectory>../org.eclipse.daanse.xmla.definition</wsdlDirectory>
+							<bindingDirectory>${basedir}/xjb/</bindingDirectory>
+							<bindingFiles>bindings.xjb</bindingFiles>
+							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+							<genJWS>true</genJWS>
+							<xdebug>true</xdebug>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-ri</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-tools</artifactId>
+		</dependency>
+	</dependencies>
+</project>

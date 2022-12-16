@@ -84,7 +84,7 @@
     <osgi.annotation.version>8.1.0</osgi.annotation.version>
     <osgi.dto.version>1.0.0</osgi.dto.version>
     <osgi.resource.version>1.0.0</osgi.resource.version>
-    <osgi.framework.version>1.8.0</osgi.framework.version>
+    <osgi.framework.version>1.10.0</osgi.framework.version>
     <osgi.tracker.version>1.5.4</osgi.tracker.version>
     <osgi.log.version>1.4.0</osgi.log.version>
     <osgi.cm.version>1.6.1</osgi.cm.version>
@@ -383,7 +383,7 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.framework</artifactId>
-        <version>1.10.0</version>
+        <version>${osgi.framework.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -438,6 +438,24 @@
         <version>4.0.1</version>
       </dependency>
       <dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>jaxws-ri</artifactId>
+        <version>4.0.0</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>jaxws-tools</artifactId>
+        <version>4.0.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.ws</groupId>
+        <artifactId>jakarta.xml.ws-api</artifactId>
+        <version>4.0.0</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>osgi-resource-locator</artifactId>
         <version>2.5.0-b42</version>
@@ -462,7 +480,7 @@
       <dependency>
         <groupId>org.apache.felix</groupId>
         <artifactId>org.apache.felix.framework</artifactId>
-        <version>7.0.3</version>
+        <version>7.0.5</version>
         <scope>runtime</scope>
       </dependency>
 
@@ -957,6 +975,7 @@
     <module>mondrian</module>
     <module>workbench</module>
     <module>olap</module>
+    <module>xmla</module>
   </modules>
   
   <profiles>

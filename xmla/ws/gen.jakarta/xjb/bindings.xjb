@@ -1,0 +1,180 @@
+<jaxb:bindings
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+
+	jaxb:extensionBindingPrefixes="xjc">
+
+	<jaxb:globalBindings
+		fixedAttributeAsConstantProperty="true">
+	<!--	<xjc:serializable uid="1" /> -->
+	</jaxb:globalBindings>
+	
+	<jaxb:bindings scd="x-schema::ext"
+		xmlns:ext="http://schemas.microsoft.com/analysisservices/2003/ext">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.ext" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::eng"
+		xmlns:eng="http://schemas.microsoft.com/analysisservices/2003/engine">
+		<jaxb:schemaBindings />
+		<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine" />
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::eng100_100"
+		xmlns:eng100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100">
+		<jaxb:schemaBindings>
+			<jaxb:package
+				name="org.eclipse.daanse.xmla.ws.eng100_100" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::eng100"
+		xmlns:eng100="http://schemas.microsoft.com/analysisservices/2008/engine/100">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine100" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::eng2_2"
+		xmlns:eng2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine2_2" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::eng2"
+		xmlns:eng2="http://schemas.microsoft.com/analysisservices/2003/engine/2">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine2" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::eng200_200"
+		xmlns:eng200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200">
+		<jaxb:schemaBindings>
+			<jaxb:package
+				name="org.eclipse.daanse.xmla.ws.eng200_200" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::eng200"
+		xmlns:eng200="http://schemas.microsoft.com/analysisservices/2010/engine/200">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine200" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::eng300_300"
+		xmlns:eng300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300">
+		<jaxb:schemaBindings>
+			<jaxb:package
+				name="org.eclipse.daanse.xmla.ws.eng300_300" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::eng300"
+		xmlns:eng300="http://schemas.microsoft.com/analysisservices/2011/engine/300">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine300" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+
+	<jaxb:bindings scd="x-schema::eng400"
+		xmlns:eng400="http://schemas.microsoft.com/analysisservices/2012/engine/400">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine400" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+
+	<jaxb:bindings scd="x-schema::eng600"
+		xmlns:eng600="http://schemas.microsoft.com/analysisservices/2013/engine/600">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine600" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::eng800"
+		xmlns:eng800="http://schemas.microsoft.com/analysisservices/2013/engine/800">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.engine800" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+
+
+	<jaxb:bindings scd="x-schema::msxmla"
+		xmlns:msxmla="http://schemas.microsoft.com/analysisservices/2003/xmla">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.msxmla" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+
+
+	<jaxb:bindings scd="x-schema::xmla" if-exists="true"
+		xmlns:xmla="urn:schemas-microsoft-com:xml-analysis">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla" />
+		</jaxb:schemaBindings>
+
+		<jaxb:bindings scd="xmla:event" if-exists="true">
+			<jaxb:class name="Event2" />
+		</jaxb:bindings>
+
+		<jaxb:bindings scd="xmla:action" if-exists="true">
+			<jaxb:class name="Action2" />
+		</jaxb:bindings>
+
+	</jaxb:bindings>
+
+
+	<jaxb:bindings scd="x-schema::xmla-ds"
+		xmlns:xmla-ds="urn:schemas-microsoft-com:xml-analysis:mddataset">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla_mddataset" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::xmla-e"
+		xmlns:tns="urn:schemas-microsoft-com:xml-analysis:empty"
+		xmlns:xmla-e="urn:schemas-microsoft-com:xml-analysis:empty">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla_empty" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::xmla-m"
+		xmlns:xmla-m="http://schemas.microsoft.com/analysisservices/2003/xmla-multipleresults">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla_multipleresults" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::xmla-rs"
+		xmlns:xmla-rs="urn:schemas-microsoft-com:xml-analysis:rowset">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla_rowset" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+	<jaxb:bindings scd="x-schema::xmla-x"
+		xmlns:xmla-x="urn:schemas-microsoft-com:xml-analysis:exception">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.eclipse.daanse.xmla.model.jaxb.xmla_exception" />
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+
+</jaxb:bindings>
