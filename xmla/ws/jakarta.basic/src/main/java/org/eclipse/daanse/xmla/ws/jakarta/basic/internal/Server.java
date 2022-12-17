@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import jakarta.xml.ws.Endpoint;
 import jakarta.xml.ws.handler.Handler;
+import jakarta.xml.ws.spi.http.HttpContext;
 
 @Component(immediate = true)
 public class Server {
@@ -30,6 +31,9 @@ public class Server {
     @Activate
     public void activate() {
 
+        if(true) {
+            return;
+        }
         int port = 8081;
 
         String address = "http://localhost:" + port + "/xmla";
@@ -44,7 +48,6 @@ public class Server {
                 .setHandlerChain(handlerChain);
 
         try {
-
             endpoint.publish(address);
         } catch (Exception e) {
             System.out.println(e);

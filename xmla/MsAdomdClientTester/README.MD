@@ -16,6 +16,11 @@ Add two lines to ~/.bashrc (after, restart system to apply):
 export DOTNET_ROOT=$HOME/.dotnet
 export PATH=$PATH:$DOTNET_ROOT
 
+OR Fish
+set -x DOTNET_ROOT ~/.dotnet
+set -gx PATH $DOTNET_ROOT $PATH
+
+
 To check the installed version run
 dotnet --info
 

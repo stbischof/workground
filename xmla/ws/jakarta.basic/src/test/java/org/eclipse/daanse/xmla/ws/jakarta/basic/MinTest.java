@@ -9,18 +9,18 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.daanse.xmla.model.jaxb.ext.AuthenticateResponse;
+import org.eclipse.daanse.xmla.model.jaxb.ext.ReturnValue;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.Discover;
-import org.eclipse.daanse.xmla.model.jaxb.xmla.Discover.Restrictions;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.DiscoverResponse;
-import org.eclipse.daanse.xmla.model.jaxb.xmla.Properties;
 import org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.Row;
 import org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.Rowset;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -58,6 +58,12 @@ public class MinTest {
 
     public static final String soapEndpointUrl = "http://localhost:8081/xmla";
     public static final String SOAP_ACTION_DISCOVER = URN_SCHEMAS_MICROSOFT_COM_XML_ANALYSIS + ":Discover";
+
+    public static final String REQUEST_AUTHENTICATE_1 = """
+            <Authenticate xmlns="http://schemas.microsoft.com/analysisservices/2003/ext">
+            <SspiHandshake>TlRMTVNTUAABAAAAB7IIogcABwAxAAAACQAJACgAAAAFAs4OAAAAD1ZBTEVSSUswM1JFRE1PTkQ=</SspiHandshake>
+            </Authenticate>
+            """;
 
     public static final String REQUEST_DISCOVER_MDSCHEMACUBES_CONTENT = """
             <Discover xmlns="urn:schemas-microsoft-com:xml-analysis">
@@ -103,37 +109,53 @@ public class MinTest {
     }
 
     @Test
+    void testRequest_AUTH(@InjectService XmlaService xmlaService) throws Exception {
+
+        AuthenticateResponse ar = new AuthenticateResponse();
+        ReturnValue rv = new ReturnValue();
+        rv.setSspiHandshake("22".getBytes());
+        ar.setReturn(rv);
+        when(xmlaService.authenticate(Mockito.any())).thenReturn(ar);
+
+        SOAPUtil.callSoapWebService(soapEndpointUrl, Optional.empty(), envelop(REQUEST_AUTHENTICATE_1));
+
+//        verify(xmlaService, (times(1))).authenticate(Mockito.any());
+    }
+
+    @Test
     void testRequest_DISCOVER_PROPERTIES_LocaleIdentifier(@InjectService XmlaService xmlaService) throws Exception {
 
-        SOAPUtil.callSoapWebService(soapEndpointUrl, SOAP_ACTION_DISCOVER,
+        SOAPUtil.callSoapWebService(soapEndpointUrl, Optional.of(SOAP_ACTION_DISCOVER),
                 envelop(REQUEST_DISCOVER_PROPERTIES_LocaleIdentifier));
 
         verify(xmlaService, (times(1))).discover(dicoverCaptor.capture(), Mockito.any(), Mockito.any(), Mockito.any());
 
-        var discoverAssert = assertThat(dicoverCaptor.getValue());
+        assertThat(dicoverCaptor.getValue()).isNotNull()
+                .satisfies(d -> {
+                    // getRequestType
+                    assertThat(d.getRequestType()).isNotNull()
+                            .isEqualTo("DISCOVER_PROPERTIES");
+                    // getRestrictions
+                    assertThat(d.getRestrictions()).isNotNull()
+                            .satisfies(r -> {
+                                assertThat(r.getRestrictionList()).isNull();
+                            });
+                    // getProperties
+                    assertThat(d.getProperties()).isNotNull()
+                            .satisfies(r -> {
+                                assertThat(r.getPropertyList()).isNotNull()
+                                        .satisfies(pl -> pl.getLocaleIdentifier()
+                                                .equals(new BigInteger("1033")));
+                            });
 
-        discoverAssert.extracting(Discover::getRequestType)
-                .isNotNull()
-                .isEqualTo("DISCOVER_PROPERTIES");
-
-        discoverAssert.extracting(Discover::getRestrictions)
-                .isNotNull()
-                .extracting(Restrictions::getRestrictionList)
-                .isNull();
-
-        discoverAssert.extracting(Discover::getProperties)
-                .isNotNull()
-                .extracting(Properties::getPropertyList)
-                .isNotNull()
-                .satisfies(pl -> pl.getLocaleIdentifier()
-                        .equals(new BigInteger("1033")));
+                });
 
     }
 
     @Test
     void testRequest_MDSCHEMA_CUBES_Content_Data(@InjectService XmlaService xmlaService) throws Exception {
 
-        SOAPUtil.callSoapWebService(soapEndpointUrl, SOAP_ACTION_DISCOVER,
+        SOAPUtil.callSoapWebService(soapEndpointUrl, Optional.of(SOAP_ACTION_DISCOVER),
                 envelop(REQUEST_DISCOVER_MDSCHEMACUBES_CONTENT));
 
         verify(xmlaService, (times(1))).discover(dicoverCaptor.capture(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -161,7 +183,6 @@ public class MinTest {
     }
 
     @Test
-    @Disabled
     void testResponse(@InjectService XmlaService xmlaService) throws Exception {
 
         DiscoverResponse discoverResponse = new DiscoverResponse();
@@ -178,7 +199,8 @@ public class MinTest {
         when(xmlaService.discover(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(discoverResponse);
 
-        SOAPMessage response = SOAPUtil.callSoapWebService(soapEndpointUrl, SOAP_ACTION_DISCOVER, envelop(""));
+        SOAPMessage response = SOAPUtil.callSoapWebService(soapEndpointUrl, Optional.of(SOAP_ACTION_DISCOVER),
+                envelop(""));
         System.out.println(response);
 
     }

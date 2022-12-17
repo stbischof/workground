@@ -1,6 +1,7 @@
 package org.eclipse.daanse.xmla.ws.jakarta.basic;
 
-import org.eclipse.daanse.xmla.model.jaxb.ext.ReturnValue;
+import org.eclipse.daanse.xmla.model.jaxb.ext.Authenticate;
+import org.eclipse.daanse.xmla.model.jaxb.ext.AuthenticateResponse;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.BeginSession;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.Discover;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.DiscoverResponse;
@@ -13,7 +14,7 @@ import jakarta.xml.ws.Holder;
 
 public interface XmlaService {
 
-  public ReturnValue authenticate(byte[] sspiHandshake);
+  public AuthenticateResponse authenticate(Authenticate authenticate);
 
   public DiscoverResponse discover(Discover parameters, Holder<Session> session, BeginSession beginSession,
       EndSession endSession);

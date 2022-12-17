@@ -1,5 +1,7 @@
 package org.eclipse.daanse.xmla.ws.jakarta.basic.internal;
 
+import org.eclipse.daanse.xmla.model.jaxb.ext.Authenticate;
+import org.eclipse.daanse.xmla.model.jaxb.ext.AuthenticateResponse;
 import org.eclipse.daanse.xmla.model.jaxb.ext.ReturnValue;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.BeginSession;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.Discover;
@@ -19,6 +21,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.ws.Holder;
 import jakarta.xml.ws.RequestWrapper;
 import jakarta.xml.ws.ResponseWrapper;
+import jakarta.xml.ws.WebServiceContext;
 
 @WebService(name = "MsXmlAnalysisSoapPortType", portName = "MsXmlAnalysisSoapPort", serviceName = "MsXmlAnalysisService") // ,
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
@@ -42,9 +45,11 @@ import jakarta.xml.ws.ResponseWrapper;
         org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.ObjectFactory.class,
         org.eclipse.daanse.xmla.model.jaxb.engine100_100.ObjectFactory.class,
         org.eclipse.daanse.xmla.model.jaxb.engine200_200.ObjectFactory.class })
-//(@SchemaValidation
 public class MsXmlAnalysisSoap {
-//  DraconianValidationErrorHandler c = new DraconianValidationErrorHandler();
+    
+    @jakarta.annotation.Resource
+    WebServiceContext wsContext;
+    
     private XmlaService xmlaService;
 
     public MsXmlAnalysisSoap(XmlaService xmlaService) {
@@ -52,13 +57,11 @@ public class MsXmlAnalysisSoap {
     }
 
     @WebMethod(operationName = "Authenticate")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "Authenticate", targetNamespace = "http://schemas.microsoft.com/analysisservices/2003/ext", className = "org.eclipse.daanse.xmla.model.jaxb.xmla.ext.Authenticate")
-    @ResponseWrapper(localName = "AuthenticateResponse", targetNamespace = "http://schemas.microsoft.com/analysisservices/2003/ext", className = "org.eclipse.daanse.xmla.model.jaxb.xmla.ext.AuthenticateResponse")
-    public ReturnValue authenticate(@WebParam(name = "SspiHandshake", targetNamespace = "") byte[] sspiHandshake) {
-
-        ReturnValue rv = xmlaService.authenticate(sspiHandshake);
-        return rv;
+    @WebResult(name = "AuthenticateResponse", targetNamespace = "http://schemas.microsoft.com/analysisservices/2003/ext", partName = "parameters")
+    public AuthenticateResponse authenticate(@WebParam(name = "Authenticate", targetNamespace = "http://schemas.microsoft.com/analysisservices/2003/ext", partName = "parameters") Authenticate authenticate) {
+        wsContext.getUserPrincipal();
+        AuthenticateResponse ar = xmlaService.authenticate(authenticate);
+        return ar;
     }
 
     @WebMethod(operationName = "Discover", action = "urn:schemas-microsoft-com:xml-analysis:Discover")
