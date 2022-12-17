@@ -15,30 +15,51 @@ import jakarta.xml.ws.handler.Handler;
 @Component(immediate = true)
 public class Server {
 
-  private Endpoint endpoint;
+    private Endpoint endpoint;
+    private XmlaService xmlaService;
 
-//  @Reference(cardinality = ReferenceCardinality.MANDATORY)
-  XmlaService xmlaService;
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    public void bindXmlaService(XmlaService xmlaService) {
+        this.xmlaService = xmlaService;
+    }
 
-  @Activate
-  public void activate() {
+    public void unbindXmlaService(XmlaService xmlaService) {
+        this.xmlaService = null;
+    }
 
-    int port = 8081;
-    String address = "http://localhost:" + port + "/xmla";
-    MsXmlAnalysisSoap s = new MsXmlAnalysisSoap(xmlaService);
-    endpoint = Endpoint.create(s);
-    List<Handler> handlerChain = endpoint.getBinding().getHandlerChain();
-    handlerChain.add(new SOAPLoggingHandler());
-    endpoint.getBinding().setHandlerChain(handlerChain);
-    endpoint.publish(address);
+    @Activate
+    public void activate() {
 
-    // TODO: may register with as a servlet
-  }
+        int port = 8081;
 
-  @Deactivate
-  public void deactivate() {
-    endpoint.stop();
-    endpoint = null;
+        String address = "http://localhost:" + port + "/xmla";
+        System.out.println(address);
+        MsXmlAnalysisSoap s = new MsXmlAnalysisSoap(xmlaService);
+        endpoint = Endpoint.create(s);
+        List<Handler> handlerChain = endpoint.getBinding()
+                .getHandlerChain();
+        handlerChain.add(new SOAPLoggingHandler());
+//    handlerChain.add(new nsHandler());
+        endpoint.getBinding()
+                .setHandlerChain(handlerChain);
 
-  }
+        try {
+
+            endpoint.publish(address);
+        } catch (Exception e) {
+            System.out.println(e);
+
+            e.printStackTrace();
+        }
+        System.out.println(address);
+
+        // TODO: may register with as a servlet
+    }
+
+    @Deactivate
+    public void deactivate() {
+        endpoint.stop();
+        endpoint = null;
+
+    }
 }

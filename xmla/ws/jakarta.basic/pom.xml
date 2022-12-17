@@ -12,16 +12,15 @@
   <dependencies>
 
     <dependency>
+      <groupId>biz.aQute.bnd</groupId>
+      <artifactId>biz.aQute.bnd.annotation</artifactId>
+      <version>${bnd.version}</version>
+    </dependency>
+    
+    <dependency>
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.xmla.model.jaxb</artifactId>
       <version>${revision}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
-      <version>4.0.0</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
