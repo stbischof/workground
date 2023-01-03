@@ -73,7 +73,7 @@
 
     <slf4j.version>2.0.4</slf4j.version>
     <asm.version>9.3</asm.version>
-    <spifly.version>1.3.5</spifly.version>
+    <spifly.version>1.3.6</spifly.version>
     <bnd.version>6.3.1</bnd.version>
 
     <junit-jupiter.version>5.9.1</junit-jupiter.version>
@@ -891,6 +891,7 @@
         <version>${slf4j.version}</version>
         <scope>compile</scope>
       </dependency>
+ 
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
         <artifactId>mssql-jdbc</artifactId>

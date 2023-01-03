@@ -1,4 +1,4 @@
-package org.eclipse.daanse.xmla.ws.jakarta.basic.internal.servlet;
+package org.eclipse.daanse.xmla.ws.servlet.adapter;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -332,26 +332,25 @@ public class CustomServletContext implements ServletContext {
 
     @Override
     public Servlet getServlet(String name) throws ServletException {
-        // TODO Auto-generated method stub
+
         return null;
     }
 
     @Override
     public Enumeration<Servlet> getServlets() {
-        // TODO Auto-generated method stub
+
         return null;
     }
 
     @Override
     public Enumeration<String> getServletNames() {
-        // TODO Auto-generated method stub
+
         return null;
     }
 
     @Override
     public void log(Exception exception, String msg) {
-        // TODO Auto-generated method stub
-        
+
     }
 
 }

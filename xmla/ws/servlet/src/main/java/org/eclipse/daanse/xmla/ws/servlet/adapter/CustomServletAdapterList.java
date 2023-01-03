@@ -1,4 +1,4 @@
-package org.eclipse.daanse.xmla.ws.jakarta.basic.internal.servlet;
+package org.eclipse.daanse.xmla.ws.servlet.adapter;
 
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
