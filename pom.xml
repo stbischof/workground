@@ -73,7 +73,7 @@
 
     <slf4j.version>2.0.4</slf4j.version>
     <asm.version>9.3</asm.version>
-    <spifly.version>1.3.6</spifly.version>
+    <spifly.version>1.3.5</spifly.version>
     <bnd.version>6.3.1</bnd.version>
 
     <junit-jupiter.version>5.9.1</junit-jupiter.version>
@@ -347,8 +347,8 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.service.component</artifactId>
-        <version>1.5.0</version>
-        <scope>runtime</scope>
+        <version>1.5.1</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -667,12 +667,12 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.service.servlet</artifactId>
-        <version>2.0.0-RC1</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.felix</groupId>
         <artifactId>org.apache.felix.http.jetty</artifactId>
-        <version>5.0.0-RC2</version>
+        <version>5.0.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -891,6 +891,12 @@
         <version>${slf4j.version}</version>
         <scope>compile</scope>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
  
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
@@ -1012,6 +1018,7 @@
     <module>workbench</module>
     <module>olap</module>
     <module>xmla</module>
+    <module>ws</module>
   </modules>
 
   <profiles>

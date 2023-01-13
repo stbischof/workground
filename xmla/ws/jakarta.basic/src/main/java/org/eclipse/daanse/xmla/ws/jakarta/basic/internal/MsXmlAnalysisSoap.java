@@ -2,7 +2,6 @@ package org.eclipse.daanse.xmla.ws.jakarta.basic.internal;
 
 import org.eclipse.daanse.xmla.model.jaxb.ext.Authenticate;
 import org.eclipse.daanse.xmla.model.jaxb.ext.AuthenticateResponse;
-import org.eclipse.daanse.xmla.model.jaxb.ext.ReturnValue;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.BeginSession;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.Discover;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.DiscoverResponse;
@@ -19,8 +18,6 @@ import jakarta.jws.WebService;
 import jakarta.jws.soap.SOAPBinding;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.ws.Holder;
-import jakarta.xml.ws.RequestWrapper;
-import jakarta.xml.ws.ResponseWrapper;
 import jakarta.xml.ws.WebServiceContext;
 
 @WebService(name = "MsXmlAnalysisSoapPortType", portName = "MsXmlAnalysisSoapPort", serviceName = "MsXmlAnalysisService") // ,

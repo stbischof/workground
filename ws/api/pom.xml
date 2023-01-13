@@ -2,12 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.eclipse.daanse</groupId>
-    <artifactId>org.eclipse.daanse.xmla.ws</artifactId>
+    <artifactId>org.eclipse.daanse.ws</artifactId>
     <version>${revision}</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>org.eclipse.daanse.xmla.ws.jakarta.basic</artifactId>
-
+  <artifactId>org.eclipse.daanse.ws.api</artifactId>
 
   <dependencies>
     <dependency>
@@ -18,26 +16,11 @@
       <groupId>biz.aQute.bnd</groupId>
       <artifactId>biz.aQute.bnd.annotation</artifactId>
       <version>${bnd.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.xmla.model.jaxb</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.ws.api</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.ws.runtime.servlet</artifactId>
-      <version>${revision}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
@@ -48,11 +31,6 @@
       <artifactId>jakarta.xml.ws-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.annotation</artifactId>
     </dependency>
@@ -60,6 +38,5 @@
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.component.annotations</artifactId>
     </dependency>
-
   </dependencies>
 </project>

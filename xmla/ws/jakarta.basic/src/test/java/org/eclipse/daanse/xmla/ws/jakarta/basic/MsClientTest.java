@@ -21,6 +21,7 @@ import org.eclipse.daanse.xmla.model.jaxb.xmla.DiscoverResponse.Return;
 import org.eclipse.daanse.xmla.model.jaxb.xmla.Properties;
 import org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.Row;
 import org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.Rowset;
+import org.eclipse.daanse.xmla.ws.jakarta.basic.XmlaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
