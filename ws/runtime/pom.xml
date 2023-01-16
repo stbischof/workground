@@ -8,8 +8,8 @@
   <artifactId>org.eclipse.daanse.ws.runtime</artifactId>
   <packaging>pom</packaging>
     <modules>
-    <module>server</module>
-    <module>servlet</module>
-    <module>common</module>
+    <module>registrar</module>
+    <module>embedded</module>
+    <module>httpwhiteboard</module>
     </modules>
 </project>

@@ -16,7 +16,7 @@ import org.osgi.namespace.implementation.ImplementationNamespace;
 		ElementType.TYPE, ElementType.PACKAGE
 })
 @Requirement(namespace = ImplementationNamespace.IMPLEMENTATION_NAMESPACE, //
-		name = SoapWhiteboardConstants.HTTP_WHITEBOARD_IMPLEMENTATION, //
+		name = SoapWhiteboardConstants.SOAP, //
 		version = SoapWhiteboardConstants.SOAP_SPECIFICATION_VERSION)
 public @interface RequireSoapWhiteboard {
 	// This is a marker annotation.
