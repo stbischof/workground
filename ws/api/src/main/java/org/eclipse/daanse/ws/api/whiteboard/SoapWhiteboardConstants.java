@@ -9,7 +9,7 @@ public class SoapWhiteboardConstants {
     public static final String SOAP = "osgi.soap";
     public static final String HTTP_WHITEBOARD_IMPLEMENTATION = SOAP;
 
-    private static final String SOAP_ENDPOINT = SOAP + ".endpoint.implementor";
+    private static final String SOAP_ENDPOINT = SOAP + ".endpoint";
     public static final String SOAP_ENDPOINT_IMPLEMENTOR = SOAP_ENDPOINT + ".implementor";
     public static final String SOAP_ENDPOINT_PATH = SOAP_ENDPOINT + ".path";
 
