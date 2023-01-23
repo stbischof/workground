@@ -12,5 +12,7 @@
     <module>api</module>
     <module>handler</module>
     <module>runtime</module>
+    <module>demo</module>
+    <module>integration-tests</module>
   </modules>
 </project>
