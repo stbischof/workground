@@ -21,8 +21,5 @@
   <packaging>pom</packaging>
   <modules>
     <module>jakarta.basic</module>
-    <module>gen.jakarta</module>
-    <module>servlet</module>
-    <module>server</module>
   </modules>
 </project>

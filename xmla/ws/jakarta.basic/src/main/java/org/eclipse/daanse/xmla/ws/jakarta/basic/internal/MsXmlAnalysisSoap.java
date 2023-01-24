@@ -61,7 +61,7 @@ import jakarta.xml.ws.WebServiceContext;
         org.eclipse.daanse.xmla.model.jaxb.xmla_rowset.ObjectFactory.class,
         org.eclipse.daanse.xmla.model.jaxb.engine100_100.ObjectFactory.class,
         org.eclipse.daanse.xmla.model.jaxb.engine200_200.ObjectFactory.class })
-@Component(service = MsXmlAnalysisSoap.class)
+@Component(service = MsXmlAnalysisSoap.class, name="org.eclipse.daanse.msxmlanalysisservice")
 @RequireSoapWhiteboard
 @Designate(factory = true, ocd = MsXmlAnalysisSoap.Config.class)
 public class MsXmlAnalysisSoap {
