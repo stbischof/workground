@@ -50,7 +50,7 @@ public class CalculatedChildFunDef extends FunDefBase {
         final StringCalc stringCalc = compiler.compileString(call.getArg(1));
 
         return new AbstractMemberCalc(
-            call,
+        		call.getFunName(),call.getType(),
             new Calc[] {memberCalc, stringCalc})
         {
             public Member evaluateMember(Evaluator evaluator) {

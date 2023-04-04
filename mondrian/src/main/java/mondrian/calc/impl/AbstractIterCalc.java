@@ -14,8 +14,8 @@ import mondrian.calc.IterCalc;
 import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.IterCalc} interface.
@@ -41,8 +41,8 @@ implements IterCalc
      * @param calcs List of child compiled expressions (for dependency
      *   analysis)
      */
-    protected AbstractIterCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractIterCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
     @Override

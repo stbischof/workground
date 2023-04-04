@@ -63,7 +63,7 @@ class TupleItemFunDef extends FunDefBase {
             final IntegerCalc indexCalc =
                 compiler.compileInteger(call.getArg(1));
             return new AbstractMemberCalc(
-                call, new Calc[] {memberCalc, indexCalc})
+            		call.getFunName(),call.getType(), new Calc[] {memberCalc, indexCalc})
             {
                 public Member evaluateMember(Evaluator evaluator) {
                     final Member member =
@@ -82,7 +82,7 @@ class TupleItemFunDef extends FunDefBase {
             final IntegerCalc indexCalc =
                 compiler.compileInteger(call.getArg(1));
             return new AbstractMemberCalc(
-                call, new Calc[] {tupleCalc, indexCalc})
+            		call.getFunName(),call.getType(), new Calc[] {tupleCalc, indexCalc})
             {
                 final Member[] nullTupleMembers =
                         FunUtil.makeNullTuple((TupleType) tupleCalc.getType());

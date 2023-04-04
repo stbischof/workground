@@ -206,7 +206,7 @@ class ExtractFunDef extends FunDefBase {
             return new DistinctFunDef.CalcImpl(call, listCalc);
         }
         final int[] extractedOrdinals = ExtractFunDef.toIntArray(extractedOrdinalList);
-        return new AbstractListCalc(call, new Calc[]{listCalc}) {
+        return new AbstractListCalc(call.getFunName(),call.getType(), new Calc[]{listCalc}) {
             public TupleList evaluateList(Evaluator evaluator) {
                 TupleList result = TupleCollections.createList(outArity);
                 TupleList list = listCalc.evaluateList(evaluator);

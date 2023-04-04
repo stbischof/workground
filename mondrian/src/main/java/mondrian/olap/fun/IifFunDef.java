@@ -88,7 +88,7 @@ public class IifFunDef extends FunDefBase {
             compiler.compileAs(
                 call.getArg(2), call.getType(), ResultStyle.ANY_LIST);
         if (call.getType() instanceof SetType) {
-            return new GenericIterCalc(call) {
+            return new GenericIterCalc(call.getFunName(),call.getType()) {
                 public Object evaluate(Evaluator evaluator) {
                     final boolean b =
                         booleanCalc.evaluateBoolean(evaluator);
@@ -105,7 +105,7 @@ public class IifFunDef extends FunDefBase {
               }
             };
         } else {
-            return new GenericCalc(call) {
+            return new GenericCalc(call.getFunName(),call.getType()) {
                 public Object evaluate(Evaluator evaluator) {
                     final boolean b =
                         booleanCalc.evaluateBoolean(evaluator);
@@ -132,7 +132,7 @@ public class IifFunDef extends FunDefBase {
             final StringCalc calc1 = compiler.compileString(call.getArg(1));
             final StringCalc calc2 = compiler.compileString(call.getArg(2));
             return new AbstractStringCalc(
-                call, new Calc[] {booleanCalc, calc1, calc2}) {
+            		call.getFunName(),call.getType(), new Calc[] {booleanCalc, calc1, calc2}) {
                 public String evaluateString(Evaluator evaluator) {
                     final boolean b =
                         booleanCalc.evaluateBoolean(evaluator);
@@ -156,7 +156,7 @@ public class IifFunDef extends FunDefBase {
                     compiler.compileBoolean(call.getArg(0));
                 final Calc calc1 = compiler.compileScalar(call.getArg(1), true);
                 final Calc calc2 = compiler.compileScalar(call.getArg(2), true);
-                return new GenericCalc(call) {
+                return new GenericCalc(call.getFunName(),call.getType()) {
                     public Object evaluate(Evaluator evaluator) {
                         final boolean b =
                             booleanCalc.evaluateBoolean(evaluator);
@@ -184,7 +184,7 @@ public class IifFunDef extends FunDefBase {
                     compiler.compileBoolean(call.getArg(0));
                 final Calc calc1 = compiler.compileTuple(call.getArg(1));
                 final Calc calc2 = compiler.compileTuple(call.getArg(2));
-                return new GenericCalc(call) {
+                return new GenericCalc(call.getFunName(),call.getType()) {
                     public Object evaluate(Evaluator evaluator) {
                         final boolean b =
                             booleanCalc.evaluateBoolean(evaluator);
@@ -213,7 +213,7 @@ public class IifFunDef extends FunDefBase {
             final BooleanCalc booleanCalc2 =
                 compiler.compileBoolean(call.getArg(2));
             Calc[] calcs = {booleanCalc, booleanCalc1, booleanCalc2};
-            return new AbstractBooleanCalc(call, calcs) {
+            return new AbstractBooleanCalc(call.getFunName(),call.getType(), calcs) {
                 public boolean evaluateBoolean(Evaluator evaluator) {
                     final boolean condition =
                         booleanCalc.evaluateBoolean(evaluator);

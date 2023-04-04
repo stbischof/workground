@@ -318,7 +318,7 @@ public class NativizeSetFunDef extends FunDefBase {
             SubstitutionMap substitutionMap,
             Exp originalExp)
         {
-            super(call, calcs);
+            super(call.getFunName(),call.getType(), calcs);
             NativizeSetFunDef.LOGGER.debug("---- NativeListCalc constructor");
             this.substitutionMap = substitutionMap;
             this.simpleCalc = (ListCalc) calcs[0];

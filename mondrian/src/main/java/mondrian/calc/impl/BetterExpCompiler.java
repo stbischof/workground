@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ListCalc;
 import mondrian.calc.MemberCalc;
 import mondrian.calc.ResultStyle;
@@ -71,7 +70,7 @@ public class BetterExpCompiler extends AbstractExpCompiler {
         } else if (type instanceof MemberType) {
             assert calc instanceof MemberCalc;
             final MemberCalc memberCalc = (MemberCalc) calc;
-            return new AbstractTupleCalc(exp, new Calc[] {memberCalc}) {
+            return new AbstractTupleCalc("SomeNameToBeBetterEvaluated",type, new Calc[] {memberCalc}) {
                 @Override
                 public Member[] evaluateTuple(Evaluator evaluator) {
                     final Member member = memberCalc.evaluateMember(evaluator);
@@ -104,7 +103,7 @@ public class BetterExpCompiler extends AbstractExpCompiler {
         private final ListCalc listCalc;
 
         public CopyListCalc(ListCalc listCalc) {
-            super(new DummyExp(listCalc.getType()), new Calc[]{listCalc});
+			super("DummyExp", listCalc.getType(), new Calc[] { listCalc });
             this.listCalc = listCalc;
         }
 

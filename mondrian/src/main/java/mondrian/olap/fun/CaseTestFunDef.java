@@ -69,7 +69,7 @@ class CaseTestFunDef extends FunDefBase {
         calcList.add(defaultCalc);
         final Calc[] calcs = calcList.toArray(new Calc[calcList.size()]);
 
-        return new GenericCalc(call) {
+        return new GenericCalc(call.getFunName(),call.getType()) {
             public Object evaluate(Evaluator evaluator) {
                 for (int i = 0; i < conditionCalcs.length; i++) {
                     if (conditionCalcs[i].evaluateBoolean(evaluator)) {

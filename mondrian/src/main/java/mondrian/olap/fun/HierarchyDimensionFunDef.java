@@ -48,7 +48,7 @@ public class HierarchyDimensionFunDef extends FunDefBase {
         private final HierarchyCalc hierarchyCalc;
 
         public CalcImpl(Exp exp, HierarchyCalc hierarchyCalc) {
-            super(exp, new Calc[] {hierarchyCalc});
+            super("Dimension",exp.getType(), new Calc[] {hierarchyCalc});
             this.hierarchyCalc = hierarchyCalc;
         }
 

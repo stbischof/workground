@@ -88,7 +88,7 @@ class TopBottomCountFunDef extends FunDefBase {
         : null;
     final int arity = call.getType().getArity();
     return new AbstractListCalc(
-      call,
+    		call.getFunName(),call.getType(),
       new Calc[] { listCalc, integerCalc, orderCalc } ) {
       public TupleList evaluateList( Evaluator evaluator ) {
         // Use a native evaluator, if more efficient.

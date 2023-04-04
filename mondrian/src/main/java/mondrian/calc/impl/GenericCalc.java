@@ -29,8 +29,8 @@ import mondrian.calc.StringCalc;
 import mondrian.calc.TupleCalc;
 import mondrian.calc.VoidCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.fun.FunUtil;
+import mondrian.olap.type.Type;
 
 /**
  * Adapter which computes a scalar or tuple expression and converts it to any
@@ -54,8 +54,8 @@ VoidCalc, MemberCalc, LevelCalc, HierarchyCalc, DimensionCalc
      *
      * @param exp Source expression
      */
-    protected GenericCalc(Exp exp) {
-        super(exp, null);
+    protected GenericCalc(String name, Type type) {
+        super(name,type, null);
     }
 
     /**
@@ -64,11 +64,13 @@ VoidCalc, MemberCalc, LevelCalc, HierarchyCalc, DimensionCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected GenericCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected GenericCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
-    @Override
+  
+
+	@Override
     public Member[] evaluateTuple(Evaluator evaluator) {
         return (Member[]) evaluate(evaluator);
     }

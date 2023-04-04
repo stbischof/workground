@@ -12,9 +12,9 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.DoubleCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.fun.FunUtil;
 import mondrian.olap.type.NumericType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.DoubleCalc} interface.
@@ -36,8 +36,8 @@ implements DoubleCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractDoubleCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractDoubleCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
         assert getType() instanceof NumericType;
     }
 

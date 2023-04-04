@@ -47,7 +47,7 @@ class IsFunDef extends FunDefBase {
             final TupleCalc tupleCalc0 = compiler.compileTuple(call.getArg(0));
             final TupleCalc tupleCalc1 = compiler.compileTuple(call.getArg(1));
             return new AbstractBooleanCalc(
-                call, new Calc[] {tupleCalc0, tupleCalc1})
+            		call.getFunName(),call.getType(), new Calc[] {tupleCalc0, tupleCalc1})
             {
                 public boolean evaluateBoolean(Evaluator evaluator) {
                     Member[] o0 = tupleCalc0.evaluateTuple(evaluator);
@@ -59,7 +59,7 @@ class IsFunDef extends FunDefBase {
             assert category == call.getArg(1).getCategory();
             final Calc calc0 = compiler.compile(call.getArg(0));
             final Calc calc1 = compiler.compile(call.getArg(1));
-            return new AbstractBooleanCalc(call, new Calc[] {calc0, calc1}) {
+            return new AbstractBooleanCalc(call.getFunName(),call.getType(), new Calc[] {calc0, calc1}) {
                 public boolean evaluateBoolean(Evaluator evaluator) {
                     Object o0 = calc0.evaluate(evaluator);
                     Object o1 = calc1.evaluate(evaluator);

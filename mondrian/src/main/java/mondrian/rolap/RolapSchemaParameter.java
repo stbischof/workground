@@ -122,7 +122,7 @@ public class RolapSchemaParameter implements Parameter, ParameterCompilable {
 
         // Generate a program which looks at the assigned value first,
         // and if it is not set, returns the default expression.
-        return new GenericCalc(defaultExp) {
+        return new GenericCalc("GenericCalc",defaultExp.getType()) {
             public Calc[] getCalcs() {
                 return new Calc[] {defaultCalc};
             }

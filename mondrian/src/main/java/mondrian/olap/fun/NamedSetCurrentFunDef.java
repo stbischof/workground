@@ -54,13 +54,13 @@ public class NamedSetCurrentFunDef extends FunDefBase {
         assert arg0 instanceof NamedSetExpr : "checked this in createCall";
         final NamedSetExpr namedSetExpr = (NamedSetExpr) arg0;
         if (arg0.getType().getArity() == 1) {
-            return new AbstractMemberCalc(call, new Calc[0]) {
+            return new AbstractMemberCalc(call.getFunName(),call.getType(), new Calc[0]) {
                 public Member evaluateMember(Evaluator evaluator) {
                     return namedSetExpr.getEval(evaluator).currentMember();
                 }
             };
         } else {
-            return new AbstractTupleCalc(call, new Calc[0]) {
+            return new AbstractTupleCalc(call.getFunName(),call.getType(), new Calc[0]) {
                 public Member[] evaluateTuple(Evaluator evaluator) {
                     return namedSetExpr.getEval(evaluator).currentTuple();
                 }

@@ -55,7 +55,7 @@ class DimensionsNumericFunDef extends FunDefBase {
     {
         final IntegerCalc integerCalc =
             compiler.compileInteger(call.getArg(0));
-        return new AbstractHierarchyCalc(call, new Calc[] {integerCalc})
+        return new AbstractHierarchyCalc(call.getFunName(),call.getType(), new Calc[] {integerCalc})
         {
             public Hierarchy evaluateHierarchy(Evaluator evaluator) {
                 int n = integerCalc.evaluateInteger(evaluator);

@@ -108,11 +108,11 @@ public class RolapProfilingEvaluator extends RolapEvaluator {
             }
             if (calc.getType() instanceof SetType) {
                 return new ProfilingIterCalc(
-                    exp,
+                		exp.getType(),
                     calc);
             } else {
                 return new ProfilingScalarCalc(
-                    exp,
+                		exp.getType(),
                     calc);
             }
         }
@@ -129,8 +129,8 @@ public class RolapProfilingEvaluator extends RolapEvaluator {
         private long elementCount;
         private long elementSquaredCount;
 
-        protected ProfilingIterCalc(Exp exp, Calc calc) {
-            super(exp, new Calc[] {calc});
+        protected ProfilingIterCalc(Type type, Calc calc) {
+            super("ProfilingIterCalc",type, new Calc[] {calc});
             this.calc = calc;
         }
 
@@ -202,8 +202,8 @@ public class RolapProfilingEvaluator extends RolapEvaluator {
         private int callCount;
         private long callMillis;
 
-        ProfilingScalarCalc(Exp exp, Calc calc) {
-            super(exp, new Calc[] {calc});
+        ProfilingScalarCalc(Type type, Calc calc) {
+            super("ProfilingScalarCalc",type, new Calc[] {calc});
             this.calc = calc;
         }
 

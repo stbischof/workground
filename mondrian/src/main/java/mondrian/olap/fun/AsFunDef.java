@@ -60,7 +60,7 @@ class AsFunDef extends FunDefBase {
         // a member to a set, have been performed. Use the new expression.
         scopedNamedSet.setExp(call.getArg(0));
 
-        return new AbstractIterCalc(call, new Calc[0]) {
+        return new AbstractIterCalc(call.getFunName(),call.getType(), new Calc[0]) {
             public TupleIterable evaluateIterable(
                 Evaluator evaluator)
             {

@@ -19,7 +19,6 @@ import org.eclipse.daanse.olap.api.model.Member;
 import mondrian.calc.BooleanCalc;
 import mondrian.calc.Calc;
 import mondrian.calc.DoubleCalc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ResultStyle;
 import mondrian.calc.StringCalc;
 import mondrian.olap.Evaluator;
@@ -45,8 +44,8 @@ public class ConstantCalc extends GenericCalc {
     private final int i;
     private final double d;
 
-    public ConstantCalc(Type type, Object o) {
-        super(new DummyExp(type));
+    public ConstantCalc( Type type, Object o) {
+        super("DummyExp",type);
         this.o = o;
         i = initializeInteger(o);
         d = initializeDouble(o);

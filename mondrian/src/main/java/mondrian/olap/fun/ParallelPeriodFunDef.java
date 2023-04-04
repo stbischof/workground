@@ -108,7 +108,7 @@ class ParallelPeriodFunDef extends FunDefBase {
         }
 
         return new AbstractMemberCalc(
-            call,
+        		call.getFunName(),call.getType(),
             new Calc[] {memberCalc, lagValueCalc, ancestorLevelCalc})
         {
             public Member evaluateMember(Evaluator evaluator) {

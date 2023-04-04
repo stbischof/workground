@@ -57,7 +57,7 @@ class ToggleDrillStateFunDef extends FunDefBase {
             compiler.compileList(call.getArg(0));
         final ListCalc listCalc1 =
             compiler.compileList(call.getArg(1));
-        return new AbstractListCalc(call, new Calc[]{listCalc0, listCalc1}) {
+        return new AbstractListCalc(call.getFunName(),call.getType(), new Calc[]{listCalc0, listCalc1}) {
             public TupleList evaluateList(Evaluator evaluator) {
                 final TupleList list0 = listCalc0.evaluateList(evaluator);
                 final TupleList list1 = listCalc1.evaluateList(evaluator);

@@ -48,6 +48,7 @@ import mondrian.olap.MondrianProperties;
 import mondrian.olap.Property;
 import mondrian.olap.SchemaReader;
 import mondrian.olap.Util;
+import mondrian.olap.type.Type;
 import mondrian.rolap.RolapAggregator;
 
 /**
@@ -98,10 +99,10 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         final Calc calc =
             call.getArgCount() > 1
                 ? compiler.compileScalar(call.getArg(1), true)
-                : new ValueCalc(call);
+                : new ValueCalc(call.getFunName(),call.getType());
         final Member member =
             call.getArgCount() > 1 ? getMember(call.getArg(1)) : null;
-        return new AggregateCalc(call, listCalc, calc, member);
+        return new AggregateCalc(call.getFunName(),calc.getType(), listCalc, calc, member);
     }
 
     public static class AggregateCalc extends GenericCalc {
@@ -110,16 +111,16 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         private final Member member;
 
         public AggregateCalc(
-            Exp exp, ListCalc listCalc, Calc calc, Member member)
+            String name,Type type, ListCalc listCalc, Calc calc, Member member)
         {
-            super(exp, new Calc[]{listCalc, calc});
+            super(name,type, new Calc[]{listCalc, calc});
             this.listCalc = listCalc;
             this.calc = calc;
             this.member = member;
         }
 
-        public AggregateCalc(Exp exp, ListCalc listCalc, Calc calc) {
-            this(exp, listCalc, calc, null);
+        public AggregateCalc(String name,Type type, ListCalc listCalc, Calc calc) {
+            this(name,type, listCalc, calc, null);
         }
 
         public Object evaluate(Evaluator evaluator) {

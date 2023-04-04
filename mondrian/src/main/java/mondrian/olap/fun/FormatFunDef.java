@@ -50,7 +50,7 @@ class FormatFunDef extends FunDefBase {
             // compiling format string.
             String formatString = (String) ((Literal) args[1]).getValue();
             final Format format = new Format(formatString, locale);
-            return new AbstractStringCalc(call, new Calc[] {calc}) {
+            return new AbstractStringCalc(call.getFunName(),call.getType(), new Calc[] {calc}) {
                 public String evaluateString(Evaluator evaluator) {
                     final Object o = calc.evaluate(evaluator);
                     return format.format(o);
@@ -60,7 +60,7 @@ class FormatFunDef extends FunDefBase {
             // Variable string expression
             final StringCalc stringCalc =
                     compiler.compileString(call.getArg(1));
-            return new AbstractStringCalc(call, new Calc[] {calc, stringCalc}) {
+            return new AbstractStringCalc(call.getFunName(),call.getType(), new Calc[] {calc, stringCalc}) {
                 public String evaluateString(Evaluator evaluator) {
                     final Object o = calc.evaluate(evaluator);
                     final String formatString =

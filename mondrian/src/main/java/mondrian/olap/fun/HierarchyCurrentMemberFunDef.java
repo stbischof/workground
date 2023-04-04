@@ -62,7 +62,7 @@ public class HierarchyCurrentMemberFunDef extends FunDefBase {
     private final HierarchyCalc hierarchyCalc;
 
     public CalcImpl( Exp exp, HierarchyCalc hierarchyCalc ) {
-      super( exp, new Calc[] { hierarchyCalc } );
+      super("CorrentMember", exp.getType(), new Calc[] { hierarchyCalc } );
       this.hierarchyCalc = hierarchyCalc;
     }
 
@@ -90,7 +90,7 @@ public class HierarchyCurrentMemberFunDef extends FunDefBase {
     private final RolapHierarchy hierarchy;
 
     public FixedCalcImpl( Exp exp, Hierarchy hierarchy ) {
-      super( exp, new Calc[] {} );
+      super( "CurrentMemberFixed",exp.getType(), new Calc[] {} );
       assert hierarchy != null;
       this.hierarchy = (RolapHierarchy) hierarchy;
     }

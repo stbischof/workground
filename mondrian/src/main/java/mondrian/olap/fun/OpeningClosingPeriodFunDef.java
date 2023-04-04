@@ -140,7 +140,7 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
             }
         }
         return new AbstractMemberCalc(
-            call, new Calc[] {levelCalc, memberCalc})
+        		call.getFunName(),call.getType(), new Calc[] {levelCalc, memberCalc})
         {
             public Member evaluateMember(Evaluator evaluator) {
                 Member member = memberCalc.evaluateMember(evaluator);

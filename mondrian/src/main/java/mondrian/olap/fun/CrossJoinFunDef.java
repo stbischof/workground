@@ -222,12 +222,14 @@ public class CrossJoinFunDef extends FunDefBase {
   }
 
   class CrossJoinIterCalc extends AbstractIterCalc {
+	private  ResolvedFunCall call;
     CrossJoinIterCalc( ResolvedFunCall call, Calc[] calcs ) {
-      super( call, calcs );
+      super( call.getFunName(),call.getType(), calcs );
+      this.call=call;
     }
 
     public TupleIterable evaluateIterable( Evaluator evaluator ) {
-      ResolvedFunCall call = (ResolvedFunCall) exp;
+
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
       SchemaReader schemaReader = evaluator.getSchemaReader();
@@ -400,12 +402,13 @@ public class CrossJoinFunDef extends FunDefBase {
   }
 
   abstract class BaseListCalc extends AbstractListCalc {
+	  ResolvedFunCall call;
     protected BaseListCalc( ResolvedFunCall call, Calc[] calcs, boolean mutable ) {
-      super( call, calcs, mutable );
+      super( call.getFunName(),call.getType(), calcs, mutable );
+      this.call=call;
     }
 
     public TupleList evaluateList( Evaluator evaluator ) {
-      ResolvedFunCall call = (ResolvedFunCall) exp;
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
       SchemaReader schemaReader = evaluator.getSchemaReader();

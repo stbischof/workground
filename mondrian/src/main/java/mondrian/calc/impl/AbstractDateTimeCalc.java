@@ -12,7 +12,7 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.DateTimeCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.DateTimeCalc} interface.
@@ -34,8 +34,8 @@ implements DateTimeCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractDateTimeCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractDateTimeCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
     @Override

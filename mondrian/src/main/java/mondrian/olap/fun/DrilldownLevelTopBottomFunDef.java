@@ -103,10 +103,10 @@ class DrilldownLevelTopBottomFunDef extends FunDefBase {
       call.getArgCount() > 3
         ? compiler.compileScalar( call.getArg( 3 ), true )
         : new ValueCalc(
-        new DummyExp(
-          new ScalarType() ) );
+        "DummyExp",
+          new ScalarType()  );
     return new AbstractListCalc(
-      call,
+    		call.getFunName(),call.getType(),
       new Calc[] { listCalc, integerCalc, orderCalc } ) {
       public TupleList evaluateList( Evaluator evaluator ) {
         // Use a native evaluator, if more efficient.

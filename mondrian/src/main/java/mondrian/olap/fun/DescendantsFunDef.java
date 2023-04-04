@@ -148,7 +148,7 @@ class DescendantsFunDef extends FunDefBase {
           ? compiler.compileInteger( call.getArg( 1 ) )
           : null;
       return new AbstractListCalc(
-        call, new Calc[] { memberCalc, depthCalc } ) {
+        call.getFunName(),call.getType(), new Calc[] { memberCalc, depthCalc } ) {
         public TupleList evaluateList( Evaluator evaluator ) {
           final Member member = memberCalc.evaluateMember( evaluator );
           List<Member> result = new ArrayList<Member>();
@@ -172,7 +172,7 @@ class DescendantsFunDef extends FunDefBase {
         compiler.compileInteger( call.getArg( 1 ) );
       final Flag flag1 = flag;
       return new AbstractListCalc(
-        call, new Calc[] { memberCalc, depthCalc } ) {
+    		  call.getFunName(),call.getType(), new Calc[] { memberCalc, depthCalc } ) {
         public TupleList evaluateList( Evaluator evaluator ) {
           final Member member = memberCalc.evaluateMember( evaluator );
           List<Member> result = new ArrayList<Member>();
@@ -194,7 +194,7 @@ class DescendantsFunDef extends FunDefBase {
           : null;
       final Flag flag2 = flag;
       return new AbstractListCalc(
-        call, new Calc[] { memberCalc, levelCalc } ) {
+    		  call.getFunName(),call.getType(), new Calc[] { memberCalc, levelCalc } ) {
         public TupleList evaluateList( Evaluator evaluator ) {
           final Evaluator context =
             evaluator.isNonEmpty() ? evaluator : null;

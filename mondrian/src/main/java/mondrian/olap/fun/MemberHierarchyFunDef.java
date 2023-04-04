@@ -19,6 +19,7 @@ import mondrian.calc.impl.AbstractHierarchyCalc;
 import mondrian.mdx.ResolvedFunCall;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Definition of the <code>&lt;Member&gt;.Hierarchy</code> MDX builtin function.
@@ -36,14 +37,14 @@ public class MemberHierarchyFunDef extends FunDefBase {
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final MemberCalc memberCalc =
                 compiler.compileMember(call.getArg(0));
-        return new CalcImpl(call, memberCalc);
+        return new CalcImpl(call.getFunName(),call.getType(), memberCalc);
     }
 
     public static class CalcImpl extends AbstractHierarchyCalc {
         private final MemberCalc memberCalc;
 
-        public CalcImpl(Exp exp, MemberCalc memberCalc) {
-            super(exp, new Calc[] {memberCalc});
+        public CalcImpl(String name, Type type, MemberCalc memberCalc) {
+            super(name,type, new Calc[] {memberCalc});
             this.memberCalc = memberCalc;
         }
 

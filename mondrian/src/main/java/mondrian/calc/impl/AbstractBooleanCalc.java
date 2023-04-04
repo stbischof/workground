@@ -12,7 +12,7 @@ package mondrian.calc.impl;
 import mondrian.calc.BooleanCalc;
 import mondrian.calc.Calc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.BooleanCalc} interface.
@@ -34,8 +34,8 @@ implements BooleanCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    public AbstractBooleanCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    public AbstractBooleanCalc(String name, Type type,Calc[] calcs) {
+        super(name,type, calcs);
         // now supports int and double conversion (see
         // AbstractExpCompiler.compileBoolean():
         // assert getType() instanceof BooleanType;

@@ -478,7 +478,7 @@ public final class ScenarioImpl implements Scenario {
          * for the values stored in the database.
          */
         public ScenarioCalc(ScenarioImpl scenario) {
-            super(new DummyExp(new ScalarType()));
+            super("DummyExp",new ScalarType());
             this.scenario = scenario;
         }
 

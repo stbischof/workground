@@ -61,7 +61,7 @@ class IntersectFunDef extends FunDefBase
         final ListCalc listCalc1 = compiler.compileList(call.getArg(0));
         final ListCalc listCalc2 = compiler.compileList(call.getArg(1));
         return new AbstractListCalc(
-            call, new Calc[] {listCalc1, listCalc2})
+        		call.getFunName(),call.getType(), new Calc[] {listCalc1, listCalc2})
         {
             public TupleList evaluateList(Evaluator evaluator) {
                 TupleList leftList =

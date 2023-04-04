@@ -45,7 +45,7 @@ class HierarchizeFunDef extends FunDefBase {
       compiler.compileList( call.getArg( 0 ), true );
     String order = FunUtil.getLiteralArg( call, 1, "PRE", HierarchizeFunDef.prePost );
     final boolean post = order.equals( "POST" );
-    return new AbstractListCalc( call, new Calc[] { listCalc } ) {
+    return new AbstractListCalc( call.getFunName(),call.getType(), new Calc[] { listCalc } ) {
       public TupleList evaluateList( Evaluator evaluator ) {
         TupleList list = listCalc.evaluateList( evaluator );
         return Sorter.hierarchizeTupleList( list, post );

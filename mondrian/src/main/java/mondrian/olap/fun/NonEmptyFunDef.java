@@ -68,7 +68,7 @@ class NonEmptyFunDef extends FunDefBase {
                 ListCalc listCalc1,
                 ListCalc listCalc2)
         {
-            super(call, new Calc[]{listCalc1, listCalc2});
+            super(call.getFunName(),call.getType(), new Calc[]{listCalc1, listCalc2});
             this.listCalc1 = listCalc1;
             this.listCalc2 = listCalc2;
         }

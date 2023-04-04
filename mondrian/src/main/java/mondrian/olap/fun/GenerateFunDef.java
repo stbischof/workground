@@ -133,7 +133,7 @@ class GenerateFunDef extends FunDefBase {
             int arityOut,
             boolean all)
         {
-            super(call, new Calc[]{iterCalc, listCalc2});
+            super(call.getFunName(),call.getType(), new Calc[]{iterCalc, listCalc2});
             this.iterCalc1 = iterCalc;
             this.listCalc2 = listCalc2;
             this.arityOut = arityOut;
@@ -210,7 +210,7 @@ class GenerateFunDef extends FunDefBase {
             StringCalc stringCalc,
             StringCalc sepCalc)
         {
-            super(call, new Calc[]{iterCalc, stringCalc});
+            super(call.getFunName(),call.getType(), new Calc[]{iterCalc, stringCalc});
             this.iterCalc = iterCalc;
             this.stringCalc = stringCalc;
             this.sepCalc = sepCalc;

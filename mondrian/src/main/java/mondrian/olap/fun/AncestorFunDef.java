@@ -51,7 +51,7 @@ class AncestorFunDef extends FunDefBase {
             final LevelCalc levelCalc =
                 compiler.compileLevel(call.getArg(1));
             return new AbstractMemberCalc(
-                call, new Calc[] {memberCalc, levelCalc})
+                call.getFunName(),call.getType(), new Calc[] {memberCalc, levelCalc})
             {
                 public Member evaluateMember(Evaluator evaluator) {
                     Level level = levelCalc.evaluateLevel(evaluator);
@@ -65,7 +65,7 @@ class AncestorFunDef extends FunDefBase {
             final IntegerCalc distanceCalc =
                 compiler.compileInteger(call.getArg(1));
             return new AbstractMemberCalc(
-                call, new Calc[] {memberCalc, distanceCalc})
+            		call.getFunName(),call.getType(), new Calc[] {memberCalc, distanceCalc})
             {
                 public Member evaluateMember(Evaluator evaluator) {
                     int distance = distanceCalc.evaluateInteger(evaluator);

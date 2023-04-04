@@ -167,7 +167,7 @@ public abstract class LinReg extends FunDefBase {
         final DoubleCalc xCalc =
             call.getArgCount() > 2
             ? compiler.compileDouble(call.getArg(2))
-            : new ValueCalc(call);
+            : new ValueCalc(call.getFunName(),call.getType());
         return new LinRegCalc(call, listCalc, yCalc, xCalc, regType);
     }
 
@@ -282,7 +282,7 @@ public abstract class LinReg extends FunDefBase {
             final DoubleCalc xCalc =
                 call.getArgCount() > 3
                 ? compiler.compileDouble(call.getArg(3))
-                : new ValueCalc(call);
+                : new ValueCalc(call.getFunName(),call.getType());
             return new PointCalc(
                 call, xPointCalc, listCalc, yCalc, xCalc);
         }
@@ -301,7 +301,7 @@ public abstract class LinReg extends FunDefBase {
             DoubleCalc yCalc,
             DoubleCalc xCalc)
         {
-            super(call, new Calc[]{xPointCalc, listCalc, yCalc, xCalc});
+            super(call.getFunName(),call.getType(), new Calc[]{xPointCalc, listCalc, yCalc, xCalc});
             this.xPointCalc = xPointCalc;
             this.listCalc = listCalc;
             this.yCalc = yCalc;
@@ -602,7 +602,7 @@ public abstract class LinReg extends FunDefBase {
             DoubleCalc xCalc,
             int regType)
         {
-            super(call, new Calc[]{listCalc, yCalc, xCalc});
+            super(call.getFunName(),call.getType(), new Calc[]{listCalc, yCalc, xCalc});
             this.listCalc = listCalc;
             this.yCalc = yCalc;
             this.xCalc = xCalc;

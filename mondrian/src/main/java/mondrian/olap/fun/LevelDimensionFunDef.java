@@ -39,7 +39,7 @@ class LevelDimensionFunDef extends FunDefBase {
     {
         final LevelCalc levelCalc =
             compiler.compileLevel(call.getArg(0));
-        return new AbstractDimensionCalc(call, new Calc[] {levelCalc}) {
+        return new AbstractDimensionCalc(call.getFunName(),call.getType(), new Calc[] {levelCalc}) {
             public Dimension evaluateDimension(Evaluator evaluator) {
                 Level level =  levelCalc.evaluateLevel(evaluator);
                 return level.getDimension();

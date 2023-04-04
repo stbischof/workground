@@ -15,7 +15,6 @@ import org.eclipse.daanse.olap.api.model.Member;
 import mondrian.calc.Calc;
 import mondrian.calc.MemberCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.ScalarType;
 import mondrian.olap.type.Type;
 
@@ -50,11 +49,11 @@ public class MemberArrayValueCalc extends GenericCalc {
      * @param nullCheck Whether to check for null values due to non-joining
      *     dimensions in a virtual cube
      */
-    MemberArrayValueCalc(Exp exp, MemberCalc[] memberCalcs, boolean nullCheck) {
-        super(exp);
+    MemberArrayValueCalc(String name, Type type, MemberCalc[] memberCalcs, boolean nullCheck) {
+        super(name,type);
         this.nullCheck = nullCheck;
-        final Type type = exp.getType();
-        assert type instanceof ScalarType : exp;
+
+        assert type instanceof ScalarType ;
         this.memberCalcs = memberCalcs;
         members = new Member[memberCalcs.length];
     }

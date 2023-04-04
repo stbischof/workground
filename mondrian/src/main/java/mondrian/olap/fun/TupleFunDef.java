@@ -101,7 +101,7 @@ public class TupleFunDef extends FunDefBase {
         private final MemberCalc[] memberCalcs;
 
         public CalcImpl(ResolvedFunCall call, MemberCalc[] memberCalcs) {
-            super(call, memberCalcs);
+            super(call.getFunName(),call.getType(), memberCalcs);
             this.memberCalcs = memberCalcs;
         }
 

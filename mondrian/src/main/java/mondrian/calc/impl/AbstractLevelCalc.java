@@ -12,8 +12,8 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.LevelCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.LevelType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.LevelCalc} interface.
@@ -35,8 +35,8 @@ implements LevelCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractLevelCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractLevelCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
         assert getType() instanceof LevelType;
     }
 

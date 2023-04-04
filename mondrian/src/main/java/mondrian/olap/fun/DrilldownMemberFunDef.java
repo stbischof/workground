@@ -56,7 +56,7 @@ class DrilldownMemberFunDef extends FunDefBase {
         final boolean recursive = literalArg.equals("RECURSIVE");
 
         return new AbstractListCalc(
-            call,
+        		call.getFunName(),call.getType(),
             new Calc[] {listCalc1, listCalc2})
         {
             public TupleList evaluateList(Evaluator evaluator) {

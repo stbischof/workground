@@ -10,7 +10,6 @@
 package mondrian.calc.impl;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.IterCalc;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
@@ -34,7 +33,7 @@ public class IterableListCalc extends AbstractListCalc {
      * @param iterCalc Calculation that returns an iterable.
      */
     public IterableListCalc(IterCalc iterCalc) {
-        super(new DummyExp(iterCalc.getType()), new Calc[] {iterCalc});
+        super("DummyExp",iterCalc.getType(), new Calc[] {iterCalc});
         this.iterCalc = iterCalc;
     }
 

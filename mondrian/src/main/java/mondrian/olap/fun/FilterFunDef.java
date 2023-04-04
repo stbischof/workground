@@ -122,14 +122,16 @@ class FilterFunDef extends FunDefBase {
     }
 
     private static abstract class BaseIterCalc extends AbstractIterCalc {
-        protected BaseIterCalc(ResolvedFunCall call, Calc[] calcs) {
-            super(call, calcs);
+        private ResolvedFunCall call;
+
+		protected BaseIterCalc(ResolvedFunCall call, Calc[] calcs) {
+            super(call.getFunName(),call.getType(), calcs);
+            this.call=call;
         }
 
         public TupleIterable evaluateIterable(Evaluator evaluator) {
             evaluator.getTiming().markStart(FilterFunDef.TIMING_NAME);
             try {
-                ResolvedFunCall call = (ResolvedFunCall) exp;
                 // Use a native evaluator, if more efficient.
                 // TODO: Figure this out at compile time.
                 SchemaReader schemaReader = evaluator.getSchemaReader();
@@ -310,12 +312,14 @@ class FilterFunDef extends FunDefBase {
     }
 
     private static abstract class BaseListCalc extends AbstractListCalc {
-        protected BaseListCalc(ResolvedFunCall call, Calc[] calcs) {
-            super(call, calcs);
+        private ResolvedFunCall call;
+
+		protected BaseListCalc(ResolvedFunCall call, Calc[] calcs) {
+            super(call.getFunName(),call.getType(), calcs);
+            this.call=call;
         }
 
         public TupleList evaluateList(Evaluator evaluator) {
-            ResolvedFunCall call = (ResolvedFunCall) exp;
             // Use a native evaluator, if more efficient.
             // TODO: Figure this out at compile time.
             SchemaReader schemaReader = evaluator.getSchemaReader();

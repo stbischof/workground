@@ -50,7 +50,7 @@ public class NamedSetCurrentOrdinalFunDef extends FunDefBase {
         final Exp arg0 = call.getArg(0);
         assert arg0 instanceof NamedSetExpr : "checked this in createCall";
         final NamedSetExpr namedSetExpr = (NamedSetExpr) arg0;
-        return new AbstractIntegerCalc(call, new Calc[0]) {
+        return new AbstractIntegerCalc(call.getFunName(),call.getType(), new Calc[0]) {
             public int evaluateInteger(Evaluator evaluator) {
                 return namedSetExpr.getEval(evaluator).currentOrdinal();
             }

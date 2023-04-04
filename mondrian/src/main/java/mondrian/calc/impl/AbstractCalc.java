@@ -19,10 +19,7 @@ import org.eclipse.daanse.olap.api.model.Member;
 import mondrian.calc.Calc;
 import mondrian.calc.CalcWriter;
 import mondrian.calc.ResultStyle;
-import mondrian.mdx.NamedSetExpr;
-import mondrian.mdx.ResolvedFunCall;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.Type;
 import mondrian.rolap.RolapEvaluator;
 import mondrian.rolap.RolapHierarchy;
@@ -36,7 +33,7 @@ import mondrian.rolap.RolapHierarchy;
 public abstract class AbstractCalc implements Calc {
     private final Calc[] calcs;
     protected final Type type;
-    protected final Exp exp;
+	private String name;
 
     /**
      * Creates an AbstractCalc.
@@ -46,11 +43,10 @@ public abstract class AbstractCalc implements Calc {
      * @param calcs
      *          Child compiled expressions
      */
-    protected AbstractCalc( Exp exp, Calc[] calcs ) {
-        assert exp != null;
-        this.exp = exp;
+    protected AbstractCalc( String name, Type type, Calc[] calcs ) {
         this.calcs = calcs;
-        type = exp.getType();
+        this.name=name;
+        this.type = type;
     }
 
     @Override
@@ -86,53 +82,13 @@ public abstract class AbstractCalc implements Calc {
     /**
      * Returns the name of this expression type, used when serializing an expression to a string.
      *
-     * <p>
-     * The default implementation tries to extract a name from a function call, if any, then prints the last part of the
-     * class name.
      */
     protected String getName() {
-        String name = lastSegment( getClass() );
-        if ( AbstractCalc.isDigits( name ) ) {
-            if ( exp instanceof ResolvedFunCall funCall ) {
-                name = funCall.getFunDef().getName();
-            } else if ( exp instanceof NamedSetExpr nse ) {
-                name = nse.getNamedSet().getName();
-            }
-        }
+
         return name;
     }
 
-    /**
-     * Returns the last segment of a class name.
-     *
-     * <p>
-     * Examples: lastSegment("com.acme.Foo") = "Foo" lastSegment("com.acme.Foo$Bar") = "Bar" lastSegment("com.acme.Foo$1")
-     * = "1"
-     *
-     * @param clazz
-     *          Class
-     * @return Last segment of class name
-     */
-    private String lastSegment( Class clazz ) {
-        final String name = clazz.getName();
-        final int dot = name.lastIndexOf( '.' );
-        final int dollar = name.lastIndexOf( '$' );
-        final int dotDollar = Math.max( dot, dollar );
-        if ( dotDollar >= 0 ) {
-            return name.substring( dotDollar + 1 );
-        }
-        return name;
-    }
-
-    private static boolean isDigits( String name ) {
-        for ( int i = 0; i < name.length(); i++ ) {
-            final char c = name.charAt( i );
-            if ( "0123456789".indexOf( c ) < 0 ) {
-                return false;
-            }
-        }
-        return true;
-    }
+  
 
     /**
      * Returns this expression's child expressions.

@@ -15,8 +15,8 @@ import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleList;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.ListCalc} interface.
@@ -39,8 +39,8 @@ implements ListCalc {
      * @param exp   Expression which was compiled
      * @param calcs List of child compiled expressions (for dependency analysis)
      */
-    protected AbstractListCalc( Exp exp, Calc[] calcs ) {
-        this( exp, calcs, true );
+    protected AbstractListCalc( String name, Type type, Calc[] calcs ) {
+        this( name,type, calcs, true );
     }
 
     /**
@@ -50,8 +50,8 @@ implements ListCalc {
      * @param calcs   List of child compiled expressions (for dependency analysis)
      * @param mutable Whether the list is mutable
      */
-    protected AbstractListCalc( Exp exp, Calc[] calcs, boolean mutable ) {
-        super( exp, calcs );
+    protected AbstractListCalc( String name, Type type, Calc[] calcs, boolean mutable ) {
+        super( name,type, calcs );
         this.mutable = mutable;
         assert type instanceof SetType : "expecting a set: " + getType();
     }
