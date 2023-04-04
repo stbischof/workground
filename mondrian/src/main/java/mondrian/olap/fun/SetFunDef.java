@@ -116,7 +116,7 @@ public class SetFunDef extends FunDefBase {
             return args[0].accept(compiler);
         }
         return new SetListCalc(
-            call, args, compiler, ResultStyle.LIST_MUTABLELIST);
+            call.getFunName(),call.getType(), args, compiler, ResultStyle.LIST_MUTABLELIST);
     }
 
     /**
@@ -135,12 +135,13 @@ public class SetFunDef extends FunDefBase {
         private final VoidCalc[] voidCalcs;
 
         public SetListCalc(
-            Exp exp,
+            String name,
+            Type type,
             Exp[] args,
             ExpCompiler compiler,
             List<ResultStyle> resultStyles)
         {
-            super(exp, null);
+            super("SetListCalc",type, null);
             voidCalcs = compileSelf(args, compiler, resultStyles);
             result = TupleCollections.createList(getType().getArity());
         }
@@ -170,7 +171,7 @@ public class SetFunDef extends FunDefBase {
             if (type instanceof SetType) {
                 // TODO use resultStyles
                 final ListCalc listCalc = compiler.compileList(arg);
-                return new AbstractVoidCalc(arg, new Calc[] {listCalc}) {
+                return new AbstractVoidCalc("VoidCalc",type, new Calc[] {listCalc}) {
                     public void evaluateVoid(Evaluator evaluator) {
                         TupleList list =
                             listCalc.evaluateList(evaluator);
@@ -197,7 +198,7 @@ public class SetFunDef extends FunDefBase {
                         mondrian.olap.Syntax.Property,
                         new Exp[] {arg});
                 final ListCalc listCalc = compiler.compileList(unresolvedFunCall.accept(compiler.getValidator()));
-                return new AbstractVoidCalc(arg, new Calc[] {listCalc}) {
+                return new AbstractVoidCalc("VoidCalc",type, new Calc[] {listCalc}) {
                     public void evaluateVoid(Evaluator evaluator) {
                         TupleList list =
                                 listCalc.evaluateList(evaluator);
@@ -206,7 +207,7 @@ public class SetFunDef extends FunDefBase {
                 };
             } else if (type.getArity() == 1 && arg instanceof MemberType) {
                 final MemberCalc memberCalc = compiler.compileMember(arg);
-                return new AbstractVoidCalc(arg, new Calc[]{memberCalc}) {
+                return new AbstractVoidCalc("VoidCalc",type, new Calc[]{memberCalc}) {
                     final Member[] members = {null};
                     public void evaluateVoid(Evaluator evaluator) {
                         // Don't add null or partially null tuple to result.
@@ -220,7 +221,7 @@ public class SetFunDef extends FunDefBase {
                 };
             } else {
                 final TupleCalc tupleCalc = compiler.compileTuple(arg);
-                return new AbstractVoidCalc(arg, new Calc[]{tupleCalc}) {
+                return new AbstractVoidCalc("VoidCalc",type, new Calc[]{tupleCalc}) {
                     public void evaluateVoid(Evaluator evaluator) {
                         // Don't add null or partially null tuple to result.
                         Member[] members = tupleCalc.evaluateTuple(evaluator);
@@ -267,7 +268,7 @@ public class SetFunDef extends FunDefBase {
             switch (calc.getResultStyle()) {
             case ITERABLE:
                 final IterCalc iterCalc = (IterCalc) calc;
-                return new AbstractIterCalc(arg, new Calc[]{calc}) {
+                return new AbstractIterCalc("VoidCalc",type, new Calc[]{calc}) {
                     public TupleIterable evaluateIterable(
                         Evaluator evaluator)
                     {
@@ -281,7 +282,7 @@ public class SetFunDef extends FunDefBase {
             case LIST:
             case MUTABLE_LIST:
                 final ListCalc listCalc = (ListCalc) calc;
-                return new AbstractIterCalc(arg, new Calc[]{calc}) {
+                return new AbstractIterCalc("VoidCalc",type, new Calc[]{calc}) {
                     public TupleIterable evaluateIterable(
                         Evaluator evaluator)
                     {
@@ -313,7 +314,7 @@ public class SetFunDef extends FunDefBase {
         } else if (TypeUtil.couldBeMember(type)) {
             final MemberCalc memberCalc = compiler.compileMember(arg);
             final ResolvedFunCall call = SetFunDef.wrapAsSet(arg);
-            return new AbstractIterCalc(call, new Calc[] {memberCalc}) {
+            return new AbstractIterCalc("VoidCalc",type, new Calc[] {memberCalc}) {
                 public TupleIterable evaluateIterable(
                     Evaluator evaluator)
                 {
@@ -331,7 +332,7 @@ public class SetFunDef extends FunDefBase {
         } else {
             final TupleCalc tupleCalc = compiler.compileTuple(arg);
             final ResolvedFunCall call = SetFunDef.wrapAsSet(arg);
-            return new AbstractIterCalc(call, new Calc[] {tupleCalc}) {
+            return new AbstractIterCalc(call.getFunName(),call.getType(), new Calc[] {tupleCalc}) {
                 public TupleIterable evaluateIterable(
                     Evaluator evaluator)
                 {
@@ -388,12 +389,13 @@ public class SetFunDef extends FunDefBase {
         private final IterCalc[] iterCalcs;
 
         public ExprIterCalc(
-            Exp exp,
+			String name,
+			Type type,
             Exp[] args,
             ExpCompiler compiler,
             List<ResultStyle> resultStyles)
         {
-            super(exp, null);
+            super("ExprIterCalc",type, null);
             final List<Calc> calcList =
                 SetFunDef.compileSelf(args, compiler, resultStyles);
             iterCalcs = calcList.toArray(new IterCalc[calcList.size()]);
@@ -508,7 +510,7 @@ public class SetFunDef extends FunDefBase {
          * @param call Expression which was compiled
          */
         EmptyListCalc(ResolvedFunCall call) {
-            super(call, new Calc[0]);
+            super(call.getFunName(),call.getType(), new Calc[0]);
 
             list = TupleCollections.emptyList(call.getType().getArity());
         }

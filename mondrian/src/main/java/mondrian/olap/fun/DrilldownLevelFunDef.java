@@ -86,7 +86,7 @@ class DrilldownLevelFunDef extends FunDefBase {
                 && call.getArg(3) instanceof Literal
                 && DrilldownLevelFunDef.INCLUDE_CALC_MEMBERS.equals(((Literal)call.getArg(3)).getValue());
         if (indexCalc == null) {
-            return new AbstractListCalc(call, new Calc[] {listCalc, levelCalc})
+            return new AbstractListCalc(call.getFunName(),call.getType(), new Calc[] {listCalc, levelCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     TupleList list = listCalc.evaluateList(evaluator);
@@ -103,7 +103,7 @@ class DrilldownLevelFunDef extends FunDefBase {
                 }
             };
         } else {
-            return new AbstractListCalc(call, new Calc[] {listCalc, indexCalc})
+            return new AbstractListCalc(call.getFunName(),call.getType(), new Calc[] {listCalc, indexCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     TupleList list = listCalc.evaluateList(evaluator);

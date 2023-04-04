@@ -26,6 +26,7 @@ import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
 import mondrian.olap.MondrianException;
 import mondrian.olap.MondrianProperties;
+import mondrian.olap.type.Type;
 import mondrian.resource.MondrianResource;
 import mondrian.rolap.RolapEvaluator;
 import mondrian.rolap.RolapHierarchy;
@@ -49,9 +50,9 @@ public class HierarchyCurrentMemberFunDef extends FunDefBase {
     final HierarchyCalc hierarchyCalc = compiler.compileHierarchy( call.getArg( 0 ) );
     final Hierarchy hierarchy = hierarchyCalc.getType().getHierarchy();
     if ( hierarchy != null ) {
-      return new FixedCalcImpl( call, hierarchy );
+      return new FixedCalcImpl( call.getFunName(),call.getType(), hierarchy );
     } else {
-      return new CalcImpl( call, hierarchyCalc );
+      return new CalcImpl( call.getFunName(),call.getType(), hierarchyCalc );
     }
   }
 
@@ -61,8 +62,8 @@ public class HierarchyCurrentMemberFunDef extends FunDefBase {
   public static class CalcImpl extends AbstractMemberCalc {
     private final HierarchyCalc hierarchyCalc;
 
-    public CalcImpl( Exp exp, HierarchyCalc hierarchyCalc ) {
-      super( exp, new Calc[] { hierarchyCalc } );
+    public CalcImpl( String name,Type type, HierarchyCalc hierarchyCalc ) {
+      super("CorrentMember", type, new Calc[] { hierarchyCalc } );
       this.hierarchyCalc = hierarchyCalc;
     }
 
@@ -89,8 +90,8 @@ public class HierarchyCurrentMemberFunDef extends FunDefBase {
     // Hierarchy
     private final RolapHierarchy hierarchy;
 
-    public FixedCalcImpl( Exp exp, Hierarchy hierarchy ) {
-      super( exp, new Calc[] {} );
+    public FixedCalcImpl( String name,Type type, Hierarchy hierarchy ) {
+      super( "CurrentMemberFixed",type, new Calc[] {} );
       assert hierarchy != null;
       this.hierarchy = (RolapHierarchy) hierarchy;
     }

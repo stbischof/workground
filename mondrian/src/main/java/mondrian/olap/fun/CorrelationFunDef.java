@@ -49,9 +49,9 @@ class CorrelationFunDef extends AbstractAggregateFunDef {
         final Calc calc2 =
             call.getArgCount() > 2
             ? compiler.compileScalar(call.getArg(2), true)
-            : new ValueCalc(call);
+            : new ValueCalc(call.getFunName(),call.getType());
         return new AbstractDoubleCalc(
-            call, new Calc[] {listCalc, calc1, calc2})
+        		call.getFunName(),call.getType(), new Calc[] {listCalc, calc1, calc2})
         {
             public double evaluateDouble(Evaluator evaluator) {
                 final int savepoint = evaluator.savepoint();

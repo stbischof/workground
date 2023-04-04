@@ -49,7 +49,7 @@ class SubsetFunDef extends FunDefBase {
             ? compiler.compileInteger(call.getArg(2))
             : null;
         return new AbstractListCalc(
-            call, new Calc[] {listCalc, startCalc, countCalc})
+        		call.getFunName(),call.getType(), new Calc[] {listCalc, startCalc, countCalc})
         {
             public TupleList evaluateList(Evaluator evaluator) {
                 final int savepoint = evaluator.savepoint();

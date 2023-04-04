@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.IterCalc;
 import mondrian.calc.ListCalc;
@@ -61,6 +60,7 @@ import mondrian.olap.type.MemberType;
 import mondrian.olap.type.SetType;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.Type;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.resource.MondrianResource;
 import mondrian.rolap.RolapEvaluator;
 import mondrian.rolap.SqlConstraintUtils;
@@ -216,18 +216,20 @@ public class CrossJoinFunDef extends FunDefBase {
       return compiler.compileAs( exp, null, ResultStyle.ITERABLE_LIST_MUTABLELIST );
     } else {
       // this always returns an IterCalc
-      return new SetFunDef.ExprIterCalc( new DummyExp( new SetType( type ) ), new Exp[] { exp }, compiler,
+      return new SetFunDef.ExprIterCalc( "DummyExp", new SetType( type ) , new Exp[] { exp }, compiler,
           ResultStyle.ITERABLE_LIST_MUTABLELIST );
     }
   }
 
   class CrossJoinIterCalc extends AbstractIterCalc {
+	private  ResolvedFunCall call;
     CrossJoinIterCalc( ResolvedFunCall call, Calc[] calcs ) {
-      super( call, calcs );
+      super( call.getFunName(),call.getType(), calcs );
+      this.call=call;
     }
 
     public TupleIterable evaluateIterable( Evaluator evaluator ) {
-      ResolvedFunCall call = (ResolvedFunCall) exp;
+
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
       SchemaReader schemaReader = evaluator.getSchemaReader();
@@ -394,18 +396,19 @@ public class CrossJoinFunDef extends FunDefBase {
       }
       return (ListCalc) calc;
     } else {
-      return new SetFunDef.SetListCalc( new DummyExp( new SetType( type ) ), new Exp[] { exp }, compiler,
+      return new SetFunDef.SetListCalc( "TypeWrapperExp", new SetType( type ), new Exp[] { exp }, compiler,
           ResultStyle.LIST_MUTABLELIST );
     }
   }
 
   abstract class BaseListCalc extends AbstractListCalc {
+	  ResolvedFunCall call;
     protected BaseListCalc( ResolvedFunCall call, Calc[] calcs, boolean mutable ) {
-      super( call, calcs, mutable );
+      super( call.getFunName(),call.getType(), calcs, mutable );
+      this.call=call;
     }
 
     public TupleList evaluateList( Evaluator evaluator ) {
-      ResolvedFunCall call = (ResolvedFunCall) exp;
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
       SchemaReader schemaReader = evaluator.getSchemaReader();

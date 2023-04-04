@@ -12,7 +12,7 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.TupleCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.TupleCalc} interface.
@@ -34,8 +34,8 @@ implements TupleCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractTupleCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractTupleCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
     @Override

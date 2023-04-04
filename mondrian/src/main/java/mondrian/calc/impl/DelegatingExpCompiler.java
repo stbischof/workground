@@ -29,7 +29,11 @@ import mondrian.calc.ResultStyle;
 import mondrian.calc.StringCalc;
 import mondrian.calc.TupleCalc;
 import mondrian.mdx.MdxVisitor;
-import mondrian.olap.*;
+import mondrian.olap.Evaluator;
+import mondrian.olap.Exp;
+import mondrian.olap.Parameter;
+import mondrian.olap.QueryPart;
+import mondrian.olap.Validator;
 import mondrian.olap.type.Type;
 
 /**

@@ -12,8 +12,8 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.DimensionCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.DimensionType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.DimensionCalc} interface.
@@ -35,8 +35,8 @@ implements DimensionCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractDimensionCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractDimensionCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
         assert getType() instanceof DimensionType;
     }
 

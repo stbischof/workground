@@ -12,7 +12,7 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.VoidCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.VoidCalc} interface.
@@ -28,8 +28,8 @@ import mondrian.olap.Exp;
 public class AbstractVoidCalc extends GenericCalc implements VoidCalc {
     private final Calc[] calcs;
 
-    protected AbstractVoidCalc(Exp exp, Calc[] calcs) {
-        super(exp);
+    protected AbstractVoidCalc(String name, Type type, Calc[] calcs) {
+        super(name,type);
         this.calcs = calcs;
     }
 

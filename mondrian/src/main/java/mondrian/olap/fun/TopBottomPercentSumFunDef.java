@@ -118,7 +118,7 @@ class TopBottomPercentSumFunDef extends FunDefBase {
       ListCalc listCalc,
       DoubleCalc doubleCalc,
       Calc calc ) {
-      super( call, new Calc[] { listCalc, doubleCalc, calc } );
+      super( call.getFunName(),call.getType(), new Calc[] { listCalc, doubleCalc, calc } );
       this.listCalc = listCalc;
       this.doubleCalc = doubleCalc;
       this.calc = calc;

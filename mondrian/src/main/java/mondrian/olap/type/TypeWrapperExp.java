@@ -7,31 +7,32 @@
  * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
  */
 
-package mondrian.calc;
+package mondrian.olap.type;
 
 import java.io.PrintWriter;
 
+import mondrian.calc.Calc;
+import mondrian.calc.ExpCompiler;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.Exp;
 import mondrian.olap.Validator;
-import mondrian.olap.type.Type;
 
 /**
- * Dummy expression which exists only to wrap a
+ * TypeWrappingExp expression which exists only to wrap a
  * {@link mondrian.olap.type.Type}.
  *
  * @author jhyde
  * @since Sep 26, 2005
  */
-public class DummyExp implements Exp {
+public class TypeWrapperExp implements Exp {
     private final Type type;
 
-    public DummyExp(Type type) {
+    public TypeWrapperExp(Type type) {
         this.type = type;
     }
 
     @Override
-    public DummyExp clone() {
+    public TypeWrapperExp clone() {
         throw new UnsupportedOperationException();
     }
 

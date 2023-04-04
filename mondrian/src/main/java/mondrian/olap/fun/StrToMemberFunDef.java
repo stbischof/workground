@@ -40,7 +40,7 @@ class StrToMemberFunDef extends FunDefBase {
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final StringCalc memberNameCalc =
             compiler.compileString(call.getArg(0));
-        return new AbstractMemberCalc(call, new Calc[] {memberNameCalc}) {
+        return new AbstractMemberCalc(call.getFunName(),call.getType(), new Calc[] {memberNameCalc}) {
             public Member evaluateMember(Evaluator evaluator) {
                 String memberName =
                     memberNameCalc.evaluateString(evaluator);

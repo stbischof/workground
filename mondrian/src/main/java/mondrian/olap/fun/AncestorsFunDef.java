@@ -62,7 +62,7 @@ class AncestorsFunDef extends FunDefBase {
             final LevelCalc levelCalc =
                 compiler.compileLevel(call.getArg(1));
             return new AbstractListCalc(
-                call, new Calc[] {memberCalc, levelCalc})
+            		call.getFunName(),call.getType(), new Calc[] {memberCalc, levelCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     Level level = levelCalc.evaluateLevel(evaluator);
@@ -81,7 +81,7 @@ class AncestorsFunDef extends FunDefBase {
             final IntegerCalc distanceCalc =
                 compiler.compileInteger(call.getArg(1));
             return new AbstractListCalc(
-                call, new Calc[] {memberCalc, distanceCalc})
+            		call.getFunName(),call.getType(), new Calc[] {memberCalc, distanceCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     Member member = memberCalc.evaluateMember(evaluator);

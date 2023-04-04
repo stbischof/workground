@@ -42,7 +42,7 @@ public class IifFunDefTest {
   @BeforeEach
   protected void setUp() throws Exception {
     when( trueCaseParamMock.getType() ).thenReturn( setTypeMock );
-    setListCalc = new SetListCalc( trueCaseParamMock, new Exp[] { args[1] }, compilerMock, ResultStyle.LIST_MUTABLELIST );
+    setListCalc = new SetListCalc("name",  setTypeMock, new Exp[] { args[1] }, compilerMock, ResultStyle.LIST_MUTABLELIST );
     call = new ResolvedFunCall( funDefMock, args, setTypeMock );
     when( compilerMock.compileAs( any(), any(), any() ) ).thenReturn( setListCalc );
   }

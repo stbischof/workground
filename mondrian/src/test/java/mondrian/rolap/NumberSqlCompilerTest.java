@@ -24,11 +24,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import mondrian.calc.DummyExp;
 import mondrian.olap.Exp;
 import mondrian.olap.Literal;
 import mondrian.olap.fun.MondrianEvaluationException;
 import mondrian.olap.type.NullType;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.rolap.sql.SqlQuery;
 
 /**
@@ -70,7 +70,7 @@ public class NumberSqlCompilerTest {
 
     @Test
     public void testRejectsNonLiteral() {
-        Exp exp = new DummyExp(new NullType());
+        Exp exp = new TypeWrapperExp(new NullType());
         assertNull(compiler.compile(exp));
     }
 

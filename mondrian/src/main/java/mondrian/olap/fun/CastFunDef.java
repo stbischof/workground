@@ -161,7 +161,7 @@ public class CastFunDef extends FunDefBase {
         private final int targetCategory;
 
         public CalcImpl(Exp arg, Calc calc, Type targetType) {
-            super(arg);
+            super("Cast",arg.getType());
             this.calc = calc;
             this.targetType = targetType;
             this.targetCategory = TypeUtil.typeToCategory(targetType);

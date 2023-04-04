@@ -45,7 +45,7 @@ class IsEmptyFunDef extends FunDefBase {
 
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final Calc calc = compiler.compileScalar(call.getArg(0), true);
-        return new AbstractBooleanCalc(call, new Calc[] {calc}) {
+        return new AbstractBooleanCalc(call.getFunName(),call.getType(), new Calc[] {calc}) {
             public boolean evaluateBoolean(Evaluator evaluator) {
                 Object o = calc.evaluate(evaluator);
                 return o == null;

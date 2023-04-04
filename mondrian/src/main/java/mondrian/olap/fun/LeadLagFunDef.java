@@ -54,7 +54,7 @@ class LeadLagFunDef extends FunDefBase {
                 compiler.compileInteger(call.getArg(1));
         final boolean lag = call.getFunName().equals("Lag");
         return new AbstractMemberCalc(
-            call,
+        		call.getFunName(),call.getType(),
             new Calc[] {memberCalc, integerCalc})
         {
             public Member evaluateMember(Evaluator evaluator) {

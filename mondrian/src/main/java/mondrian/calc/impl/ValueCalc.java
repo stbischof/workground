@@ -13,7 +13,7 @@ import org.eclipse.daanse.olap.api.model.Hierarchy;
 
 import mondrian.calc.Calc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Expression which yields the value of the current member in the current
@@ -30,8 +30,8 @@ public class ValueCalc extends GenericCalc {
      *
      * @param exp Source expression
      */
-    public ValueCalc(Exp exp) {
-        super(exp, new Calc[0]);
+    public ValueCalc(String name, Type type) {
+        super(name,type, new Calc[0]);
     }
 
     @Override

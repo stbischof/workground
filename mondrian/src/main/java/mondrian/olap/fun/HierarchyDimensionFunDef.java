@@ -18,7 +18,7 @@ import mondrian.calc.HierarchyCalc;
 import mondrian.calc.impl.AbstractDimensionCalc;
 import mondrian.mdx.ResolvedFunCall;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Definition of the <code>&lt;Hierarchy&gt;.Dimension</code> MDX
@@ -41,14 +41,14 @@ public class HierarchyDimensionFunDef extends FunDefBase {
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final HierarchyCalc hierarchyCalc =
                 compiler.compileHierarchy(call.getArg(0));
-        return new CalcImpl(call, hierarchyCalc);
+        return new CalcImpl(call.getFunName(),call.getType(), hierarchyCalc);
     }
 
     public static class CalcImpl extends AbstractDimensionCalc {
         private final HierarchyCalc hierarchyCalc;
 
-        public CalcImpl(Exp exp, HierarchyCalc hierarchyCalc) {
-            super(exp, new Calc[] {hierarchyCalc});
+        public CalcImpl(String name,Type type, HierarchyCalc hierarchyCalc) {
+            super("Dimension",type, new Calc[] {hierarchyCalc});
             this.hierarchyCalc = hierarchyCalc;
         }
 

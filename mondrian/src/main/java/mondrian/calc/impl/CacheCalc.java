@@ -11,8 +11,8 @@ package mondrian.calc.impl;
 
 import mondrian.calc.Calc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.ExpCacheDescriptor;
+import mondrian.olap.type.Type;
 
 /**
  * Calculation which retrieves the value of an underlying calculation
@@ -24,8 +24,8 @@ import mondrian.olap.ExpCacheDescriptor;
 public class CacheCalc extends GenericCalc {
     private final ExpCacheDescriptor key;
 
-    public CacheCalc(Exp exp, ExpCacheDescriptor key) {
-        super(exp);
+    public CacheCalc(String name, Type type, ExpCacheDescriptor key) {
+        super( name,  type);
         this.key = key;
     }
 

@@ -330,7 +330,7 @@ public class JavaFunDef extends FunDefBase {
          * @param calc Child compiled expression
          */
         protected AbstractCalc2(Exp exp, Calc calc) {
-            super(exp, new Calc[] {calc});
+            super("AbstractCalc2",exp.getType(), new Calc[] {calc});
         }
     }
 
@@ -351,7 +351,7 @@ public class JavaFunDef extends FunDefBase {
         public JavaMethodCalc(
             ResolvedFunCall call, Calc[] calcs, Method method)
         {
-            super(call, calcs);
+            super(call.getFunName(),call.getType(), calcs);
             this.method = method;
             this.args = new Object[calcs.length];
         }

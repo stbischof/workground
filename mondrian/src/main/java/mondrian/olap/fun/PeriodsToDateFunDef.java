@@ -80,7 +80,7 @@ class PeriodsToDateFunDef extends FunDefBase {
     final RolapHierarchy timeHierarchy =
         levelCalc == null ? ( (RolapCube) compiler.getEvaluator().getCube() ).getTimeHierarchy( getName() ) : null;
 
-    return new AbstractListCalc( call, new Calc[] { levelCalc, memberCalc } ) {
+    return new AbstractListCalc( call.getFunName(),call.getType(), new Calc[] { levelCalc, memberCalc } ) {
       public TupleList evaluateList( Evaluator evaluator ) {
         evaluator.getTiming().markStart( PeriodsToDateFunDef.TIMING_NAME );
         try {

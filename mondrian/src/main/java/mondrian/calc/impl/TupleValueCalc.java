@@ -13,10 +13,8 @@ import org.eclipse.daanse.olap.api.model.Hierarchy;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.TupleCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.fun.TupleFunDef;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.Type;
@@ -47,8 +45,8 @@ public class TupleValueCalc extends GenericCalc {
      * @param nullCheck Whether to check for null values due to non-joining
      *     dimensions in a virtual cube
      */
-    public TupleValueCalc(Exp exp, TupleCalc tupleCalc, boolean nullCheck) {
-        super(exp);
+    public TupleValueCalc(String name, Type type, TupleCalc tupleCalc, boolean nullCheck) {
+        super(name,type);
         this.tupleCalc = tupleCalc;
         this.nullCheck = nullCheck;
     }
@@ -117,7 +115,7 @@ public class TupleValueCalc extends GenericCalc {
     public Calc optimize() {
         if (tupleCalc instanceof TupleFunDef.CalcImpl calc) {
             return MemberValueCalc.create(
-                    new DummyExp(type),
+                    "DummyExp",type,
                     calc.getMemberCalcs(),
                     nullCheck);
         }

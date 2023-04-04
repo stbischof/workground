@@ -45,7 +45,7 @@ class IsNullFunDef extends FunDefBase {
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         assert call.getArgCount() == 1;
         final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
-        return new AbstractBooleanCalc(call, new Calc[]{memberCalc}) {
+        return new AbstractBooleanCalc(call.getFunName(),call.getType(), new Calc[]{memberCalc}) {
             public boolean evaluateBoolean(Evaluator evaluator) {
                 Member member = memberCalc.evaluateMember(evaluator);
                 return member.isNull()

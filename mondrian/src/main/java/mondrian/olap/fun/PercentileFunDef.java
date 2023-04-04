@@ -60,7 +60,7 @@ class PercentileFunDef extends AbstractAggregateFunDef {
         final DoubleCalc percentCalc =
             compiler.compileDouble(call.getArg(2));
         return new AbstractDoubleCalc(
-            call, new Calc[] {listCalc, calc, percentCalc})
+        		call.getFunName(),call.getType(), new Calc[] {listCalc, calc, percentCalc})
         {
             public double evaluateDouble(Evaluator evaluator) {
                 TupleList list = AbstractAggregateFunDef.evaluateCurrentList(listCalc, evaluator);

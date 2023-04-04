@@ -19,7 +19,6 @@ import org.eclipse.daanse.olap.api.model.Level;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.LevelCalc;
 import mondrian.calc.MemberCalc;
@@ -33,6 +32,7 @@ import mondrian.olap.Util;
 import mondrian.olap.Validator;
 import mondrian.olap.type.MemberType;
 import mondrian.olap.type.Type;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.resource.MondrianResource;
 import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapHierarchy;
@@ -104,8 +104,8 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
                     .getTimeHierarchy(getName());
             memberCalc =
                 new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    new DummyExp(
-                        MemberType.forHierarchy(defaultTimeHierarchy)),
+                    "DummyExp",
+                        MemberType.forHierarchy(defaultTimeHierarchy),
                     defaultTimeHierarchy);
             levelCalc = null;
             break;
@@ -116,8 +116,8 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
             levelCalc = compiler.compileLevel(call.getArg(0));
             memberCalc =
                 new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    new DummyExp(
-                        MemberType.forHierarchy(defaultTimeHierarchy)),
+                    "DummyExp",
+                        MemberType.forHierarchy(defaultTimeHierarchy),
                     defaultTimeHierarchy);
             break;
         default:
@@ -140,7 +140,7 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
             }
         }
         return new AbstractMemberCalc(
-            call, new Calc[] {levelCalc, memberCalc})
+        		call.getFunName(),call.getType(), new Calc[] {levelCalc, memberCalc})
         {
             public Member evaluateMember(Evaluator evaluator) {
                 Member member = memberCalc.evaluateMember(evaluator);

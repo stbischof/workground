@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.IterCalc;
 import mondrian.calc.ParameterSlot;
 import mondrian.calc.TupleCollections;
@@ -74,6 +73,7 @@ import mondrian.olap.fun.VisualTotalsFunDef.VisualTotalMember;
 import mondrian.olap.fun.sort.Sorter;
 import mondrian.olap.type.ScalarType;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.resource.MondrianResource;
 import mondrian.rolap.agg.AggregationManager;
 import mondrian.rolap.agg.CellRequestQuantumExceededException;
@@ -280,7 +280,7 @@ public class RolapResult extends ResultBase {
         SetType setType = new SetType(memberType1);
         mondrian.calc.ListCalc listCalc =
                 new mondrian.calc.impl.AbstractListCalc(
-                        new DummyExp(setType), new Calc[0])
+                        "DummyExp",setType, new Calc[0])
                 {
                   public TupleList evaluateList(
                           Evaluator evaluator)
@@ -451,11 +451,11 @@ public class RolapResult extends ResultBase {
           tupleList = AggregateFunDef.AggregateCalc.optimizeTupleList( evaluator, tupleList, false );
           evaluator.setSlicerTuples( tupleList );
 
-          final Calc valueCalc = new ValueCalc( new DummyExp( new ScalarType() ) );
+          final Calc valueCalc = new ValueCalc( "DummyExp",new ScalarType() ) ;
 
           final List<Member> prevSlicerMembers = new ArrayList<Member>();
 
-          final Calc calcCached = new GenericCalc( new DummyExp( query.slicerCalc.getType() ) ) {
+          final Calc calcCached = new GenericCalc("DummyExp", query.slicerCalc.getType() ) {
             public Object evaluate( Evaluator evaluator ) {
               try {
                 evaluator.getTiming().markStart( "EvalForSlicer" );
@@ -485,7 +485,7 @@ public class RolapResult extends ResultBase {
           // Generate a cached calculation for slicer aggregation
           // This is so critical for performance that we should consider creating an
           // optimized query level slicer cache.
-          final Calc calc = new CacheCalc( query.getSlicerAxis().getSet(), cacheDescriptor );
+          final Calc calc = new CacheCalc("CacheCalc", query.getSlicerAxis().getSet().getType(), cacheDescriptor );
 
           // replace the slicer set with a placeholder to avoid
           // interaction between the aggregate calc we just created
@@ -2315,7 +2315,7 @@ public class RolapResult extends ResultBase {
 
     @Override
     public Exp getExpression() {
-      return new DummyExp( calc.getType() );
+      return new TypeWrapperExp( calc.getType() );
     }
 
     @Override

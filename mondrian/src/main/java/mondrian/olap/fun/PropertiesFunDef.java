@@ -57,7 +57,7 @@ class PropertiesFunDef extends FunDefBase {
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
         final StringCalc stringCalc = compiler.compileString(call.getArg(1));
-        return new GenericCalc(call) {
+        return new GenericCalc(call.getFunName(),call.getType()) {
             public Object evaluate(Evaluator evaluator) {
                 return PropertiesFunDef.properties(
                     memberCalc.evaluateMember(evaluator),

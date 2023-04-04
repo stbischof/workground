@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.AbstractCalc;
 import mondrian.calc.impl.GenericCalc;
@@ -55,6 +54,7 @@ import mondrian.olap.ParameterImpl;
 import mondrian.olap.SchemaReader;
 import mondrian.olap.Util;
 import mondrian.olap.type.StringType;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.rolap.sql.MemberChildrenConstraint;
 import mondrian.rolap.sql.TupleConstraint;
 
@@ -826,7 +826,7 @@ public class RolapSchemaReader
         }
 
         public Calc compile(ExpCompiler compiler) {
-            return new GenericCalc(new DummyExp(getType())) {
+            return new GenericCalc("DummyExp",getType()) {
                 public Calc[] getCalcs() {
                     return new Calc[0];
                 }

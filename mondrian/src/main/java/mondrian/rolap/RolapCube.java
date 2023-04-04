@@ -3541,7 +3541,7 @@ public class RolapCube extends CubeBase {
      * expression. The expression has minimal amounts of metadata, for example
      * type information, but the function has no name or description.
      *
-     * @see mondrian.calc.DummyExp
+     * @see mondrian.olap.type.TypeWrapperExp
      */
     static Exp createDummyExp(final Calc calc) {
         return new ResolvedFunCall(

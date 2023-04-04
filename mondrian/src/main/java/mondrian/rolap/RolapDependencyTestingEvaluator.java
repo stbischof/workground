@@ -20,7 +20,6 @@ import org.eclipse.daanse.olap.api.model.Level;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCollections;
@@ -34,6 +33,7 @@ import mondrian.olap.MondrianProperties;
 import mondrian.olap.SchemaReader;
 import mondrian.olap.Util;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.TypeWrapperExp;
 
 /**
  * Evaluator which checks dependencies of expressions.
@@ -318,7 +318,7 @@ public class RolapDependencyTestingEvaluator extends RolapEvaluator {
             Hierarchy[] independentHierarchies,
             String mdxString)
         {
-            super(new DummyExp(calc.getType()));
+            super("DummyExp",calc.getType());
             this.calc = calc;
             this.independentHierarchies = independentHierarchies;
             this.mdxString = mdxString;
@@ -355,7 +355,7 @@ public class RolapDependencyTestingEvaluator extends RolapEvaluator {
             boolean mutableList,
             String mdxString)
         {
-            super(new DummyExp(calc.getType()));
+            super("DummyExp",calc.getType());
             this.calc = calc;
             this.independentHierarchies = independentHierarchies;
             this.mutableList = mutableList;

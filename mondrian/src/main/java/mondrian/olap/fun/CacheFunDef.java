@@ -68,7 +68,7 @@ public class CacheFunDef extends FunDefBase {
         final ExpCacheDescriptor cacheDescriptor =
                 new ExpCacheDescriptor(exp, compiler);
         if (call.getType() instanceof SetType) {
-            return new GenericIterCalc(call) {
+            return new GenericIterCalc(call.getFunName(),call.getType()) {
                 public Object evaluate(Evaluator evaluator) {
                     return evaluator.getCachedResult(cacheDescriptor);
                 }
@@ -83,7 +83,7 @@ public class CacheFunDef extends FunDefBase {
                 }
             };
         } else {
-            return new GenericCalc(call) {
+            return new GenericCalc(call.getFunName(),call.getType()) {
                 public Object evaluate(Evaluator evaluator) {
                     return evaluator.getCachedResult(cacheDescriptor);
                 }

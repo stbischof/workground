@@ -99,7 +99,7 @@ public class NamedSetExpr extends ExpBase implements Exp {
         }
 
         return new AbstractIterCalc(
-            this,
+            getNamedSet().getName(),getType(),
             new Calc[]{/* todo: compile namedSet.getExp() */})
         {
             public TupleIterable evaluateIterable(

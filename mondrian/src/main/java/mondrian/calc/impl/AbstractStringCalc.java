@@ -12,7 +12,7 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.StringCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.StringCalc} interface.
@@ -34,8 +34,8 @@ implements StringCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractStringCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractStringCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
     @Override

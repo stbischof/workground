@@ -134,7 +134,7 @@ class SetItemFunDef extends FunDefBase {
             final TupleType tupleType = (TupleType) elementType;
             final Member[] nullTuple = FunUtil.makeNullTuple(tupleType);
             if (isString) {
-                return new AbstractTupleCalc(call, calcs) {
+                return new AbstractTupleCalc(call.getFunName(),call.getType(), calcs) {
                     public Member[] evaluateTuple(Evaluator evaluator) {
                         final int savepoint = evaluator.savepoint();
                         final TupleList list;
@@ -173,7 +173,7 @@ class SetItemFunDef extends FunDefBase {
                     }
                 };
             } else {
-                return new AbstractTupleCalc(call, calcs) {
+                return new AbstractTupleCalc(call.getFunName(),call.getType(), calcs) {
                     public Member[] evaluateTuple(Evaluator evaluator) {
                         final int savepoint = evaluator.savepoint();
                         final TupleList list;
@@ -207,7 +207,7 @@ class SetItemFunDef extends FunDefBase {
             final MemberType memberType = (MemberType) elementType;
             final Member nullMember = FunUtil.makeNullMember(memberType);
             if (isString) {
-                return new AbstractMemberCalc(call, calcs) {
+                return new AbstractMemberCalc(call.getFunName(),call.getType(), calcs) {
                     public Member evaluateMember(Evaluator evaluator) {
                         final int savepoint = evaluator.savepoint();
                         final List<Member> list;
@@ -234,7 +234,7 @@ class SetItemFunDef extends FunDefBase {
                     }
                 };
             } else {
-                return new AbstractMemberCalc(call, calcs) {
+                return new AbstractMemberCalc(call.getFunName(),call.getType(), calcs) {
                     public Member evaluateMember(Evaluator evaluator) {
                         final int savepoint = evaluator.savepoint();
                         final List<Member> list;

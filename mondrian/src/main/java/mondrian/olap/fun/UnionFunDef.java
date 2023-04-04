@@ -56,7 +56,7 @@ public class UnionFunDef extends FunDefBase {
             compiler.compileList(call.getArg(0));
         final ListCalc listCalc1 =
             compiler.compileList(call.getArg(1));
-        return new AbstractListCalc(call, new Calc[] {listCalc0, listCalc1}) {
+        return new AbstractListCalc(call.getFunName(),call.getType(), new Calc[] {listCalc0, listCalc1}) {
             public TupleList evaluateList(Evaluator evaluator) {
                 TupleList list0 = listCalc0.evaluateList(evaluator);
                 TupleList list1 = listCalc1.evaluateList(evaluator);

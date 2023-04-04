@@ -42,7 +42,7 @@ class TupleToStrFunDef extends FunDefBase {
         if (TypeUtil.couldBeMember(call.getArg(0).getType())) {
             final MemberCalc memberCalc =
                     compiler.compileMember(call.getArg(0));
-            return new AbstractStringCalc(call, new Calc[] {memberCalc}) {
+            return new AbstractStringCalc(call.getFunName(),call.getType(), new Calc[] {memberCalc}) {
                 public String evaluateString(Evaluator evaluator) {
                     final Member member =
                             memberCalc.evaluateMember(evaluator);
@@ -57,7 +57,7 @@ class TupleToStrFunDef extends FunDefBase {
         } else {
             final TupleCalc tupleCalc =
                     compiler.compileTuple(call.getArg(0));
-            return new AbstractStringCalc(call, new Calc[] {tupleCalc}) {
+            return new AbstractStringCalc(call.getFunName(),call.getType(), new Calc[] {tupleCalc}) {
                 public String evaluateString(Evaluator evaluator) {
                     final Member[] members =
                             tupleCalc.evaluateTuple(evaluator);

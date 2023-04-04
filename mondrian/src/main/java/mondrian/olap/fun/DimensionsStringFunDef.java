@@ -53,7 +53,7 @@ class DimensionsStringFunDef extends FunDefBase {
     {
         final StringCalc stringCalc =
             compiler.compileString(call.getArg(0));
-        return new AbstractHierarchyCalc(call, new Calc[] {stringCalc})
+        return new AbstractHierarchyCalc(call.getFunName(),call.getType(), new Calc[] {stringCalc})
         {
             public Hierarchy evaluateHierarchy(Evaluator evaluator) {
                 String dimensionName =

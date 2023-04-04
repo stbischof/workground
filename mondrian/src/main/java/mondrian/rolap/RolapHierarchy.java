@@ -925,7 +925,7 @@ public class RolapHierarchy extends HierarchyBase {
                 SetType setType = new SetType(memberType1);
                 ListCalc listCalc =
                     new AbstractListCalc(
-                        new DummyExp(setType), new Calc[0])
+                         "DummyExp",setType, new Calc[0])
                     {
                         public TupleList evaluateList(
                             Evaluator evaluator)
@@ -1527,9 +1527,9 @@ public class RolapHierarchy extends HierarchyBase {
             ListCalc listCalc)
         {
             super(
-                new DummyExp(returnType),
+                "DummyExp",returnType,
                 listCalc,
-                new ValueCalc(new DummyExp(returnType)));
+                new ValueCalc("DummyExp",returnType));
         }
     }
 

@@ -61,8 +61,8 @@ class CovarianceFunDef extends FunDefBase {
         final Calc calc2 =
             call.getArgCount() > 2
             ? compiler.compileScalar(call.getArg(2), true)
-            : new ValueCalc(call);
-        return new AbstractDoubleCalc(call, new Calc[] {listCalc, calc1, calc2})
+            : new ValueCalc(call.getFunName(),call.getType());
+        return new AbstractDoubleCalc(call.getFunName(),call.getType(), new Calc[] {listCalc, calc1, calc2})
         {
             public double evaluateDouble(Evaluator evaluator) {
                 TupleList memberList = listCalc.evaluateList(evaluator);

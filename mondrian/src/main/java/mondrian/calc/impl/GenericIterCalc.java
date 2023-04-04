@@ -17,8 +17,8 @@ import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleList;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.Type;
 
 /**
  * Adapter which computes a set expression and converts it to any list or
@@ -39,8 +39,8 @@ implements ListCalc, IterCalc
      *
      * @param exp Source expression
      */
-    protected GenericIterCalc(Exp exp) {
-        super(exp, null);
+    protected GenericIterCalc(String name, Type type) {
+        super( name,  type, null);
     }
 
     /**
@@ -49,8 +49,8 @@ implements ListCalc, IterCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected GenericIterCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected GenericIterCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
     }
 
     @Override

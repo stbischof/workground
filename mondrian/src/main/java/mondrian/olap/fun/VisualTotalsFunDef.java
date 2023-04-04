@@ -95,7 +95,7 @@ public class VisualTotalsFunDef extends FunDefBase {
         public CalcImpl(
             ResolvedFunCall call, ListCalc listCalc, StringCalc stringCalc)
         {
-            super(call, new Calc[] {listCalc, stringCalc});
+            super(call.getFunName(),call.getType(), new Calc[] {listCalc, stringCalc});
             this.listCalc = listCalc;
             this.stringCalc = stringCalc;
         }

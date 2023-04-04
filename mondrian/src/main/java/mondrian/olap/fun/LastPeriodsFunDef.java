@@ -79,7 +79,7 @@ class LastPeriodsFunDef extends FunDefBase {
                     .getTimeHierarchy(getName());
             memberCalc =
                 new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    call, timeHierarchy);
+                		call.getFunName(),call.getType(), timeHierarchy);
         } else {
             memberCalc = compiler.compileMember(args[1]);
         }
@@ -89,7 +89,7 @@ class LastPeriodsFunDef extends FunDefBase {
                 compiler.compileInteger(args[0]);
 
         return new AbstractListCalc(
-            call, new Calc[] {memberCalc, indexValueCalc})
+call.getFunName(),call.getType(), new Calc[] {memberCalc, indexValueCalc})
         {
             public TupleList evaluateList(Evaluator evaluator) {
                 Member member = memberCalc.evaluateMember(evaluator);

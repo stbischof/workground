@@ -61,7 +61,7 @@ class HeadTailFunDef extends FunDefBase {
             : ConstantCalc.constantInteger(1);
         if (head) {
             return new AbstractListCalc(
-                call, new Calc[] {listCalc, integerCalc})
+            		call.getFunName(),call.getType(), new Calc[] {listCalc, integerCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     final int savepoint = evaluator.savepoint();
@@ -77,7 +77,7 @@ class HeadTailFunDef extends FunDefBase {
             };
         } else {
             return new AbstractListCalc(
-                call, new Calc[] {listCalc, integerCalc})
+            		call.getFunName(),call.getType(), new Calc[] {listCalc, integerCalc})
             {
                 public TupleList evaluateList(Evaluator evaluator) {
                     final int savepoint = evaluator.savepoint();

@@ -12,8 +12,8 @@ package mondrian.calc.impl;
 import mondrian.calc.Calc;
 import mondrian.calc.HierarchyCalc;
 import mondrian.olap.Evaluator;
-import mondrian.olap.Exp;
 import mondrian.olap.type.HierarchyType;
+import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link mondrian.calc.HierarchyCalc} interface.
@@ -35,8 +35,8 @@ implements HierarchyCalc
      * @param exp Source expression
      * @param calcs Child compiled expressions
      */
-    protected AbstractHierarchyCalc(Exp exp, Calc[] calcs) {
-        super(exp, calcs);
+    protected AbstractHierarchyCalc(String name, Type type, Calc[] calcs) {
+        super(name,type, calcs);
         assert getType() instanceof HierarchyType;
     }
 

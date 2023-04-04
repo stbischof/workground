@@ -39,7 +39,7 @@ class MemberDimensionFunDef extends FunDefBase {
     {
         final MemberCalc memberCalc =
             compiler.compileMember(call.getArg(0));
-        return new AbstractDimensionCalc(call, new Calc[] {memberCalc})
+        return new AbstractDimensionCalc(call.getFunName(),call.getType(), new Calc[] {memberCalc})
         {
             public Dimension evaluateDimension(Evaluator evaluator) {
                 Member member = memberCalc.evaluateMember(evaluator);

@@ -20,7 +20,6 @@ import org.olap4j.AllocationPolicy;
 import org.olap4j.Scenario;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.mdx.ResolvedFunCall;
 import mondrian.olap.Evaluator;
@@ -28,6 +27,7 @@ import mondrian.olap.Formula;
 import mondrian.olap.Query;
 import mondrian.olap.Util;
 import mondrian.olap.type.ScalarType;
+import mondrian.olap.type.TypeWrapperExp;
 
 /**
  * Implementation of {@link org.olap4j.Scenario}.
@@ -478,7 +478,7 @@ public final class ScenarioImpl implements Scenario {
          * for the values stored in the database.
          */
         public ScenarioCalc(ScenarioImpl scenario) {
-            super(new DummyExp(new ScalarType()));
+            super("DummyExp",new ScalarType());
             this.scenario = scenario;
         }
 

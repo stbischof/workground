@@ -20,7 +20,6 @@ import org.eclipse.daanse.olap.api.model.Level;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.IntegerCalc;
 import mondrian.calc.LevelCalc;
@@ -40,6 +39,7 @@ import mondrian.olap.NativeEvaluator;
 import mondrian.olap.SchemaReader;
 import mondrian.olap.fun.sort.Sorter;
 import mondrian.olap.type.ScalarType;
+import mondrian.olap.type.TypeWrapperExp;
 
 /**
  * Definition of the <code>DrilldownLevelTop</code> and
@@ -103,10 +103,10 @@ class DrilldownLevelTopBottomFunDef extends FunDefBase {
       call.getArgCount() > 3
         ? compiler.compileScalar( call.getArg( 3 ), true )
         : new ValueCalc(
-        new DummyExp(
-          new ScalarType() ) );
+        "DummyExp",
+          new ScalarType()  );
     return new AbstractListCalc(
-      call,
+    		call.getFunName(),call.getType(),
       new Calc[] { listCalc, integerCalc, orderCalc } ) {
       public TupleList evaluateList( Evaluator evaluator ) {
         // Use a native evaluator, if more efficient.

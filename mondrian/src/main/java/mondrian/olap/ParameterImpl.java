@@ -14,7 +14,6 @@ package mondrian.olap;
 import java.util.List;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.ParameterCompilable;
 import mondrian.calc.ParameterSlot;
@@ -264,7 +263,7 @@ public class ParameterImpl
          * @param slot Slot
          */
         public ParameterCalc(ParameterSlot slot) {
-            super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
+            super("DummyExp",slot.getParameter().getType(), new Calc[0]);
             this.slot = slot;
         }
 
@@ -297,7 +296,7 @@ public class ParameterImpl
          * @param slot Slot
          */
         public MemberListParameterCalc(ParameterSlot slot) {
-            super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
+			super("DummyExp", slot.getParameter().getType(), new Calc[0]);
             this.slot = slot;
         }
 

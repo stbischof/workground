@@ -67,7 +67,7 @@ class AddCalculatedMembersFunDef extends FunDefBase {
 
     public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final ListCalc listCalc = compiler.compileList(call.getArg(0));
-        return new AbstractListCalc(call, new Calc[] {listCalc}) {
+        return new AbstractListCalc(call.getFunDef().getName(),call.getType(), new Calc[] {listCalc}) {
             public TupleList evaluateList(Evaluator evaluator) {
                 final TupleList list =
                     listCalc.evaluateList(evaluator);

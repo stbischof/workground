@@ -23,7 +23,6 @@ import org.eclipse.daanse.olap.api.model.Hierarchy;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.ListCalc;
 import mondrian.calc.MemberCalc;
@@ -41,6 +40,7 @@ import mondrian.olap.MondrianProperties;
 import mondrian.olap.Util;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.Type;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.rolap.RolapUtil;
 
 /**
@@ -76,7 +76,7 @@ public class RankFunDef extends FunDefBase {
     final Type type0 = call.getArg( 0 ).getType();
     final ListCalc listCalc = compiler.compileList( call.getArg( 1 ) );
     final Calc keyCalc = compiler.compileScalar( call.getArg( 2 ), true );
-    Calc sortedListCalc = new SortedListCalc( call, listCalc, keyCalc );
+    Calc sortedListCalc = new SortedListCalc( call.getFunName(),call.getType(), listCalc, keyCalc );
     final ExpCacheDescriptor cacheDescriptor = new ExpCacheDescriptor( call, sortedListCalc, compiler.getEvaluator() );
     if ( type0 instanceof TupleType ) {
       final TupleCalc tupleCalc = compiler.compileTuple( call.getArg( 0 ) );
@@ -95,7 +95,7 @@ public class RankFunDef extends FunDefBase {
     final Calc listCalc;
     if ( MondrianProperties.instance().EnableExpCache.get() ) {
       final ExpCacheDescriptor key = new ExpCacheDescriptor( listExp, listCalc1, compiler.getEvaluator() );
-      listCalc = new CacheCalc( listExp, key );
+      listCalc = new CacheCalc( "CacheCalc",listExp.getType(), key );
     } else {
       listCalc = listCalc1;
     }
@@ -113,7 +113,7 @@ public class RankFunDef extends FunDefBase {
     private final Calc listCalc;
 
     public Rank2TupleCalc( ResolvedFunCall call, TupleCalc tupleCalc, Calc listCalc ) {
-      super( call, new Calc[] { tupleCalc, listCalc } );
+      super( call.getFunName(),call.getType(), new Calc[] { tupleCalc, listCalc } );
       this.tupleCalc = tupleCalc;
       this.listCalc = listCalc;
     }
@@ -156,7 +156,7 @@ public class RankFunDef extends FunDefBase {
     private final Calc listCalc;
 
     public Rank2MemberCalc( ResolvedFunCall call, MemberCalc memberCalc, Calc listCalc ) {
-      super( call, new Calc[] { memberCalc, listCalc } );
+      super( call.getFunName(),call.getType(), new Calc[] { memberCalc, listCalc } );
       this.memberCalc = memberCalc;
       this.listCalc = listCalc;
     }
@@ -199,7 +199,7 @@ public class RankFunDef extends FunDefBase {
 
     public Rank3TupleCalc( ResolvedFunCall call, TupleCalc tupleCalc, Calc sortCalc,
         ExpCacheDescriptor cacheDescriptor ) {
-      super( call, new Calc[] { tupleCalc, sortCalc } );
+      super( call.getFunName(),call.getType(), new Calc[] { tupleCalc, sortCalc } );
       this.tupleCalc = tupleCalc;
       this.sortCalc = sortCalc;
       this.cacheDescriptor = cacheDescriptor;
@@ -284,7 +284,7 @@ public class RankFunDef extends FunDefBase {
 
     public Rank3MemberCalc( ResolvedFunCall call, MemberCalc memberCalc, Calc sortCalc,
         ExpCacheDescriptor cacheDescriptor ) {
-      super( call, new Calc[] { memberCalc, sortCalc } );
+      super( call.getFunName(),call.getType(), new Calc[] { memberCalc, sortCalc } );
       this.memberCalc = memberCalc;
       this.sortCalc = sortCalc;
       this.cacheDescriptor = cacheDescriptor;
@@ -387,8 +387,8 @@ public class RankFunDef extends FunDefBase {
      * @param keyCalc
      *          Compiled expression to compute the sort key
      */
-    public SortedListCalc( Exp exp, ListCalc listCalc, Calc keyCalc ) {
-      super( exp, new Calc[] { listCalc, keyCalc } );
+    public SortedListCalc( String name,Type type, ListCalc listCalc, Calc keyCalc ) {
+      super( name,type, new Calc[] { listCalc, keyCalc } );
       this.listCalc = listCalc;
       this.keyCalc = keyCalc;
     }
@@ -610,7 +610,7 @@ public class RankFunDef extends FunDefBase {
      *          Whether elements of the list are tuples (as opposed to members)
      */
     public RankedListCalc( ListCalc listCalc, boolean tuple ) {
-      super( new DummyExp( listCalc.getType() ), new Calc[] { listCalc } );
+      super( "DummyExp", listCalc.getType() , new Calc[] { listCalc } );
       this.listCalc = listCalc;
       this.tuple = tuple;
     }
