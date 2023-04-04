@@ -23,7 +23,6 @@ import mondrian.calc.Calc;
 import mondrian.calc.DateTimeCalc;
 import mondrian.calc.DimensionCalc;
 import mondrian.calc.DoubleCalc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.HierarchyCalc;
 import mondrian.calc.IntegerCalc;
@@ -67,6 +66,7 @@ import mondrian.olap.type.StringType;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.Type;
 import mondrian.olap.type.TypeUtil;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.resource.MondrianResource;
 
 /**
@@ -216,11 +216,11 @@ public class AbstractExpCompiler implements ExpCompiler {
         final Hierarchy hierarchy = hierarchyCalc.getType().getHierarchy();
         if (hierarchy != null) {
             return new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    new DummyExp(TypeUtil.toMemberType(hierarchyCalc.getType())),
+                    "DummyExp",TypeUtil.toMemberType(hierarchyCalc.getType()),
                     hierarchy);
         }
         return new HierarchyCurrentMemberFunDef.CalcImpl(
-                new DummyExp(TypeUtil.toMemberType(hierarchyCalc.getType())),
+                "DummyExp",TypeUtil.toMemberType(hierarchyCalc.getType()),
                 hierarchyCalc);
     }
 
@@ -244,7 +244,7 @@ public class AbstractExpCompiler implements ExpCompiler {
         if (type instanceof HierarchyType) {
             final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
             return new HierarchyDimensionFunDef.CalcImpl(
-                    new DummyExp(new DimensionType(type.getDimension())),
+                    "DummyExp",new DimensionType(type.getDimension()),
                     hierarchyCalc);
         }
         assert type instanceof DimensionType : type;
@@ -273,7 +273,7 @@ public class AbstractExpCompiler implements ExpCompiler {
             }
             final DimensionCalc dimensionCalc = compileDimension(exp);
             return new DimensionHierarchyCalc(
-                    new DummyExp(HierarchyType.forType(type)),
+            		"DummyExp",HierarchyType.forType(type),
                     dimensionCalc);
         }
         if (type instanceof MemberType) {
@@ -635,8 +635,8 @@ public class AbstractExpCompiler implements ExpCompiler {
     private static class DimensionHierarchyCalc extends AbstractHierarchyCalc {
         private final DimensionCalc dimensionCalc;
 
-        protected DimensionHierarchyCalc(Exp exp, DimensionCalc dimensionCalc) {
-            super("DimensionHierarchyCalc",exp.getType(), new Calc[] {dimensionCalc});
+        protected DimensionHierarchyCalc(String name,Type type, DimensionCalc dimensionCalc) {
+            super("DimensionHierarchyCalc",type, new Calc[] {dimensionCalc});
             this.dimensionCalc = dimensionCalc;
         }
 

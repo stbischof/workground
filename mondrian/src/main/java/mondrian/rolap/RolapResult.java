@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.IterCalc;
 import mondrian.calc.ParameterSlot;
 import mondrian.calc.TupleCollections;
@@ -74,6 +73,7 @@ import mondrian.olap.fun.VisualTotalsFunDef.VisualTotalMember;
 import mondrian.olap.fun.sort.Sorter;
 import mondrian.olap.type.ScalarType;
 import mondrian.olap.type.SetType;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.resource.MondrianResource;
 import mondrian.rolap.agg.AggregationManager;
 import mondrian.rolap.agg.CellRequestQuantumExceededException;
@@ -2315,7 +2315,7 @@ public class RolapResult extends ResultBase {
 
     @Override
     public Exp getExpression() {
-      return new DummyExp( calc.getType() );
+      return new TypeWrapperExp( calc.getType() );
     }
 
     @Override

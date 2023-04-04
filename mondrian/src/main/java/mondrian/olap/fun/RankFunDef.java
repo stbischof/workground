@@ -23,7 +23,6 @@ import org.eclipse.daanse.olap.api.model.Hierarchy;
 import org.eclipse.daanse.olap.api.model.Member;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.ListCalc;
 import mondrian.calc.MemberCalc;
@@ -41,6 +40,7 @@ import mondrian.olap.MondrianProperties;
 import mondrian.olap.Util;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.Type;
+import mondrian.olap.type.TypeWrapperExp;
 import mondrian.rolap.RolapUtil;
 
 /**

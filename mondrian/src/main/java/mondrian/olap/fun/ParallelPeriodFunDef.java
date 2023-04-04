@@ -92,7 +92,7 @@ class ParallelPeriodFunDef extends FunDefBase {
                 // the dimension cannot be determined at compile time.
                 memberCalc =
                     new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                        call, hierarchy);
+                        call.getFunName(),call.getType(), hierarchy);
             } else {
                 memberCalc = null;
             }
@@ -103,7 +103,7 @@ class ParallelPeriodFunDef extends FunDefBase {
                     .getTimeHierarchy(getName());
             memberCalc =
                 new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    call, timeHierarchy);
+                		call.getFunName(),call.getType(), timeHierarchy);
             break;
         }
 

@@ -21,7 +21,6 @@ import org.eclipse.daanse.olap.api.model.Member;
 import org.eigenbase.xom.XOMUtil;
 
 import mondrian.calc.Calc;
-import mondrian.calc.DummyExp;
 import mondrian.calc.ExpCompiler;
 import mondrian.calc.IterCalc;
 import mondrian.calc.MemberCalc;
@@ -49,6 +48,7 @@ import mondrian.olap.fun.sort.SortKeySpec;
 import mondrian.olap.fun.sort.Sorter;
 import mondrian.olap.fun.sort.Sorter.Flag;
 import mondrian.olap.type.Type;
+import mondrian.olap.type.TypeWrapperExp;
 
 /**
  * Definition of the <code>Order</code> MDX function.

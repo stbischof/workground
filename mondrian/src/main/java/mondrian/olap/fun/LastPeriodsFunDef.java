@@ -79,7 +79,7 @@ class LastPeriodsFunDef extends FunDefBase {
                     .getTimeHierarchy(getName());
             memberCalc =
                 new HierarchyCurrentMemberFunDef.FixedCalcImpl(
-                    call, timeHierarchy);
+                		call.getFunName(),call.getType(), timeHierarchy);
         } else {
             memberCalc = compiler.compileMember(args[1]);
         }

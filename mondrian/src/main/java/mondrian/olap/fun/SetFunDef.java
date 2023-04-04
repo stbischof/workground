@@ -116,7 +116,7 @@ public class SetFunDef extends FunDefBase {
             return args[0].accept(compiler);
         }
         return new SetListCalc(
-            call, args, compiler, ResultStyle.LIST_MUTABLELIST);
+            call.getFunName(),call.getType(), args, compiler, ResultStyle.LIST_MUTABLELIST);
     }
 
     /**
@@ -135,12 +135,13 @@ public class SetFunDef extends FunDefBase {
         private final VoidCalc[] voidCalcs;
 
         public SetListCalc(
-            Exp exp,
+            String name,
+            Type type,
             Exp[] args,
             ExpCompiler compiler,
             List<ResultStyle> resultStyles)
         {
-            super("SetListCalc",exp.getType(), null);
+            super("SetListCalc",type, null);
             voidCalcs = compileSelf(args, compiler, resultStyles);
             result = TupleCollections.createList(getType().getArity());
         }
@@ -388,12 +389,13 @@ public class SetFunDef extends FunDefBase {
         private final IterCalc[] iterCalcs;
 
         public ExprIterCalc(
-            Exp exp,
+			String name,
+			Type type,
             Exp[] args,
             ExpCompiler compiler,
             List<ResultStyle> resultStyles)
         {
-            super("ExprIterCalc",exp.getType(), null);
+            super("ExprIterCalc",type, null);
             final List<Calc> calcList =
                 SetFunDef.compileSelf(args, compiler, resultStyles);
             iterCalcs = calcList.toArray(new IterCalc[calcList.size()]);
