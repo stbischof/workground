@@ -425,7 +425,7 @@ public void testResultLimitWithinCrossjoin_1(TestingContext foodMartContext) {
     }
 
     public String getName() {
-      throw new UnsupportedOperationException();
+      return "SomeName";
     }
 
     public String getDescription() {
