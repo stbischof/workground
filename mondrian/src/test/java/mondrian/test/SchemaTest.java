@@ -2601,7 +2601,7 @@ public class SchemaTest {
         withRole(context, "Role1");
         assertQueryThrows(context,
             "select from [Sales]",
-            "Cannot invoke \"org.eclipse.daanse.olap.rolap.dbmapper.api.enums.AccessEnum.name()\" because the return value of \"org.eclipse.daanse.olap.rolap.dbmapper.api.SchemaGrant.access()\" is null");
+            "Cannot invoke \"org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum.name()\" because the return value of \"org.eclipse.daanse.olap.rolap.dbmapper.model.api.SchemaGrant.access()\" is null");
     }
 
     @ParameterizedTest
