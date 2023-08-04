@@ -48,7 +48,7 @@ public class SoapClient {
         message.saveChanges();
 
         /* Print the request message, just for debugging purposes */
-        logger.error("Request SOAP Message:");
+        logger.debug("Request SOAP Message:");
 
         // Create SOAP Connection
 

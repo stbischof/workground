@@ -14,8 +14,10 @@
 package org.eclipse.daanse.xmla.client.soapmessage;
 
 import jakarta.xml.soap.SOAPElement;
+import jakarta.xml.soap.SOAPEnvelope;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPPart;
 import org.eclipse.daanse.xmla.api.discover.DiscoverService;
 import org.eclipse.daanse.xmla.api.discover.Properties;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsRequest;
@@ -102,6 +104,8 @@ import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsRestrictio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -1294,8 +1298,14 @@ public class DiscoverServiceImpl implements DiscoverService {
             try {
                 MdSchemaDimensionsRestrictions dr = requestApi.restrictions();
                 Properties properties = requestApi.properties();
+                SOAPPart soapPart = message.getSOAPPart();
+                SOAPEnvelope envelope = soapPart.getEnvelope();
+                envelope.addNamespaceDeclaration("msxmla", "urn:schemas-microsoft-com:xml-analysis");
                 SOAPElement discover = message.getSOAPBody()
                     .addChildElement(DISCOVER);
+                    //.addChildElement(DISCOVER, "msxmla");
+                //discover.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis");
+                discover.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "urn:schemas-microsoft-com:xml-analysis");
                 discover.addChildElement(REQUEST_TYPE).setTextContent(MDSCHEMA_DIMENSIONS);
                 SOAPElement restrictionList = discover.addChildElement(RESTRICTIONS)
                     .addChildElement(RESTRICTION_LIST);
@@ -1314,6 +1324,16 @@ public class DiscoverServiceImpl implements DiscoverService {
                 SOAPElement propertyList = discover.addChildElement(PROPERTIES)
                     .addChildElement(PROPERTY_LIST);
                 addChildElementPropertyList(propertyList, properties);
+                //LOG SOAP message for debug only
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                try {
+                    message.writeTo(stream);
+                    String m = new String(stream.toByteArray(), "utf-8");
+                    LOGGER.error(m);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
             } catch (SOAPException e) {
                 LOGGER.error("DiscoverService MdSchemaDimensionsRequest accept error", e);
