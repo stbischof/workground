@@ -1298,14 +1298,13 @@ public class DiscoverServiceImpl implements DiscoverService {
             try {
                 MdSchemaDimensionsRestrictions dr = requestApi.restrictions();
                 Properties properties = requestApi.properties();
-                SOAPPart soapPart = message.getSOAPPart();
-                SOAPEnvelope envelope = soapPart.getEnvelope();
-                envelope.addNamespaceDeclaration("msxmla", "urn:schemas-microsoft-com:xml-analysis");
-                SOAPElement discover = message.getSOAPBody()
-                    .addChildElement(DISCOVER);
-                    //.addChildElement(DISCOVER, "msxmla");
-                //discover.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis");
-                discover.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "urn:schemas-microsoft-com:xml-analysis");
+//                SOAPPart soapPart = message.getSOAPPart();
+//                SOAPEnvelope envelope = soapPart.getEnvelope();
+//                envelope.addNamespaceDeclaration("msxmla", "urn:schemas-microsoft-com:xml-analysis");
+                SOAPElement body = message.getSOAPBody();
+                
+                SOAPElement  discover=    body.addChildElement(DISCOVER,null,"urn:schemas-microsoft-com:xml-analysis");
+
                 discover.addChildElement(REQUEST_TYPE).setTextContent(MDSCHEMA_DIMENSIONS);
                 SOAPElement restrictionList = discover.addChildElement(RESTRICTIONS)
                     .addChildElement(RESTRICTION_LIST);
