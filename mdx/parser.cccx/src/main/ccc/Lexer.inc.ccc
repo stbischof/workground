@@ -52,7 +52,7 @@ INJECT PARSER_CLASS :
 
 INJECT LEXER_CLASS :
 {
-  // It seems that multiline comments can nest 
+  // It seems that multiline comments can nest
   // in MDX. So we have this little TOKEN_HOOK
   // and these variables where we keep track
   // of the nesting levels of the comments and
@@ -80,9 +80,9 @@ INJECT LEXER_CLASS :
       tok.setBeginOffset(commentStartOffset);
       if (commentNesting > 0) {
          switchTo(LexicalState.IN_MULTI_LINE_COMMENT);
-      } 
+      }
     }
-    // If we hit EOF but commentNesting is > 0, 
+    // If we hit EOF but commentNesting is > 0,
     // we obviously have a problem!
     else if (tok.getType() == EOF && commentNesting !=0) {
       tok.setBeginOffset(commentStartOffset);
@@ -92,7 +92,7 @@ INJECT LEXER_CLASS :
   }
 }
 
-UNPARSED #Comment : 
+UNPARSED #Comment :
   < SINGLE_LINE_COMMENT : ("//" | "--") (~["\n"])* "\n" > #SingleLineComment
 ;
 
@@ -169,6 +169,7 @@ TOKEN #Keyword:
 | < PLAN : "PLAN" >
 | < PROPERTIES : "PROPERTIES" >
 | < REFRESH : "REFRESH" >
+| < UPDATE : "UPDATE" >
 | < RETURN : "RETURN" >
 | < ROWS : "ROWS" >
 | < SECTIONS : "SECTIONS" >
@@ -226,7 +227,7 @@ TOKEN #ReservedWord :
                   | "TOPSUM"|"TOPPERCENT"|"TOTALS"|"TRAN"|"TRANSACTION"|"TREE"
                   | "TRUE"|"TUPLETOSTR"|"TYPE"|"UNIQUE"|"UNIQUENAME"|"UPDATE"
                   | "USE"|"USE_EQUAL_ALLOCATION"|"USE_EQUAL_INCREMENT"
-                  | "USE_WEIGHTED_ALLOCATION"|"USE_WEIGHTED_INCREMENT"|"USERNAME" 
+                  | "USE_WEIGHTED_ALLOCATION"|"USE_WEIGHTED_INCREMENT"|"USERNAME"
                   | "VALIDMEASURE"|"VALUE"|"VAR"|"VARIANCE"|"VARIANCEP"|"VARP"
                   | "UNION"|"VISUAL"|"VISUALTOTALS"|"WTD"|"YTD"
    >
@@ -262,7 +263,7 @@ INCLUDE JAVA_IDENTIFIER_DEF
  */
 
 TOKEN #IdToken :
-  < ID : <JAVA_IDENTIFIER_START> (<JAVA_IDENTIFIER_PART>)* > 
+  < ID : <JAVA_IDENTIFIER_START> (<JAVA_IDENTIFIER_PART>)* >
   |
   < QUOTED_ID :
     < LBRACKET >
@@ -281,7 +282,7 @@ TOKEN #IdToken :
   >
   |
   // Neither the Microsoft spec the Oracle spec makes any mention of this!
-  < AT_ID : "@" <ID> > 
+  < AT_ID : "@" <ID> >
 ;
 
 INJECT IdToken :
@@ -319,7 +320,7 @@ INJECT IdToken :
       return List.of(this);
    }
 
-}   
+}
 
 TOKEN #NumericLiteral :
   < UNSIGNED_INTEGER_LITERAL : ([ "0"-"9" ])+ >
@@ -327,21 +328,21 @@ TOKEN #NumericLiteral :
   < APPROX_NUMERIC_LITERAL :
     (
       < UNSIGNED_INTEGER_LITERAL >
-      | 
+      |
       < DECIMAL_NUMERIC_LITERAL >
     )
-    < EXPONENT > 
-  > 
+    < EXPONENT >
+  >
   |
   < DECIMAL_NUMERIC_LITERAL :
     ([ "0"-"9" ])+ (".")? ([ "0"-"9" ])*
   | "." ([ "0"-"9" ])+
-  > 
+  >
   |
   < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
 ;
 
-TOKEN : 
+TOKEN :
   < STRING_LITERAL : <SINGLE_QUOTED_STRING> | <DOUBLE_QUOTED_STRING> > #StringLiteral
   |
   < #SINGLE_QUOTED_STRING :
@@ -350,7 +351,7 @@ TOKEN :
       (~[ "'" ])
     | ("''")
     )*
-    "'" 
+    "'"
   >
   |
   < #DOUBLE_QUOTED_STRING :
@@ -359,13 +360,13 @@ TOKEN :
       (~[ "\"" ])
     | ("\"\"")
     )*
-    "\"" 
+    "\""
   >
 ;
 
 INJECT StringLiteral :
    import static PARSER_PACKAGE.PARSER_CLASS.stripQuotes;
-   implements Literal, org.eclipse.daanse.mdx.model.api.expression.StringLiteral 
+   implements Literal, org.eclipse.daanse.mdx.model.api.expression.StringLiteral
 {
    private String value;
 
@@ -375,7 +376,7 @@ INJECT StringLiteral :
    }
 }
 
-INJECT NumericLiteral : 
+INJECT NumericLiteral :
   import java.math.BigDecimal;
   implements Literal, org.eclipse.daanse.mdx.model.api.expression.NumericLiteral
 {

@@ -12,7 +12,7 @@
 *   Stefan Bischof (bipolis.org) - initial
 */
 
-// Breaking the statement related logic out 
+// Breaking the statement related logic out
 // into an INCLUDE
 
 // ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ MdxStatement MdxStatement#interface :
     |
     ExplainStatement
   )
-  {MdxStatement result = (MdxStatement) peekNode();} 
+  {MdxStatement result = (MdxStatement) peekNode();}
   < EOF >
   {
     return result;
@@ -61,13 +61,13 @@ INJECT DrillthroughStatement :
 {
    public Optional<Integer> maxRows() {
       Node maxRows = firstChildOfType(MAXROWS);
-      return maxRows == null ? Optional.empty() 
+      return maxRows == null ? Optional.empty()
                              : Optional.of(Integer.valueOf(maxRows.nextSibling().getImage()));
    }
 
    public Optional<Integer> firstRowSet() {
       Node firstRow = firstChildOfType(FIRSTROWSET);
-      return firstRow == null ? Optional.empty() 
+      return firstRow == null ? Optional.empty()
                               : Optional.of(Integer.valueOf(firstRow.nextSibling().getImage()));
    }
 
@@ -79,7 +79,7 @@ INJECT DrillthroughStatement :
       List<ReturnItem> result = childrenOfType(ReturnItem.class);
       return result.isEmpty() ? null : result;
    }
-}   
+}
 
 DrillthroughStatement :
   < DRILLTHROUGH >
@@ -92,10 +92,10 @@ DrillthroughStatement :
   SelectStatement
   (
     < RETURN >
-    ReturnItem 
+    ReturnItem
     (
-      <COMMA> 
-      ReturnItem 
+      <COMMA>
+      ReturnItem
     )*
   )?
 ;
@@ -144,8 +144,22 @@ INJECT RefreshStatement :
 }
 
 RefreshStatement :
-  < REFRESH > 
-  < CUBE >  
+  < REFRESH >
+  < CUBE >
+  NameObjectIdentifier
+;
+
+INJECT UpdateStatement :
+   implements org.eclipse.daanse.mdx.model.api.UpdateStatement;
+{
+   public NameObjectIdentifier cubeName() {
+      return (NameObjectIdentifier) getChild(2);
+   }
+}
+
+UpdateStatement :
+  < UPDATE >
+  < CUBE >
   NameObjectIdentifier
 ;
 
@@ -175,9 +189,9 @@ INJECT DMVStatement :
         < COMMA > CompoundId
     )*
   )?
-  < FROM > 
+  < FROM >
   < SYSTEM_CUBE >
-  < DOT > 
+  < DOT >
   NameObjectIdentifier
   (
      < WHERE > Expression()
@@ -252,25 +266,25 @@ INJECT Axis :
          default  -> "Axis(" + ordinal + ")";
       };
    }
-}   
+}
 
-Axis : 
+Axis :
    (
-    < UNSIGNED_INTEGER_LITERAL > 
+    < UNSIGNED_INTEGER_LITERAL >
     |
     < COLUMNS >
-    | 
+    |
     < ROWS >
-    | 
+    |
     < PAGES >
-    | 
+    |
     < SECTIONS >
-    | 
+    |
     < CHAPTERS >
    )
    |
    < AXIS >
-   < LPAREN > 
+   < LPAREN >
    < UNSIGNED_INTEGER_LITERAL >
    < RPAREN >
 ;
@@ -285,7 +299,7 @@ INJECT CreateSetBodyClause :
    public org.eclipse.daanse.mdx.model.api.expression.Expression expression() {
       return (org.eclipse.daanse.mdx.model.api.expression.Expression) getChild(2);
    }
-}  
+}
 
 CreateSetBodyClause :
   CompoundId < AS > Expression
@@ -306,7 +320,7 @@ INJECT SelectCellPropertyListClause :
 
 SelectCellPropertyListClause SelectCellPropertyListClause# :
   (< CELL >)?
-  < PROPERTIES > 
+  < PROPERTIES >
   <ID>
   (
     < COMMA > <ID>
@@ -325,7 +339,7 @@ INJECT SelectSlicerAxisClause :
 }
 
 SelectSlicerAxisClause :
-  < WHERE > 
+  < WHERE >
   Expression
 ;
 
@@ -336,12 +350,12 @@ INJECT SelectQueryAxesClause :
    public java.util.List<SelectQueryAxisClause> selectQueryAxisClauses() {
       return childrenOfType(SelectQueryAxisClause.class);
    }
-}   
+}
 
 SelectQueryAxesClause :
   SelectQueryAxisClause
   (
-    < COMMA > 
+    < COMMA >
     SelectQueryAxisClause
   )*
 ;
@@ -363,15 +377,15 @@ INJECT SelectSubcubeClauseStatement :
     public Optional<SelectSlicerAxisClause> selectSlicerAxisClause() {
       return Optional.ofNullable(firstChildOfType(SelectSlicerAxisClause.class));
     }
-}  
+}
 
 SelectSubcubeClauseStatement :
-  < LPAREN > 
+  < LPAREN >
   < SELECT >
   (
     SelectQueryClause
   )?
-  < FROM > 
+  < FROM >
   SelectSubcubeClause
   (
     SelectSlicerAxisClause
@@ -379,7 +393,7 @@ SelectSubcubeClauseStatement :
   < RPAREN >
 ;
 
-SelectQueryClause#interface : 
+SelectQueryClause#interface :
    SelectQueryAsteriskClause
    |
    SelectQueryAxesClause
@@ -409,7 +423,7 @@ INJECT SelectStatement :
 {
     public List<SelectWithClause> selectWithClauses() {
         return childrenOfType(SelectWithClause.class);
-    } 
+    }
 
     public org.eclipse.daanse.mdx.model.api.select.SelectQueryClause selectQueryClause() {
         return firstChildOfType(org.eclipse.daanse.mdx.model.api.select.SelectQueryClause.class);
@@ -425,7 +439,7 @@ INJECT SelectStatement :
 
     public Optional<SelectCellPropertyListClause> selectCellPropertyListClause() {
         return Optional.ofNullable(firstChildOfType(SelectCellPropertyListClause.class));
-    };   
+    };
 }
 
 //https://learn.microsoft.com/en-us/sql/mdx/mdx-data-manipulation-select?view=sql-server-ver16
@@ -439,7 +453,7 @@ SelectStatement :
     |
     SelectQueryAxesClause
   )?
-  < FROM > 
+  < FROM >
   SelectSubcubeClause
   (
     SelectSlicerAxisClause
@@ -462,7 +476,7 @@ INJECT SelectSubcubeClauseName :
    public NameObjectIdentifier cubeName() {
       return (NameObjectIdentifier) getChild(0);
    }
-}   
+}
 
 SelectSubcubeClauseName SelectSubcubeClauseName :
   NameObjectIdentifier
@@ -482,11 +496,11 @@ MeasureBodyClause :
 // https://docs.oracle.com/cd/E57185_01/ESBTR/mdx_grammar_rules.html
 SelectWithClause#interface :
   <CELL> <CALCULATION> CreateCellCalculationBodyClause
-  | 
+  |
   ("CALCULATED")? < MEMBER > CreateMemberBodyClause
-  | 
+  |
   < SET > CreateSetBodyClause
-  | 
+  |
   <MEASURE> MeasureBodyClause
 ;
 
@@ -500,7 +514,7 @@ INJECT ReturnItem :
 
 ReturnItem : CompoundId ;
 
-INJECT CreateCellCalculationBodyClause : 
+INJECT CreateCellCalculationBodyClause :
    implements SelectWithClause, org.eclipse.daanse.mdx.model.api.select.CreateCellCalculationBodyClause
 
 //https://learn.microsoft.com/en-us/sql/mdx/mdx-data-definition-create-cell-calculation?view=sql-server-ver16
@@ -510,8 +524,8 @@ CreateCellCalculationBodyClause :
 
 // This is not used in the parser. I just re-added this method
 // so that a pre-existing test still compiles
-List<ReturnItem> parseReturnItems : 
-   {List<ReturnItem> result = new ArrayList<>();} 
+List<ReturnItem> parseReturnItems :
+   {List<ReturnItem> result = new ArrayList<>();}
    ReturnItem
    {result.add((ReturnItem) peekNode());}
    (<COMMA> ReturnItem {result.add((ReturnItem) peekNode());})*
@@ -534,12 +548,12 @@ INJECT CreateMemberBodyClause :
   public java.util.List<MemberPropertyDefinition> memberPropertyDefinitions() {
      return childrenOfType(MemberPropertyDefinition.class);
   }
-}  
+}
 
 // https://learn.microsoft.com/en-us/sql/mdx/mdx-data-definition-create-member?view=sql-server-ver16
 CreateMemberBodyClause :
-  CompoundId 
-  < AS > 
+  CompoundId
+  < AS >
   Expression
     (
      < COMMA > MemberPropertyDefinition

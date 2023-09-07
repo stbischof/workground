@@ -23,6 +23,7 @@ import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.ReturnItem;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.expression.Expression;
 import org.eclipse.daanse.mdx.model.api.select.MemberPropertyDefinition;
 import org.eclipse.daanse.mdx.model.api.select.SelectCellPropertyListClause;
@@ -239,6 +240,17 @@ public class MdxParserWrapper implements org.eclipse.daanse.mdx.parser.api.MdxPa
     public RefreshStatement parseRefreshStatement() throws MdxParserException {
         try {
             return delegate.parseRefreshStatement();
+
+        } catch (Exception e) {
+            throw new MdxParserException(e);
+        } finally {
+            dump();
+        }
+    }
+
+    public UpdateStatement parseUpdateStatement() throws MdxParserException {
+        try {
+            return delegate.parseUpdateStatement();
 
         } catch (Exception e) {
             throw new MdxParserException(e);

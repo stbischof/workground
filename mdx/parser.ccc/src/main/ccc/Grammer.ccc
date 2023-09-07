@@ -48,6 +48,7 @@ import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.ReturnItem;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
 import org.eclipse.daanse.mdx.model.api.expression.CallExpression;
 import org.eclipse.daanse.mdx.model.api.expression.CompoundId;
@@ -102,6 +103,7 @@ import org.eclipse.daanse.mdx.model.record.select.SelectSlicerAxisClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectSubcubeClauseNameR;
 import org.eclipse.daanse.mdx.model.record.select.SelectSubcubeClauseStatementR;
 import org.eclipse.daanse.mdx.model.record.RefreshStatementR;
+import org.eclipse.daanse.mdx.model.record.UpdateStatementR;
 import org.eclipse.daanse.mdx.model.record.DMVStatementR;
 {
 
@@ -1475,6 +1477,16 @@ RefreshStatement parseRefreshStatement :
   < REFRESH > < CUBE >  cubeName = parseNameObjectIdentifier
 {
     return new RefreshStatementR(cubeName);
+}
+;
+
+UpdateStatement parseUpdateStatement :
+{
+  NameObjectIdentifier cubeName;
+}
+  < UPDATE > < CUBE >  cubeName = parseNameObjectIdentifier
+{
+    return new UpdateStatementR(cubeName);
 }
 ;
 

@@ -20,6 +20,7 @@ import mondrian.olap.ExplainImpl;
 import mondrian.olap.QueryAxisImpl;
 import mondrian.olap.QueryImpl;
 import mondrian.olap.RefreshImpl;
+import mondrian.olap.UpdateImpl;
 import mondrian.olap.api.DmvQuery;
 import mondrian.olap.api.DrillThrough;
 import mondrian.olap.api.Explain;
@@ -28,6 +29,7 @@ import mondrian.olap.api.Query;
 import mondrian.olap.api.QueryPart;
 import mondrian.olap.api.Refresh;
 import mondrian.olap.api.Subcube;
+import mondrian.olap.api.Update;
 import mondrian.server.Statement;
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
@@ -35,6 +37,7 @@ import org.eclipse.daanse.mdx.model.api.ExplainStatement;
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.query.api.QueryProvider;
 
 import java.util.ArrayList;
@@ -73,8 +76,12 @@ public class QueryProviderImpl implements QueryProvider {
 
     @Override
     public Refresh createRefresh(RefreshStatement refreshStatement) {
-        getName(refreshStatement.cubeName());
         return new RefreshImpl(getName(refreshStatement.cubeName()));
+    }
+
+    @Override
+    public Update createUpdate(UpdateStatement updateStatement) {
+        return new UpdateImpl(getName(updateStatement.cubeName()), List.of());
     }
 
     @Override

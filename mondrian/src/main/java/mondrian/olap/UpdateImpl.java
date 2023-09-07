@@ -30,7 +30,7 @@ public class UpdateImpl extends AbstractQueryPart implements Update {
     private final String cubeName;
     private List<UpdateClause> updateClauses;
 
-    UpdateImpl(String cubeName, List<UpdateClause> updateClauses)
+    public UpdateImpl(String cubeName, List<UpdateClause> updateClauses)
     {
         this.cubeName = cubeName;
         this.updateClauses = updateClauses;

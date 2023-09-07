@@ -25,6 +25,7 @@ import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.ReturnItem;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.expression.CallExpression;
 import org.eclipse.daanse.mdx.model.api.expression.CompoundId;
 import org.eclipse.daanse.mdx.model.api.expression.Expression;
@@ -532,6 +533,14 @@ public class SimpleUnparser implements UnParser {
         StringBuilder sb = new StringBuilder();
         if (selectStatement.cubeName() != null) {
             sb.append("REFRESH CUBE ").append(unparseNameObjectIdentifier(selectStatement.cubeName()));
+        }
+        return sb;
+    }
+
+    public StringBuilder unparseUpdateStatement(UpdateStatement updateStatement) {
+        StringBuilder sb = new StringBuilder();
+        if (updateStatement.cubeName() != null) {
+            sb.append("UPDATE CUBE ").append(unparseNameObjectIdentifier(updateStatement.cubeName()));
         }
         return sb;
     }

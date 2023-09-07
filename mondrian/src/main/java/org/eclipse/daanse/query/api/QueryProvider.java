@@ -19,12 +19,14 @@ import mondrian.olap.api.Explain;
 import mondrian.olap.api.Query;
 import mondrian.olap.api.QueryPart;
 import mondrian.olap.api.Refresh;
+import mondrian.olap.api.Update;
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
 import org.eclipse.daanse.mdx.model.api.ExplainStatement;
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 
 public interface QueryProvider {
 
@@ -39,4 +41,6 @@ public interface QueryProvider {
     DmvQuery createDMV(DMVStatement dmvStatement);
 
     Refresh createRefresh(RefreshStatement refreshStatement);
+
+    Update createUpdate(UpdateStatement updateStatement);
 }
