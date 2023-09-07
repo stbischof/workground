@@ -44,7 +44,7 @@ public abstract class QueryPart implements Walkable {
 
     /**
      * Returns the plan that Mondrian intends to use to execute this query.
-     *
+     *unparse 
      * @param pw Print writer
      */
     public void explain(PrintWriter pw) {

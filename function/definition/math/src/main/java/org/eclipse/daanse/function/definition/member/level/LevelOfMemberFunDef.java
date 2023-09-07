@@ -7,8 +7,11 @@
 * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
 */
 
-package mondrian.olap.fun;
+package org.eclipse.daanse.function.definition.member.level;
 
+import java.io.PrintWriter;
+
+import org.eclipse.daanse.function.api.FunctionDefinition;
 import org.eclipse.daanse.olap.api.model.Level;
 import org.eclipse.daanse.olap.api.model.Member;
 import org.eclipse.daanse.olap.calc.api.Calc;
@@ -17,8 +20,10 @@ import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedLevelCalc
 
 import mondrian.calc.ExpCompiler;
 import mondrian.mdx.ResolvedFunCall;
+import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
+import mondrian.olap.Syntax;
 import mondrian.olap.Validator;
 import mondrian.olap.type.LevelType;
 import mondrian.olap.type.Type;
@@ -29,12 +34,9 @@ import mondrian.olap.type.Type;
  * @author jhyde
  * @since Mar 23, 2006
  */
-public class MemberLevelFunDef extends FunDefBase {
-    static final MemberLevelFunDef instance = new MemberLevelFunDef();
+public class LevelOfMemberFunDef implements FunctionDefinition {
+    static final LevelOfMemberFunDef instance = new LevelOfMemberFunDef();
 
-    private MemberLevelFunDef() {
-        super("Level", "Returns a member's level.", "plm");
-    }
 
     @Override
 	public Type getResultType(Validator validator, Exp[] args) {
@@ -46,23 +48,48 @@ public class MemberLevelFunDef extends FunDefBase {
 	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
         final MemberCalc memberCalc =
                 compiler.compileMember(call.getArg(0));
-        return new MemberLevelCalcImpl(call.getType(), memberCalc);
+        return new LevelOfMemberCalc(call.getType(), memberCalc);
     }
 
-    public static class MemberLevelCalcImpl extends AbstractProfilingNestedLevelCalc<MemberCalc> {
-        private final MemberCalc memberCalc;
+	@Override
+	public Syntax getSyntax() {
+		return Syntax.Property;
+	}
 
-        public MemberLevelCalcImpl(Type type, MemberCalc memberCalc) {
-            super(type, new MemberCalc[] {memberCalc});
-            this.memberCalc = memberCalc;
-        }
+	@Override
+	public String getName() {
+		return "Level";
+	}
 
+	@Override
+	public int getReturnCategory() {
+		return Category.LEVEL;
+	}
 
+	@Override
+	public int[] getParameterCategories() {
+		return new int[] {Category.MEMBER};
+	}
 
-		@Override
-		public Level evaluate(Evaluator evaluator) {
-            Member member = memberCalc.evaluate(evaluator);
-            return member.getLevel();
-        }
-    }
+	@Override
+	public String getDescription() {
+		return "Returns a member's level.";
+	}
+
+	@Override
+	public String getSignature() {
+		return null;
+	}
+
+	@Override
+	public void unparse(Exp[] args, PrintWriter pw) {
+		
+	}
+
+	@Override
+	public Exp createCall(org.eclipse.daanse.function.api.Validator validator, Exp[] args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
