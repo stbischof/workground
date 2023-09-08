@@ -150,10 +150,15 @@ RefreshStatement :
 ;
 
 INJECT UpdateStatement :
+   import java.util.List;
    implements org.eclipse.daanse.mdx.model.api.UpdateStatement;
 {
    public NameObjectIdentifier cubeName() {
       return (NameObjectIdentifier) getChild(2);
+   }
+
+   public List<org.eclipse.daanse.mdx.model.api.select.UpdateClause> updateClauses() {
+       return childrenOfType(org.eclipse.daanse.mdx.model.api.select.UpdateClause.class);
    }
 }
 
@@ -161,6 +166,38 @@ UpdateStatement :
   < UPDATE >
   < CUBE >
   NameObjectIdentifier
+  <SET>
+  UpdateClause
+  (
+       < COMMA > UpdateClause
+  )*
+
+;
+
+INJECT UpdateClause :
+   implements org.eclipse.daanse.mdx.model.api.select.UpdateClause
+{
+    public org.eclipse.daanse.mdx.model.api.expression.Expression tupleExp() {
+      return (org.eclipse.daanse.mdx.model.api.expression.Expression) getChild(0);
+    }
+
+    public org.eclipse.daanse.mdx.model.api.expression.Expression valueExp() {
+          return (org.eclipse.daanse.mdx.model.api.expression.Expression) getChild(2);
+    }
+
+    public org.eclipse.daanse.mdx.model.api.select.Allocation allocation() {
+          return org.eclipse.daanse.mdx.model.api.select.Allocation.NO_ALLOCATION;
+    }
+
+    public org.eclipse.daanse.mdx.model.api.expression.Expression weight() {
+          return null;
+    }
+}
+
+UpdateClause :
+  PrimaryExpression
+    < EQ >
+  Expression
 ;
 
 INJECT DMVStatement :

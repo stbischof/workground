@@ -69,6 +69,8 @@ import org.eclipse.daanse.mdx.model.api.select.SelectDimensionPropertyListClause
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAsteriskClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxesClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxisClause;
+import org.eclipse.daanse.mdx.model.api.select.UpdateClause;
+import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSlicerAxisClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClause;
@@ -98,6 +100,7 @@ import org.eclipse.daanse.mdx.model.record.select.SelectDimensionPropertyListCla
 import org.eclipse.daanse.mdx.model.record.select.SelectQueryAsteriskClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectQueryAxesClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectQueryAxisClauseR;
+import org.eclipse.daanse.mdx.model.record.select.UpdateClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectQueryEmptyClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectSlicerAxisClauseR;
 import org.eclipse.daanse.mdx.model.record.select.SelectSubcubeClauseNameR;
@@ -1483,11 +1486,53 @@ RefreshStatement parseRefreshStatement :
 UpdateStatement parseUpdateStatement :
 {
   NameObjectIdentifier cubeName;
+  List<UpdateClause> list = new ArrayList<UpdateClause>();
+  UpdateClause uc;
 }
   < UPDATE > < CUBE >  cubeName = parseNameObjectIdentifier
+  <SET>
+      uc = updateClause() {
+          list.add(uc);
+      }
+      (
+          <COMMA>
+          uc = updateClause() {
+              list.add(uc);
+          }
+      )*
 {
-    return new UpdateStatementR(cubeName);
+    return new UpdateStatementR(cubeName, list);
 }
+;
+
+UpdateClause updateClause :
+{
+    Expression t = null;
+    Expression v = null;
+    Expression w = null;
+    Allocation a = Allocation.NO_ALLOCATION;
+}
+
+  t = parseAtom < EQ > v = parseExpression
+  (
+          <USE_EQUAL_ALLOCATION>
+          { a = Allocation.USE_EQUAL_ALLOCATION; }
+          |
+          <USE_EQUAL_INCREMENT>
+          { a = Allocation.USE_EQUAL_INCREMENT; }
+          |
+          <USE_WEIGHTED_ALLOCATION>
+          { a = Allocation.USE_WEIGHTED_ALLOCATION; }
+          (<BY> w = parseExpression)?
+          |
+          <USE_WEIGHTED_INCREMENT>
+          { a = Allocation.USE_WEIGHTED_INCREMENT; }
+          (<BY> w = parseExpression)?
+  )?
+
+  {
+    return new UpdateClauseR(t, v, a, w);
+  }
 ;
 
 DMVStatement parseDMVStatement :

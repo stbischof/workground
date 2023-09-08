@@ -13,9 +13,12 @@
 */
 package org.eclipse.daanse.mdx.model.record;
 
+import org.eclipse.daanse.mdx.model.api.select.UpdateClause;
 import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.expression.NameObjectIdentifier;
 
-public record UpdateStatementR(NameObjectIdentifier cubeName) implements UpdateStatement {
+import java.util.List;
+
+public record UpdateStatementR(NameObjectIdentifier cubeName, List<UpdateClause> updateClauses) implements UpdateStatement {
 
 }

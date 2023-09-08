@@ -11,15 +11,13 @@
  *   SmartCity Jena - initial
  *   Stefan Bischof (bipolis.org) - initial
  */
-package org.eclipse.daanse.mdx.model.api;
+package org.eclipse.daanse.mdx.model.api.select;
 
-import org.eclipse.daanse.mdx.model.api.expression.NameObjectIdentifier;
-import org.eclipse.daanse.mdx.model.api.select.UpdateClause;
-
-import java.util.List;
-
-public non-sealed interface UpdateStatement extends MdxStatement {
-
-    NameObjectIdentifier cubeName();
-    List<UpdateClause> updateClauses();
+public enum Allocation {
+    NO_ALLOCATION,
+    USE_EQUAL_ALLOCATION,
+    USE_EQUAL_INCREMENT,
+    USE_WEIGHTED_ALLOCATION,
+    USE_WEIGHTED_INCREMENT
 }
+

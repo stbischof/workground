@@ -11,15 +11,12 @@
  *   SmartCity Jena - initial
  *   Stefan Bischof (bipolis.org) - initial
  */
-package org.eclipse.daanse.mdx.model.api;
+package org.eclipse.daanse.mdx.model.record.select;
 
-import org.eclipse.daanse.mdx.model.api.expression.NameObjectIdentifier;
+import org.eclipse.daanse.mdx.model.api.expression.Expression;
+import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.mdx.model.api.select.UpdateClause;
 
-import java.util.List;
+public record UpdateClauseR(Expression tupleExp, Expression valueExp, Allocation allocation, Expression weight) implements UpdateClause {
 
-public non-sealed interface UpdateStatement extends MdxStatement {
-
-    NameObjectIdentifier cubeName();
-    List<UpdateClause> updateClauses();
 }

@@ -19,6 +19,8 @@ import org.eclipse.daanse.mdx.model.record.UpdateStatementR;
 import org.eclipse.daanse.mdx.model.record.expression.NameObjectIdentifierR;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SimpleUnparserUpdateStatementTest {
@@ -28,7 +30,7 @@ class SimpleUnparserUpdateStatementTest {
     @Test
     void test1() {
         UpdateStatement updateStatement =
-            new UpdateStatementR(new NameObjectIdentifierR("cubeName", ObjectIdentifier.Quoting.UNQUOTED));
+            new UpdateStatementR(new NameObjectIdentifierR("cubeName", ObjectIdentifier.Quoting.UNQUOTED), List.of());
 
         assertThat(unparser.unparseUpdateStatement(updateStatement)).asString()
             .isEqualTo("UPDATE CUBE cubeName");
@@ -37,7 +39,7 @@ class SimpleUnparserUpdateStatementTest {
     @Test
     void test2() {
         UpdateStatement updateStatement =
-            new UpdateStatementR(new NameObjectIdentifierR("cubeName", ObjectIdentifier.Quoting.QUOTED));
+            new UpdateStatementR(new NameObjectIdentifierR("cubeName", ObjectIdentifier.Quoting.QUOTED), List.of());
 
         assertThat(unparser.unparseUpdateStatement(updateStatement)).asString()
             .isEqualTo("UPDATE CUBE [cubeName]");
