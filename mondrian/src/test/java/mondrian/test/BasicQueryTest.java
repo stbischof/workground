@@ -61,6 +61,7 @@ import java.util.regex.Pattern;
 import mondrian.olap.api.Segment;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -86,7 +87,6 @@ import org.opencube.junit5.propupdator.AppandFoodMartCatalogAsFile;
 import org.opencube.junit5.propupdator.SchemaUpdater;
 import org.slf4j.Logger;
 
-import mondrian.calc.ResultStyle;
 import mondrian.enums.DatabaseProduct;
 import mondrian.olap.Evaluator;
 import mondrian.olap.IdImpl;

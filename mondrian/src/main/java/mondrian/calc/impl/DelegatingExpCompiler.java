@@ -12,6 +12,7 @@ package mondrian.calc.impl;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.query.component.QueryPart;
 import org.eclipse.daanse.olap.api.query.component.WrapExpression;
 import org.eclipse.daanse.olap.calc.api.BooleanCalc;
@@ -25,12 +26,11 @@ import org.eclipse.daanse.olap.calc.api.LevelCalc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
 import org.eclipse.daanse.olap.calc.api.TupleCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleIteratorCalc;
 import mondrian.calc.TupleListCalc;
-import mondrian.calc.ParameterSlot;
-import mondrian.calc.ResultStyle;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
@@ -40,15 +40,15 @@ import mondrian.olap.Validator;
 import mondrian.olap.type.Type;
 
 /**
- * Abstract implementation of {@link mondrian.calc.ExpCompiler}
+ * Abstract implementation of {@link org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler}
  *
  * @author jhyde
  * @since Jan 2, 2006
  */
-public class DelegatingExpCompiler implements ExpCompiler {
-    private final ExpCompiler parent;
+public class DelegatingExpCompiler implements ExpressionCompiler {
+    private final ExpressionCompiler parent;
 
-    protected DelegatingExpCompiler(ExpCompiler parent) {
+    protected DelegatingExpCompiler(ExpressionCompiler parent) {
         this.parent = parent;
     }
 
@@ -209,11 +209,11 @@ public class DelegatingExpCompiler implements ExpCompiler {
      */
     private static class WrapExpressionImpl extends AbstractQueryPart implements Exp, WrapExpression {
         private final Exp e;
-        private final ExpCompiler wrappingCompiler;
+        private final ExpressionCompiler wrappingCompiler;
 
         WrapExpressionImpl(
                 Exp e,
-                ExpCompiler wrappingCompiler)
+                ExpressionCompiler wrappingCompiler)
         {
             this.e = e;
             this.wrappingCompiler = wrappingCompiler;
@@ -245,7 +245,7 @@ public class DelegatingExpCompiler implements ExpCompiler {
         }
 
         @Override
-        public Calc accept(ExpCompiler compiler) {
+        public Calc accept(ExpressionCompiler compiler) {
             return e.accept(wrappingCompiler);
         }
 

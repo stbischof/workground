@@ -20,11 +20,11 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantStringCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedStringCalc;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
@@ -88,7 +88,7 @@ class GenerateFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final TupleIteratorCalc tupleIteratorCalc = compiler.compileIter(call.getArg(0));
         if (call.getArg(1).getType() instanceof StringType
                 || call.getArg(1).getType() instanceof NumericType) {

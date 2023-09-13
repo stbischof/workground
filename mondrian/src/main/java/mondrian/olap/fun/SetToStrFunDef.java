@@ -14,9 +14,9 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedStringCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
@@ -37,7 +37,7 @@ class SetToStrFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         Exp arg = call.getArg(0);
         final TupleListCalc tupleListCalc = compiler.compileList(arg);
         return new AbstractProfilingNestedStringCalc(call.getType(), new Calc[]{tupleListCalc}) {

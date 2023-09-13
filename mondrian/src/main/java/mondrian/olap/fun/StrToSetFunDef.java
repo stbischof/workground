@@ -18,8 +18,8 @@ import org.eclipse.daanse.olap.api.query.component.DimensionExpression;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.AbstractListCalc;
 import mondrian.calc.impl.UnaryTupleList;
@@ -57,7 +57,7 @@ class StrToSetFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final StringCalc stringCalc = compiler.compileString(call.getArg(0));
         SetType type = (SetType) call.getType();
         Type elementType = type.getElementType();

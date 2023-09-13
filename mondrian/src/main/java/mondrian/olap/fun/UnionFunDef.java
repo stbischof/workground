@@ -16,8 +16,8 @@ import java.util.Set;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
@@ -48,7 +48,7 @@ public class UnionFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         String allString = FunUtil.getLiteralArg(call, 2, "DISTINCT", UnionFunDef.ReservedWords);
         final boolean all = allString.equalsIgnoreCase("ALL");
         // todo: do at validate time

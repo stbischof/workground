@@ -23,7 +23,8 @@ import javax.sql.DataSource;
 import mondrian.olap.NullLiteralImpl;
 import mondrian.olap.api.NameSegment;
 import mondrian.olap.api.Segment;
-import org.eclipse.daanse.engine.api.Context;
+
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.access.HierarchyAccess;
 import org.eclipse.daanse.olap.api.access.Role;
@@ -35,12 +36,12 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.NamedSet;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eigenbase.util.property.Property;
 import org.olap4j.mdx.IdentifierSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.ElevatorSimplifyer;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Evaluator;
@@ -880,7 +881,7 @@ ElevatorSimplifyer.simplifyEvaluator(calc, evaluator);
         }
 
         @Override
-		public Calc compile(ExpCompiler compiler) {
+		public Calc compile(ExpressionCompiler compiler) {
             return new GenericCalc(getType()) {
             	//"SystemPropertyCalc"
                 @Override

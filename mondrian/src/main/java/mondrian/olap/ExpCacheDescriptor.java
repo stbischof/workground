@@ -14,12 +14,12 @@ package mondrian.olap;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.impl.BetterExpCompiler;
 
 /**
@@ -63,7 +63,7 @@ public class ExpCacheDescriptor {
      * @param exp Expression
      * @param compiler Compiler
      */
-    public ExpCacheDescriptor(Exp exp, ExpCompiler compiler) {
+    public ExpCacheDescriptor(Exp exp, ExpressionCompiler compiler) {
         this.exp = exp;
 
         // Compile expression.

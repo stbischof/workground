@@ -25,8 +25,8 @@ import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.IntegerCalc;
 import org.eclipse.daanse.olap.calc.api.LevelCalc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.AbstractListCalc;
 import mondrian.calc.impl.UnaryTupleList;
@@ -82,7 +82,7 @@ class DescendantsFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Type type0 = call.getArg( 0 ).getType();
     if ( type0 instanceof SetType setType ) {
       if ( setType.getElementType() instanceof TupleType ) {

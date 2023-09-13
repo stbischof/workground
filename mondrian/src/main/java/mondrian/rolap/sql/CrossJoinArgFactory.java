@@ -34,10 +34,10 @@ import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.api.query.component.NamedSetExpression;
 import org.eclipse.daanse.olap.api.query.component.NumericLiteral;
 import org.eclipse.daanse.olap.api.query.component.QueryAxis;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.TupleList;
 import mondrian.mdx.ResolvedFunCallImpl;
@@ -952,7 +952,7 @@ public class CrossJoinArgFactory {
         RolapEvaluator evaluator,
         Exp exp)
     {
-        ExpCompiler compiler = evaluator.getQuery().createCompiler();
+        ExpressionCompiler compiler = evaluator.getQuery().createExpressionCompiler();
         CrossJoinArg[] arg0 = null;
         if (shouldExpandNonEmpty(exp)
             && evaluator.getActiveNativeExpansions().add(exp))

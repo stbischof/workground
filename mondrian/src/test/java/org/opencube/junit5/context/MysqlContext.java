@@ -22,7 +22,10 @@ import javax.sql.DataSource;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.db.mysql.MySqlDialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
+
+import mondrian.calc.impl.BetterExpressionCompilerFactory;
 
 public class MysqlContext implements Context {
 
@@ -85,4 +88,9 @@ public class MysqlContext implements Context {
     public Optional<String> getDescription() {
         return Optional.empty();
     }
+
+	@Override
+	public ExpressionCompilerFactory getExpressionCompilerFactory() {
+		return new BetterExpressionCompilerFactory();
+	}
 }

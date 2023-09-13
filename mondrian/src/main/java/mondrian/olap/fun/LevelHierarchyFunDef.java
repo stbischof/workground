@@ -14,9 +14,9 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.LevelCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedHierarchyCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Evaluator;
 import mondrian.olap.type.Type;
 
@@ -34,7 +34,7 @@ public class LevelHierarchyFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final LevelCalc levelCalc =
                 compiler.compileLevel(call.getArg(0));
         return new LevelHirarchyCalc(call.getType(), levelCalc);

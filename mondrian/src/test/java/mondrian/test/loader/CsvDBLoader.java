@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 
 /**
  * Implementation of {@link DBLoader} which gets its Tables by reading CSV files

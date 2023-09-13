@@ -19,10 +19,10 @@ import org.eclipse.daanse.olap.api.query.component.DimensionExpression;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedTupleCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.HierarchyExpressionImpl;
 import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
@@ -56,7 +56,7 @@ class StrToTupleFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final StringCalc stringCalc = compiler.compileString(call.getArg(0));
         Type elementType = call.getType();
         if (elementType instanceof MemberType) {

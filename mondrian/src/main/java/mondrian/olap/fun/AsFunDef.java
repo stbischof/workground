@@ -14,8 +14,8 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.query.component.NamedSetExpression;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.impl.AbstractIterCalc;
 import mondrian.olap.Category;
@@ -56,7 +56,7 @@ class AsFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         // Argument 0, the definition of the set, has been resolved since the
         // scoped named set was created. Implicit conversions, like converting
         // a member to a set, have been performed. Use the new expression.

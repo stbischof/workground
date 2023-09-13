@@ -41,6 +41,7 @@ import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantCalcs;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.Annotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.Closure;
@@ -58,7 +59,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.AbstractListCalc;
@@ -991,7 +991,7 @@ public class RolapHierarchy extends HierarchyBase {
                             @Override
 							public Calc compileCall(
 								ResolvedFunCall call,
-                                ExpCompiler compiler)
+                                ExpressionCompiler compiler)
                             {
                                 return partialCalc;
                             }
@@ -1012,7 +1012,7 @@ public class RolapHierarchy extends HierarchyBase {
                         new FunDefBase("$x", "x", "In") {
                             @Override
 							public Calc compileCall(
-									ResolvedFunCall call, ExpCompiler compiler)
+									ResolvedFunCall call, ExpressionCompiler compiler)
                             {
                                 return ConstantCalcs.nullCalcOf(returnType);
                             }

@@ -34,6 +34,7 @@ import org.eclipse.daanse.olap.calc.api.IntegerCalc;
 import org.eclipse.daanse.olap.calc.api.LevelCalc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedBooleanCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedDoubleCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedIntegerCalc;
@@ -41,7 +42,6 @@ import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedLevelCalc
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedStringCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.AbstractListCalc;
@@ -123,7 +123,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fa*")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -171,7 +171,7 @@ public class BuiltinFunTable extends FunTableImpl {
             }
 
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -216,7 +216,7 @@ public class BuiltinFunTable extends FunTableImpl {
 
             @Override
 			public Calc compileCall(
-                final ResolvedFunCall call, ExpCompiler compiler)
+                final ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                     compiler.compileHierarchy(call.getArg(0));
@@ -256,7 +256,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 return LevelType.forType(argType);
             }
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc stringCalc =
                         compiler.compileString(call.getArg(0));
@@ -315,7 +315,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fmmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -350,7 +350,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -381,7 +381,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -407,7 +407,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -437,7 +437,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -477,7 +477,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -507,7 +507,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -547,7 +547,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fmS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -561,7 +561,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -591,7 +591,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                     compiler.compileMember(call.getArg(0));
@@ -622,7 +622,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pmm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -664,7 +664,7 @@ public class BuiltinFunTable extends FunTableImpl {
 
                     @Override
 					public Calc compileCall(
-							ResolvedFunCall call, ExpCompiler compiler)
+							ResolvedFunCall call, ExpressionCompiler compiler)
                     {
                         final HierarchyCalc hierarchyCalc =
                             compiler.compileHierarchy(call.getArg(0));
@@ -742,7 +742,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pnx")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final TupleListCalc tupleListCalc =
                         compiler.compileList(call.getArg(0));
@@ -789,7 +789,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pnl")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final LevelCalc levelCalc =
                         compiler.compileLevel(call.getArg(0));
@@ -823,7 +823,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pnm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -875,7 +875,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fxm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                     compiler.compileMember(call.getArg(0));
@@ -916,7 +916,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pxm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                     compiler.compileMember(call.getArg(0));
@@ -959,7 +959,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fx*")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -974,7 +974,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fx*")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -989,7 +989,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fx*")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -1004,7 +1004,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fx*")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -1039,7 +1039,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pxh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -1065,7 +1065,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pxh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -1094,7 +1094,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pxl")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final LevelCalc levelCalc =
                         compiler.compileLevel(call.getArg(0));
@@ -1124,7 +1124,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fxx")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final TupleListCalc tupleListCalc =
                     compiler.compileList(call.getArg(0));
@@ -1147,7 +1147,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pxm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -1206,7 +1206,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSd")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DimensionCalc dimensionCalc =
                         compiler.compileDimension(call.getArg(0));
@@ -1230,7 +1230,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -1254,7 +1254,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSl")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final LevelCalc levelCalc =
                         compiler.compileLevel(call.getArg(0));
@@ -1276,7 +1276,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -1299,7 +1299,7 @@ public class BuiltinFunTable extends FunTableImpl {
                     "pSm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -1322,7 +1322,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSd")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DimensionCalc dimensionCalc =
                         compiler.compileDimension(call.getArg(0));
@@ -1346,7 +1346,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -1370,7 +1370,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSl")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final LevelCalc levelCalc =
                         compiler.compileLevel(call.getArg(0));
@@ -1392,7 +1392,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -1419,7 +1419,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSd")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DimensionCalc dimensionCalc =
                         compiler.compileDimension(call.getArg(0));
@@ -1443,7 +1443,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSh")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final HierarchyCalc hierarchyCalc =
                         compiler.compileHierarchy(call.getArg(0));
@@ -1467,7 +1467,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSl")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final LevelCalc levelCalc =
                         compiler.compileLevel(call.getArg(0));
@@ -1489,7 +1489,7 @@ public class BuiltinFunTable extends FunTableImpl {
                         "pim")
                 {
                     @Override
-					public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+					public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
                     {
                         final MemberCalc memberCalc =
                                 compiler.compileMember(call.getArg(0));
@@ -1512,7 +1512,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "pSm")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final MemberCalc memberCalc =
                         compiler.compileMember(call.getArg(0));
@@ -1535,7 +1535,7 @@ public class BuiltinFunTable extends FunTableImpl {
                         "pSm")
                 {
                     @Override
-					public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+					public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
                     {
                         final MemberCalc memberCalc =
                                 compiler.compileMember(call.getArg(0));
@@ -1562,7 +1562,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ptx")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 throw new UnsupportedOperationException();
             }
@@ -1599,7 +1599,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "innn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -1635,7 +1635,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "innn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -1670,7 +1670,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "innn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -1699,7 +1699,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "innn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -1764,7 +1764,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "Pnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc = compiler.compileDouble(call.getArg(0));
                 return new AbstractProfilingNestedDoubleCalc(call.getType(), new Calc[] {calc}) {
@@ -1810,7 +1810,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "iSSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -1833,7 +1833,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibbb")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc calc0 =
                     compiler.compileBoolean(call.getArg(0));
@@ -1865,7 +1865,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibbb")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc calc0 =
                     compiler.compileBoolean(call.getArg(0));
@@ -1897,7 +1897,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibbb")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc calc0 =
                     compiler.compileBoolean(call.getArg(0));
@@ -1923,7 +1923,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "Pbb")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc calc =
                     compiler.compileBoolean(call.getArg(0));
@@ -1944,7 +1944,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -1971,7 +1971,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2002,7 +2002,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -2029,7 +2029,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2060,7 +2060,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2091,7 +2091,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -2118,7 +2118,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2149,7 +2149,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -2176,7 +2176,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2207,7 +2207,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -2234,7 +2234,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibnn")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final DoubleCalc calc0 = compiler.compileDouble(call.getArg(0));
                 final DoubleCalc calc1 = compiler.compileDouble(call.getArg(1));
@@ -2265,7 +2265,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "ibSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc calc0 = compiler.compileString(call.getArg(0));
                 final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -2304,7 +2304,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fSS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final Locale locale =
                     compiler.getEvaluator().getConnectionLocale();
@@ -2332,7 +2332,7 @@ public class BuiltinFunTable extends FunTableImpl {
                 "fnS")
         {
             @Override
-			public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final StringCalc stringCalc =
                     compiler.compileString(call.getArg(0));

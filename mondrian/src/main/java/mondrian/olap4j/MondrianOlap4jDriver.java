@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;

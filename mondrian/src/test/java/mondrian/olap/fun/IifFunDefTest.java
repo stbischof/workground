@@ -15,12 +15,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.mdx.ResolvedFunCallImpl;
 import mondrian.olap.Exp;
 import mondrian.olap.FunctionDefinition;
@@ -33,7 +33,7 @@ class IifFunDefTest {
   private Exp trueCaseParamMock = mock( Exp.class );
   private Exp falseCaseParamMock = mock( Exp.class );
   private FunctionDefinition funDefMock = mock( FunctionDefinition.class );
-  private ExpCompiler compilerMock = mock( ExpCompiler.class );
+  private ExpressionCompiler compilerMock = mock( ExpressionCompiler.class );
   private Exp[] args = new Exp[] { logicalParamMock, trueCaseParamMock, falseCaseParamMock };
   private SetType setTypeMock = mock( SetType.class );
   private SetListCalc setListCalc;

@@ -9,7 +9,6 @@
 
 package org.eclipse.daanse.function.definition;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.AbstractListCalc;
@@ -24,6 +23,7 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -55,7 +55,7 @@ class AddCalculatedMembersFunDef extends FunDefBase {
     }
 
     @Override
-    public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0));
         return new AbstractListCalc(call.getType(), new Calc[] {tupleListCalc}) {
             @Override

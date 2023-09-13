@@ -12,9 +12,9 @@ package mondrian.mdx;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.query.component.HierarchyExpression;
 import org.eclipse.daanse.olap.calc.api.HierarchyCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantHierarchyCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
@@ -78,7 +78,7 @@ public class HierarchyExpressionImpl extends ExpBase implements Exp, HierarchyEx
     }
 
     @Override
-	public HierarchyCalc accept(ExpCompiler compiler) {
+	public HierarchyCalc accept(ExpressionCompiler compiler) {
         return ConstantHierarchyCalc.of(hierarchy);
     }
 

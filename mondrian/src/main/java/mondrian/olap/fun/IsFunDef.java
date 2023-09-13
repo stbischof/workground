@@ -13,9 +13,9 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.TupleCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedBooleanCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
 import mondrian.olap.FunctionDefinition;
@@ -41,7 +41,7 @@ class IsFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final int category = call.getArg(0).getCategory();
         switch (category) {
         case Category.TUPLE:

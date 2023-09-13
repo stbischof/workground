@@ -14,8 +14,8 @@ package mondrian.olap;
 import java.io.PrintWriter;
 
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.type.Type;
 
@@ -69,7 +69,7 @@ public interface Exp {
      * @param compiler
      * @return A compiled expression
      */
-    Calc accept(ExpCompiler compiler);
+    Calc accept(ExpressionCompiler compiler);
 
     /**
      * Accepts a visitor to this Exp.

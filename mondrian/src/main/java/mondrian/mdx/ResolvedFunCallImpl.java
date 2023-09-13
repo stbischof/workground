@@ -15,8 +15,8 @@ import java.io.PrintWriter;
 
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
 import mondrian.olap.FunCall;
@@ -171,7 +171,7 @@ public final class ResolvedFunCallImpl extends ExpBase implements  ResolvedFunCa
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         return funDef.compileCall(this, compiler);
     }
 

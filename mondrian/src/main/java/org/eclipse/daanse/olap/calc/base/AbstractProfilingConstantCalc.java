@@ -15,11 +15,11 @@ package org.eclipse.daanse.olap.calc.base;
 
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.calc.api.ConstantCalc;
 import org.eclipse.daanse.olap.calc.api.profile.CalculationProfile;
 
-import mondrian.calc.ResultStyle;
 import mondrian.olap.Evaluator;
 import mondrian.olap.type.Type;
 

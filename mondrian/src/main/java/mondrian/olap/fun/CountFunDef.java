@@ -9,14 +9,14 @@
 
 package mondrian.olap.fun;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.query.component.Literal;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedIntegerCalc;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleIteratorCalc;
 import mondrian.calc.TupleList;
@@ -44,7 +44,7 @@ class CountFunDef extends AbstractAggregateFunDef {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Calc calc = compiler.compileAs( call.getArg( 0 ), null, ResultStyle.ITERABLE_ANY );
     final boolean includeEmpty =
         call.getArgCount() < 2 || ( (Literal) call.getArg( 1 ) ).getValue().equals( "INCLUDEEMPTY" );

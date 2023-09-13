@@ -12,9 +12,9 @@ package mondrian.mdx;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.query.component.LevelExpression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantLevelCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
@@ -79,7 +79,7 @@ public class LevelExpressionImpl extends ExpBase implements Exp, LevelExpression
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         return ConstantLevelCalc.of(level);
     }
 

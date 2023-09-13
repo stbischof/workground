@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 
 import mondrian.olap.MondrianProperties;
 import mondrian.olap.Util;

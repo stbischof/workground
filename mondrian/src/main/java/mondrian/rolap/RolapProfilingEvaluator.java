@@ -13,9 +13,9 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.api.profile.ProfilingCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.DelegatingExpCompiler;
 import mondrian.olap.Exp;
 
@@ -84,7 +84,7 @@ public class RolapProfilingEvaluator extends RolapEvaluator {
 	 * asked for a mutable list.
 	 */
 	static class ProfilingEvaluatorCompiler extends DelegatingExpCompiler {
-		ProfilingEvaluatorCompiler(ExpCompiler compiler) {
+		ProfilingEvaluatorCompiler(ExpressionCompiler compiler) {
 			super(compiler);
 		}
 

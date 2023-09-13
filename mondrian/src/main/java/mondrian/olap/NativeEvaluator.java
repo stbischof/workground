@@ -9,7 +9,7 @@
 
 package mondrian.olap;
 
-import mondrian.calc.ResultStyle;
+import org.eclipse.daanse.olap.api.ResultStyle;
 
 /**
  * Allows expressions to be evaluated native, e.g. in SQL.

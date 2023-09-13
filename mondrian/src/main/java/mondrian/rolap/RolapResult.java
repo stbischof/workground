@@ -41,10 +41,10 @@ import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ParameterSlot;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
@@ -323,7 +323,7 @@ public class RolapResult extends ResultBase {
                         new mondrian.olap.fun.FunDefBase("$x", "x", "In") {
                           @Override
 						public Calc compileCall(
-                                  ResolvedFunCall call, mondrian.calc.ExpCompiler compiler)
+                                  ResolvedFunCall call, org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler compiler)
                           {
                             return partialCalc;
                           }

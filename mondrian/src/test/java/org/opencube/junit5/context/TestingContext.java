@@ -21,8 +21,8 @@ package org.opencube.junit5.context;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 
-import org.eclipse.daanse.engine.api.Context;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.olap4j.OlapConnection;
 
 import mondrian.olap.Util.PropertyList;

@@ -19,16 +19,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
 import org.eclipse.daanse.olap.calc.api.TupleCalc;
 import org.eclipse.daanse.olap.calc.api.VoidCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedVoidCalc;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
@@ -103,7 +103,7 @@ public class SetFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final Exp[] args = call.getArgs();
         if (args.length == 0) {
             // Special treatment for empty set, because we don't know whether it
@@ -141,7 +141,7 @@ public class SetFunDef extends FunDefBase {
         public SetListCalc(
             Type type,
             Exp[] args,
-            ExpCompiler compiler,
+            ExpressionCompiler compiler,
             List<ResultStyle> resultStyles)
         {
             super(type, null);
@@ -156,7 +156,7 @@ public class SetFunDef extends FunDefBase {
 
         private VoidCalc[] compileSelf(
             Exp[] args,
-            ExpCompiler compiler,
+            ExpressionCompiler compiler,
             List<ResultStyle> resultStyles)
         {
             VoidCalc[] voidCalcs = new VoidCalc[args.length];
@@ -168,7 +168,7 @@ public class SetFunDef extends FunDefBase {
 
         private VoidCalc createCalc(
             Exp arg,
-            ExpCompiler compiler,
+            ExpressionCompiler compiler,
             List<ResultStyle> resultStyles)
         {
             final Type type = arg.getType();
@@ -258,7 +258,7 @@ public class SetFunDef extends FunDefBase {
 
     private static List<Calc> compileSelf(
         Exp[] args,
-        ExpCompiler compiler,
+        ExpressionCompiler compiler,
         List<ResultStyle> resultStyles)
     {
         List<Calc> calcs = new ArrayList<>(args.length);
@@ -270,7 +270,7 @@ public class SetFunDef extends FunDefBase {
 
     private static TupleIteratorCalc createCalc(
         Exp arg,
-        ExpCompiler compiler,
+        ExpressionCompiler compiler,
         List<ResultStyle> resultStyles)
     {
         final Type type = arg.getType();
@@ -398,7 +398,7 @@ public class SetFunDef extends FunDefBase {
         public ExprIterCalc(
 			Type type,
             Exp[] args,
-            ExpCompiler compiler,
+            ExpressionCompiler compiler,
             List<ResultStyle> resultStyles)
         {
             super(type, null);

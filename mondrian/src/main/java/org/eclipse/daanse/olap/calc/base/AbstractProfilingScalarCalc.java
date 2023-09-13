@@ -13,7 +13,8 @@
 */
 package org.eclipse.daanse.olap.calc.base;
 
-import mondrian.calc.ResultStyle;
+import org.eclipse.daanse.olap.api.ResultStyle;
+
 import mondrian.olap.type.Type;
 
 public abstract class AbstractProfilingScalarCalc<T> extends AbstractProfilingCalc<T> {

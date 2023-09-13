@@ -16,8 +16,8 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.LevelCalc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.AbstractListCalc;
 import mondrian.calc.impl.UnaryTupleList;
@@ -76,7 +76,7 @@ public Type getResultType( Validator validator, Exp[] args ) {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final LevelCalc levelCalc = call.getArgCount() > 0 ? compiler.compileLevel( call.getArg( 0 ) ) : null;
     final MemberCalc memberCalc = call.getArgCount() > 1 ? compiler.compileMember( call.getArg( 1 ) ) : null;
     final RolapHierarchy timeHierarchy =

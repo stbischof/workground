@@ -26,6 +26,7 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,6 @@ import org.opencube.junit5.context.TestingContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalogAsFile;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleList;
@@ -465,7 +465,7 @@ void testResultLimitWithinCrossjoin_1(TestingContext foodMartContext) {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
       throw new UnsupportedOperationException();
     }
   }
@@ -515,7 +515,7 @@ void testResultLimitWithinCrossjoin_1(TestingContext foodMartContext) {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
       return null;
     }
   }

@@ -25,7 +25,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.opencube.junit5.context.MysqlContext;
 
 import com.github.dockerjava.api.model.PortBinding;

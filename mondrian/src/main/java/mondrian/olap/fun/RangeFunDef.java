@@ -15,9 +15,9 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantMemberCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.AbstractListCalc;
@@ -57,7 +57,7 @@ class RangeFunDef extends FunDefBase {
      * @return two member calcs
      */
     private MemberCalc[] compileMembers(
-        Exp exp0, Exp exp1, ExpCompiler compiler)
+        Exp exp0, Exp exp1, ExpressionCompiler compiler)
     {
         MemberCalc[] members = new MemberCalc[2];
 
@@ -94,7 +94,7 @@ class RangeFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(final ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(final ResolvedFunCall call, ExpressionCompiler compiler) {
         final MemberCalc[] memberCalcs =
             compileMembers(call.getArg(0), call.getArg(1), compiler);
         return new AbstractListCalc(

@@ -25,7 +25,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import mondrian.olap.api.Segment;
-import org.eclipse.daanse.engine.api.Context;
+
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.access.Role;
 import org.eclipse.daanse.olap.api.element.Cube;

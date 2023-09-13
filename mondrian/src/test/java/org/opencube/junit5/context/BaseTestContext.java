@@ -22,8 +22,8 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.eclipse.daanse.engine.api.Context;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.olap4j.OlapConnection;
 import org.olap4j.OlapWrapper;
 import org.opencube.junit5.propupdator.PropertyUpdater;

@@ -13,9 +13,9 @@
 */
 package org.eclipse.daanse.olap.calc.base;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 
-import mondrian.calc.ResultStyle;
 import mondrian.olap.Evaluator;
 import mondrian.olap.type.Type;
 

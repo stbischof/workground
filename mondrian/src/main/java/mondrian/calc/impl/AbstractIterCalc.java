@@ -9,11 +9,11 @@
 
 package mondrian.calc.impl;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.base.AbstractProfilingNestedCalc;
 
 import mondrian.calc.TupleIteratorCalc;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.olap.Evaluator;
 import mondrian.olap.type.SetType;

@@ -11,12 +11,12 @@
 
 package org.eclipse.daanse.function;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Exp;
 import mondrian.olap.Syntax;
 
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
 import java.io.PrintWriter;
 
@@ -46,7 +46,7 @@ public interface FunDef {
      * type. For example, a function which returns an integer must return
      * an object which implements {@link org.eclipse.daanse.olap.calc.api.IntegerCalc}.
      */
-    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler);
+    Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler);
 
     void unparse(Exp[] args, PrintWriter pw);
 }

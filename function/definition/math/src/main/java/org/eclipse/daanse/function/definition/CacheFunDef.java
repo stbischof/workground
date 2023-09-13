@@ -9,8 +9,6 @@
 
 package org.eclipse.daanse.function.definition;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.calc.impl.GenericIterCalc;
 import mondrian.olap.Evaluator;
@@ -20,8 +18,10 @@ import mondrian.olap.Syntax;
 import mondrian.olap.type.SetType;
 import mondrian.olap.type.Type;
 import org.eclipse.daanse.function.FunDefBase;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eigenbase.xom.XOMUtil;
 
 import java.io.PrintWriter;
@@ -55,7 +55,7 @@ public class CacheFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final Exp exp = call.getArg(0);
         final ExpCacheDescriptor cacheDescriptor =
                 new ExpCacheDescriptor(exp, compiler);

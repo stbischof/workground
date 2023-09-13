@@ -19,8 +19,8 @@ import java.util.Set;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
@@ -50,7 +50,7 @@ class DrilldownMemberFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final TupleListCalc listCalc1 = compiler.compileList(call.getArg(0));
         final TupleListCalc listCalc2 = compiler.compileList(call.getArg(1));
         final String literalArg = FunUtil.getLiteralArg(call, 2, "", DrilldownMemberFunDef.reservedWords);

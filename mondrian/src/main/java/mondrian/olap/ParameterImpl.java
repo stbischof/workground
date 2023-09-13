@@ -16,10 +16,10 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.query.component.Literal;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterCompilable;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ParameterCompilable;
-import mondrian.calc.ParameterSlot;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.AbstractListCalc;
@@ -221,7 +221,7 @@ public class ParameterImpl
     }
 
     @Override
-	public Calc compile(ExpCompiler compiler) {
+	public Calc compile(ExpressionCompiler compiler) {
         final ParameterSlot slot = compiler.registerParameter(this);
         if (this.slot != null) {
             // save previous value

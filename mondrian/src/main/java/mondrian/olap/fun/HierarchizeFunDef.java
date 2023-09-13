@@ -11,8 +11,8 @@ package mondrian.olap.fun;
 
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.AbstractListCalc;
@@ -42,7 +42,7 @@ class HierarchizeFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final TupleListCalc tupleListCalc =
       compiler.compileList( call.getArg( 0 ), true );
     String order = FunUtil.getLiteralArg( call, 1, "PRE", HierarchizeFunDef.prePost );

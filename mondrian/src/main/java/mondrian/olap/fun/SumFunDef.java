@@ -9,14 +9,14 @@
 
 package mondrian.olap.fun;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedDoubleCalc;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleIteratorCalc;
 import mondrian.calc.TupleList;
@@ -44,7 +44,7 @@ class SumFunDef extends AbstractAggregateFunDef {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     // What is the desired type to use to get the underlying values
     for ( ResultStyle r : compiler.getAcceptableResultStyles() ) {
       Calc calc;
@@ -79,7 +79,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         .getAcceptableResultStyles() );
   }
 
-  protected Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler, ResultStyle resultStyle ) {
+  protected Calc compileCall( final ResolvedFunCall call, ExpressionCompiler compiler, ResultStyle resultStyle ) {
     final Calc ncalc = compiler.compileIter( call.getArg( 0 ) );
     if ( ncalc == null ) {
       return null;

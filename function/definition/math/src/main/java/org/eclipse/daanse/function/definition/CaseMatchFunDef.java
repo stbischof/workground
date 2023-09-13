@@ -9,7 +9,6 @@
 
 package org.eclipse.daanse.function.definition;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
@@ -18,6 +17,7 @@ import org.eclipse.daanse.function.FunDef;
 import org.eclipse.daanse.function.FunDefBase;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantCalcs;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ class CaseMatchFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final Exp[] args = call.getArgs();
         final List<Calc> calcList = new ArrayList<>();
         final Calc valueCalc =

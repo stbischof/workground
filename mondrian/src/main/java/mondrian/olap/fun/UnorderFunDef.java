@@ -11,8 +11,8 @@ package mondrian.olap.fun;
 
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.FunctionDefinition;
 
 /**
@@ -36,7 +36,7 @@ class UnorderFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         // Currently Unorder has no effect. In future, we may use the function
         // as a marker to weaken the ordering required from an expression and
         // therefore allow the compiler to use a more efficient implementation

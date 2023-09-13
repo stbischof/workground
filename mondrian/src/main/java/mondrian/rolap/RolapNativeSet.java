@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.access.Role;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -31,7 +32,6 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleList;
 import mondrian.calc.impl.DelegatingTupleList;
 import mondrian.olap.DelegatingSchemaReader;

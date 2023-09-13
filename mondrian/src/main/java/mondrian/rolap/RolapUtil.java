@@ -40,8 +40,9 @@ import mondrian.olap.api.Quoting;
 import mondrian.olap.api.Segment;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Member;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.Hierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.InlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.Relation;
@@ -53,7 +54,6 @@ import org.eigenbase.util.property.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Evaluator;
 import mondrian.olap.IdImpl;
 import mondrian.olap.MatchType;
@@ -457,8 +457,8 @@ public class RolapUtil {
      * whether the dependencies declared via
      * {@link mondrian.calc.Calc#dependsOn(Hierarchy)} are accurate.
      */
-    public static ExpCompiler createDependencyTestingCompiler(
-        ExpCompiler compiler)
+    public static ExpressionCompiler createDependencyTestingCompiler(
+        ExpressionCompiler compiler)
     {
         return new RolapDependencyTestingEvaluator.DteCompiler(compiler);
     }
@@ -587,7 +587,7 @@ public class RolapUtil {
         return member;
     }
 
-    public static ExpCompiler createProfilingCompiler(ExpCompiler compiler) {
+    public static ExpressionCompiler createProfilingCompiler(ExpressionCompiler compiler) {
         return new RolapProfilingEvaluator.ProfilingEvaluatorCompiler(
             compiler);
     }

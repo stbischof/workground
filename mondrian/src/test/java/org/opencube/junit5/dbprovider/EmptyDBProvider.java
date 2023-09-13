@@ -21,7 +21,7 @@ package org.opencube.junit5.dbprovider;
 import java.io.IOException;
 import java.util.Map.Entry;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 
 import mondrian.olap.Util.PropertyList;
 

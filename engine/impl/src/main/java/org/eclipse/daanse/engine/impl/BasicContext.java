@@ -21,7 +21,8 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
 import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,6 +44,7 @@ public class BasicContext implements Context {
     public static final String REF_NAME_DATA_SOURCE = "dataSource";
     public static final String REF_NAME_QUERY_PROVIDER = "queryProvier";
     public static final String REF_NAME_DB_MAPPING_SCHEMA_PROVIDER = "dataBaseMappingSchemaProvider";
+    public static final String REF_NAME_EXPRESSION_COMPILER_FACTORY = "expressionCompilerFactory";
 	private static final String ERR_MSG_DIALECT_INIT = "Could not activate context. Error on initialisation of Dialect";
 	private static Logger LOGGER = LoggerFactory.getLogger(BasicContext.class);
 
@@ -56,6 +58,9 @@ public class BasicContext implements Context {
 
     @Reference(name = REF_NAME_STATISTICS_PROVIDER)
     private StatisticsProvider statisticsProvider = null;
+    
+    @Reference(name = REF_NAME_EXPRESSION_COMPILER_FACTORY)
+    private ExpressionCompilerFactory expressionCompilerFactory = null;
     
 //    @Reference(name = REF_NAME_QUERY_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
 //    private QueryProvider queryProvider;
@@ -115,4 +120,8 @@ public class BasicContext implements Context {
 //		return queryProvider;
 //	}
 
+	@Override
+	public ExpressionCompilerFactory getExpressionCompilerFactory() {
+		return expressionCompilerFactory;
+	}
 }

@@ -9,6 +9,8 @@
 
 package mondrian.calc;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
+
 import mondrian.olap.Evaluator;
 
 /**

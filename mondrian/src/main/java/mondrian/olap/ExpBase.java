@@ -14,8 +14,7 @@ package mondrian.olap;
 import java.io.PrintWriter;
 
 import org.eclipse.daanse.olap.calc.api.Calc;
-
-import mondrian.calc.ExpCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
 /**
  * Skeleton implementation of {@link Exp} interface.
@@ -64,7 +63,7 @@ public abstract class ExpBase
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         throw new UnsupportedOperationException(this.toString());
     }
 }

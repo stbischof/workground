@@ -13,12 +13,12 @@ package mondrian.olap.fun;
 
 import java.io.PrintWriter;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.ResolvedFunCallImpl;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
@@ -421,7 +421,7 @@ public abstract class FunDefBase implements FunctionDefinition {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         throw Util.newInternal(
             new StringBuilder("function '").append( getSignature())
                 .append("' has not been implemented").toString());

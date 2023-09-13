@@ -19,11 +19,11 @@ import java.util.Map;
 
 import org.eclipse.daanse.olap.api.query.component.NumericLiteral;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantDoubleCalc;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantStringCalc;
 import org.olap4j.impl.UnmodifiableArrayMap;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.type.NumericType;
 import mondrian.olap.type.StringType;
@@ -78,7 +78,7 @@ public class NumericLiteralImpl extends AbstractLiteralImpl<BigDecimal> implemen
 	}
 	
 	@Override
-	public Calc<?> accept(ExpCompiler compiler) {
+	public Calc<?> accept(ExpressionCompiler compiler) {
 		return new ConstantDoubleCalc(new NumericType(), getValue().doubleValue());
 	}
 

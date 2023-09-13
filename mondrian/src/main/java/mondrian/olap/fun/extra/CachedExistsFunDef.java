@@ -19,8 +19,8 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
 import org.eclipse.daanse.olap.calc.api.TupleCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
@@ -55,7 +55,7 @@ public class CachedExistsFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final TupleListCalc listCalc1 = compiler.compileList( call.getArg( 0 ) );
     final TupleCalc tupleCalc1 = compiler.compileTuple( call.getArg( 1 ) );
     final StringCalc stringCalc = compiler.compileString( call.getArg( 2 ) );

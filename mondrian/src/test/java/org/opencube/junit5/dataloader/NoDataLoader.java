@@ -18,7 +18,7 @@
  */
 package org.opencube.junit5.dataloader;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 
 public class NoDataLoader implements DataLoader{
 

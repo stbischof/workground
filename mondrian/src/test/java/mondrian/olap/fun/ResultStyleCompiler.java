@@ -13,13 +13,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.AbstractProfilingCalc;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.impl.DelegatingExpCompiler;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
@@ -57,20 +57,22 @@ public class ResultStyleCompiler extends DelegatingExpCompiler {
         System.out.println("ResultStyleCompiler being used");
     }
 
-    private static ExpCompiler generateCompiler(
+    private static ExpressionCompiler generateCompiler(
         Evaluator evaluator,
         Validator validator,
         List<ResultStyle> resultStyles)
     {
         // pop and then push class name
-        Object context = ExpCompiler.Factory.getFactory().removeContext();
-        try {
-            return ExpCompiler.Factory.getExpCompiler(
-                evaluator, validator, resultStyles);
-        } finally {
-            // reset ExpCompiler.Factory test context
-            ExpCompiler.Factory.getFactory().restoreContext(context);
-        }
+//        Object context = ExpressionCompiler.ExpressionCompilerFactory.getFactory().removeContext();
+//        try {
+//            return ExpressionCompiler.ExpressionCompilerFactory.createExpressionCompiler(
+//                evaluator, validator, resultStyles);
+//        } finally {
+//            // reset ExpCompiler.Factory test context
+//            ExpressionCompiler.ExpressionCompilerFactory.getFactory().restoreContext(context);
+//        }
+    	
+    	return null;
     }
 
     /**

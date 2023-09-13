@@ -14,7 +14,7 @@ package mondrian.rolap;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.query.component.Literal;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.api.query.component.NumericLiteral;

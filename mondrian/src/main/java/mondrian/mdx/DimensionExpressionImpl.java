@@ -12,9 +12,9 @@ package mondrian.mdx;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.query.component.DimensionExpression;
 import org.eclipse.daanse.olap.calc.api.DimensionCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantDimensionCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
@@ -79,7 +79,7 @@ public class DimensionExpressionImpl extends ExpBase implements Exp, DimensionEx
     }
 
     @Override
-	public DimensionCalc accept(ExpCompiler compiler) {
+	public DimensionCalc accept(ExpressionCompiler compiler) {
         return ConstantDimensionCalc.of(dimension);
     }
 

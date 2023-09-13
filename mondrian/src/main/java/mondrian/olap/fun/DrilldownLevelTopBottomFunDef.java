@@ -15,6 +15,7 @@ package mondrian.olap.fun;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -22,10 +23,9 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.IntegerCalc;
 import org.eclipse.daanse.olap.calc.api.LevelCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.AbstractListCalc;
@@ -89,7 +89,7 @@ class DrilldownLevelTopBottomFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( final ResolvedFunCall call, ExpressionCompiler compiler ) {
     // Compile the member list expression. Ask for a mutable list, because
     // we're going to insert members into it later.
     final TupleListCalc tupleListCalc =

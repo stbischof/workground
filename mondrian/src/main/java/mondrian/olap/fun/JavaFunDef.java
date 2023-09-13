@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.DoubleCalc;
 import org.eclipse.daanse.olap.calc.api.IntegerCalc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.AbstractProfilingNestedCalc;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
@@ -95,7 +95,7 @@ public class JavaFunDef extends FunDefBase {
     @Override
 	public Calc compileCall(
         ResolvedFunCall call,
-        ExpCompiler compiler)
+        ExpressionCompiler compiler)
     {
         final Calc[] calcs = new Calc[parameterCategories.length];
         final Class<?>[] parameterTypes = method.getParameterTypes();
@@ -179,7 +179,7 @@ public class JavaFunDef extends FunDefBase {
      * @param clazz Desired class
      * @return compiled expression
      */
-    private static Calc compileTo(ExpCompiler compiler, Exp exp, Class clazz) {
+    private static Calc compileTo(ExpressionCompiler compiler, Exp exp, Class clazz) {
         if (clazz == String.class) {
             return compiler.compileString(exp);
         } else if (clazz == Date.class) {

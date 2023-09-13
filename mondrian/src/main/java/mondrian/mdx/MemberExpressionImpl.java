@@ -12,9 +12,9 @@ package mondrian.mdx;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantMemberCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
@@ -83,7 +83,7 @@ public class MemberExpressionImpl extends ExpBase implements Exp, MemberExpressi
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         return ConstantMemberCalc.of(member);
     }
 

@@ -14,14 +14,14 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.udf.impl.BooleanScalarUserDefinedFunctionCalcImpl;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleIteratorCalc;
@@ -167,7 +167,7 @@ public class UdfResolver implements FunctionResolver {
         }
 
         @Override
-		public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+		public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
             final Exp[] args = call.getArgs();
             Calc[] calcs = new Calc[args.length];
             UserDefinedFunction.Argument[] expCalcs =

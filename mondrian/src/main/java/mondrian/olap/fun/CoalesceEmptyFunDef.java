@@ -15,8 +15,8 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
@@ -42,7 +42,7 @@ public class CoalesceEmptyFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final Exp[] args = call.getArgs();
         final Calc[] calcs = new Calc[args.length];
         for (int i = 0; i < args.length; i++) {

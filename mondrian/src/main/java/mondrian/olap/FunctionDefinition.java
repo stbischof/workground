@@ -13,11 +13,10 @@ package mondrian.olap;
 
 import java.io.PrintWriter;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
-
-import mondrian.calc.ExpCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
 /**
  * Definition of an MDX function. See also {@link FunctionTable}.
@@ -80,7 +79,7 @@ public interface FunctionDefinition {
      * type. For example, a function which returns an integer must return
      * an object which implements {@link org.eclipse.daanse.olap.calc.api.IntegerCalc}.
      */
-    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler);
+    Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler);
     
     /**
      * Gives access to the Context, that holds Dialect and Context related Properties.

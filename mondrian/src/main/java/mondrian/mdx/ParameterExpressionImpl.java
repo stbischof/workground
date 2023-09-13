@@ -14,9 +14,9 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.query.component.ParameterExpression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterCompilable;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ParameterCompilable;
 import mondrian.olap.Category;
 import mondrian.olap.Exp;
 import mondrian.olap.ExpBase;
@@ -84,7 +84,7 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         return ((ParameterCompilable) parameter).compile(compiler);
     }
 

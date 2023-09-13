@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.olap4j.OlapException;
 
 import mondrian.rolap.RolapConnection;

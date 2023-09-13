@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -38,7 +39,6 @@ import org.eclipse.daanse.olap.calc.api.DoubleCalc;
 import org.eigenbase.xom.XOMUtil;
 import org.olap4j.impl.IdentifierParser.Builder;
 
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.TupleList;

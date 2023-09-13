@@ -12,7 +12,6 @@
 package mondrian.olap;
 
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,13 +23,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import mondrian.mdx.HierarchyExpressionImpl;
-import mondrian.mdx.LevelExpressionImpl;
-import mondrian.olap.api.NameSegment;
-import mondrian.olap.api.Segment;
-
 import org.apache.commons.collections.collection.CompositeCollection;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.access.Role;
 import org.eclipse.daanse.olap.api.element.Cube;
@@ -55,19 +50,24 @@ import org.eclipse.daanse.olap.api.query.component.Subcube;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
 import org.eclipse.daanse.olap.calc.api.profile.CalculationProfile;
 import org.eclipse.daanse.olap.calc.api.profile.ProfilingCalc;
 import org.eclipse.daanse.olap.calc.base.profile.SimpleCalculationProfileWriter;
 import org.olap4j.impl.IdentifierParser;
 import org.olap4j.mdx.IdentifierSegment;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
+import mondrian.calc.impl.BetterExpCompiler;
+import mondrian.mdx.HierarchyExpressionImpl;
+import mondrian.mdx.LevelExpressionImpl;
 import mondrian.mdx.MdxVisitor;
 import mondrian.mdx.MdxVisitorImpl;
 import mondrian.mdx.MemberExpressionImpl;
 import mondrian.mdx.ResolvedFunCallImpl;
 import mondrian.mdx.UnresolvedFunCallImpl;
+import mondrian.olap.api.NameSegment;
+import mondrian.olap.api.Segment;
 import mondrian.olap.fun.ParameterFunDef;
 import mondrian.olap.type.MemberType;
 import mondrian.olap.type.SetType;
@@ -497,8 +497,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         resolve(validator); // resolve self and children
         // Create a dummy result so we can use its evaluator
         final Evaluator evaluator = RolapUtil.createEvaluator(statement);
-        ExpCompiler compiler =
-            createCompiler(
+        ExpressionCompiler compiler =
+            createExpressionCompiler(
                 evaluator, validator, Collections.singletonList(resultStyle));
         compile(compiler);
     }
@@ -567,7 +567,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      *
      * @param compiler Compiler
      */
-    private void compile(ExpCompiler compiler) {
+    private void compile(ExpressionCompiler compiler) {
 
         if(this.subcube != null) {
 
@@ -1428,8 +1428,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         resultStyleList =
             Collections.singletonList(
                 resultStyle != null ? resultStyle : this.resultStyle);
-        final ExpCompiler compiler =
-            createCompiler(
+        final ExpressionCompiler compiler =
+            createExpressionCompiler(
                 evaluator, validator, resultStyleList);
         if (scalar) {
             return compiler.compileScalar(exp, false);
@@ -1438,28 +1438,25 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
     }
 
-    public ExpCompiler createCompiler() {
+    public ExpressionCompiler createExpressionCompiler() {
         // REVIEW: Set query on a connection's shared internal statement is
         // not re-entrant.
         statement.setQuery(this);
         Evaluator evaluator = RolapEvaluator.create(statement);
         Validator validator = createValidator();
-        return createCompiler(
+        return createExpressionCompiler(
             evaluator,
             validator,
             Collections.singletonList(resultStyle));
     }
 
-    private ExpCompiler createCompiler(
+    private ExpressionCompiler createExpressionCompiler(
         final Evaluator evaluator,
         final Validator validator,
         List<ResultStyle> resultStyleList)
     {
-        ExpCompiler compiler =
-            ExpCompiler.Factory.getExpCompiler(
-                evaluator,
-                validator,
-                resultStyleList);
+    	ExpressionCompilerFactory factory=statement.getMondrianConnection().getContext().getExpressionCompilerFactory();
+		ExpressionCompiler compiler = factory.createExpressionCompiler(evaluator, validator, resultStyleList);
 
         final int expDeps =
             MondrianProperties.instance().TestExpDependencies.get();

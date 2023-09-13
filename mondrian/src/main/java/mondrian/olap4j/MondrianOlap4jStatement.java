@@ -18,6 +18,7 @@ import java.sql.SQLWarning;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.api.query.component.DrillThrough;
 import org.eclipse.daanse.olap.api.query.component.Explain;
@@ -32,7 +33,6 @@ import org.olap4j.mdx.ParseTreeNode;
 import org.olap4j.mdx.ParseTreeWriter;
 import org.olap4j.mdx.SelectNode;
 
-import mondrian.calc.ResultStyle;
 import mondrian.olap.MondrianException;
 import mondrian.olap.QueryCanceledException;
 import mondrian.olap.QueryTimeoutException;

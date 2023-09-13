@@ -10,8 +10,6 @@
 */
 package org.eclipse.daanse.function.definition;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
@@ -52,6 +50,7 @@ import org.eclipse.daanse.function.FunDef;
 import org.eclipse.daanse.function.FunDefBase;
 import org.eclipse.daanse.function.FunUtil;
 import org.eclipse.daanse.function.Validator;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -60,6 +59,7 @@ import org.eclipse.daanse.olap.api.query.component.ParameterExpression;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +139,7 @@ public Type getResultType(Validator validator, Exp[] args ) {
   }
 
   @Override
-public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( final ResolvedFunCall call, ExpressionCompiler compiler ) {
     // What is the desired return type?
     for ( ResultStyle r : compiler.getAcceptableResultStyles() ) {
       switch ( r ) {
@@ -164,7 +164,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
 
-  protected TupleIteratorCalc compileCallIterable( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleIteratorCalc compileCallIterable( final ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
@@ -173,7 +173,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     return compileCallIterableArray(call, compiler, calcs);
   }
 
-  protected TupleIteratorCalc compileCallIterableArray( final ResolvedFunCall call, ExpCompiler compiler, Calc[] calcs) {
+  protected TupleIteratorCalc compileCallIterableArray( final ResolvedFunCall call, ExpressionCompiler compiler, Calc[] calcs) {
     TupleIteratorCalc tupleIteratorCalc = compileCallIterableLeaf(call, calcs[0], calcs[1]);
 
     if(calcs.length == 2){
@@ -204,7 +204,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     return new CrossJoinIterCalc( call, calcs );
   }
 
-  private Calc toIter( ExpCompiler compiler, final Exp exp ) {
+  private Calc toIter( ExpressionCompiler compiler, final Exp exp ) {
     // Want iterable, immutable list or mutable list in that order
     // It is assumed that an immutable list is easier to get than
     // a mutable list.
@@ -333,7 +333,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
   // Immutable List
   ///////////////////////////////////////////////////////////////////////////
 
-  protected TupleListCalc compileCallImmutableList( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleListCalc compileCallImmutableList( final ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
@@ -342,7 +342,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     return compileCallImmutableListArray(call, compiler, calcs);
   }
 
-  protected TupleListCalc compileCallImmutableListArray( final ResolvedFunCall call, ExpCompiler compiler, Calc[] calcs ) {
+  protected TupleListCalc compileCallImmutableListArray( final ResolvedFunCall call, ExpressionCompiler compiler, Calc[] calcs ) {
     TupleListCalc tupleListCalc = compileCallImmutableListLeaf(call, calcs[0], calcs[1]);
 
     if(calcs.length == 2){
@@ -384,7 +384,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
    *          Expression
    * @return Compiled expression that yields a list or mutable list
    */
-  private TupleListCalc toList( ExpCompiler compiler, final Exp exp ) {
+  private TupleListCalc toList( ExpressionCompiler compiler, final Exp exp ) {
     // Want immutable list or mutable list in that order
     // It is assumed that an immutable list is easier to get than
     // a mutable list.
@@ -475,7 +475,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
   }
 
-  protected TupleListCalc compileCallMutableList( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleListCalc compileCallMutableList( final ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
@@ -484,7 +484,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     return compileCallMutableListArray(call, compiler, calcs);
   }
 
-  protected TupleListCalc compileCallMutableListArray( final ResolvedFunCall call, ExpCompiler compiler, Calc[] calcs ) {
+  protected TupleListCalc compileCallMutableListArray( final ResolvedFunCall call, ExpressionCompiler compiler, Calc[] calcs ) {
     TupleListCalc tupleListCalc = compileCallMutableListLeaf(call, calcs[0], calcs[1]);
 
     if(calcs.length == 2){

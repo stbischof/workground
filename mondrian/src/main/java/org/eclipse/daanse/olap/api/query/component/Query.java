@@ -13,8 +13,6 @@
  */
 package org.eclipse.daanse.olap.api.query.component;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.olap.Exp;
 import mondrian.olap.FunctionDefinition;
 import mondrian.olap.Parameter;
@@ -23,11 +21,13 @@ import mondrian.olap.Validator;
 import mondrian.rolap.RolapCube;
 import mondrian.server.Statement;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,7 +93,7 @@ public non-sealed interface Query extends QueryPart {
 
     boolean shouldAlertForNonNative(FunctionDefinition fun);
 
-    ExpCompiler createCompiler();
+    ExpressionCompiler createExpressionCompiler();
 
     boolean hasCellProperty(String name);
 

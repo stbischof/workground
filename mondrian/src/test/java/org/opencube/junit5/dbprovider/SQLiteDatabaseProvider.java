@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Map.Entry;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.opencube.junit5.context.SQLLiteContext;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;

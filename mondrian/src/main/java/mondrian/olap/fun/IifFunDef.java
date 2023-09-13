@@ -9,15 +9,15 @@
 
 package mondrian.olap.fun;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.BooleanCalc;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedBooleanCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedStringCalc;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.calc.impl.GenericIterCalc;
 import mondrian.olap.Category;
@@ -81,7 +81,7 @@ public class IifFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         final BooleanCalc booleanCalc =
             compiler.compileBoolean(call.getArg(0));
         final Calc calc1 =
@@ -135,7 +135,7 @@ public class IifFunDef extends FunDefBase {
         "fSbSS")
     {
         @Override
-		public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+		public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
             final BooleanCalc booleanCalc =
                 compiler.compileBoolean(call.getArg(0));
             final StringCalc calc1 = compiler.compileString(call.getArg(1));
@@ -161,7 +161,7 @@ public class IifFunDef extends FunDefBase {
             "fnbnn")
         {
             @Override
-			public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc booleanCalc =
                     compiler.compileBoolean(call.getArg(0));
@@ -192,7 +192,7 @@ public class IifFunDef extends FunDefBase {
             "ftbtt")
         {
             @Override
-			public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler)
+			public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler)
             {
                 final BooleanCalc booleanCalc =
                     compiler.compileBoolean(call.getArg(0));
@@ -222,7 +222,7 @@ public class IifFunDef extends FunDefBase {
         "fbbbb")
     {
         @Override
-		public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+		public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
             final BooleanCalc booleanCalc =
                 compiler.compileBoolean(call.getArg(0));
             final BooleanCalc booleanCalc1 =

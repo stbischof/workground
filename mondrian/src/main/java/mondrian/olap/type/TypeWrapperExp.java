@@ -12,8 +12,8 @@ package mondrian.olap.type;
 import java.io.PrintWriter;
 
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.Exp;
 import mondrian.olap.Validator;
@@ -58,7 +58,7 @@ public class TypeWrapperExp implements Exp {
     }
 
     @Override
-    public Calc accept(ExpCompiler compiler) {
+    public Calc accept(ExpressionCompiler compiler) {
         throw new UnsupportedOperationException();
     }
 

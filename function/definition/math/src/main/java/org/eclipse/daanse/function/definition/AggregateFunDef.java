@@ -10,7 +10,6 @@
 */
 package org.eclipse.daanse.function.definition;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterator;
 import mondrian.calc.TupleList;
@@ -37,6 +36,7 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 import org.eigenbase.util.property.IntegerProperty;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0));
         final Calc calc =
             call.getArgCount() > 1

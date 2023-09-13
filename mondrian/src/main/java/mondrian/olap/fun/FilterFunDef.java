@@ -12,15 +12,15 @@ package mondrian.olap.fun;
 
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.BooleanCalc;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleCollections;
 import mondrian.calc.TupleCursor;
 import mondrian.calc.TupleIterable;
@@ -64,7 +64,7 @@ class FilterFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(final ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(final ResolvedFunCall call, ExpressionCompiler compiler) {
         // Ignore the caller's priority. We prefer to return iterable, because
         // it makes NamedSet.CurrentOrdinal work.
         List<ResultStyle> styles = compiler.getAcceptableResultStyles();
@@ -102,7 +102,7 @@ class FilterFunDef extends FunDefBase {
      */
     protected TupleIteratorCalc compileCallIterable(
         final ResolvedFunCall call,
-        ExpCompiler compiler)
+        ExpressionCompiler compiler)
     {
         // want iterable, mutable list or immutable list in that order
         Calc imlcalc = compiler.compileAs(
@@ -302,7 +302,7 @@ class FilterFunDef extends FunDefBase {
      */
     protected TupleListCalc compileCallList(
         final ResolvedFunCall call,
-        ExpCompiler compiler)
+        ExpressionCompiler compiler)
     {
         Calc ilcalc = compiler.compileList(call.getArg(0), false);
         BooleanCalc bcalc = compiler.compileBoolean(call.getArg(1));

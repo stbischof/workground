@@ -13,7 +13,7 @@ package mondrian.rolap;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 
 import mondrian.calc.TupleList;
 

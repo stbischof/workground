@@ -17,9 +17,9 @@ import java.io.PrintWriter;
 
 import org.eclipse.daanse.olap.api.query.component.SymbolLiteral;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantStringCalc;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.mdx.MdxVisitor;
 import mondrian.olap.type.StringType;
 import mondrian.olap.type.SymbolType;
@@ -56,7 +56,7 @@ public class SymbolLiteralImpl extends AbstractLiteralImpl<String> implements Sy
 	}
 
 	@Override
-	public Calc<String> accept(ExpCompiler compiler) {
+	public Calc<String> accept(ExpressionCompiler compiler) {
 
 		// why is this not a symbolType?
 		return new ConstantStringCalc(new StringType(), getValue());

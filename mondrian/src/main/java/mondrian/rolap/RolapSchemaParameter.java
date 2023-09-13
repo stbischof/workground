@@ -10,9 +10,9 @@
 package mondrian.rolap;
 
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterCompilable;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ParameterCompilable;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
@@ -123,7 +123,7 @@ public class RolapSchemaParameter implements Parameter, ParameterCompilable {
     }
 
     @Override
-	public Calc compile(ExpCompiler compiler) {
+	public Calc compile(ExpressionCompiler compiler) {
         // Parse and compile the expression for the default value.
         Exp defaultExp = compiler.getValidator()
             .getQuery()

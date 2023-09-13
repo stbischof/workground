@@ -13,9 +13,8 @@ import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.query.component.DimensionExpression;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantDimensionCalc;
-
-import mondrian.calc.ExpCompiler;
 
 /**
  * Definition of the <code>&lt;Dimension&gt;.Dimension</code>
@@ -35,7 +34,7 @@ class DimensionDimensionFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler)
+	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler)
     {
         Dimension dimension =
             ((DimensionExpression) call.getArg(0)).getDimension();

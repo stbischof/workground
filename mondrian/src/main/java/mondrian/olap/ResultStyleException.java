@@ -13,7 +13,7 @@ package mondrian.olap;
 
 import java.util.List;
 
-import mondrian.calc.ResultStyle;
+import org.eclipse.daanse.olap.api.ResultStyle;
 
 /**
  * Exception that indicates a compiler could not implement an expression in any

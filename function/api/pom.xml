@@ -18,7 +18,7 @@
     <artifactId>org.eclipse.daanse.function</artifactId>
     <version>${revision}</version>
   </parent>
-  <artifactId>org.eclipse.daanse.function.api</artifactId>
+  <artifactId>org.eclipse.daanse.emondrian</artifactId>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.daanse</groupId>

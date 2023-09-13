@@ -27,10 +27,10 @@
 
 package org.eclipse.daanse.olap.calc.api;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.olap.Evaluator;
 import mondrian.olap.type.Type;
 
@@ -54,7 +54,7 @@ import mondrian.olap.type.Type;
  * <h3>Compilation</h3>
  *
  * Expressions are generally created from using an expression compiler
- * ({@link ExpCompiler}). There are often more than one evaluation strategy
+ * ({@link ExpressionCompiler}). There are often more than one evaluation strategy
  * for a given expression, and compilation process gives us an opportunity to
  * choose the optimal one.<p/>
  *
@@ -122,7 +122,7 @@ public interface Calc<E> {
      * whether the compiled expression is returning a mutable list. If a mutable
      * list is required, the compiler can create a mutable copy.
      *
-     * @see ExpCompiler#compileList(mondrian.olap.Exp, boolean)
+     * @see ExpressionCompiler#compileList(mondrian.olap.Exp, boolean)
      */
     ResultStyle getResultStyle();
 

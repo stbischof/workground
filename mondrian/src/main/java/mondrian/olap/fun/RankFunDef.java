@@ -24,13 +24,13 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.MemberCalc;
 import org.eclipse.daanse.olap.calc.api.TupleCalc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.AbstractProfilingNestedCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedIntegerCalc;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.TupleList;
 import mondrian.calc.TupleListCalc;
 import mondrian.calc.impl.CacheCalc;
@@ -64,7 +64,7 @@ public class RankFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     switch ( call.getArgCount() ) {
       case 2:
         return compileCall2( call, compiler );
@@ -75,7 +75,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
   }
 
-  public Calc compileCall3( ResolvedFunCall call, ExpCompiler compiler ) {
+  public Calc compileCall3( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Type type0 = call.getArg( 0 ).getType();
     final TupleListCalc tupleListCalc = compiler.compileList( call.getArg( 1 ) );
     final Calc keyCalc = compiler.compileScalar( call.getArg( 2 ), true );
@@ -90,7 +90,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
   }
 
-  public Calc compileCall2( ResolvedFunCall call, ExpCompiler compiler ) {
+  public Calc compileCall2( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final boolean tuple = call.getArg( 0 ).getType() instanceof TupleType;
     final Exp listExp = call.getArg( 1 );
     final TupleListCalc listCalc0 = compiler.compileList( listExp );

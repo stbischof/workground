@@ -15,8 +15,8 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.query.component.Literal;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
 import mondrian.calc.impl.GenericCalc;
 import mondrian.olap.Category;
 import mondrian.olap.Evaluator;
@@ -56,7 +56,7 @@ public class CastFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpressionCompiler compiler) {
         final Type targetType = call.getType();
         final Exp arg = call.getArg(0);
         final Calc calc = compiler.compileScalar(arg, false);

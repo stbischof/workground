@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.NamedSet;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 
-import mondrian.calc.ParameterSlot;
-import mondrian.calc.ResultStyle;
 import mondrian.olap.Evaluator;
 import mondrian.olap.Exp;
 import mondrian.olap.MondrianProperties;

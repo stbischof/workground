@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.calc.api.profile.CalcEvaluationProfile;
 import org.eclipse.daanse.olap.calc.api.profile.CalculationProfile;
 
-import mondrian.calc.ResultStyle;
 import mondrian.olap.type.Type;
 
 public record CalcProfileR(Class<?> clazz, Type type, ResultStyle resultStyle, Optional<Instant> start,

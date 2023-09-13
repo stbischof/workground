@@ -11,7 +11,7 @@
 *   SmartCity Jena - initial
 *   Stefan Bischof (bipolis.org) - initial
 */
-package org.eclipse.daanse.engine.api;
+package org.eclipse.daanse.olap.api;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -20,6 +20,9 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.olap.api.query.QueryProvider;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
+
 
 /**
  * The Context gives access to all resources and configurations that are needed
@@ -76,5 +79,12 @@ public interface Context {
      * The human readable description of the Context.
      */
     Optional<String> getDescription();
+
+    /**
+     * Gives access to a {@link ExpressionCompilerFactory}.
+     *
+     * @return {@link ExpressionCompilerFactory}.
+     */
+	ExpressionCompilerFactory getExpressionCompilerFactory();
 
 }

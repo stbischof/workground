@@ -11,13 +11,13 @@ package mondrian.mdx;
 
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.ResultStyle;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.NamedSet;
 import org.eclipse.daanse.olap.api.query.component.NamedSetExpression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 
-import mondrian.calc.ExpCompiler;
-import mondrian.calc.ResultStyle;
 import mondrian.calc.TupleIterable;
 import mondrian.calc.impl.AbstractIterCalc;
 import mondrian.olap.Category;
@@ -89,7 +89,7 @@ public class NamedSetExpressionImpl extends ExpBase implements Exp, NamedSetExpr
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpressionCompiler compiler) {
         // This is a deliberate breach of the usual rules for interpreting
         // acceptable result styles. Usually the caller gets to call the shots:
         // the callee iterates over the acceptable styles and implements in the

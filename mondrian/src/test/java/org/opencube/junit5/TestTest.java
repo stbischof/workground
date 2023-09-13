@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Map.Entry;
 
-import org.eclipse.daanse.engine.api.Context;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.context.SQLLiteContext;
 import org.opencube.junit5.context.TestingContext;
