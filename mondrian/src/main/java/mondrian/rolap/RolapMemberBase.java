@@ -121,7 +121,7 @@ public class RolapMemberBase
         RolapLevel level,
         Object key,
         String name,
-        MemberType memberType)
+        MemberType memberType, boolean caseSensitive)
     {
         super(parentMember, level, memberType);
         assert key != null;
@@ -143,9 +143,9 @@ public class RolapMemberBase
         {
             // Save memory by only saving the name as a property if it's
             // different from the key.
-            setProperty(Property.NAME_PROPERTY.name, name);
+            setProperty(Property.NAME_PROPERTY.name, name, caseSensitive);
         } else if (key != null) {
-            setUniqueName(key);
+            setUniqueName(key, caseSensitive);
         }
     }
 
@@ -154,8 +154,8 @@ public class RolapMemberBase
         this.key = RolapUtil.sqlNullValue;
     }
 
-    RolapMemberBase(RolapMember parentMember, RolapLevel level, Object value) {
-        this(parentMember, level, value, null, MemberType.REGULAR);
+    RolapMemberBase(RolapMember parentMember, RolapLevel level, Object value, boolean caseSensitive) {
+        this(parentMember, level, value, null, MemberType.REGULAR, caseSensitive);
         assert !(level instanceof RolapCubeLevel);
     }
 
@@ -185,13 +185,13 @@ public class RolapMemberBase
      * Actually, acts like MemberBase#getCaption(),
      * but using not formatted object values.
      */
-    public Object getCaptionValue() {
+    public Object getCaptionValue(boolean caseSensitive) {
         if (captionValue != null) {
             return captionValue;
         }
 
         // falling back to member name, as it's done in MemberBase
-        Object name = getPropertyValue(Property.NAME_PROPERTY.name);
+        Object name = getPropertyValue(Property.NAME_PROPERTY.name, caseSensitive);
 
         // falling back to member key, as it's done in #getName()
         return name != null ? name : key;
@@ -259,7 +259,7 @@ public class RolapMemberBase
         }
     }
 
-    protected void setUniqueName(Object key) {
+    protected void setUniqueName(Object key, boolean caseSensitive) {
         String name = keyToString(key);
 
         // Drop the '[All Xxxx]' segment in regular members.
@@ -279,7 +279,7 @@ public class RolapMemberBase
             if (dimension.getDimensionType() != null
                 && (dimension.getDimensionType().equals(
                     DimensionType.MEASURES_DIMENSION)
-                && hierarchy.getName().equals(dimension.getName())))
+                && hierarchy.getName().equals(dimension.getName(caseSensitive))))
             {
                 // Kludge to ensure that calc members are called
                 // [Measures].[Foo] not [Measures].[Measures].[Foo]. We can
@@ -309,9 +309,9 @@ public class RolapMemberBase
     }
 
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
         final Object name =
-            getPropertyValue(Property.NAME_PROPERTY.name);
+            getPropertyValue(Property.NAME_PROPERTY.name, caseSensitive);
         return (name != null)
             ? String.valueOf(name)
             : keyToString(key);
@@ -329,7 +329,7 @@ public class RolapMemberBase
      * side-effects.
      */
     @Override
-	public synchronized void setProperty(String name, Object value) {
+	public synchronized void setProperty(String name, Object value, boolean caseSensitive) {
         if (name.equals(Property.CAPTION.name)) {
             setCaption((String)value);
             return;
@@ -345,7 +345,7 @@ public class RolapMemberBase
             if (value == null) {
                 value = RolapUtil.mdxNullLiteral();
             }
-            setUniqueName(value);
+            setUniqueName(value, caseSensitive);
         }
 
         if (name.equals(Property.MEMBER_ORDINAL.name)) {
@@ -361,12 +361,12 @@ public class RolapMemberBase
     }
 
     @Override
-	public Object getPropertyValue(String propertyName) {
+	public Object getPropertyValue(String propertyName, boolean caseSensitive) {
         return getPropertyValue(propertyName, true);
     }
 
     @Override
-	public Object getPropertyValue(String propertyName, boolean matchCase) {
+	public Object getPropertyValue(String propertyName, boolean matchCase, boolean caseSensitive) {
         Property property = Property.lookup(propertyName, matchCase);
         if (property != null) {
             Schema schema;
@@ -379,7 +379,7 @@ public class RolapMemberBase
                 break;
 
             case Property.CAPTION_ORDINAL:
-                return getCaption();
+                return getCaption(caseSensitive);
 
             case Property.CONTRIBUTING_CHILDREN_ORDINAL:
                 list = new ArrayList<>();
@@ -415,7 +415,7 @@ public class RolapMemberBase
                 return getUniqueName();
 
             case Property.MEMBER_NAME_ORDINAL:
-                return getName();
+                return getName(caseSensitive);
 
             case Property.MEMBER_TYPE_ORDINAL:
                 return getMemberType().ordinal();
@@ -424,14 +424,14 @@ public class RolapMemberBase
                 return null;
 
             case Property.MEMBER_CAPTION_ORDINAL:
-                return getCaption();
+                return getCaption(caseSensitive);
 
             case Property.MEMBER_ORDINAL_ORDINAL:
                 return getOrdinal();
 
             case Property.CHILDREN_CARDINALITY_ORDINAL:
                 return Locus.execute(
-                    ((RolapSchema) level.getDimension().getSchema())
+                    ((RolapSchema) level.getDimension(caseSensitive).getSchema())
                         .getInternalConnection(),
                     "Member.CHILDREN_CARDINALITY",
                     new Locus.Action<Integer>() {
@@ -486,7 +486,7 @@ public class RolapMemberBase
                     : getKey();
 
             case Property.SCENARIO_ORDINAL:
-                return ScenarioImpl.forMember(this);
+                return ScenarioImpl.forMember(this, caseSensitive);
 
             default:
                 break;
@@ -601,7 +601,8 @@ public class RolapMemberBase
         {
             // if both keys are null, they are equal.
             // compare by unique name.
-            return this.getName().compareTo(other.getName());
+            return this.getName(true).compareTo(other.getName(true));
+            //TODO UTILS
         }
 
         if (other.key == RolapUtil.sqlNullValue) {
@@ -636,7 +637,7 @@ public class RolapMemberBase
     }
 
     @Override
-	public boolean isHidden() {
+	public boolean isHidden(boolean caseSensitive) {
         final RolapLevel rolapLevel = getLevel();
         switch (rolapLevel.getHideMemberCondition()) {
         case Never:
@@ -646,7 +647,7 @@ public class RolapMemberBase
         {
             // If the key value in the database is null, then we use
             // a special key value whose toString() is "null".
-            final String name = getName();
+            final String name = getName(caseSensitive);
             return name.equals(RolapUtil.mdxNullLiteral())
                 || Util.isBlank(name);
         }
@@ -657,8 +658,8 @@ public class RolapMemberBase
             if (parentMember == null) {
                 return false;
             }
-            final String parentName = parentMember.getName();
-            final String name = getName();
+            final String parentName = parentMember.getName(caseSensitive);
+            final String name = getName(caseSensitive);
             return (parentName == null ? "" : parentName).equals(
                 name == null ? "" : name);
         }
@@ -674,7 +675,7 @@ public class RolapMemberBase
     }
 
     @Override
-	public String getPropertyFormattedValue(String propertyName) {
+	public String getPropertyFormattedValue(String propertyName, boolean caseSensitive) {
         // do we have a formatter ? if yes, use it
         Property[] props = getLevel().getProperties();
         Property prop = null;
@@ -684,7 +685,7 @@ public class RolapMemberBase
                 break;
             }
         }
-        Object propertyValue = getPropertyValue(propertyName);
+        Object propertyValue = getPropertyValue(propertyName, caseSensitive);
         PropertyFormatter pf;
         if (prop != null && (pf = prop.getFormatter()) != null) {
             return pf.formatProperty(this, propertyName, propertyValue);
@@ -694,10 +695,10 @@ public class RolapMemberBase
     }
 
     @Override
-	public boolean isParentChildLeaf() {
+	public boolean isParentChildLeaf(boolean caseSensitive) {
         if (isParentChildLeaf == null) {
             isParentChildLeaf = getLevel().isParentChild()
-                && getDimension().getSchema().getSchemaReader()
+                && getDimension(caseSensitive).getSchema().getSchemaReader()
                 .getMemberChildren(this).size() == 0;
         }
         return isParentChildLeaf;
@@ -781,7 +782,7 @@ public class RolapMemberBase
      */
     public static void setOrdinals(
         SchemaReader schemaReader,
-        Member seedMember)
+        Member seedMember, boolean caseSensitive)
     {
         seedMember = RolapUtil.strip((RolapMember) seedMember);
 
@@ -803,7 +804,7 @@ public class RolapMemberBase
         long start = System.currentTimeMillis();
 
         try {
-            Hierarchy hierarchy = seedMember.getHierarchy();
+            Hierarchy hierarchy = seedMember.getHierarchy(caseSensitive);
             int ordinal = hierarchy.hasAll() ? 1 : 0;
             List<List<Member>> levelMembers =
                 getAllMembers(schemaReader, hierarchy);
@@ -813,8 +814,8 @@ public class RolapMemberBase
 
             // Set all ordinals
             for (Member child : leafMembers) {
-                ordinal = bottomUpSetParentOrdinals(ordinal, child);
-                ordinal = setOrdinal(child, ordinal);
+                ordinal = bottomUpSetParentOrdinals(ordinal, child, caseSensitive);
+                ordinal = setOrdinal(child, ordinal, caseSensitive);
             }
 
             boolean needsFullTopDown = needsFullTopDown(levelMembers);
@@ -831,7 +832,7 @@ public class RolapMemberBase
                 }
 
                 // call full Top-down
-                setOrdinalsTopDown(schemaReader, seedMember);
+                setOrdinalsTopDown(schemaReader, seedMember, caseSensitive);
             }
         } finally {
             if (LOGGER.isDebugEnabled()) {
@@ -874,23 +875,23 @@ public class RolapMemberBase
      * @param child Member whose ancestors ordinals to set
      * @return Ordinal, incremented for each time it was used
      */
-    private static int bottomUpSetParentOrdinals(int ordinal, Member child) {
+    private static int bottomUpSetParentOrdinals(int ordinal, Member child, boolean caseSensitive) {
         Member parent = child.getParentMember();
         if ((parent != null) && parent.getOrdinal() == -1) {
-            ordinal = bottomUpSetParentOrdinals(ordinal, parent);
-            ordinal = setOrdinal(parent, ordinal);
+            ordinal = bottomUpSetParentOrdinals(ordinal, parent, caseSensitive);
+            ordinal = setOrdinal(parent, ordinal, caseSensitive);
         }
         return ordinal;
     }
 
-    private static int setOrdinal(Member member, int ordinal) {
+    private static int setOrdinal(Member member, int ordinal, boolean caseSensitive) {
         if (member instanceof RolapMemberBase) {
             ((RolapMemberBase) member).setOrdinal(ordinal++);
         } else {
             // TODO
             LOGGER.warn(
                 "RolapMember.setAllChildren: NOT RolapMember member.name={}, member.class={}, ordinal={}",
-                member.getName(), member.getClass().getName(), ordinal);
+                member.getName(caseSensitive), member.getClass().getName(), ordinal);
             ordinal++;
         }
         return ordinal;
@@ -909,7 +910,7 @@ public class RolapMemberBase
      */
     private static void setOrdinalsTopDown(
         SchemaReader schemaReader,
-        Member member)
+        Member member, boolean caseSensitive)
     {
         long start = System.currentTimeMillis();
 
@@ -921,14 +922,14 @@ public class RolapMemberBase
                 int ordinal = 0;
 
                 List<Member> siblings =
-                    schemaReader.getHierarchyRootMembers(member.getHierarchy());
+                    schemaReader.getHierarchyRootMembers(member.getHierarchy(caseSensitive));
 
                 for (Member sibling : siblings) {
-                    ordinal = setAllChildren(ordinal, schemaReader, sibling);
+                    ordinal = setAllChildren(ordinal, schemaReader, sibling, caseSensitive);
                 }
 
             } else {
-                setOrdinalsTopDown(schemaReader, parent);
+                setOrdinalsTopDown(schemaReader, parent, caseSensitive);
             }
         } finally {
             if (LOGGER.isDebugEnabled()) {
@@ -942,13 +943,13 @@ public class RolapMemberBase
     private static int setAllChildren(
         int ordinal,
         SchemaReader schemaReader,
-        Member member)
+        Member member, boolean caseSensitive)
     {
-        ordinal = setOrdinal(member, ordinal);
+        ordinal = setOrdinal(member, ordinal, caseSensitive);
 
         List<Member> children = schemaReader.getMemberChildren(member);
         for (Member child : children) {
-            ordinal = setAllChildren(ordinal, schemaReader, child);
+            ordinal = setAllChildren(ordinal, schemaReader, child, caseSensitive);
         }
 
         return ordinal;

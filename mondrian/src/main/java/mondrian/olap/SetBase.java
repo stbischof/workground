@@ -124,18 +124,18 @@ public class SetBase extends OlapElementBase implements NamedSet {
         return displayFolder;
     }
 
-    public List<Hierarchy> getHierarchies() {
-        return ((SetType)exp.getType()).getHierarchies();
+    public List<Hierarchy> getHierarchies(boolean caseSensitive) {
+        return ((SetType)exp.getType()).getHierarchies(caseSensitive);
     }
 
     @Override
-	public Hierarchy getHierarchy() {
-        return exp.getType().getHierarchy();
+	public Hierarchy getHierarchy(boolean caseSensitive) {
+        return exp.getType().getHierarchy(caseSensitive);
     }
 
     @Override
-	public Dimension getDimension() {
-        return getHierarchy().getDimension();
+	public Dimension getDimension(boolean caseSensitive) {
+        return getHierarchy(caseSensitive).getDimension();
     }
 
     @Override

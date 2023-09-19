@@ -38,19 +38,19 @@ public non-sealed interface QueryAxis extends QueryPart {
 
     void setSet(Exp set);
 
-    Calc compile(ExpCompiler compiler, ResultStyle resultStyle);
+    Calc compile(ExpCompiler compiler, ResultStyle resultStyle, boolean caseSensitive);
 
-    Object accept(MdxVisitor visitor);
+    Object accept(MdxVisitor visitor, boolean caseSensitive);
 
     Id[] getDimensionProperties();
 
     SubtotalVisibility getSubtotalVisibility();
 
-    void validate(Validator validator);
+    void validate(Validator validator, boolean caseSensitive);
 
     void addLevel(Level level);
 
-    void resolve(Validator validator);
+    void resolve(Validator validator, boolean caseSensitive);
 
     boolean isOrdered();
 

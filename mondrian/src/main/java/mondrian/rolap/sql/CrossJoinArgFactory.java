@@ -71,13 +71,13 @@ public class CrossJoinArgFactory {
     }
 
     public Set<CrossJoinArg> buildConstraintFromAllAxes(
-        final RolapEvaluator evaluator)
+        final RolapEvaluator evaluator, boolean caseSensitive)
     {
         Set<CrossJoinArg> joinArgs =
             new LinkedHashSet<>();
         for (QueryAxis ax : evaluator.getQuery().getAxes()) {
             List<CrossJoinArg[]> axesArgs =
-                checkCrossJoinArg(evaluator, ax.getSet(), true);
+                checkCrossJoinArg(evaluator, ax.getSet(), true, caseSensitive);
             if (axesArgs != null) {
                 for (CrossJoinArg[] axesArg : axesArgs) {
                     joinArgs.addAll(Arrays.asList(axesArg));
@@ -125,9 +125,9 @@ public class CrossJoinArgFactory {
      */
     public List<CrossJoinArg[]> checkCrossJoinArg(
         RolapEvaluator evaluator,
-        Exp exp)
+        Exp exp, boolean caseSensitive)
     {
-        return checkCrossJoinArg(evaluator, exp, false);
+        return checkCrossJoinArg(evaluator, exp, false, caseSensitive);
     }
 
     /**
@@ -152,7 +152,7 @@ public class CrossJoinArgFactory {
     List<CrossJoinArg[]> checkCrossJoinArg(
         RolapEvaluator evaluator,
         Exp exp,
-        final boolean returnAny)
+        final boolean returnAny, boolean caseSensitive)
     {
         if (exp instanceof NamedSetExpression namedSetExpr) {
             NamedSet namedSet = namedSetExpr.getNamedSet();
@@ -193,19 +193,19 @@ public class CrossJoinArgFactory {
         }
 
         List<CrossJoinArg[]> allArgs =
-            checkDimensionFilter(evaluator, fun, args);
+            checkDimensionFilter(evaluator, fun, args, caseSensitive);
         if (allArgs != null) {
             return allArgs;
         }
         // strip off redundant set braces, for example
         // { Gender.Gender.members }, or {{{ Gender.M }}}
         if ("{}".equalsIgnoreCase(fun.getName()) && args.length == 1) {
-            return checkCrossJoinArg(evaluator, args[0], returnAny);
+            return checkCrossJoinArg(evaluator, args[0], returnAny, caseSensitive);
         }
         if ("NativizeSet".equalsIgnoreCase(fun.getName()) && args.length == 1) {
-            return checkCrossJoinArg(evaluator, args[0], returnAny);
+            return checkCrossJoinArg(evaluator, args[0], returnAny, caseSensitive);
         }
-        return checkCrossJoin(evaluator, fun, args, returnAny);
+        return checkCrossJoin(evaluator, fun, args, returnAny, caseSensitive);
     }
 
     private CrossJoinArg[] checkConstrainedMeasures(
@@ -373,7 +373,7 @@ public class CrossJoinArgFactory {
         RolapEvaluator evaluator,
         FunctionDefinition fun,
         Exp[] args,
-        final boolean returnAny)
+        final boolean returnAny, boolean caseSensitive)
     {
         // is this "CrossJoin([A].children, [B].children)"
         if (!"Crossjoin".equalsIgnoreCase(fun.getName())
@@ -402,7 +402,7 @@ public class CrossJoinArgFactory {
                 || allArgsOneInput.isEmpty()
                 || allArgsOneInput.get(0) == null)
             {
-                cjArgsBothInputs[i] = expandNonNative(evaluator, args[i]);
+                cjArgsBothInputs[i] = expandNonNative(evaluator, args[i], caseSensitive);
             } else {
                 // Collect CJ CrossJoinArg
                 cjArgsBothInputs[i] = allArgsOneInput.get(0);
@@ -704,7 +704,7 @@ public class CrossJoinArgFactory {
     private List<CrossJoinArg[]> checkDimensionFilter(
         RolapEvaluator evaluator,
         FunctionDefinition fun,
-        Exp[] filterArgs)
+        Exp[] filterArgs, boolean caseSensitive)
     {
         if (!MondrianProperties.instance().EnableNativeFilter.get()) {
             return null;
@@ -724,7 +724,7 @@ public class CrossJoinArgFactory {
         // dimensions. If either the list or the first array is null, then
         // native cross join is not feasible.
         List<CrossJoinArg[]> allArgs =
-            checkCrossJoinArg(evaluator, filterArgs[0]);
+            checkCrossJoinArg(evaluator, filterArgs[0], caseSensitive);
 
         if (allArgs == null || allArgs.isEmpty() || allArgs.get(0) == null) {
             return null;
@@ -950,15 +950,15 @@ public class CrossJoinArgFactory {
 
     private CrossJoinArg[] expandNonNative(
         RolapEvaluator evaluator,
-        Exp exp)
+        Exp exp, boolean caseSensitive)
     {
         ExpCompiler compiler = evaluator.getQuery().createCompiler();
         CrossJoinArg[] arg0 = null;
         if (shouldExpandNonEmpty(exp)
             && evaluator.getActiveNativeExpansions().add(exp))
         {
-            TupleListCalc listCalc0 = compiler.compileList(exp);
-            final TupleList tupleList = listCalc0.evaluateList(evaluator);
+            TupleListCalc listCalc0 = compiler.compileList(exp, caseSensitive);
+            final TupleList tupleList = listCalc0.evaluateList(evaluator, caseSensitive);
 
             // Prevent the case when the second argument size is too large
             Util.checkCJResultLimit(tupleList.size());

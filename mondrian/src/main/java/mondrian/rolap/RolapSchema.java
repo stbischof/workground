@@ -1008,10 +1008,10 @@ public class RolapSchema implements Schema {
      */
     protected org.eclipse.daanse.olap.rolap.dbmapper.model.api.CalculatedMember lookupXmlCalculatedMember(
         final String calcMemberName,
-        final String cubeName)
+        final String cubeName, boolean caseSensitive)
     {
         for (final org.eclipse.daanse.olap.rolap.dbmapper.model.api.Cube cube : xmlSchema.cubes()) {
-            if (!Util.equalName(cube.name(), cubeName)) {
+            if (!Util.equalName(cube.name(), cubeName, caseSensitive)) {
                 continue;
             }
             for (org.eclipse.daanse.olap.rolap.dbmapper.model.api.CalculatedMember xmlCalcMember
@@ -1024,7 +1024,7 @@ public class RolapSchema implements Schema {
                 // (e.g. "[Time].[Weekly]").
                 if (Util.equalName(
                         calcMemberFqName(xmlCalcMember),
-                        calcMemberName))
+                        calcMemberName, context.getConfig().caseSensitive()))
                 {
                     return xmlCalcMember;
                 }
@@ -1101,7 +1101,7 @@ public class RolapSchema implements Schema {
         // FIXME: write a map that efficiently maps segment->value, taking
         // into account case-sensitivity etc.
         for (Map.Entry<String, NamedSet> entry : mapNameToSet.entrySet()) {
-            if (Util.matches(segment, entry.getKey())) {
+            if (Util.matches(segment, entry.getKey(), context.getConfig().caseSensitive())) {
                 return entry.getValue();
             }
         }

@@ -94,7 +94,7 @@ public final class IdBatchResolver {
         axes = query.getAxes();
         cube = query.getCube();
         initOlapElementNames();
-        initIdentifiers();
+        initIdentifiers(query.getConnection().getContext().getConfig().caseSensitive());
     }
 
     /**
@@ -125,16 +125,16 @@ public final class IdBatchResolver {
      *   [Store].[All Store].[USA]
      *   [Store].[All Store]
      */
-    private void initIdentifiers() {
+    private void initIdentifiers(boolean caseSensitive) {
         MdxVisitor identifierVisitor = new IdentifierVisitor(identifiers);
         for (QueryAxis axis : axes) {
-            axis.accept(identifierVisitor);
+            axis.accept(identifierVisitor, caseSensitive);
         }
         if (query.getSlicerAxis() != null) {
-            query.getSlicerAxis().accept(identifierVisitor);
+            query.getSlicerAxis().accept(identifierVisitor, caseSensitive);
         }
         for (Formula formula : formulas) {
-            formula.accept(identifierVisitor);
+            formula.accept(identifierVisitor, caseSensitive);
         }
         expandIdentifiers(identifiers);
     }
@@ -154,8 +154,8 @@ public final class IdBatchResolver {
      * @return  a Map of the expressions Id elements mapped to their
      * respective resolved Exp.
      */
-    public Map<QueryPart, QueryPart> resolve() {
-        return resolveInParentGroupings(identifiers);
+    public Map<QueryPart, QueryPart> resolve(boolean caseSensitive) {
+        return resolveInParentGroupings(identifiers, caseSensitive);
     }
 
     /**
@@ -166,7 +166,7 @@ public final class IdBatchResolver {
      *  occur before their children.
      */
     private  Map<QueryPart, QueryPart> resolveInParentGroupings(
-        SortedSet<Id> identifiers)
+        SortedSet<Id> identifiers, boolean caseSensitive)
     {
         final Map<QueryPart, QueryPart> resolvedIdentifiers =
             new HashMap<>();
@@ -175,7 +175,7 @@ public final class IdBatchResolver {
             Id parent = identifiers.first();
             identifiers.remove(parent);
 
-            if (!supportedIdentifier(parent)) {
+            if (!supportedIdentifier(parent, caseSensitive)) {
                 continue;
             }
             Exp exp = (Exp)resolvedIdentifiers.get(parent);
@@ -188,7 +188,7 @@ public final class IdBatchResolver {
             }
             resolvedIdentifiers.put(parent, (QueryPart)exp);
             batchResolveChildren(
-                parent, parentMember, identifiers, resolvedIdentifiers);
+                parent, parentMember, identifiers, resolvedIdentifiers, caseSensitive);
         }
         return resolvedIdentifiers;
     }
@@ -200,17 +200,17 @@ public final class IdBatchResolver {
      */
     private void batchResolveChildren(
         Id parent, Member parentMember, SortedSet<Id> identifiers,
-        Map<QueryPart, QueryPart> resolvedIdentifiers)
+        Map<QueryPart, QueryPart> resolvedIdentifiers, boolean caseSensitive)
     {
         final List<Id> children = findChildIds(parent, identifiers);
         final List<NameSegment> childNameSegments =
-            collectChildrenNameSegments(parentMember, children);
+            collectChildrenNameSegments(parentMember, children, caseSensitive);
 
         if (!childNameSegments.isEmpty()) {
             List<Member> childMembers =
                 lookupChildrenByNames(parentMember, childNameSegments);
             addChildrenToResolvedMap(
-                resolvedIdentifiers, children, childMembers);
+                resolvedIdentifiers, children, childMembers, caseSensitive);
         }
     }
 
@@ -234,12 +234,12 @@ public final class IdBatchResolver {
      */
     private void addChildrenToResolvedMap(
         Map<QueryPart, QueryPart> resolvedIdentifiers, List<Id> children,
-        List<Member> childMembers)
+        List<Member> childMembers, boolean caseSensitive)
     {
         for (Member child : childMembers) {
             for (Id childId : children) {
                 if (!resolvedIdentifiers.containsKey(childId)
-                    && getLastSegment(childId).matches(child.getName()))
+                    && getLastSegment(childId).matches(child.getName(), caseSensitive))
                 {
                     resolvedIdentifiers.put(
                         childId, (QueryPart)Util.createExpr(child));
@@ -278,7 +278,7 @@ public final class IdBatchResolver {
      * to the corresponding NameSegment.
      */
     private List<NameSegment> collectChildrenNameSegments(
-        final Member parentMember, List<Id> children)
+        final Member parentMember, List<Id> children, boolean caseSensitive)
     {
         filter(
             children, new Predicate() {
@@ -287,8 +287,8 @@ public final class IdBatchResolver {
 				public boolean evaluate(Object theId)
                 {
                     Id id = (Id)theId;
-                    return !Util.matches(parentMember, id.getSegments())
-                        && supportedIdentifier(id);
+                    return !Util.matches(parentMember, id.getSegments(), caseSensitive)
+                        && supportedIdentifier(id, caseSensitive);
                 }
             });
         return new ArrayList(
@@ -313,15 +313,15 @@ public final class IdBatchResolver {
      * Checks various conditions to determine whether
      * the given identifier is likely to be resolvable at this point.
      */
-    private boolean supportedIdentifier(Id id) {
+    private boolean supportedIdentifier(Id id,  boolean caseSensitive) {
         Segment seg = getLastSegment(id);
         if (!(seg instanceof NameSegment)) {
             // we can't batch resolve members identified by key
             return false;
         }
-        return (isPossibleMemberRef(id))
+        return (isPossibleMemberRef(id, caseSensitive))
             && !segmentIsCalcMember(id.getSegments())
-            && !id.getSegments().get(0).matches("Measures");
+            && !id.getSegments().get(0).matches("Measures", caseSensitive);
     }
 
     private boolean supportedMember(Member member) {
@@ -382,22 +382,22 @@ public final class IdBatchResolver {
      * This filters out references that we'd be unlikely to effectively
      * handle.
      */
-    private boolean isPossibleMemberRef(Id id) {
+    private boolean isPossibleMemberRef(Id id, boolean caseSensitive) {
         int size = id.getSegments().size();
 
         if (size == 1) {
             return segListMatchInUniqueNames(
-                id.getSegments(), dimensionUniqueNames)
+                id.getSegments(), dimensionUniqueNames, caseSensitive)
                 || segListMatchInUniqueNames(
-                    id.getSegments(), hierarchyUniqueNames);
+                    id.getSegments(), hierarchyUniqueNames, caseSensitive);
         }
         if (MondrianProperties.instance().SsasCompatibleNaming.get()
             && size == 2)
         {
             return segListMatchInUniqueNames(
-                id.getSegments(), hierarchyUniqueNames);
+                id.getSegments(), hierarchyUniqueNames, caseSensitive);
         }
-        if (segMatchInNames(getLastSegment(id), levelNames)) {
+        if (segMatchInNames(getLastSegment(id), levelNames, caseSensitive)) {
             // conservative.  false on any match of any level name
             return false;
         }
@@ -406,11 +406,11 @@ public final class IdBatchResolver {
     }
 
     private boolean segListMatchInUniqueNames(
-        List<Segment> segments, Collection<String> names)
+        List<Segment> segments, Collection<String> names, boolean caseSensitive)
     {
         String segUniqueName = Util.implode(segments);
         for (String name : names) {
-           if (Util.equalName(segUniqueName, name)) {
+           if (Util.equalName(segUniqueName, name, caseSensitive)) {
                return true;
            }
         }
@@ -418,10 +418,10 @@ public final class IdBatchResolver {
     }
 
     private boolean segMatchInNames(
-        Segment seg, Collection<String> names)
+        Segment seg, Collection<String> names, boolean caseSensitive)
     {
         for (String name : names) {
-            if (seg.matches(name)) {
+            if (seg.matches(name, caseSensitive)) {
                 return true;
             }
         }

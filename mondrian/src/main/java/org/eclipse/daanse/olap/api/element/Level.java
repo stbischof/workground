@@ -7,7 +7,7 @@
  * Copyright (C) 1999-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
  */
@@ -39,7 +39,7 @@ public interface Level extends OlapElement, MetaElement {
      */
     int getDepth();
     @Override
-	Hierarchy getHierarchy();
+	Hierarchy getHierarchy(boolean caseSensitive);
 
     Level getChildLevel();
     Level getParentLevel();

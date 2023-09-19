@@ -253,7 +253,7 @@ class MondrianOlap4jExtra implements XmlaHandler.XmlaExtra {
     }
 
     @Override
-	public void checkMemberOrdinal(Member member) throws OlapException {
+	public void checkMemberOrdinal(Member member, boolean caseSensitive) throws OlapException {
         if (member.getOrdinal() == -1) {
             MondrianOlap4jMember olap4jMember =
                 (MondrianOlap4jMember) member;
@@ -261,7 +261,7 @@ class MondrianOlap4jExtra implements XmlaHandler.XmlaExtra {
                 olap4jMember.olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData
                     .olap4jConnection.getMondrianConnection().getSchemaReader()
                     .withLocus();
-            RolapMemberBase.setOrdinals(schemaReader, olap4jMember.member);
+            RolapMemberBase.setOrdinals(schemaReader, olap4jMember.member, caseSensitive);
         }
     }
 

@@ -58,7 +58,7 @@ public class HierarchyExpressionImpl extends ExpBase implements Exp, HierarchyEx
     }
 
     @Override
-	public Type getType() {
+	public Type getType(boolean caseSensitive) {
         return HierarchyType.forHierarchy(hierarchy);
     }
 
@@ -73,17 +73,17 @@ public class HierarchyExpressionImpl extends ExpBase implements Exp, HierarchyEx
     }
 
     @Override
-	public Exp accept(Validator validator) {
+	public Exp accept(Validator validator, boolean caseSensitive) {
         return this;
     }
 
     @Override
-	public HierarchyCalc accept(ExpCompiler compiler) {
+	public HierarchyCalc accept(ExpCompiler compiler, boolean caseSensitive) {
         return ConstantHierarchyCalc.of(hierarchy);
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         return visitor.visit(this);
     }
 }

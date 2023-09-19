@@ -1878,8 +1878,8 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    * This method is used in native evaluation to determine whether any measures in the query could conflict with the SQL
    * constraint being constructed.
    */
-  public static boolean measuresConflictWithMembers( Set<Member> measures, Member[] members ) {
-    Set<Member> membersNestedInMeasures = getMembersNestedInMeasures( measures );
+  public static boolean measuresConflictWithMembers( Set<Member> measures, Member[] members, boolean caseSensitive ) {
+    Set<Member> membersNestedInMeasures = getMembersNestedInMeasures( measures, caseSensitive );
     for ( Member memberInMeasure : membersNestedInMeasures ) {
       if ( !anyMemberOverlaps( members, memberInMeasure ) ) {
         return true;
@@ -1888,19 +1888,19 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     return false;
   }
 
-  public static Set<Member> getMembersNestedInMeasures( Set<Member> measures ) {
+  public static Set<Member> getMembersNestedInMeasures( Set<Member> measures, boolean caseSensitive ) {
     Set<Member> membersNestedInMeasures = new HashSet<>();
     for ( Member m : measures ) {
       if ( m.isCalculated() ) {
         Exp exp = m.getExpression();
-        exp.accept( new MemberExtractingVisitor( membersNestedInMeasures, null, false ) );
+        exp.accept( new MemberExtractingVisitor( membersNestedInMeasures, null, false ), caseSensitive );
       }
     }
     return membersNestedInMeasures;
   }
 
-  public static boolean measuresConflictWithMembers( Set<Member> measuresMembers, CrossJoinArg[] cjArgs ) {
-    return measuresConflictWithMembers( measuresMembers, getCJArgMembers( cjArgs ) );
+  public static boolean measuresConflictWithMembers( Set<Member> measuresMembers, CrossJoinArg[] cjArgs, boolean caseSensitive ) {
+    return measuresConflictWithMembers( measuresMembers, getCJArgMembers( cjArgs ), caseSensitive );
   }
 
   public static boolean containsValidMeasure( Exp... expressions ) {

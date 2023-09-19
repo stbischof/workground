@@ -19,5 +19,5 @@ import mondrian.calc.ResultStyle;
  */
 
 public interface NativeEvaluator {
-    Object execute(ResultStyle resultStyle);
+    Object execute(ResultStyle resultStyle, boolean caseSensitive);
 }

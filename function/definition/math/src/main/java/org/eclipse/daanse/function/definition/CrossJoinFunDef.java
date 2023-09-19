@@ -139,19 +139,19 @@ public Type getResultType(Validator validator, Exp[] args ) {
   }
 
   @Override
-public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     // What is the desired return type?
     for ( ResultStyle r : compiler.getAcceptableResultStyles() ) {
       switch ( r ) {
         case ITERABLE, ANY:
           // Consumer wants ITERABLE or ANY
-          return compileCallIterable( call, compiler );
+          return compileCallIterable( call, compiler, caseSensitive );
         case LIST:
           // Consumer wants (immutable) LIST
-          return compileCallImmutableList( call, compiler );
+          return compileCallImmutableList( call, compiler, caseSensitive );
         case MUTABLE_LIST:
           // Consumer MUTABLE_LIST
-          return compileCallMutableList( call, compiler );
+          return compileCallMutableList( call, compiler, caseSensitive );
       }
     }
     throw ResultStyleException.generate( ResultStyle.ITERABLE_LIST_MUTABLELIST_ANY, compiler
@@ -164,11 +164,11 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
 
-  protected TupleIteratorCalc compileCallIterable( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleIteratorCalc compileCallIterable( final ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
-      calcs[i] = toIter( compiler, args[i] );
+      calcs[i] = toIter( compiler, args[i], caseSensitive );
     }
     return compileCallIterableArray(call, compiler, calcs);
   }
@@ -204,14 +204,14 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     return new CrossJoinIterCalc( call, calcs );
   }
 
-  private Calc toIter( ExpCompiler compiler, final Exp exp ) {
+  private Calc toIter( ExpCompiler compiler, final Exp exp, boolean caseSensitive ) {
     // Want iterable, immutable list or mutable list in that order
     // It is assumed that an immutable list is easier to get than
     // a mutable list.
     final Type type = exp.getType();
     if ( type instanceof SetType ) {
       // this can return an TupleIteratorCalc or TupleListCalc
-      return compiler.compileAs( exp, null, ResultStyle.ITERABLE_LIST_MUTABLELIST );
+      return compiler.compileAs( exp, null, ResultStyle.ITERABLE_LIST_MUTABLELIST, caseSensitive );
     } else {
       // this always returns an TupleIteratorCalc
       return new SetFunDef.ExprIterCalc(  new SetType( type ) , new Exp[] { exp }, compiler,
@@ -227,7 +227,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public TupleIterable evaluateIterable( Evaluator evaluator ) {
+	public TupleIterable evaluateIterable( Evaluator evaluator, boolean caseSensitive ) {
 
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
@@ -242,18 +242,18 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
       TupleIteratorCalc calc1 = (TupleIteratorCalc) calcs[0];
       TupleIteratorCalc calc2 = (TupleIteratorCalc) calcs[1];
 
-      TupleIterable o1 = calc1.evaluateIterable( evaluator );
+      TupleIterable o1 = calc1.evaluateIterable( evaluator, caseSensitive );
       if ( o1 instanceof TupleList l1 ) {
-        l1 = nonEmptyOptimizeList( evaluator, l1, call );
+        l1 = nonEmptyOptimizeList( evaluator, l1, call, caseSensitive );
         if ( l1.isEmpty() ) {
           return TupleCollections.emptyList( getType().getArity() );
         }
         o1 = l1;
       }
 
-      TupleIterable o2 = calc2.evaluateIterable( evaluator );
+      TupleIterable o2 = calc2.evaluateIterable( evaluator, caseSensitive );
       if ( o2 instanceof TupleList l2 ) {
-        l2 = nonEmptyOptimizeList( evaluator, l2, call );
+        l2 = nonEmptyOptimizeList( evaluator, l2, call, caseSensitive );
         if ( l2.isEmpty() ) {
           return TupleCollections.emptyList( getType().getArity() );
         }
@@ -333,11 +333,11 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
   // Immutable List
   ///////////////////////////////////////////////////////////////////////////
 
-  protected TupleListCalc compileCallImmutableList( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleListCalc compileCallImmutableList( final ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
-      calcs[i] = toList( compiler, args[i] );
+      calcs[i] = toList( compiler, args[i], caseSensitive );
     }
     return compileCallImmutableListArray(call, compiler, calcs);
   }
@@ -384,15 +384,15 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
    *          Expression
    * @return Compiled expression that yields a list or mutable list
    */
-  private TupleListCalc toList( ExpCompiler compiler, final Exp exp ) {
+  private TupleListCalc toList( ExpCompiler compiler, final Exp exp, boolean caseSensitive ) {
     // Want immutable list or mutable list in that order
     // It is assumed that an immutable list is easier to get than
     // a mutable list.
     final Type type = exp.getType();
     if ( type instanceof SetType ) {
-      final Calc calc = compiler.compileAs( exp, null, ResultStyle.LIST_MUTABLELIST );
+      final Calc calc = compiler.compileAs( exp, null, ResultStyle.LIST_MUTABLELIST, caseSensitive);
       if ( calc == null ) {
-        return compiler.compileList( exp, false );
+        return compiler.compileList( exp, false, caseSensitive );
       }
       return (TupleListCalc) calc;
     } else {
@@ -409,7 +409,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public TupleList evaluateList( Evaluator evaluator ) {
+	public TupleList evaluateList( Evaluator evaluator, boolean caseSensitive ) {
       // Use a native evaluator, if more efficient.
       // TODO: Figure this out at compile time.
       SchemaReader schemaReader = evaluator.getSchemaReader();
@@ -423,20 +423,20 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
       TupleListCalc listCalc1 = (TupleListCalc) calcs[0];
       TupleListCalc listCalc2 = (TupleListCalc) calcs[1];
 
-      TupleList l1 = listCalc1.evaluateList( evaluator );
+      TupleList l1 = listCalc1.evaluateList( evaluator, caseSensitive );
       // check if size of first list already exceeds limit
       Util.checkCJResultLimit( l1.size() );
-      TupleList l2 = listCalc2.evaluateList( evaluator );
+      TupleList l2 = listCalc2.evaluateList( evaluator, caseSensitive );
       // check if size of second list already exceeds limit
       Util.checkCJResultLimit( l2.size() );
       // check crossjoin
       Util.checkCJResultLimit( (long) l1.size() * l2.size() );
 
-      l1 = nonEmptyOptimizeList( evaluator, l1, call );
+      l1 = nonEmptyOptimizeList( evaluator, l1, call, caseSensitive );
       if ( l1.isEmpty() ) {
         return TupleCollections.emptyList( l1.getArity() + l2.getArity() );
       }
-      l2 = nonEmptyOptimizeList( evaluator, l2, call );
+      l2 = nonEmptyOptimizeList( evaluator, l2, call, caseSensitive );
       if ( l2.isEmpty() ) {
         return TupleCollections.emptyList( l1.getArity() + l2.getArity() );
       }
@@ -475,11 +475,11 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
   }
 
-  protected TupleListCalc compileCallMutableList( final ResolvedFunCall call, ExpCompiler compiler ) {
+  protected TupleListCalc compileCallMutableList( final ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     final Exp[] args = call.getArgs();
     Calc[] calcs =  new Calc[args.length];
     for (int i = 0; i < args.length; i++) {
-      calcs[i] = toList( compiler, args[i] );
+      calcs[i] = toList( compiler, args[i], caseSensitive );
     }
     return compileCallMutableListArray(call, compiler, calcs);
   }
@@ -538,7 +538,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
   }
 
-  protected TupleList nonEmptyOptimizeList( Evaluator evaluator, TupleList list, ResolvedFunCall call ) {
+  protected TupleList nonEmptyOptimizeList( Evaluator evaluator, TupleList list, ResolvedFunCall call, boolean caseSensitive ) {
     int opSize = MondrianProperties.instance().CrossJoinOptimizerSize.get();
     if ( list.isEmpty() ) {
       return list;
@@ -565,7 +565,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
       // nonempty(crossjoin(nonempty(a),nonempty(b))
       final int missCount = evaluator.getMissCount();
 
-      list = nonEmptyList( evaluator, list, call );
+      list = nonEmptyList( evaluator, list, call, caseSensitive );
       size = list.size();
       // list may be empty after nonEmpty optimization
       if ( size == 0 ) {
@@ -665,13 +665,13 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Object visit( ParameterExpression parameterExpr ) {
+	public Object visit( ParameterExpression parameterExpr, boolean caseSensitive ) {
       final Parameter parameter = parameterExpr.getParameter();
       final Type type = parameter.getType();
       if ( type instanceof MemberType ) {
         final Object value = parameter.getValue();
         if ( value instanceof Member member ) {
-          process( member );
+          process( member, caseSensitive );
         }
       }
 
@@ -679,21 +679,21 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Object visit( MemberExpressionImpl memberExpr ) {
+	public Object visit( MemberExpressionImpl memberExpr, boolean caseSensitive ) {
       Member member = memberExpr.getMember();
-      process( member );
+      process( member, caseSensitive );
       return null;
     }
 
-    private void process( final Member member ) {
+    private void process( final Member member, boolean caseSensitive ) {
       if ( member.isMeasure() ) {
         if ( member.isCalculated() ) {
           if ( activeMeasures.add( member ) ) {
             Exp exp = member.getExpression();
             finder.found = false;
-            exp.accept( finder );
+            exp.accept( finder, caseSensitive );
             if ( !finder.found ) {
-              exp.accept( this );
+              exp.accept( this, caseSensitive);
             }
             activeMeasures.remove( member );
           }
@@ -763,7 +763,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
    *          Calling ResolvedFunCall used to determine what Measures to use
    * @return List of elements from the input parameter list that have evaluated to non-null.
    */
-  protected TupleList nonEmptyList( Evaluator evaluator, TupleList list, ResolvedFunCall call ) {
+  protected TupleList nonEmptyList( Evaluator evaluator, TupleList list, ResolvedFunCall call, boolean caseSensitive ) {
     if ( list.isEmpty() ) {
       return list;
     }
@@ -797,8 +797,8 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
       for ( Member m : queryMeasureSet ) {
         if ( m.isCalculated() ) {
           Exp exp = m.getExpression();
-          exp.accept( measureVisitor );
-          exp.accept( memVisitor );
+          exp.accept( measureVisitor, caseSensitive );
+          exp.accept( memVisitor, caseSensitive );
         } else {
           measureSet.add( m );
         }
@@ -810,7 +810,7 @@ public Calc compileCall( final ResolvedFunCall call, ExpCompiler compiler ) {
             // short circuit if VM is present.
             return list;
           }
-          f.accept( measureVisitor );
+          f.accept( measureVisitor, caseSensitive );
         }
       }
       query.putEvalCache( measureSetKey, measureSet );

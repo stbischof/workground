@@ -24,7 +24,7 @@ public interface Segment {
 
     List<NameSegment> getKeyParts();
 
-    boolean matches(String name);
+    boolean matches(String name, boolean caseSensitive);
 
     void toString(StringBuilder buf);
 

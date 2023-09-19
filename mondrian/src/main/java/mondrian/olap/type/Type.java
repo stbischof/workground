@@ -98,7 +98,7 @@ public interface Type {
      *
      * @return the Hierarchy of this type, or null if not known
      */
-    Hierarchy getHierarchy();
+    Hierarchy getHierarchy(boolean caseSensitive);
 
     /**
      * Returns the Level of this Type, or null if not known.
@@ -147,7 +147,7 @@ public interface Type {
      *
      * @return More general type
      */
-    Type computeCommonType(Type type, int[] conversionCount);
+    Type computeCommonType(Type type, int[] conversionCount, boolean caseSensitive);
 
     /**
      * Returns whether a value is valid for a type.
@@ -155,7 +155,7 @@ public interface Type {
      * @param value Value
      * @return Whether value is valid for this type
      */
-    boolean isInstance(Object value);
+    boolean isInstance(Object value, boolean caseSensitive);
 
     /**
      * Returns the number of fields in a tuple type, or a set of tuples.

@@ -71,10 +71,10 @@ public class MemberPropertyImpl extends AbstractQueryPart implements MemberPrope
     /**
      * Retrieves a property by name from an array.
      */
-    static Exp get(MemberProperty[] a, String name) {
+    static Exp get(MemberProperty[] a, String name, boolean caseSensitive) {
         // TODO: Linear search may be a performance problem.
         for (int i = 0; i < a.length; i++) {
-            if (Util.equalName(a[i].getName(), name)) {
+            if (Util.equalName(a[i].getName(), name, caseSensitive)) {
                 return a[i].getExp();
             }
         }

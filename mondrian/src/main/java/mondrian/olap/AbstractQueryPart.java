@@ -31,7 +31,7 @@ public abstract class AbstractQueryPart implements Walkable {
      *
      * @param pw writer
      */
-    public void unparse(PrintWriter pw) {
+    public void unparse(PrintWriter pw, boolean caseSensitive) {
         pw.print(toString());
     }
 

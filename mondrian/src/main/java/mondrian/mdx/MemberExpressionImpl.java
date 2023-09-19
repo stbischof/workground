@@ -60,9 +60,9 @@ public class MemberExpressionImpl extends ExpBase implements Exp, MemberExpressi
     }
 
     @Override
-	public Type getType() {
+	public Type getType(boolean caseSensitive) {
         if (type == null) {
-            type = MemberType.forMember(member);
+            type = MemberType.forMember(member, caseSensitive);
         }
         return type;
     }
@@ -83,12 +83,12 @@ public class MemberExpressionImpl extends ExpBase implements Exp, MemberExpressi
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpCompiler compiler, boolean caseSensitive) {
         return ConstantMemberCalc.of(member);
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
-        return visitor.visit(this);
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
+        return visitor.visit(this, caseSensitive);
     }
 }

@@ -66,7 +66,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @return Compiled expression
      */
-    Calc<?> compile(Exp exp);
+    Calc<?> compile(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression to a given result type.
@@ -91,45 +91,45 @@ public interface ExpCompiler {
     Calc compileAs(
             Exp exp,
             Type resultType,
-            List<ResultStyle> preferredResultStyles);
+            List<ResultStyle> preferredResultStyles, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link Member} result.
      */
-    MemberCalc compileMember(Exp exp);
+    MemberCalc compileMember(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link Level} result.
      */
-    LevelCalc compileLevel(Exp exp);
+    LevelCalc compileLevel(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link Dimension} result.
      */
-    DimensionCalc compileDimension(Exp exp);
+    DimensionCalc compileDimension(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link Hierarchy} result.
      */
-    HierarchyCalc compileHierarchy(Exp exp);
+    HierarchyCalc compileHierarchy(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields an <code>int</code> result.
      * The expression is implicitly converted into a scalar.
      */
-    IntegerCalc compileInteger(Exp exp);
+    IntegerCalc compileInteger(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link String} result.
      * The expression is implicitly converted into a scalar.
      */
-    StringCalc compileString(Exp exp);
+    StringCalc compileString(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a {@link java.util.Date} result.
      * The expression is implicitly converted into a scalar.
      */
-    DateTimeCalc compileDateTime(Exp exp);
+    DateTimeCalc compileDateTime(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields an immutable {@link TupleList}
@@ -137,7 +137,7 @@ public interface ExpCompiler {
      *
      * <p>Always equivalent to <code>{@link #compileList}(exp, false)</code>.
      */
-    TupleListCalc compileList(Exp exp);
+    TupleListCalc compileList(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields {@link TupleList} result.
@@ -150,7 +150,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @param mutable Whether resulting list is mutable
      */
-    TupleListCalc compileList(Exp exp, boolean mutable);
+    TupleListCalc compileList(Exp exp, boolean mutable, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields an immutable {@link Iterable} result.
@@ -158,7 +158,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @return Calculator which yields an Iterable
      */
-    TupleIteratorCalc compileIter(Exp exp);
+    TupleIteratorCalc compileIter(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a <code>boolean</code> result.
@@ -166,7 +166,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @return Calculator which yields a boolean
      */
-    BooleanCalc compileBoolean(Exp exp);
+    BooleanCalc compileBoolean(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a <code>double</code> result.
@@ -174,7 +174,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @return Calculator which yields a double
      */
-    DoubleCalc compileDouble(Exp exp);
+    DoubleCalc compileDouble(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression which yields a tuple result.
@@ -182,7 +182,7 @@ public interface ExpCompiler {
      * @param exp Expression
      * @return Calculator which yields a tuple
      */
-    TupleCalc compileTuple(Exp exp);
+    TupleCalc compileTuple(Exp exp, boolean caseSensitive);
 
     /**
      * Compiles an expression to yield a scalar result.
@@ -198,7 +198,7 @@ public interface ExpCompiler {
      *   {@link #compileString(mondrian.olap.Exp)}
      * @return Calculation which returns the scalar value of the expression
      */
-    Calc<?> compileScalar(Exp exp, boolean specific);
+    Calc<?> compileScalar(Exp exp, boolean specific, boolean caseSensitive);
 
     /**
      * Implements a parameter, returning a unique slot which will hold the
@@ -207,7 +207,7 @@ public interface ExpCompiler {
      * @param parameter Parameter
      * @return Slot
      */
-    ParameterSlot registerParameter(Parameter parameter);
+    ParameterSlot registerParameter(Parameter parameter, boolean caseSensitive);
 
     /**
      * Returns a list of the {@link ResultStyle}s

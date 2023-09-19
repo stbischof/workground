@@ -19,7 +19,7 @@ import mondrian.olap.Evaluator;
 
 public interface ProfilingCalc<E> extends Calc<E> {
 
-	E evaluateWithProfile(Evaluator evaluator);
+	E evaluateWithProfile(Evaluator evaluator, boolean caseSensitive);
 
 	CalculationProfile getCalculationProfile();
 }

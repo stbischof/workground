@@ -37,14 +37,14 @@ public interface NamedSet extends OlapElement, MetaElement {
     /**
      * Returns the type of this named set.
      */
-    Type getType();
+    Type getType(boolean caseSensitive);
 
     /**
      * Returns the expression used to derive this named set.
      */
     Exp getExp();
 
-    NamedSet validate(Validator validator);
+    NamedSet validate(Validator validator, boolean caseSensitive);
 
     /**
      * Returns a name for this set that is unique within the query.

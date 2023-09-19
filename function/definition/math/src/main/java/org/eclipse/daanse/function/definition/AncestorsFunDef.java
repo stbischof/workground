@@ -57,9 +57,9 @@ class AncestorsFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final MemberCalc memberCalc =
-            compiler.compileMember(call.getArg(0));
+            compiler.compileMember(call.getArg(0), caseSensitive);
         final Type type1 = call.getArg(1).getType();
         if (type1 instanceof LevelType) {
             final LevelCalc levelCalc =

@@ -12,7 +12,6 @@
 package mondrian.olap;
 
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -211,7 +210,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
    * Creates a Query.
    */
   public QueryImpl(Statement statement, Formula[] formulas, QueryAxis[] axes, String cubeName, QueryAxis slicerAxis,
-               CellProperty[] cellProps, boolean strictValidation ) {
+               CellProperty[] cellProps, boolean strictValidation, boolean caseSensitive) {
       this(
               statement,
               Util.lookupCube( statement.getSchemaReader(), cubeName, true ),
@@ -221,13 +220,13 @@ public class QueryImpl extends AbstractQueryPart implements Query {
               slicerAxis,
               cellProps,
               new Parameter[0],
-              strictValidation );
+              strictValidation);
   }
 
   public QueryImpl(Statement statement, Formula[] formulas, QueryAxis[] axes, Subcube subcube, QueryAxis slicerAxis,
-                   CellProperty[] cellProps, boolean strictValidation ) {
+                   CellProperty[] cellProps, boolean strictValidation) {
     this( statement, Util.lookupCube( statement.getSchemaReader(), subcube.getCubeName(), true ), formulas, subcube, axes, slicerAxis, cellProps,
-        new Parameter[0], strictValidation );
+        new Parameter[0], strictValidation);
   }
 
     /**
@@ -385,7 +384,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      *
      * @param additions Formulas to add to query
      */
-    public void addFormulas(Formula... additions) {
+    public void addFormulas(Formula[] additions) {
         formulas = Util.appendArrays(formulas, additions);
         resolve();
     }
@@ -492,9 +491,9 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         // and calculated sets
         createFormulaElements();
         Map<QueryPart, QueryPart> resolvedIdentifiers =
-            new IdBatchResolver(this).resolve();
+            new IdBatchResolver(this).resolve(getConnection().getContext().getConfig().caseSensitive());
         final Validator validator = createValidator(resolvedIdentifiers);
-        resolve(validator); // resolve self and children
+        resolve(validator, getConnection().getContext().getConfig().caseSensitive()); // resolve self and children
         // Create a dummy result so we can use its evaluator
         final Evaluator evaluator = RolapUtil.createEvaluator(statement);
         ExpCompiler compiler =
@@ -589,7 +588,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 for(int j = 0; j < subcubeAxisExps.size(); j++) {
                     Exp subcubeAxisExp = subcubeAxisExps.get(j);
                     subcubeAxisExp = subcubeAxisExp.accept(compiler.getValidator());
-                    Hierarchy[] subcubeAxisHierarchies = collectHierarchies(subcubeAxisExp);
+                    Hierarchy[] subcubeAxisHierarchies = collectHierarchies(subcubeAxisExp, getConnection().getContext().getConfig().caseSensitive());
                     if(Arrays.asList(subcubeAxisHierarchies).contains(hierarchy)) {
                         hierarchyExps.add(subcubeAxisExp);
                     }
@@ -633,7 +632,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
 
                     resultExp = resultExp.accept(compiler.getValidator());
 
-                    Calc calc = compiler.compileList(resultExp);
+                    Calc calc = compiler.compileList(resultExp, getConnection().getContext().getConfig().caseSensitive());
                     subcubeHierarchyCalcs.put(hierarchy, calc);
 
                 }
@@ -649,11 +648,11 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         if (axes != null) {
             axisCalcs = new Calc[axes.length];
             for (int i = 0; i < axes.length; i++) {
-                axisCalcs[i] = axes[i].compile(compiler, resultStyle);
+                axisCalcs[i] = axes[i].compile(compiler, resultStyle, getConnection().getContext().getConfig().caseSensitive());
             }
         }
         if (slicerAxis != null) {
-            slicerCalc = slicerAxis.compile(compiler, resultStyle);
+            slicerCalc = slicerAxis.compile(compiler, resultStyle, getConnection().getContext().getConfig().caseSensitive());
         }
     }
 
@@ -662,19 +661,19 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      *
      * @param validator Validator
      */
-    public void resolve(Validator validator) {
+    public void resolve(Validator validator, boolean caseSensitive) {
         // Register all parameters.
         parameters.clear();
         parametersByName.clear();
-        accept(new ParameterFinder());
+        accept(new ParameterFinder(), caseSensitive);
 
         // Register all aliased expressions ('expr AS alias') as named sets.
-        accept(new AliasedExpressionFinder());
+        accept(new AliasedExpressionFinder(), caseSensitive);
 
         // Validate formulas.
         if (formulas != null) {
             for (Formula formula : formulas) {
-                validator.validate(formula);
+                validator.validate(formula, caseSensitive);
             }
         }
 
@@ -713,7 +712,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         for (Hierarchy hierarchy : ((RolapCube) getCube()).getHierarchies()) {
             int useCount = 0;
             for (QueryAxis axis : allAxes()) {
-                if (axis.getSet().getType().usesHierarchy(hierarchy, true)) {
+                if (axis.getSet().getType(caseSensitive).usesHierarchy(hierarchy, true)) {
                     ++useCount;
                 }
             }
@@ -786,7 +785,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     }
 
     @Override
-	public void unparse(PrintWriter pw) {
+	public void unparse(PrintWriter pw, boolean caseSensitive) {
         if (formulas != null) {
             for (int i = 0; i < formulas.length; i++) {
                 if (i == 0) {
@@ -794,14 +793,14 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 } else {
                     pw.print("  ");
                 }
-                formulas[i].unparse(pw);
+                formulas[i].unparse(pw, getConnection().getContext().getConfig().caseSensitive());
                 pw.println();
             }
         }
         pw.print("select ");
         if (axes != null) {
             for (int i = 0; i < axes.length; i++) {
-                axes[i].unparse(pw);
+                axes[i].unparse(pw, getConnection().getContext().getConfig().caseSensitive());
                 if (i < axes.length - 1) {
                     pw.println(",");
                     pw.print("  ");
@@ -812,11 +811,11 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
         if (subcube != null) {
             pw.print("from ");
-            subcube.unparse(pw);
+            subcube.unparse(pw, getConnection().getContext().getConfig().caseSensitive());
         }
         if (slicerAxis != null) {
             pw.print("where ");
-            slicerAxis.unparse(pw);
+            slicerAxis.unparse(pw, getConnection().getContext().getConfig().caseSensitive());
             pw.println();
         }
     }
@@ -825,7 +824,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     @Override
 	public String toString() {
         resolve();
-        return Util.unparse(this);
+        //TODO UTILS
+        return Util.unparse(this, true);
     }
 
     @Override
@@ -879,8 +879,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      * <code>[Time].LastSibling</code> might return a member of either
      * [Time.Monthly] or [Time.Weekly].
      */
-    private Hierarchy[] collectHierarchies(Exp queryPart) {
-        Type exprType = queryPart.getType();
+    private Hierarchy[] collectHierarchies(Exp queryPart, boolean caseSensitive) {
+        Type exprType = queryPart.getType(getConnection().getContext().getConfig().caseSensitive());
         if (exprType instanceof SetType setType) {
             exprType = setType.getElementType();
         }
@@ -888,21 +888,21 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             final Type[] types = tupleType.elementTypes;
             ArrayList<Hierarchy> hierarchyList = new ArrayList<>();
             for (Type type : types) {
-                hierarchyList.add(getTypeHierarchy(type));
+                hierarchyList.add(getTypeHierarchy(type, caseSensitive));
             }
             return hierarchyList.toArray(new Hierarchy[hierarchyList.size()]);
         }
-        return new Hierarchy[] {getTypeHierarchy(exprType)};
+        return new Hierarchy[] {getTypeHierarchy(exprType, caseSensitive)};
     }
 
-    private Hierarchy getTypeHierarchy(final Type type) {
-        Hierarchy hierarchy = type.getHierarchy();
+    private Hierarchy getTypeHierarchy(final Type type, boolean caseSensitive) {
+        Hierarchy hierarchy = type.getHierarchy(caseSensitive);
         if (hierarchy != null) {
             return hierarchy;
         }
         final Dimension dimension = type.getDimension();
         if (dimension != null) {
-            return dimension.getHierarchy();
+            return dimension.getHierarchy(getConnection().getContext().getConfig().caseSensitive());
         }
         return null;
     }
@@ -938,7 +938,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 @Override
 				public Object execute() {
                     return quickParse(
-                        parameterName, param.getType(), value, QueryImpl.this);
+                        parameterName, param.getType(), value, QueryImpl.this, getConnection().getContext().getConfig().caseSensitive());
                 }
             }
         );
@@ -968,7 +968,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         String parameterName,
         Type type,
         Object value,
-        QueryImpl query)
+        QueryImpl query, boolean caseSensitive)
         throws NumberFormatException
     {
         int category = TypeUtil.typeToCategory(type);
@@ -1012,7 +1012,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                     continue;
                 }
                 final Member member =
-                    (Member) quickParse(parameterName, elementType, o, query);
+                    (Member) quickParse(parameterName, elementType, o, query, caseSensitive);
                 expList.add(member);
             }
             return expList;
@@ -1022,10 +1022,10 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 // the null member of the hierarchy. May not be equivalent to
                 // the default value of the parameter, nor the same as the all
                 // member.
-                if (type.getHierarchy() != null) {
-                    value = type.getHierarchy().getNullMember();
+                if (type.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()) != null) {
+                    value = type.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember();
                 } else if (type.getDimension() != null) {
-                    value = type.getDimension().getHierarchy().getNullMember();
+                    value = type.getDimension().getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember();
                 }
             }
             if (value instanceof String str) {
@@ -1052,7 +1052,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                     value = olapElement;
                 }
             }
-            if (value instanceof Member && type.isInstance(value)) {
+            if (value instanceof Member && type.isInstance(value, caseSensitive)) {
                 return value;
             }
             throw Util.newInternal(
@@ -1116,13 +1116,13 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      * Looks up a member whose unique name is <code>memberUniqueName</code>
      * from cache. If the member is not in cache, returns null.
      */
-    public Member lookupMemberFromCache(String memberUniqueName) {
+    public Member lookupMemberFromCache(String memberUniqueName, boolean caseSensitive) {
         // first look in defined members
         for (Member member : getDefinedMembers()) {
-            if (Util.equalName(member.getUniqueName(), memberUniqueName)
+            if (Util.equalName(member.getUniqueName(), memberUniqueName, caseSensitive)
                 || Util.equalName(
-                    getUniqueNameWithoutAll(member),
-                    memberUniqueName))
+                    getUniqueNameWithoutAll(member, caseSensitive),
+                    memberUniqueName, caseSensitive))
             {
                 return member;
             }
@@ -1130,15 +1130,15 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         return null;
     }
 
-    private String getUniqueNameWithoutAll(Member member) {
+    private String getUniqueNameWithoutAll(Member member, boolean caseSensitive) {
         // build unique string
         Member parentMember = member.getParentMember();
         if ((parentMember != null) && !parentMember.isAll()) {
             return Util.makeFqName(
-                getUniqueNameWithoutAll(parentMember),
-                member.getName());
+                getUniqueNameWithoutAll(parentMember, caseSensitive),
+                member.getName(caseSensitive));
         } else {
-            return Util.makeFqName(member.getHierarchy(), member.getName());
+            return Util.makeFqName(member.getHierarchy(caseSensitive), member.getName(caseSensitive));
         }
     }
 
@@ -1183,7 +1183,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      */
     ScopedNamedSet lookupScopedNamedSet(
         List<Segment> nameParts,
-        ArrayStack<QueryPart> scopeList)
+        ArrayStack<QueryPart> scopeList, boolean caseSensitive)
     {
         if (nameParts.size() != 1) {
             return null;
@@ -1195,7 +1195,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         ScopedNamedSet bestScopedNamedSet = null;
         int bestScopeOrdinal = -1;
         for (ScopedNamedSet scopedNamedSet : scopedNamedSets) {
-            if (Util.equalName(scopedNamedSet.name, name)) {
+            if (Util.equalName(scopedNamedSet.name, name, caseSensitive)) {
                 int scopeOrdinal = scopeList.indexOf(scopedNamedSet.scope);
                 if (scopeOrdinal > bestScopeOrdinal) {
                     bestScopedNamedSet = scopedNamedSet;
@@ -1225,7 +1225,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      * true, checks and throws an error if formula is used somewhere in the
      * query.
      */
-    public void removeFormula(String uniqueName, boolean failIfUsedInQuery) {
+    public void removeFormula(String uniqueName, boolean failIfUsedInQuery, boolean caseSensitive) {
         Formula formula = findFormula(uniqueName);
         if (failIfUsedInQuery && formula != null) {
             OlapElement mdxElement = formula.getElement();
@@ -1279,7 +1279,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 }
                 throw MondrianResource.instance()
                     .MdxCalculatedFormulaUsedInQuery.ex(
-                        formulaType, uniqueName, Util.unparse(this));
+                        formulaType, uniqueName, Util.unparse(this, caseSensitive));
             }
         }
 
@@ -1349,11 +1349,11 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     /**
      * Finds formula by name and renames it to new name.
      */
-    public void renameFormula(String uniqueName, String newName) {
+    public void renameFormula(String uniqueName, String newName, boolean caseSensitive) {
         Formula formula = findFormula(uniqueName);
         if (formula == null) {
             throw MondrianResource.instance().MdxFormulaNotFound.ex(
-                "formula", uniqueName, Util.unparse(this));
+                "formula", uniqueName, Util.unparse(this, caseSensitive));
         }
         formula.rename(newName);
     }
@@ -1386,7 +1386,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      * Returns <code>Hierarchy[]</code> used on <code>axis</code>. It calls
      * {@link #collectHierarchies}.
      */
-    public Hierarchy[] getMdxHierarchiesOnAxis(AxisOrdinal axis) {
+    public Hierarchy[] getMdxHierarchiesOnAxis(AxisOrdinal axis, boolean caseSensitive) {
         if (axis.logicalOrdinal() >= axes.length) {
             throw MondrianResource.instance().MdxAxisShowSubtotalsNotSupported
                 .ex(axis.logicalOrdinal());
@@ -1395,14 +1395,14 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             axis.isFilter()
             ? slicerAxis
             : axes[axis.logicalOrdinal()];
-        return collectHierarchies(queryAxis.getSet());
+        return collectHierarchies(queryAxis.getSet(), caseSensitive);
     }
 
-    public Hierarchy[] getMdxHierarchiesOnAxis(QueryAxisImpl axis) {
+    public Hierarchy[] getMdxHierarchiesOnAxis(QueryAxisImpl axis, boolean caseSensitive) {
         if(axis == null) {
             return new Hierarchy[0];
         }
-        return collectHierarchies(axis.getSet());
+        return collectHierarchies(axis.getSet(), caseSensitive);
     }
 
     /**
@@ -1432,9 +1432,9 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             createCompiler(
                 evaluator, validator, resultStyleList);
         if (scalar) {
-            return compiler.compileScalar(exp, false);
+            return compiler.compileScalar(exp, false, getConnection().getContext().getConfig().caseSensitive());
         } else {
-            return compiler.compile(exp);
+            return compiler.compile(exp, getConnection().getContext().getConfig().caseSensitive());
         }
     }
 
@@ -1530,20 +1530,20 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         return baseCubes;
     }
 
-    public Object accept(MdxVisitor visitor) {
+    public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         Object o = visitor.visit(this);
 
         if (visitor.shouldVisitChildren()) {
             // visit formulas
             for (Formula formula : formulas) {
-                formula.accept(visitor);
+                formula.accept(visitor, caseSensitive);
             }
             // visit axes
             for (QueryAxis axis : axes) {
-                axis.accept(visitor);
+                axis.accept(visitor, caseSensitive);
             }
             if (slicerAxis != null) {
-                slicerAxis.accept(visitor);
+                slicerAxis.accept(visitor, caseSensitive);
             }
         }
         return o;
@@ -1624,7 +1624,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             MatchType matchType)
         {
             final String uniqueName = Util.implode(uniqueNameParts);
-            Member member = query.lookupMemberFromCache(uniqueName);
+            Member member = query.lookupMemberFromCache(uniqueName, getContext().getConfig().caseSensitive());
             if (member == null) {
                 // Not a calculated member in the query, so go to the cube.
                 member = schemaReader.getMemberByUniqueName(
@@ -1667,7 +1667,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 members = Util.addLevelCalculatedMembers(this, level, members);
             }
 
-            Hierarchy hierarchy = level.getHierarchy();
+            Hierarchy hierarchy = level.getHierarchy(getContext().getConfig().caseSensitive());
             if(query.subcubeHierarchies.containsKey(hierarchy)) {
                 ArrayList<Member> newMembers = new ArrayList<>();
                 HashMap<Member, Member> subcubeMembers = query.subcubeHierarchies.get(hierarchy);
@@ -1742,7 +1742,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 if (member == null) {
                     continue;
                 }
-                if (!Util.matches(member, nameParts)) {
+                if (!Util.matches(member, nameParts, getContext().getConfig().caseSensitive())) {
                     continue;
                 }
                 if (!query.getConnection().getRole().canAccess(member)) {
@@ -1764,7 +1764,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             result.addAll(calculatedMembers);
             // Add calculated members defined in the query.
             for (Member member : query.getDefinedMembers()) {
-                if (member.getHierarchy().equals(hierarchy)) {
+                if (member.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).equals(hierarchy)) {
                     result.add(member);
                 }
             }
@@ -1774,7 +1774,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         @Override
 		public List<Member> getCalculatedMembers(Level level) {
             List<Member> hierarchyMembers =
-                getCalculatedMembers(level.getHierarchy());
+                getCalculatedMembers(level.getHierarchy(getContext().getConfig().caseSensitive()));
             List<Member> result = new ArrayList<>();
             for (Member member : hierarchyMembers) {
                 if (member.getLevel().equals(level)) {
@@ -1820,7 +1820,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 }
                 Id id = formula.getIdentifier();
                 if (id.getSegments().size() == 1
-                    && id.getSegments().get(0).matches(name))
+                    && id.getSegments().get(0).matches(name, getContext().getConfig().caseSensitive()))
                 {
                     return formula.getNamedSet();
                 }
@@ -1863,14 +1863,14 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 parent, names, failIfNotFound, category, matchType);
             if (olapElement instanceof Member member) {
                 final Formula formula = (Formula)
-                    member.getPropertyValue(Property.FORMULA.name);
+                    member.getPropertyValue(Property.FORMULA.name, getContext().getConfig().caseSensitive());
                 if (formula != null) {
                     // This is a calculated member defined against the cube.
                     // Create a free-standing formula using the same
                     // expression, then use the member defined in that formula.
                     final Formula formulaClone = new FormulaImpl(formula);
                     formulaClone.createElement(query);
-                    formulaClone.accept(query.createValidator());
+                    formulaClone.accept(query.createValidator(), getContext().getConfig().caseSensitive());
                     olapElement = formulaClone.getMdxMember();
                 }
             }
@@ -1926,7 +1926,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             // Only look for calculated members and named sets defined in the
             // query.
             for (Formula formula : query.getFormulas()) {
-                if (NameResolver.matches(formula, parent, segment)) {
+                if (NameResolver.matches(formula, parent, segment, getContext().getConfig().caseSensitive())) {
                     return formula.getElement();
                 }
             }
@@ -2104,7 +2104,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             if ( Category.SET == category || Category.UNKNOWN == category ) {
                 final ScopedNamedSet namedSet =
                     queryValidator.getQuery().lookupScopedNamedSet(
-                        names, queryValidator.getScopeStack());
+                        names, queryValidator.getScopeStack(), getContext().getConfig().caseSensitive());
                 if (namedSet != null) {
                     return namedSet;
                 }
@@ -2133,7 +2133,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             }
             return queryValidator.getQuery().lookupScopedNamedSet(
                 Collections.singletonList(Util.convert(segment)),
-                queryValidator.getScopeStack());
+                queryValidator.getScopeStack(), getContext().getConfig().caseSensitive());
         }
     }
 
@@ -2157,7 +2157,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public String getName() {
+		public String getName(boolean caseSensitive) {
             return name;
         }
 
@@ -2186,8 +2186,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public Type getType() {
-            return expr.getType();
+		public Type getType(boolean caseSensitive) {
+            return expr.getType(caseSensitive);
         }
 
         @Override
@@ -2196,9 +2196,9 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public NamedSet validate(Validator validator) {
+		public NamedSet validate(Validator validator, boolean caseSensitive) {
             Exp newExpr = expr.accept(validator);
-            final Type type = newExpr.getType();
+            final Type type = newExpr.getType(caseSensitive);
             if (type instanceof MemberType
                 || type instanceof TupleType)
             {
@@ -2218,7 +2218,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public String getDescription() {
+		public String getDescription(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -2235,7 +2235,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public String getCaption() {
+		public String getCaption(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -2245,17 +2245,17 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public Hierarchy getHierarchy() {
+		public Hierarchy getHierarchy(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-		public Dimension getDimension() {
+		public Dimension getDimension(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-		public String getLocalized(LocalizedProperty prop, Locale locale) {
+		public String getLocalized(LocalizedProperty prop, Locale locale, boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -2266,7 +2266,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      */
     private class ParameterFinder extends MdxVisitorImpl {
         @Override
-		public Object visit(ParameterExpression parameterExpr) {
+		public Object visit(ParameterExpression parameterExpr, boolean c) {
             Parameter parameter = parameterExpr.getParameter();
             if (!parameters.contains(parameter)) {
                 parameters.add(parameter);
@@ -2308,7 +2308,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     private class AliasedExpressionFinder extends MdxVisitorImpl {
         @Override
         public Object visit(QueryAxisImpl queryAxis) {
-            registerAlias(queryAxis, queryAxis.getSet());
+            registerAlias(queryAxis, queryAxis.getSet(), getConnection().getContext().getConfig().caseSensitive());
             return super.visit(queryAxis);
         }
 
@@ -2319,9 +2319,9 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public Object visit(ResolvedFunCallImpl call) {
+		public Object visit(ResolvedFunCallImpl call, boolean c) {
             registerAliasArgs(call);
-            return super.visit(call);
+            return super.visit(call, c);
         }
 
         /**
@@ -2331,7 +2331,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
          */
         private void registerAliasArgs(FunCall call) {
             for (Exp exp : call.getArgs()) {
-                registerAlias((QueryPart) call, exp);
+                registerAlias((QueryPart) call, exp, getConnection().getContext().getConfig().caseSensitive());
             }
         }
 
@@ -2342,7 +2342,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
          * @param parent Parent node
          * @param exp Expression that may be an "AS"
          */
-        private void registerAlias(QueryPart parent, Exp exp) {
+        private void registerAlias(QueryPart parent, Exp exp, boolean caseSensitive) {
             if (exp instanceof FunCall call2 && call2.getSyntax() == Syntax.Infix
                 && call2.getFunName().equals("AS")) {
                 // Scope is the function enclosing the 'AS' expression.
@@ -2358,7 +2358,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                         call2.getArg(0));
                 } else if (call2.getArg(1) instanceof NamedSetExpression set) {
                     createScopedNamedSet(
-                        set.getNamedSet().getName(),
+                        set.getNamedSet().getName(caseSensitive),
                         parent,
                         call2.getArg(0));
                 }

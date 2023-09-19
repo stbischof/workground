@@ -26,7 +26,7 @@ public interface Hierarchy extends OlapElement, MetaElement {
      * Returns the dimension this hierarchy belongs to.
      */
     @Override
-	Dimension getDimension();
+	Dimension getDimension(boolean caseSensitive);
     /**
      * Returns the levels in this hierarchy.
      *

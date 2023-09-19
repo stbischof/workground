@@ -47,39 +47,39 @@ class CaseMatchFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final Exp[] args = call.getArgs();
         final List<Calc> calcList = new ArrayList<>();
         final Calc valueCalc =
-                compiler.compileScalar(args[0], true);
+                compiler.compileScalar(args[0], true, caseSensitive);
         calcList.add(valueCalc);
         final int matchCount = (args.length - 1) / 2;
         final Calc[] matchCalcs = new Calc[matchCount];
         final Calc[] exprCalcs = new Calc[matchCount];
         for (int i = 0, j = 1; i < exprCalcs.length; i++) {
-            matchCalcs[i] = compiler.compileScalar(args[j++], true);
+            matchCalcs[i] = compiler.compileScalar(args[j++], true, caseSensitive);
             calcList.add(matchCalcs[i]);
-            exprCalcs[i] = compiler.compile(args[j++]);
+            exprCalcs[i] = compiler.compile(args[j++], caseSensitive);
             calcList.add(exprCalcs[i]);
         }
         final Calc defaultCalc =
             args.length % 2 == 0
-            ? compiler.compile(args[args.length - 1])
+            ? compiler.compile(args[args.length - 1], caseSensitive)
             : ConstantCalcs.nullCalcOf(call.getType());
         calcList.add(defaultCalc);
         final Calc[] calcs = calcList.toArray(new Calc[calcList.size()]);
 
         return new GenericCalc(call.getType()) {
             @Override
-			public Object evaluate(Evaluator evaluator) {
-                Object value = valueCalc.evaluate(evaluator);
+			public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
+                Object value = valueCalc.evaluate(evaluator, caseSensitive);
                 for (int i = 0; i < matchCalcs.length; i++) {
-                    Object match = matchCalcs[i].evaluate(evaluator);
+                    Object match = matchCalcs[i].evaluate(evaluator, caseSensitive);
                     if (match.equals(value)) {
-                        return exprCalcs[i].evaluate(evaluator);
+                        return exprCalcs[i].evaluate(evaluator, caseSensitive);
                     }
                 }
-                return defaultCalc.evaluate(evaluator);
+                return defaultCalc.evaluate(evaluator, caseSensitive);
             }
 
             @Override
@@ -102,7 +102,7 @@ class CaseMatchFunDef extends FunDefBase {
 		public FunctionDefinition resolve(
             Exp[] args,
             Validator validator,
-            List<Conversion> conversions)
+            List<Conversion> conversions, boolean caseSensitive)
         {
             if (args.length < 3) {
                 return null;
@@ -112,23 +112,23 @@ class CaseMatchFunDef extends FunDefBase {
             int j = 0;
             int clauseCount = (args.length - 1) / 2;
             int mismatchingArgs = 0;
-            if (!validator.canConvert(j, args[j++], valueType, conversions)) {
+            if (!validator.canConvert(j, args[j++], valueType, conversions, caseSensitive)) {
                 mismatchingArgs++;
             }
             for (int i = 0; i < clauseCount; i++) {
-                if (!validator.canConvert(j, args[j++], valueType, conversions))
+                if (!validator.canConvert(j, args[j++], valueType, conversions, caseSensitive))
                 {
                     mismatchingArgs++;
                 }
                 if (!validator.canConvert(
-                        j, args[j++], returnType, conversions))
+                        j, args[j++], returnType, conversions, caseSensitive))
                 {
                     mismatchingArgs++;
                 }
             }
 
             if (j < args.length && !validator.canConvert(
-                        j, args[j++], returnType, conversions)) {
+                        j, args[j++], returnType, conversions, caseSensitive)) {
                     mismatchingArgs++;
             }
 

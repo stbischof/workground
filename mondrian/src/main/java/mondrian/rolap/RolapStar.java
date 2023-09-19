@@ -1603,7 +1603,7 @@ public class RolapStar {
         {
             if (relationOrJoin instanceof Relation relationInner) {
                 RolapStar.Table starTable =
-                    findChild(relationInner, joinCondition);
+                    findChild(relationInner, joinCondition, cube.getContext().getConfig().caseSensitive());
                 if (starTable == null) {
                     starTable = new RolapStar.Table(
                         star, relationInner, this, joinCondition);
@@ -1665,12 +1665,12 @@ public class RolapStar {
          */
         public Table findChild(
             Relation relation,
-            Condition joinCondition)
+            Condition joinCondition, boolean caseSensitive)
         {
             for (Table child : getChildren()) {
                 if (child.relation.equals(relation)) {
                     Condition condition = joinCondition;
-                    if (!Util.equalName(RelationUtil.getAlias(relation), child.alias)) {
+                    if (!Util.equalName(RelationUtil.getAlias(relation), child.alias, caseSensitive)) {
                         // Make the two conditions comparable, by replacing
                         // occurrence of this table's alias with occurrences
                         // of the child's alias.

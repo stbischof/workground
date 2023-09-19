@@ -107,7 +107,7 @@ public class RolapNativeSql {
          * @param exp Expression
          * @return SQL, or null if cannot be converted into SQL
          */
-        StringBuilder compile(Exp exp);
+        StringBuilder compile(Exp exp, boolean caseSensitive);
     }
 
     /**
@@ -122,9 +122,9 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             for (SqlCompiler compiler : compilers) {
-                StringBuilder s = compiler.compile(exp);
+                StringBuilder s = compiler.compile(exp, caseSensitive);
                 if (s != null) {
                     return s;
                 }
@@ -143,7 +143,7 @@ public class RolapNativeSql {
      */
     class NumberSqlCompiler implements SqlCompiler {
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             if (!(exp instanceof Literal)) {
                 return null;
             }
@@ -182,7 +182,7 @@ public class RolapNativeSql {
     class StoredMeasureSqlCompiler extends MemberSqlCompiler {
 
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             exp = unwind(exp);
             if (!(exp instanceof MemberExpression)) {
                 return null;
@@ -249,7 +249,7 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             if (!match(exp)) {
                 return null;
             }
@@ -266,7 +266,7 @@ public class RolapNativeSql {
             // Must finish by ".Caption" or ".Name"
             if (!(arg0 instanceof ResolvedFunCallImpl)
                 || ((ResolvedFunCallImpl)arg0).getArgCount() != 1
-                || !(arg0.getType() instanceof StringType)
+                || !(arg0.getType(caseSensitive) instanceof StringType)
                 || (!((ResolvedFunCallImpl)arg0).getFunName().equals("Name")
                     && !((ResolvedFunCallImpl)arg0)
                             .getFunName().equals("Caption")))
@@ -285,7 +285,7 @@ public class RolapNativeSql {
             final Exp currMemberExpr = ((ResolvedFunCallImpl)arg0).getArg(0);
             if (!(currMemberExpr instanceof ResolvedFunCallImpl)
                 || ((ResolvedFunCallImpl)currMemberExpr).getArgCount() != 1
-                || !(currMemberExpr.getType() instanceof MemberType)
+                || !(currMemberExpr.getType(caseSensitive) instanceof MemberType)
                 || !((ResolvedFunCallImpl)currMemberExpr)
                         .getFunName().equals("CurrentMember"))
             {
@@ -298,16 +298,16 @@ public class RolapNativeSql {
             if (dimExpr instanceof DimensionExpression) {
                 dimension =
                     (RolapCubeDimension) evaluator.getCachedResult(
-                        new ExpCacheDescriptor(dimExpr, evaluator));
+                        new ExpCacheDescriptor(dimExpr, evaluator, caseSensitive));
             } else if (dimExpr instanceof HierarchyExpressionImpl) {
                 final RolapCubeHierarchy hierarchy =
                     (RolapCubeHierarchy) evaluator.getCachedResult(
-                        new ExpCacheDescriptor(dimExpr, evaluator));
+                        new ExpCacheDescriptor(dimExpr, evaluator, caseSensitive));
                 dimension = (RolapCubeDimension) hierarchy.getDimension();
             } else if (dimExpr instanceof LevelExpression) {
                 final RolapCubeLevel level =
                     (RolapCubeLevel) evaluator.getCachedResult(
-                        new ExpCacheDescriptor(dimExpr, evaluator));
+                        new ExpCacheDescriptor(dimExpr, evaluator, caseSensitive));
                 dimension = level.getDimension();
             } else {
                 return null;
@@ -373,7 +373,7 @@ public class RolapNativeSql {
                         sourceExp,
                         String.valueOf(
                             evaluator.getCachedResult(
-                                new ExpCacheDescriptor(arg1, evaluator))));
+                                new ExpCacheDescriptor(arg1, evaluator, caseSensitive))));
             } else {
                 return null;
             }
@@ -395,7 +395,7 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             exp = unwind(exp);
             if (!(exp instanceof MemberExpression)) {
                 return null;
@@ -408,7 +408,7 @@ public class RolapNativeSql {
             if (exp == null) {
                 return null;
             }
-            return compiler.compile(exp);
+            return compiler.compile(exp, caseSensitive);
         }
 
         @Override
@@ -457,14 +457,14 @@ public class RolapNativeSql {
          * @return array of expressions or null if either exp does not match or
          * any argument could not be compiled.
          */
-        protected StringBuilder[] compileArgs(Exp exp, SqlCompiler compiler) {
+        protected StringBuilder[] compileArgs(Exp exp, SqlCompiler compiler, boolean caseSensitive) {
             if (!match(exp)) {
                 return null;
             }
             Exp[] args = ((FunCall) exp).getArgs();
             StringBuilder[] sqls = new StringBuilder[args.length];
             for (int i = 0; i < args.length; i++) {
-                sqls[i] = compiler.compile(args[i]);
+                sqls[i] = compiler.compile(args[i], caseSensitive);
                 if (sqls[i] == null) {
                     return null;
                 }
@@ -490,8 +490,8 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
-            StringBuilder[] args = compileArgs(exp, compiler);
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
+            StringBuilder[] args = compileArgs(exp, compiler, caseSensitive);
             if (args == null) {
                 return null;
             }
@@ -565,8 +565,8 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
-            StringBuilder[] args = compileArgs(exp, compiler);
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
+            StringBuilder[] args = compileArgs(exp, compiler, caseSensitive);
             if (args == null) {
                 return null;
             }
@@ -595,8 +595,8 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
-            StringBuilder[] args = compileArgs(exp, compiler);
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
+            StringBuilder[] args = compileArgs(exp, compiler, caseSensitive);
             if (args == null) {
                 return null;
             }
@@ -623,14 +623,14 @@ public class RolapNativeSql {
         }
 
         @Override
-		public StringBuilder compile(Exp exp) {
+		public StringBuilder compile(Exp exp, boolean caseSensitive) {
             if (!match(exp)) {
                 return null;
             }
             Exp[] args = ((FunCall) exp).getArgs();
-            StringBuilder cond = booleanCompiler.compile(args[0]);
-            StringBuilder val1 = valueCompiler.compile(args[1]);
-            StringBuilder val2 = valueCompiler.compile(args[2]);
+            StringBuilder cond = booleanCompiler.compile(args[0], caseSensitive);
+            StringBuilder val1 = valueCompiler.compile(args[1], caseSensitive);
+            StringBuilder val2 = valueCompiler.compile(args[2], caseSensitive);
             if (cond == null || val1 == null || val2 == null) {
                 return null;
             }
@@ -723,12 +723,12 @@ public class RolapNativeSql {
      * TopCount. The returned expr will be added to the select list and to the
      * order by clause.
      */
-    public StringBuilder generateTopCountOrderBy(Exp exp) {
-        return numericCompiler.compile(exp);
+    public StringBuilder generateTopCountOrderBy(Exp exp, boolean caseSensitive) {
+        return numericCompiler.compile(exp, caseSensitive);
     }
 
-    public StringBuilder generateFilterCondition(Exp exp) {
-    	return booleanCompiler.compile(exp);
+    public StringBuilder generateFilterCondition(Exp exp, boolean caseSensitive) {
+    	return booleanCompiler.compile(exp, caseSensitive);
     }
 
     public RolapStoredMeasure getStoredMeasure() {

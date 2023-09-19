@@ -114,7 +114,7 @@ public abstract class DimensionBase
     {
         OlapElement oe = null;
         if (s instanceof NameSegment nameSegment) {
-            oe = lookupHierarchy(nameSegment);
+            oe = lookupHierarchy(nameSegment, schemaReader.getContext().getConfig().caseSensitive());
         }
 
         // Original mondrian behavior:
@@ -155,9 +155,9 @@ public abstract class DimensionBase
         return this.highCardinality;
     }
 
-    private Hierarchy lookupHierarchy(NameSegment s) {
+    private Hierarchy lookupHierarchy(NameSegment s, boolean caseSensitive) {
         for (Hierarchy hierarchy : hierarchies) {
-            if (Util.equalName(hierarchy.getName(), s.getName())) {
+            if (Util.equalName(hierarchy.getName(), s.getName(), caseSensitive)) {
                 return hierarchy;
             }
         }

@@ -24,6 +24,7 @@ import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.db.mysql.MySqlDialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.ContextConfig;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 
 public class MysqlContext implements Context {
@@ -87,7 +88,12 @@ public class MysqlContext implements Context {
         return Optional.empty();
     }
 
-	@Override
+    @Override
+    public ContextConfig getConfig() {
+        return null;
+    }
+
+    @Override
 	public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
 		return null;
 	}

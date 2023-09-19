@@ -268,13 +268,13 @@ public abstract class FunDefBase implements FunctionDefinition {
     }
 
     @Override
-	public Exp createCall(Validator validator, Exp[] args) {
+	public Exp createCall(Validator validator, Exp[] args, boolean caseSensitive) {
         int[] categories = getParameterCategories();
         Util.assertTrue(categories.length == args.length);
         for (int i = 0; i < args.length; i++) {
             args[i] = validateArg(validator, args, i, categories[i]);
         }
-        final Type type = getResultType(validator, args);
+        final Type type = getResultType(validator, args, caseSensitive);
         if (type == null) {
             throw Util.newInternal("could not derive type");
         }
@@ -406,10 +406,10 @@ public abstract class FunDefBase implements FunctionDefinition {
      * @param args Arguments to the call to this operator
      * @return result type of a call this function
      */
-    public Type getResultType(Validator validator, Exp[] args) {
+    public Type getResultType(Validator validator, Exp[] args, boolean caseSensitive) {
         Type firstArgType =
             args.length > 0
-            ? args[0].getType()
+            ? args[0].getType(caseSensitive)
             : null;
         Type type = FunDefBase.castType(firstArgType, getReturnCategory());
         if (type != null) {
@@ -421,7 +421,7 @@ public abstract class FunDefBase implements FunctionDefinition {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         throw Util.newInternal(
             new StringBuilder("function '").append( getSignature())
                 .append("' has not been implemented").toString());
@@ -436,7 +436,7 @@ public abstract class FunDefBase implements FunctionDefinition {
     }
 
     @Override
-	public void unparse(Exp[] args, PrintWriter pw) {
-        getSyntax().unparse(getName(), args, pw);
+	public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
+        getSyntax().unparse(getName(), args, pw, caseSensitive);
     }
 }

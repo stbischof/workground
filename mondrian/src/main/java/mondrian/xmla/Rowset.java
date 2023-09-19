@@ -169,11 +169,11 @@ abstract class Rowset implements XmlaConstants {
     /**
      * Writes the contents of this rowset as a series of SAX events.
      */
-    public final void unparse(XmlaResponse response)
+    public final void unparse(XmlaResponse response, boolean caseSensitive)
         throws XmlaException, SQLException
     {
         final List<Row> rows = new ArrayList<>();
-        populate(response, null, rows);
+        populate(response, null, rows, caseSensitive);
         final Comparator<Row> comparator = rowsetDefinition.getComparator();
         if (comparator != null) {
             Collections.sort(rows, comparator);
@@ -181,7 +181,7 @@ abstract class Rowset implements XmlaConstants {
         final SaxWriter writer = response.getWriter();
         writer.startSequence(null, "row");
         for (Row row : rows) {
-            emit(row, response);
+            emit(row, response, caseSensitive);
         }
         writer.endSequence();
     }
@@ -192,7 +192,7 @@ abstract class Rowset implements XmlaConstants {
     public final void populate(
         XmlaResponse response,
         OlapConnection connection,
-        List<Row> rows)
+        List<Row> rows, boolean caseSensitive)
         throws XmlaException
     {
         boolean ourConnection = false;
@@ -201,7 +201,7 @@ abstract class Rowset implements XmlaConstants {
                 connection = handler.getConnection(request, extraProperties);
                 ourConnection = true;
             }
-            populateImpl(response, connection, rows);
+            populateImpl(response, connection, rows, caseSensitive);
         } catch (SQLException e) {
             throw new XmlaException(
                 UNKNOWN_ERROR_CODE,
@@ -229,7 +229,7 @@ abstract class Rowset implements XmlaConstants {
     protected abstract void populateImpl(
         XmlaResponse response,
         OlapConnection connection,
-        List<Row> rows)
+        List<Row> rows, boolean caseSensitive)
         throws XmlaException, SQLException;
 
     /**
@@ -254,7 +254,7 @@ abstract class Rowset implements XmlaConstants {
      * @param row Row
      * @param response XMLA response writer
      */
-    protected void emit(Row row, XmlaResponse response)
+    protected void emit(Row row, XmlaResponse response, boolean caseSensitive)
         throws XmlaException, SQLException
     {
         SaxWriter writer = response.getWriter();
@@ -298,10 +298,10 @@ abstract class Rowset implements XmlaConstants {
                 }
             } else if (value instanceof Rowset rowset) {
                 final List<Row> rows = new ArrayList<>();
-                rowset.populate(response, null, rows);
+                rowset.populate(response, null, rows, caseSensitive);
                 writer.startSequence(column.name, "row");
                 for (Row row1 : rows) {
-                    rowset.emit(row1, response);
+                    rowset.emit(row1, response, caseSensitive);
                 }
                 writer.endSequence();
             } else {

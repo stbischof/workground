@@ -39,7 +39,7 @@ public interface Exp {
     /**
      * Returns the type of this expression. Never null.
      */
-    Type getType();
+    Type getType(boolean caseSensitive);
 
     /**
      * Writes the MDX representation of this expression to a print writer.
@@ -47,7 +47,7 @@ public interface Exp {
      *
      * @param pw PrintWriter
      */
-    void unparse(PrintWriter pw);
+    void unparse(PrintWriter pw, boolean caseSensitive);
 
     /**
      * Validates this expression.
@@ -60,7 +60,7 @@ public interface Exp {
      * @return The validated expression; often but not always the same as
      *   this expression
      */
-    Exp accept(Validator validator);
+    Exp accept(Validator validator, boolean caseSensitive);
 
     /**
      * Converts this expression into an a tree of expressions which can be
@@ -69,7 +69,7 @@ public interface Exp {
      * @param compiler
      * @return A compiled expression
      */
-    Calc accept(ExpCompiler compiler);
+    Calc accept(ExpCompiler compiler, boolean caseSensitive);
 
     /**
      * Accepts a visitor to this Exp.
@@ -78,5 +78,5 @@ public interface Exp {
      *
      * @param visitor Visitor
      */
-    Object accept(MdxVisitor visitor);
+    Object accept(MdxVisitor visitor, boolean caseSensitive);
 }

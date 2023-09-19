@@ -61,8 +61,8 @@ implements TupleListCalc, TupleIteratorCalc
     }
 
     @Override
-    public TupleList evaluateList(Evaluator evaluator) {
-        final Object o = evaluate(evaluator);
+    public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
+        final Object o = evaluate(evaluator, caseSensitive);
         if (o instanceof TupleList tupleList) {
             return tupleList;
         }
@@ -78,8 +78,8 @@ implements TupleListCalc, TupleIteratorCalc
     }
 
     @Override
-    public TupleIterable evaluateIterable(Evaluator evaluator) {
-        final Object o = evaluate(evaluator);
+    public TupleIterable evaluateIterable(Evaluator evaluator, boolean caseSensitive) {
+        final Object o = evaluate(evaluator, caseSensitive);
         return (TupleIterable) o;
     }
 

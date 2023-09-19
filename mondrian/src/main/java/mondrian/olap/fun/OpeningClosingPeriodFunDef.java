@@ -95,7 +95,7 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final Exp[] args = call.getArgs();
         final LevelCalc levelCalc;
         final MemberCalc memberCalc;
@@ -115,16 +115,16 @@ class OpeningClosingPeriodFunDef extends FunDefBase {
             defaultTimeHierarchy =
                 ((RolapCube) compiler.getEvaluator().getCube())
                     .getTimeHierarchy(getName());
-            levelCalc = compiler.compileLevel(call.getArg(0));
+            levelCalc = compiler.compileLevel(call.getArg(0), caseSensitive);
             memberCalc =
                 new HierarchyCurrentMemberFunDef.CurrentMemberFixedCalc(
-                    
+
                         MemberType.forHierarchy(defaultTimeHierarchy),
                     defaultTimeHierarchy);
             break;
         default:
-            levelCalc = compiler.compileLevel(call.getArg(0));
-            memberCalc = compiler.compileMember(call.getArg(1));
+            levelCalc = compiler.compileLevel(call.getArg(0), caseSensitive);
+            memberCalc = compiler.compileMember(call.getArg(1), caseSensitive);
             break;
         }
 

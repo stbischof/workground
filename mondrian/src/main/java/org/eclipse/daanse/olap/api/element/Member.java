@@ -7,7 +7,7 @@
  * Copyright (C) 1999-2005 Julian Hyde
  * Copyright (C) 2005-2020 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
  */
@@ -55,7 +55,7 @@ public interface Member extends OlapElement, Comparable, MetaElement {
   Level getLevel();
 
   @Override
-Hierarchy getHierarchy();
+Hierarchy getHierarchy(boolean caseSensitive);
 
   /**
    * Returns name of parent member, or empty string (not null) if we are the root.
@@ -70,7 +70,7 @@ Hierarchy getHierarchy();
   /**
    * @return True when the member is a leaf member, meaning it has no children
    */
-  boolean isParentChildLeaf();
+  boolean isParentChildLeaf(boolean caseSensitive);
 
   /**
    * @return True when the member is part of a Parent-Child hierarchy and it is a physical member. In a Parent Child
@@ -144,7 +144,7 @@ Hierarchy getHierarchy();
    * @deprecated Use {@link SchemaReader#getMemberAncestors(Member, java.util.List)}.
    */
   @Deprecated
-List<Member> getAncestorMembers();
+List<Member> getAncestorMembers(boolean caseSensitive);
 
   /**
    * Returns whether this member is computed from a {@code WITH MEMBER} clause in an MDX query.
@@ -154,24 +154,24 @@ List<Member> getAncestorMembers();
   /**
    * Returns the value of the property named <code>propertyName</code>. Name match is case-sensitive.
    */
-  Object getPropertyValue( String propertyName );
+  Object getPropertyValue( String propertyName, boolean caseSensitive );
 
   /**
    * Returns the value of the property named <code>propertyName</code>, matching according to the required
    * case-sensitivity.
    */
-  Object getPropertyValue( String propertyName, boolean matchCase );
+  Object getPropertyValue( String propertyName, boolean matchCase, boolean caseSensitive );
 
   /**
    * Returns the formatted value of the property named
    * <code>propertyName</code>.
    */
-  String getPropertyFormattedValue( String propertyName );
+  String getPropertyFormattedValue( String propertyName, boolean caseSensitive );
 
   /**
    * Sets a property of this member to a given value.
    */
-  void setProperty( String name, Object value );
+  void setProperty( String name, Object value, boolean caseSensitive );
 
   /**
    * Returns the definitions of the properties this member may have.
@@ -191,7 +191,7 @@ List<Member> getAncestorMembers();
   /**
    * Returns whether this member is 'hidden', as per the rules which define a ragged hierarchy.
    */
-  boolean isHidden();
+  boolean isHidden(boolean caseSensitive);
 
   /**
    * returns the depth of this member, which is not the level's depth in case of parent child dimensions

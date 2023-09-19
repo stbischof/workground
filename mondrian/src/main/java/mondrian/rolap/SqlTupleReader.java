@@ -548,7 +548,7 @@ public Object getCacheKey() {
             0, firstEnumTarget, enumTargetCount, srcMemberIdxes,
             stmt, message );
           if ( newPartialResult != null ) {
-            savePartialResult( newPartialResult );
+            savePartialResult( newPartialResult, context.getConfig().caseSensitive() );
           }
         }
 
@@ -663,7 +663,7 @@ public TupleList readTuples(
       }
 
       prepareTuples(
-        context, partialResult, newPartialResult, targetGroup );
+        context, partialResult, newPartialResult, targetGroup);
 
       int size = targetGroup.size();
       final Iterator<Member>[] iter = new Iterator[ size ];
@@ -930,7 +930,7 @@ public TupleList readTuples(
    *
    * @param partialResult list containing the columns and rows corresponding to data fetched through sql
    */
-  private void savePartialResult( List<List<RolapMember>> partialResult ) {
+  private void savePartialResult( List<List<RolapMember>> partialResult, boolean caseSensitive ) {
     List<RolapMember> row = new ArrayList<>();
     for ( TargetBase target : targets ) {
       if ( target.srcMembers == null ) {
@@ -956,7 +956,7 @@ public TupleList readTuples(
     if ( constraint instanceof SqlContextConstraint sqlConstraint ) {
       Query query = constraint.getEvaluator().getQuery();
       cube = (RolapCube) query.getCube();
-      if ( sqlConstraint.isJoinRequired() ) {
+      if ( sqlConstraint.isJoinRequired(context.getConfig().caseSensitive()) ) {
         virtualCube = cube.isVirtual();
       }
     }
@@ -1579,7 +1579,7 @@ public TupleList readTuples(
       return null;
     }
 
-    if ( evaluator == null || !constraint.supportsAggTables() ) {
+    if ( evaluator == null || !constraint.supportsAggTables(baseCube.getContext().getConfig().caseSensitive()) ) {
       return null;
     }
 

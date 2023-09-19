@@ -156,6 +156,7 @@ public abstract class DelegatingSchemaReader implements SchemaReader {
         int category,
         MatchType matchType)
     {
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
         if (MondrianProperties.instance().SsasCompatibleNaming.get()) {
             return new NameResolver().resolve(
                 parent,
@@ -163,7 +164,8 @@ public abstract class DelegatingSchemaReader implements SchemaReader {
                 failIfNotFound,
                 category,
                 matchType,
-                getNamespaces());
+                getNamespaces(),
+                caseSensitive);
         }
         return lookupCompoundInternal(
             parent,

@@ -258,9 +258,9 @@ public class FunUtil extends Util {
    *
    * @throws MondrianEvaluationException if expressions don't have the same hierarchy
    */
-  static void checkCompatible( Exp left, Exp right, FunctionDefinition funDef ) {
-    final Type leftType = TypeUtil.stripSetType( left.getType() );
-    final Type rightType = TypeUtil.stripSetType( right.getType() );
+  static void checkCompatible( Exp left, Exp right, FunctionDefinition funDef, boolean caseSensitive ) {
+    final Type leftType = TypeUtil.stripSetType( left.getType(caseSensitive) );
+    final Type rightType = TypeUtil.stripSetType( right.getType(caseSensitive) );
     if ( !TypeUtil.isUnionCompatible( leftType, rightType ) ) {
       throw FunUtil.newEvalException(
         funDef, "Expressions must have the same hierarchy" );
@@ -678,8 +678,8 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     TupleList members,
     Calc exp,
-    double p ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp );
+    double p, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp, caseSensitive);
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else if ( sw.v.isEmpty() ) {
@@ -746,10 +746,10 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     TupleList members,
     Calc exp,
-    int range ) {
+    int range, boolean caseSensitive ) {
     assert range >= 1 && range <= 3;
 
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp );
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else if ( sw.v.isEmpty() ) {
@@ -773,8 +773,8 @@ public class FunUtil extends Util {
   public static Object min(
     Evaluator evaluator,
     TupleList members,
-    Calc calc ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, calc );
+    Calc calc, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, calc, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else {
@@ -797,8 +797,8 @@ public class FunUtil extends Util {
   public static Object max(
     Evaluator evaluator,
     TupleList members,
-    Calc exp ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp );
+    Calc exp, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else {
@@ -822,8 +822,8 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     TupleList members,
     Calc exp,
-    boolean biased ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp );
+    boolean biased, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp, caseSensitive );
     return FunUtil.var( sw, biased );
   }
 
@@ -851,9 +851,9 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     TupleList memberList,
     Calc exp1,
-    Calc exp2 ) {
-    SetWrapper sw1 = FunUtil.evaluateSet( evaluator, memberList, exp1 );
-    SetWrapper sw2 = FunUtil.evaluateSet( evaluator, memberList, exp2 );
+    Calc exp2, boolean caseSensitive ) {
+    SetWrapper sw1 = FunUtil.evaluateSet( evaluator, memberList, exp1, caseSensitive );
+    SetWrapper sw2 = FunUtil.evaluateSet( evaluator, memberList, exp2, caseSensitive );
     Object covar = FunUtil.covariance( sw1, sw2, false );
     Object var1 = FunUtil.var( sw1, false ); // this should be false, yes?
     Object var2 = FunUtil.var( sw2, false );
@@ -869,17 +869,17 @@ public class FunUtil extends Util {
     TupleList members,
     Calc exp1,
     Calc exp2,
-    boolean biased ) {
+    boolean biased, boolean caseSensitive ) {
     final int savepoint = evaluator.savepoint();
     SetWrapper sw1;
     try {
-      sw1 = FunUtil.evaluateSet( evaluator, members, exp1 );
+      sw1 = FunUtil.evaluateSet( evaluator, members, exp1, caseSensitive );
     } finally {
       evaluator.restore( savepoint );
     }
     SetWrapper sw2;
     try {
-      sw2 = FunUtil.evaluateSet( evaluator, members, exp2 );
+      sw2 = FunUtil.evaluateSet( evaluator, members, exp2, caseSensitive );
     } finally {
       evaluator.restore( savepoint );
     }
@@ -917,8 +917,8 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     TupleList members,
     Calc exp,
-    boolean biased ) {
-    Object o = FunUtil.var( evaluator, members, exp, biased );
+    boolean biased, boolean caseSensitive ) {
+    Object o = FunUtil.var( evaluator, members, exp, biased, caseSensitive );
     return ( o instanceof Double )
       ? Double.valueOf( Math.sqrt( ( (Number) o ).doubleValue() ) )
       : o;
@@ -927,8 +927,8 @@ public class FunUtil extends Util {
   public static Object avg(
     Evaluator evaluator,
     TupleList members,
-    Calc calc ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, calc );
+    Calc calc, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, calc, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else {
@@ -952,16 +952,16 @@ public class FunUtil extends Util {
   public static Object sum(
     Evaluator evaluator,
     TupleList members,
-    Calc exp ) {
-    double d = FunUtil.sumDouble( evaluator, members, exp );
+    Calc exp, boolean caseSensitive ) {
+    double d = FunUtil.sumDouble( evaluator, members, exp, caseSensitive );
     return d == FunUtil.DOUBLE_NULL ? Util.nullValue : Double.valueOf( d );
   }
 
   public static double sumDouble(
     Evaluator evaluator,
     TupleList members,
-    Calc exp ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp );
+    Calc exp, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, members, exp, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else if ( sw.v.isEmpty() ) {
@@ -978,8 +978,8 @@ public class FunUtil extends Util {
   public static double sumDouble(
     Evaluator evaluator,
     TupleIterable iterable,
-    Calc exp ) {
-    SetWrapper sw = FunUtil.evaluateSet( evaluator, iterable, exp );
+    Calc exp, boolean caseSensitive ) {
+    SetWrapper sw = FunUtil.evaluateSet( evaluator, iterable, exp, caseSensitive );
     if ( sw.errorCount > 0 ) {
       return Double.NaN;
     } else if ( sw.v.isEmpty() ) {
@@ -1034,7 +1034,7 @@ public class FunUtil extends Util {
   static SetWrapper evaluateSet(
     Evaluator evaluator,
     TupleIterable members,
-    Calc calc ) {
+    Calc calc, boolean caseSensitive ) {
     assert members != null;
     assert calc != null;
     assert calc.getType() instanceof ScalarType;
@@ -1049,7 +1049,7 @@ public class FunUtil extends Util {
       CancellationChecker.checkCancelOrTimeout(
         currentIteration++, execution );
       cursor.setContext( evaluator );
-      Object o = calc.evaluate( evaluator );
+      Object o = calc.evaluate( evaluator, caseSensitive );
       if ( o == null || o == Util.nullValue ) {
         retval.nullCount++;
       } else if ( o == RolapUtil.valueNotReadyException ) {
@@ -1078,7 +1078,7 @@ public class FunUtil extends Util {
   static SetWrapper[] evaluateSet(
     Evaluator evaluator,
     TupleList list,
-    DoubleCalc[] calcs ) {
+    DoubleCalc[] calcs, boolean caseSensitive ) {
     Util.assertPrecondition( calcs != null, "calcs != null" );
 
     // todo: treat constant exps as evaluateMembers() does
@@ -1097,7 +1097,7 @@ public class FunUtil extends Util {
       for ( int i = 0; i < calcs.length; i++ ) {
         DoubleCalc calc = calcs[ i ];
         SetWrapper retval = retvals[ i ];
-        Double o = calc.evaluate( evaluator );
+        Double o = calc.evaluate( evaluator, caseSensitive );
         if(o==null) {
         	System.out.println(calc);
         }
@@ -1177,22 +1177,22 @@ public class FunUtil extends Util {
   static Member cousin(
     SchemaReader schemaReader,
     Member member,
-    Member ancestorMember ) {
+    Member ancestorMember, boolean caseSensitive ) {
     if ( ancestorMember.isNull() ) {
       return ancestorMember;
     }
-    if ( member.getHierarchy() != ancestorMember.getHierarchy() ) {
+    if ( member.getHierarchy(caseSensitive) != ancestorMember.getHierarchy(caseSensitive) ) {
       throw MondrianResource.instance().CousinHierarchyMismatch.ex(
         member.getUniqueName(), ancestorMember.getUniqueName() );
     }
     if ( member.getLevel().getDepth()
       < ancestorMember.getLevel().getDepth() ) {
-      return member.getHierarchy().getNullMember();
+      return member.getHierarchy(caseSensitive).getNullMember();
     }
 
     Member cousin = FunUtil.cousin2( schemaReader, member, ancestorMember );
     if ( cousin == null ) {
-      cousin = member.getHierarchy().getNullMember();
+      cousin = member.getHierarchy(caseSensitive).getNullMember();
     }
 
     return cousin;
@@ -1238,9 +1238,9 @@ public class FunUtil extends Util {
     Evaluator evaluator,
     Member member,
     int distance,
-    Level targetLevel ) {
+    Level targetLevel, boolean caseSensitive ) {
     if ( ( targetLevel != null )
-      && ( member.getHierarchy() != targetLevel.getHierarchy() ) ) {
+      && ( member.getHierarchy(caseSensitive) != targetLevel.getHierarchy() ) ) {
       throw MondrianResource.instance().MemberNotInLevelHierarchy.ex(
         member.getUniqueName(), targetLevel.getUniqueName() );
     }
@@ -1250,14 +1250,14 @@ public class FunUtil extends Util {
       return member;
     } else if ( distance < 0 ) {
       // Can't go backwards.
-      return member.getHierarchy().getNullMember();
+      return member.getHierarchy(caseSensitive).getNullMember();
     }
 
     final List<Member> ancestors = new ArrayList<>();
     final SchemaReader schemaReader = evaluator.getSchemaReader();
     schemaReader.getMemberAncestors( member, ancestors );
 
-    Member result = member.getHierarchy().getNullMember();
+    Member result = member.getHierarchy(caseSensitive).getNullMember();
 
     searchLoop:
     for ( int i = 0; i < ancestors.size(); i++ ) {
@@ -1269,7 +1269,7 @@ public class FunUtil extends Util {
             result = ancestorMember;
             break;
           } else {
-            result = member.getHierarchy().getNullMember();
+            result = member.getHierarchy(caseSensitive).getNullMember();
             break;
           }
         }
@@ -1427,18 +1427,18 @@ public class FunUtil extends Util {
     return false;
   }
 
-  public static Member[] makeNullTuple( final TupleType tupleType ) {
+  public static Member[] makeNullTuple( final TupleType tupleType, boolean caseSensitive ) {
     final Type[] elementTypes = tupleType.elementTypes;
     Member[] members = new Member[ elementTypes.length ];
     for ( int i = 0; i < elementTypes.length; i++ ) {
       MemberType type = (MemberType) elementTypes[ i ];
-      members[ i ] = FunUtil.makeNullMember( type );
+      members[ i ] = FunUtil.makeNullMember( type, caseSensitive );
     }
     return members;
   }
 
-  static Member makeNullMember( MemberType memberType ) {
-    Hierarchy hierarchy = memberType.getHierarchy();
+  static Member makeNullMember( MemberType memberType, boolean caseSensitive ) {
+    Hierarchy hierarchy = memberType.getHierarchy(caseSensitive);
     if ( hierarchy == null ) {
       return FunUtil.NullMember;
     }
@@ -1462,12 +1462,12 @@ public class FunUtil extends Util {
     Exp[] args,
     Exp[] newArgs,
     String name,
-    Syntax syntax ) {
+    Syntax syntax, boolean caseSensitive ) {
     for ( int i = 0; i < args.length; i++ ) {
-      newArgs[ i ] = validator.validate( args[ i ], false );
+      newArgs[ i ] = validator.validate( args[ i ], false, caseSensitive );
     }
     if ( funDef == null || validator.alwaysResolveFunDef() ) {
-      funDef = validator.getDef( newArgs, name, syntax );
+      funDef = validator.getDef( newArgs, name, syntax, caseSensitive );
     }
     FunUtil.checkNativeCompatible( validator, funDef, newArgs );
     return funDef;
@@ -1841,12 +1841,12 @@ public class FunUtil extends Util {
     final List<Member> leftTuple, final List<Member> rightTuple,
     final List<Hierarchy> leftHierarchies,
     final List<Hierarchy> rightHierarchies,
-    final Evaluator eval ) {
+    final Evaluator eval, boolean caseSensitive ) {
     List<Member> checkedMembers = new ArrayList<>();
 
     for ( Member leftMember : leftTuple ) {
       Member rightMember = FunUtil.getCorrespondingMember(
-        leftMember, rightTuple, rightHierarchies, eval );
+        leftMember, rightTuple, rightHierarchies, eval, caseSensitive );
       checkedMembers.add( rightMember );
       if ( !leftMember.isOnSameHierarchyChain( rightMember ) ) {
         return false;
@@ -1861,7 +1861,7 @@ public class FunUtil extends Util {
         continue;
       }
       Member leftMember = FunUtil.getCorrespondingMember(
-        rightMember, leftTuple, leftHierarchies, eval );
+        rightMember, leftTuple, leftHierarchies, eval, caseSensitive );
       if ( !leftMember.isOnSameHierarchyChain( rightMember ) ) {
         return false;
       }
@@ -1886,15 +1886,15 @@ public class FunUtil extends Util {
   private static Member getCorrespondingMember(
     final Member member, final List<Member> tuple,
     final List<Hierarchy> tupleHierarchies,
-    final Evaluator eval ) {
+    final Evaluator eval, boolean caseSensitive ) {
     assert tuple.size() == tupleHierarchies.size();
-    int dimPos = tupleHierarchies.indexOf( member.getHierarchy() );
+    int dimPos = tupleHierarchies.indexOf( member.getHierarchy(caseSensitive) );
     if ( dimPos >= 0 ) {
       return tuple.get( dimPos );
     } else if ( eval != null ) {
-      return eval.getContext( member.getHierarchy() );
+      return eval.getContext( member.getHierarchy(caseSensitive) );
     } else {
-      return member.getHierarchy().getDefaultMember();
+      return member.getHierarchy(caseSensitive).getDefaultMember();
     }
   }
 
@@ -1957,7 +1957,7 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
@@ -1972,7 +1972,7 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public boolean isParentChildLeaf() {
+	public boolean isParentChildLeaf(boolean caseSensitive) {
       return false;
     }
 
@@ -2027,7 +2027,7 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public List<Member> getAncestorMembers() {
+	public List<Member> getAncestorMembers(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
@@ -2132,7 +2132,7 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public Dimension getDimension() {
+	public Dimension getDimension(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 

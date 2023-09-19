@@ -111,16 +111,16 @@ public abstract class RolapNativeSet extends RolapNative {
      * the evaluator context is empty.
      */
     @Override
-	protected boolean isJoinRequired() {
-      return args.length > 1 || super.isJoinRequired();
+	protected boolean isJoinRequired(boolean caseSensitive) {
+      return args.length > 1 || super.isJoinRequired(caseSensitive);
     }
 
     @Override
 	public void addConstraint(
       SqlQuery sqlQuery,
       RolapCube baseCube,
-      AggStar aggStar ) {
-      super.addConstraint( sqlQuery, baseCube, aggStar );
+      AggStar aggStar, boolean caseSensitive ) {
+      super.addConstraint( sqlQuery, baseCube, aggStar, caseSensitive );
       for ( CrossJoinArg arg : args ) {
         if ( canApplyCrossJoinArgConstraint( arg ) ) {
           RolapLevel level = arg.getLevel();
@@ -201,7 +201,7 @@ public abstract class RolapNativeSet extends RolapNative {
     }
 
     @Override
-	public Object execute( ResultStyle desiredResultStyle ) {
+	public Object execute( ResultStyle desiredResultStyle, boolean caseSensitive ) {
       switch ( desiredResultStyle ) {
         case ITERABLE:
           if (this.args !=null && this.args.length > 0) {
@@ -210,14 +210,14 @@ public abstract class RolapNativeSet extends RolapNative {
                   // If any of the dimensions is a HCD,
                   // use the proper tuple reader.
                   return executeList(
-                      new HighCardSqlTupleReader( constraint ) );
+                      new HighCardSqlTupleReader( constraint ), caseSensitive );
               }
           }
           // Use the regular tuple reader.
           return executeList(
-              new SqlTupleReader( constraint ) );
+              new SqlTupleReader( constraint ), caseSensitive );
         case MUTABLE_LIST, LIST:
-          return executeList( new SqlTupleReader( constraint ) );
+          return executeList( new SqlTupleReader( constraint ), caseSensitive );
         default:
           throw ResultStyleException.generate(
             ResultStyle.ITERABLE_MUTABLELIST_LIST,
@@ -225,7 +225,7 @@ public abstract class RolapNativeSet extends RolapNative {
       }
     }
 
-    protected TupleList executeList( final SqlTupleReader tr ) {
+    protected TupleList executeList( final SqlTupleReader tr, boolean caseSensitive ) {
       tr.setMaxRows( maxRows );
       for ( CrossJoinArg arg : args ) {
         addLevel( tr, arg );
@@ -329,34 +329,34 @@ public abstract class RolapNativeSet extends RolapNative {
           cache.put( key, result );
         }
       }
-      return filterInaccessibleTuples( result );
+      return filterInaccessibleTuples( result, caseSensitive );
     }
 
     /**
      * Checks access rights and hidden status on the members in each tuple in tupleList.
      */
-    private TupleList filterInaccessibleTuples( TupleList tupleList ) {
-      if ( needsFiltering( tupleList ) ) {
+    private TupleList filterInaccessibleTuples( TupleList tupleList, boolean caseSensitive ) {
+      if ( needsFiltering( tupleList, caseSensitive ) ) {
         final Predicate memberInaccessible =
-          memberInaccessiblePredicate();
+          memberInaccessiblePredicate(caseSensitive);
         filter(
           tupleList, tupleAccessiblePredicate( memberInaccessible ) );
       }
       return tupleList;
     }
 
-    private boolean needsFiltering( TupleList tupleList ) {
+    private boolean needsFiltering( TupleList tupleList, boolean caseSensitive ) {
       return !tupleList.isEmpty()
-        && exists( tupleList.get( 0 ), needsFilterPredicate() );
+        && exists( tupleList.get( 0 ), needsFilterPredicate(caseSensitive) );
     }
 
-    private Predicate needsFilterPredicate() {
+    private Predicate needsFilterPredicate(boolean caseSensitive) {
       return new Predicate() {
         @Override
 		public boolean evaluate( Object o ) {
           Member member = (Member) o;
           return isRaggedLevel( member.getLevel() )
-            || isCustomAccess( member.getHierarchy() );
+            || isCustomAccess( member.getHierarchy(caseSensitive) );
         }
       };
     }
@@ -384,7 +384,7 @@ public abstract class RolapNativeSet extends RolapNative {
       return access == Access.CUSTOM;
     }
 
-    private Predicate memberInaccessiblePredicate() {
+    private Predicate memberInaccessiblePredicate(boolean caseSensitive) {
       if ( constraint.getEvaluator() != null ) {
         return new Predicate() {
           @Override
@@ -393,14 +393,14 @@ public abstract class RolapNativeSet extends RolapNative {
               constraint
                 .getEvaluator().getSchemaReader().getRole();
             Member member = (Member) o;
-            return member.isHidden() || !role.canAccess( member );
+            return member.isHidden(caseSensitive) || !role.canAccess( member );
           }
         };
       }
       return new Predicate() {
         @Override
 		public boolean evaluate( Object o ) {
-          return ( (Member) o ).isHidden();
+          return ( (Member) o ).isHidden(caseSensitive);
         }
       };
     }

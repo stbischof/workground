@@ -28,5 +28,5 @@ public non-sealed interface ResolvedFunCall extends QueryPart, FunCall {
 
     Exp[] getArgs();
 
-    Type getType();
+    Type getType(boolean caseSensitive);
 }

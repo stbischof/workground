@@ -64,15 +64,15 @@ implements TupleListCalc {
     }
 
     @Override
-    public final Object evaluate( Evaluator evaluator ) {
-        final TupleList tupleList = evaluateList( evaluator );
+    public final Object evaluate( Evaluator evaluator, boolean caseSensitive ) {
+        final TupleList tupleList = evaluateList( evaluator, caseSensitive );
         assert tupleList != null : "null as empty tuple list is deprecated";
         return tupleList;
     }
 
     @Override
-    public TupleIterable evaluateIterable( Evaluator evaluator ) {
-        return evaluateList( evaluator );
+    public TupleIterable evaluateIterable( Evaluator evaluator, boolean caseSensitive ) {
+        return evaluateList( evaluator, caseSensitive );
     }
 
     @Override

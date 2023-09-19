@@ -74,7 +74,7 @@ public class DefaultTupleConstraint implements TupleConstraint {
     }
 
     @Override
-    public boolean supportsAggTables() {
+    public boolean supportsAggTables(boolean caseSensitive) {
         return false;
     }
 }

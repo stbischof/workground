@@ -101,7 +101,7 @@ public String getQualifiedName() {
   }
 
   @Override
-public abstract String getName();
+public abstract String getName(boolean caseSensitive);
 
   @Override
 public String getUniqueName() {
@@ -109,7 +109,7 @@ public String getUniqueName() {
   }
 
   @Override
-public String getCaption() {
+public String getCaption(boolean caseSensitive) {
     // if there is a member formatter for the members level,
     //  we will call this interface to provide the display string
     MemberFormatter mf = getLevel().getMemberFormatter();
@@ -118,10 +118,10 @@ public String getCaption() {
     }
 
     // fallback if formatter is null
-    final String caption = super.getCaption();
+    final String caption = super.getCaption(caseSensitive);
     return ( caption != null )
       ? caption
-      : getName();
+      : getName(caseSensitive);
   }
 
   @Override
@@ -132,12 +132,12 @@ public String getParentUniqueName() {
   }
 
   @Override
-public Dimension getDimension() {
-    return level.getDimension();
+public Dimension getDimension(boolean caseSensitive) {
+    return level.getDimension(caseSensitive);
   }
 
   @Override
-public Hierarchy getHierarchy() {
+public Hierarchy getHierarchy(boolean caseSensitive) {
     return level.getHierarchy();
   }
 
@@ -152,8 +152,8 @@ public MemberType getMemberType() {
   }
 
   @Override
-public String getDescription() {
-    return (String) getPropertyValue( Property.DESCRIPTION_PROPERTY.name );
+public String getDescription(boolean caseSensitive) {
+    return (String) getPropertyValue( Property.DESCRIPTION_PROPERTY.name, caseSensitive );
   }
 
   @Override
@@ -269,9 +269,9 @@ public Exp getExpression() {
 
   // implement Member
   @Override
-public List<Member> getAncestorMembers() {
+public List<Member> getAncestorMembers(boolean caseSensitive) {
     final SchemaReader schemaReader =
-      getDimension().getSchema().getSchemaReader();
+      getDimension(caseSensitive).getSchema().getSchemaReader();
     final ArrayList<Member> ancestorList = new ArrayList<>();
     schemaReader.getMemberAncestors( this, ancestorList );
     return ancestorList;
@@ -294,7 +294,7 @@ public Comparable getOrderKey() {
   }
 
   @Override
-public boolean isHidden() {
+public boolean isHidden(boolean caseSensitive) {
     return false;
   }
 
@@ -304,8 +304,8 @@ public Member getDataMember() {
   }
 
   @Override
-public String getPropertyFormattedValue( String propertyName ) {
-    return getPropertyValue( propertyName ).toString();
+public String getPropertyFormattedValue( String propertyName, boolean caseSensitive ) {
+    return getPropertyValue( propertyName, caseSensitive ).toString();
   }
 
   @Override
@@ -314,7 +314,7 @@ public boolean isParentChildPhysicalMember() {
   }
 
   @Override
-public boolean isParentChildLeaf() {
+public boolean isParentChildLeaf(boolean caseSensitive) {
     return false;
   }
 

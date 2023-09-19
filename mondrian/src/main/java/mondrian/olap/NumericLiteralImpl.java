@@ -58,7 +58,7 @@ public class NumericLiteralImpl extends AbstractLiteralImpl<BigDecimal> implemen
 	}
 
 	@Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean c) {
 		return visitor.visit(this);
 	}
 
@@ -76,7 +76,7 @@ public class NumericLiteralImpl extends AbstractLiteralImpl<BigDecimal> implemen
 	public void unparse(PrintWriter pw) {
 		pw.print(getValue());
 	}
-	
+
 	@Override
 	public Calc<?> accept(ExpCompiler compiler) {
 		return new ConstantDoubleCalc(new NumericType(), getValue().doubleValue());

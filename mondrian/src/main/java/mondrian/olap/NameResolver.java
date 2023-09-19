@@ -53,7 +53,8 @@ public final class NameResolver {
         boolean failIfNotFound,
         int category,
         MatchType matchType,
-        List<Namespace> namespaces)
+        List<Namespace> namespaces,
+        boolean caseSensitive)
     {
         OlapElement element;
         if (matchType == MatchType.EXACT) {
@@ -66,7 +67,8 @@ public final class NameResolver {
                 parent,
                 segments,
                 matchType,
-                namespaces);
+                namespaces,
+                caseSensitive);
         }
         if (element != null) {
             element = nullify(category, element);
@@ -83,7 +85,7 @@ public final class NameResolver {
         OlapElement parent,
         List<IdentifierSegment> segments,
         MatchType matchType,
-        List<Namespace> namespaces)
+        List<Namespace> namespaces, boolean caseSensitive)
     {
         OlapElement element = parent;
         for (final IdentifierSegment segment : segments) {
@@ -97,12 +99,12 @@ public final class NameResolver {
                     case EXACT_SCHEMA:
                         break;
                     case BEFORE:
-                        if (!Util.matches(segment, child.getName())) {
+                        if (!Util.matches(segment, child.getName(), caseSensitive)) {
                             matchType = MatchType.LAST;
                         }
                         break;
                     case AFTER:
-                        if (!Util.matches(segment, child.getName())) {
+                        if (!Util.matches(segment, child.getName(), caseSensitive)) {
                             matchType = MatchType.FIRST;
                         }
                         break;
@@ -192,9 +194,9 @@ public final class NameResolver {
     public static boolean matches(
         Formula formula,
         OlapElement parent,
-        IdentifierSegment segment)
+        IdentifierSegment segment, boolean caseSensitive)
     {
-        if (!Util.matches(segment, formula.getName())) {
+        if (!Util.matches(segment, formula.getName(), caseSensitive)) {
             return false;
         }
         if (formula.isMember()) {

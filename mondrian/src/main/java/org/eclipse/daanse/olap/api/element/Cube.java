@@ -31,7 +31,7 @@ import mondrian.olap.SchemaReader;
 public interface Cube extends OlapElement, MetaElement {
 
     @Override
-	String getName();
+	String getName(boolean caseSensitive);
 
     Schema getSchema();
 
@@ -51,7 +51,7 @@ public interface Cube extends OlapElement, MetaElement {
      * Finds a hierarchy whose name (or unique name, if <code>unique</code> is
      * true) equals <code>s</code>.
      */
-    Hierarchy lookupHierarchy(NameSegment s, boolean unique);
+    Hierarchy lookupHierarchy(NameSegment s, boolean unique, boolean caseSensitive);
 
     /**
      * Returns Member[]. It builds Member[] by analyzing cellset, which

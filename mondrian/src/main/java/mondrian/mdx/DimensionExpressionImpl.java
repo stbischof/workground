@@ -84,7 +84,7 @@ public class DimensionExpressionImpl extends ExpBase implements Exp, DimensionEx
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         return visitor.visit(this);
     }
 

@@ -270,7 +270,7 @@ public  class FunDefBase implements FunDef {
     }
 
     @Override
-    public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         throw Util.newInternal(
             new StringBuilder("function '").append( getSignature())
                 .append("' has not been implemented").toString());
@@ -416,7 +416,7 @@ public  class FunDefBase implements FunDef {
     }
 
     @Override
-    public void unparse(Exp[] args, PrintWriter pw) {
+    public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
         getSyntax().unparse(getName(), args, pw);
     }
 

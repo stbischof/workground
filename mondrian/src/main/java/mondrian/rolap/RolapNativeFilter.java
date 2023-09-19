@@ -62,7 +62,7 @@ public class RolapNativeFilter extends RolapNativeSet {
      * expression references a measure.
      */
     @Override
-	protected boolean isJoinRequired() {
+	protected boolean isJoinRequired(boolean caseSensitive) {
       // Use a visitor and check all member expressions.
       // If any of them is a measure, we will have to
       // force the join to the fact table. If it is something
@@ -72,15 +72,15 @@ public class RolapNativeFilter extends RolapNativeSet {
       final AtomicBoolean mustJoin = new AtomicBoolean( false );
       filterExpr.accept( new MdxVisitorImpl() {
         @Override
-		public Object visit( MemberExpressionImpl memberExpr ) {
+		public Object visit( MemberExpressionImpl memberExpr, boolean caseSensitive ) {
           if ( memberExpr.getMember().isMeasure() ) {
             mustJoin.set( true );
             return null;
           }
-          return super.visit( memberExpr );
+          return super.visit( memberExpr, caseSensitive );
         }
-      } );
-      return mustJoin.get() || ( getEvaluator().isNonEmpty() && super.isJoinRequired() );
+      },  caseSensitive);
+      return mustJoin.get() || ( getEvaluator().isNonEmpty() && super.isJoinRequired(caseSensitive) );
     }
 
     @Override
@@ -92,7 +92,7 @@ public class RolapNativeFilter extends RolapNativeSet {
         sqlQuery.addHaving( filterSql.toString() );
       }
 
-      if ( getEvaluator().isNonEmpty() || isJoinRequired() ) {
+      if ( getEvaluator().isNonEmpty() || isJoinRequired(baseCube.getContext().getConfig().caseSensitive()) ) {
         // only apply context constraint if non empty, or
         // if a join is required to fulfill the filter condition
         super.addConstraint( sqlQuery, baseCube, aggStar );

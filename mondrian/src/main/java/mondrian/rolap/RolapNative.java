@@ -73,7 +73,7 @@ public abstract class RolapNative {
     abstract NativeEvaluator createEvaluator(
         RolapEvaluator evaluator,
         FunctionDefinition fun,
-        Exp[] args);
+        Exp[] args, boolean caseSensitive);
 
     /**
      * if enabled == false, then createEvaluator will always return null

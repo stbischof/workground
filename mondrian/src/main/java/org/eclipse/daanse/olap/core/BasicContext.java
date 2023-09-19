@@ -24,6 +24,7 @@ import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectFactory;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.ContextConfig;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Activate;
@@ -71,11 +72,11 @@ public class BasicContext implements Context {
 	@Reference(name = REF_NAME_DB_MAPPING_SCHEMA_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER, cardinality = ReferenceCardinality.MULTIPLE)
 	private List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders;
 
-	private BasicContextConfig config;
+	private ContextConfig config;
 
 	@Activate
 	public void activate(Map<String, Object> coniguration) throws Exception {
-		activate(CONVERTER.convert(coniguration).to(BasicContextConfig.class));
+		activate(CONVERTER.convert(coniguration).to(ContextConfig.class));
 	}
 
 	public void activate(BasicContextConfig coniguration) throws Exception {
@@ -113,7 +114,7 @@ public class BasicContext implements Context {
 	public Optional<String> getDescription() {
 
 		return config.descriptionOverride();
-		
+
 
 	}
 
@@ -121,6 +122,11 @@ public class BasicContext implements Context {
 	public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
 		return databaseMappingSchemaProviders;
 	}
+
+    @Override
+    public ContextConfig getConfig() {
+        return config;
+    }
 //
 //	@Override
 //	public QueryProvider getQueryProvider() {

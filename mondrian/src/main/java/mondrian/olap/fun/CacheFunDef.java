@@ -59,19 +59,19 @@ public class CacheFunDef extends FunDefBase {
     }
 
     @Override
-	public void unparse(Exp[] args, PrintWriter pw) {
-        args[0].unparse(pw);
+	public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
+        args[0].unparse(pw, caseSensitive);
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final Exp exp = call.getArg(0);
         final ExpCacheDescriptor cacheDescriptor =
-                new ExpCacheDescriptor(exp, compiler);
+                new ExpCacheDescriptor(exp, compiler, caseSensitive);
         if (call.getType() instanceof SetType) {
             return new GenericIterCalc(call.getType()) {
                 @Override
-				public Object evaluate(Evaluator evaluator) {
+				public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
                     return evaluator.getCachedResult(cacheDescriptor);
                 }
 
@@ -89,7 +89,7 @@ public class CacheFunDef extends FunDefBase {
         } else {
             return new GenericCalc(call.getType()) {
                 @Override
-				public Object evaluate(Evaluator evaluator) {
+				public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
                     return evaluator.getCachedResult(cacheDescriptor);
                 }
 
@@ -115,14 +115,14 @@ public class CacheFunDef extends FunDefBase {
 		public FunctionDefinition resolve(
             Exp[] args,
             Validator validator,
-            List<Conversion> conversions)
+            List<Conversion> conversions, boolean caseSensitive)
         {
             if (args.length != 1) {
                 return null;
             }
             final Exp exp = args[0];
             final int category = exp.getCategory();
-            final Type type = exp.getType();
+            final Type type = exp.getType(caseSensitive);
             return new CacheFunDef(
                 CacheFunDef.NAME, CacheFunDef.SIGNATURE_VALUE, CacheFunDef.DESCRIPTION, CacheFunDef.SYNTAX,
                 category, type);

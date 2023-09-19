@@ -44,7 +44,7 @@ public interface Validator {
      * @param scalar Whether the context requires that the expression is
      *   evaluated to a value, as opposed to a tuple
      */
-    Exp validate(Exp exp, boolean scalar);
+    Exp validate(Exp exp, boolean scalar, boolean caseSensitive);
 
     /**
      * Validates a usage of a parameter.
@@ -65,14 +65,14 @@ public interface Validator {
      *
      * It must resolve to the same object (although sub-objects may change).
      */
-    void validate(QueryAxis axis);
+    void validate(QueryAxis axis, boolean caseSensitive);
 
     /**
      * Validates a formula.
      *
      * It must resolve to the same object (although sub-objects may change).
      */
-    void validate(Formula formula);
+    void validate(Formula formula, boolean caseSensitive );
 
     /**
      * Returns whether the current context requires an expression.
@@ -94,7 +94,7 @@ public interface Validator {
         int ordinal,
         Exp fromExp,
         int to,
-        List<FunctionResolver.Conversion> conversions);
+        List<FunctionResolver.Conversion> conversions, boolean caseSensitive);
 
     /**
      * Returns the table of function and operator definitions.
@@ -120,7 +120,7 @@ public interface Validator {
     FunctionDefinition getDef(
         Exp[] args,
         String name,
-        Syntax syntax);
+        Syntax syntax, boolean caseSensitive);
 
     /**
      * Whether to resolve function name and arguments to a function definition

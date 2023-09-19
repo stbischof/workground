@@ -20,5 +20,5 @@ import mondrian.olap.Parameter;
  * @since Jul 22, 2006
  */
 public interface ParameterCompilable extends Parameter {
-    Calc compile(ExpCompiler compiler);
+    Calc compile(ExpCompiler compiler, boolean caseSensitive);
 }

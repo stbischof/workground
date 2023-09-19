@@ -82,4 +82,5 @@ public interface Context {
 	 */
 	Optional<String> getDescription();
 
+    ContextConfig getConfig();
 }

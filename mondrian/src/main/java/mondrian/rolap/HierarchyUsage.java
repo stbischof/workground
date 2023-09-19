@@ -308,9 +308,10 @@ public class HierarchyUsage {
             return (this.kind == other.kind)
                 && Objects.equals(this.fact, other.fact)
                 && this.hierarchyName.equals(other.hierarchyName)
-                && Util.equalName(this.name, other.name)
-                && Util.equalName(this.source, other.source)
-                && Util.equalName(this.foreignKey, other.foreignKey);
+                && Util.equalName(this.name, other.name, true)
+                && Util.equalName(this.source, other.source, true)
+                && Util.equalName(this.foreignKey, other.foreignKey, true);
+            //TODO UTILS
         } else {
             return false;
         }

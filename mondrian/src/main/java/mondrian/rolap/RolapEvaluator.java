@@ -823,7 +823,7 @@ public final Object evaluateCurrent() {
     final Calc calc = maxSolveMember.getCompiledExpression( root );
     final Object o;
     try {
-      o = calc.evaluate( this );
+      o = calc.evaluate( this, getCube().getContext().getConfig().caseSensitive() );
     } finally {
       restore( savepoint );
     }
@@ -1007,7 +1007,7 @@ public final String getFormatString() {
       return "Standard";
     }
     final Calc formatCalc = root.getCompiled( formatExp, true, null );
-    final Object o = formatCalc.evaluate( this );
+    final Object o = formatCalc.evaluate( this, getCube().getContext().getConfig().caseSensitive() );
     if ( o == null ) {
       return "Standard";
     }
@@ -1100,7 +1100,7 @@ public final Object getCachedResult( ExpCacheDescriptor cacheDescriptor ) {
     if ( result == null ) {
       boolean aggCacheDirty = cellReader.isDirty();
       int aggregateCacheMissCountBefore = cellReader.getMissCount();
-      result = cacheDescriptor.evaluate( this );
+      result = cacheDescriptor.evaluate( this, getCube().getContext().getConfig().caseSensitive() );
       int aggregateCacheMissCountAfter = cellReader.getMissCount();
 
       boolean isValidResult;

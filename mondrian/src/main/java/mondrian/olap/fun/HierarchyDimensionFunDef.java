@@ -39,9 +39,9 @@ public class HierarchyDimensionFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final HierarchyCalc hierarchyCalc =
-                compiler.compileHierarchy(call.getArg(0));
+                compiler.compileHierarchy(call.getArg(0), caseSensitive);
         return new DimensionCalcImpl(call.getType(), hierarchyCalc);
     }
 

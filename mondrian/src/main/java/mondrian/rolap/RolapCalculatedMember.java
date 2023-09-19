@@ -61,7 +61,7 @@ public class RolapCalculatedMember extends RolapMemberBase {
     // override RolapMember
     @Override
 	public int getSolveOrder() {
-        final Number solveOrder = formula.getSolveOrder();
+        final Number solveOrder = formula.getSolveOrder(getBaseCube().getContext().getConfig().caseSensitive());
         return solveOrder == null ? 0 : solveOrder.intValue();
     }
 

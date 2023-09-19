@@ -60,7 +60,7 @@ public interface FunctionDefinition {
      * a given set of arguments. The result is usually a {@link ResolvedFunCall} but
      * not always.
      */
-    Exp createCall(Validator validator, Exp[] args);
+    Exp createCall(Validator validator, Exp[] args, boolean caseSensitive);
 
     /**
      * Returns an English description of the signature of the function, for
@@ -71,7 +71,7 @@ public interface FunctionDefinition {
     /**
      * Converts a function call into MDX source code.
      */
-    void unparse(Exp[] args, PrintWriter pw);
+    void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive);
 
     /**
      * Converts a call to this function into executable objects.
@@ -80,8 +80,8 @@ public interface FunctionDefinition {
      * type. For example, a function which returns an integer must return
      * an object which implements {@link org.eclipse.daanse.olap.calc.api.IntegerCalc}.
      */
-    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler);
-    
+    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive);
+
     /**
      * Gives access to the Context, that holds Dialect and Context related Properties.
      * @param context

@@ -70,19 +70,19 @@ public class DimensionType implements Type {
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         if (dimension == null) {
             return null;
         } else {
             return dimension.getHierarchies().length > 1
-                ? getHierarchyWithDefaultName()
+                ? getHierarchyWithDefaultName(caseSensitive)
                 : dimension.getHierarchies()[0];
         }
     }
 
-    private Hierarchy getHierarchyWithDefaultName() {
+    private Hierarchy getHierarchyWithDefaultName(boolean caseSensitive) {
       for ( Hierarchy hierarchy : dimension.getHierarchies() ) {
-        if ( Util.equalName( hierarchy.getName(), dimension.getName() ) ) {
+        if ( Util.equalName( hierarchy.getName(), dimension.getName(), caseSensitive ) ) {
           return hierarchy;
         }
       }

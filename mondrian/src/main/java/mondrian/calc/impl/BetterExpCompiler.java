@@ -48,14 +48,14 @@ public class BetterExpCompiler extends AbstractExpCompiler {
 	}
 
 	@Override
-	public TupleCalc compileTuple(Exp exp) {
-		final Calc<?> calc = compile(exp);
-		final Type type = exp.getType();
+	public TupleCalc compileTuple(Exp exp, boolean caseSensitive) {
+		final Calc<?> calc = compile(exp, caseSensitive);
+		final Type type = exp.getType(caseSensitive);
 		if (type instanceof mondrian.olap.type.DimensionType || type instanceof mondrian.olap.type.HierarchyType) {
 			final mondrian.mdx.UnresolvedFunCallImpl unresolvedFunCall = new mondrian.mdx.UnresolvedFunCallImpl("DefaultMember",
 					mondrian.olap.Syntax.Property, new Exp[] { exp });
 			final Exp defaultMember = unresolvedFunCall.accept(getValidator());
-			return compileTuple(defaultMember);
+			return compileTuple(defaultMember, caseSensitive);
 		}
 		if (type instanceof TupleType) {
 
@@ -91,7 +91,7 @@ public class BetterExpCompiler extends AbstractExpCompiler {
 		return tupleListCalc;
 	}
 
-	
+
 
 	private static class CopyListCalc extends AbstractListCalc {
 		private final TupleListCalc tupleListCalc;
@@ -102,8 +102,8 @@ public class BetterExpCompiler extends AbstractExpCompiler {
 		}
 
 		@Override
-		public TupleList evaluateList(Evaluator evaluator) {
-			final TupleList list = tupleListCalc.evaluateList(evaluator);
+		public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
+			final TupleList list = tupleListCalc.evaluateList(evaluator, caseSensitive);
 			return list.copyList(-1);
 		}
 	}

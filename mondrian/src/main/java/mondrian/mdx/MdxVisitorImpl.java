@@ -69,7 +69,7 @@ public class MdxVisitorImpl implements MdxVisitor {
     }
 
     @Override
-	public Object visit(ResolvedFunCallImpl call) {
+	public Object visit(ResolvedFunCallImpl call, boolean caseSensitive) {
         return null;
     }
 
@@ -79,7 +79,7 @@ public class MdxVisitorImpl implements MdxVisitor {
     }
 
     @Override
-	public Object visit(ParameterExpression parameterExpr) {
+	public Object visit(ParameterExpression parameterExpr, boolean caseSensitive) {
         return null;
     }
 
@@ -102,7 +102,7 @@ public class MdxVisitorImpl implements MdxVisitor {
     }
 
     @Override
-	public Object visit(MemberExpressionImpl memberExpr) {
+	public Object visit(MemberExpressionImpl memberExpr, boolean caseSensitive) {
         // do nothing
         return null;
     }
@@ -127,11 +127,11 @@ public class MdxVisitorImpl implements MdxVisitor {
      * @return Array of visited expressions; same as {@code args} iff none of
      * the expressions are changed.
      */
-    protected Exp[] visitArray(Exp[] args) {
+    protected Exp[] visitArray(Exp[] args, boolean caseSensitive) {
         Exp[] newArgs = args;
         for (int i = 0; i < args.length; i++) {
             Exp arg = args[i];
-            Exp newArg = (Exp) arg.accept(this);
+            Exp newArg = (Exp) arg.accept(this, caseSensitive);
             if (newArg != arg) {
                 if (newArgs == args) {
                     newArgs = args.clone();

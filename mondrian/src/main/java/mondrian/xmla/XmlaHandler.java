@@ -747,7 +747,7 @@ public class XmlaHandler {
      * @param response Destination for response
      * @throws XmlaException on error
      */
-    public void process(XmlaRequest request, XmlaResponse response)
+    public void process(XmlaRequest request, XmlaResponse response, boolean caseSensitive)
         throws XmlaException
     {
         Method method = request.getMethod();
@@ -755,10 +755,11 @@ public class XmlaHandler {
 
         switch (method) {
         case DISCOVER:
-            discover(request, response);
+            discover(request, response, caseSensitive);
             break;
         case EXECUTE:
-            execute(request, response);
+            execute(request, response, true);
+            //TODO UTILS
             break;
         default:
             throw new XmlaException(
@@ -832,7 +833,7 @@ public class XmlaHandler {
 
     private void execute(
         XmlaRequest request,
-        XmlaResponse response)
+        XmlaResponse response, boolean caseSensitive)
         throws XmlaException
     {
         mondrian.xmla.impl.DefaultXmlaRequest defaultXmlaRequest = (mondrian.xmla.impl.DefaultXmlaRequest)request;
@@ -1038,7 +1039,8 @@ public class XmlaHandler {
                     for(UpdateClause updateClause: update.getUpdateClauses()) {
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);
-                        updateClause.getTupleExp().unparse(pw);
+                        updateClause.getTupleExp().unparse(pw, true);
+                        //TODO UTILS
                         String tupleString = sw.toString();
 
                         PreparedOlapStatement pstmt = connection.prepareOlapStatement(
@@ -1060,7 +1062,7 @@ public class XmlaHandler {
 
                         sw = new StringWriter();
                         pw = new mondrian.mdx.QueryPrintWriter(sw);
-                        updateClause.getValueExp().unparse(pw);
+                        updateClause.getValueExp().unparse(pw, caseSensitive);
                         String valueString = sw.toString();
 
                         pstmt = connection.prepareOlapStatement(
@@ -3541,7 +3543,7 @@ public class XmlaHandler {
         return null;
     }
 
-    private void discover(XmlaRequest request, XmlaResponse response)
+    private void discover(XmlaRequest request, XmlaResponse response, boolean caseSensitive)
         throws XmlaException
     {
         final RowsetDefinition rowsetDefinition =
@@ -3584,7 +3586,7 @@ public class XmlaHandler {
             switch (content) {
             case Data:
             case SchemaData:
-                rowset.unparse(response);
+                rowset.unparse(response, caseSensitive);
                 break;
             }
         } catch (XmlaException xex) {
@@ -3736,7 +3738,7 @@ public class XmlaHandler {
 
         String getMeasureDisplayFolder(Member member);
 
-        void checkMemberOrdinal(Member member) throws OlapException;
+        void checkMemberOrdinal(Member member, boolean caseSensitive) throws OlapException;
 
         /**
          * Returns whether we should return a cell property in the XMLA result.

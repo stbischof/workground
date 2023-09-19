@@ -46,7 +46,7 @@ public interface FunDef {
      * type. For example, a function which returns an integer must return
      * an object which implements {@link org.eclipse.daanse.olap.calc.api.IntegerCalc}.
      */
-    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler);
+    Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive);
 
-    void unparse(Exp[] args, PrintWriter pw);
+    void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive);
 }

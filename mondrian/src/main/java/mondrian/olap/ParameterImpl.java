@@ -221,8 +221,8 @@ public class ParameterImpl
     }
 
     @Override
-	public Calc compile(ExpCompiler compiler) {
-        final ParameterSlot slot = compiler.registerParameter(this);
+	public Calc compile(ExpCompiler compiler, boolean caseSensitive) {
+        final ParameterSlot slot = compiler.registerParameter(this, caseSensitive);
         if (this.slot != null) {
             // save previous value
             if (this.slot.isParameterSet()) {
@@ -289,7 +289,7 @@ public class ParameterImpl
         }
 
         @Override
-		public Object evaluate(Evaluator evaluator) {
+		public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
             Object value = evaluator.getParameterValue(slot);
             if (!slot.isParameterSet()) {
                 // save value if not set (setting the default value)
@@ -323,7 +323,7 @@ public class ParameterImpl
         }
 
         @Override
-		public TupleList evaluateList(Evaluator evaluator) {
+		public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
             TupleList value = (TupleList) evaluator.getParameterValue(slot);
             if (!slot.isParameterSet()) {
                 // save value if not set (setting the default value)

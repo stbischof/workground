@@ -59,11 +59,11 @@ public class ValidMeasureFunDef extends FunDefBase
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final Calc calc;
         final Exp arg = call.getArg(0);
         if (TypeUtil.couldBeMember(arg.getType())) {
-            calc = compiler.compileMember(arg);
+            calc = compiler.compileMember(arg, caseSensitive);
         } else {
             calc = compiler.compileTuple(arg);
         }
@@ -81,10 +81,10 @@ public class ValidMeasureFunDef extends FunDefBase
         }
 
         @Override
-		public Object evaluate(Evaluator evaluator) {
+		public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
             RolapCube baseCube;
             RolapCube virtualCube = (RolapCube) evaluator.getCube();
-            final List<Member> memberList = getCalcsMembers(evaluator);
+            final List<Member> memberList = getCalcsMembers(evaluator, caseSensitive);
 
             if (memberList == null || memberList.size() == 0) {
               // there are no members in the ValidMeasure
@@ -152,7 +152,7 @@ public class ValidMeasureFunDef extends FunDefBase
             return evaluator.evaluateCurrent();
         }
 
-		private List<Member> getCalcsMembers(Evaluator evaluator) {
+		private List<Member> getCalcsMembers(Evaluator evaluator, boolean caseSensitive) {
 			List<Member> memberList;
 
 			MemberCalc mc = null;
@@ -162,10 +162,10 @@ public class ValidMeasureFunDef extends FunDefBase
 				mc = (MemberCalc) calc.unwrap(MemberCalc.class);
 			}
 			if (mc != null) {
-				memberList = Collections.singletonList(mc.evaluate(evaluator));
+				memberList = Collections.singletonList(mc.evaluate(evaluator, caseSensitive));
 			} else {
 				TupleCalc tc = (TupleCalc) calc.unwrap((TupleCalc.class));
-				final Member[] tupleMembers = tc.evaluate(evaluator);
+				final Member[] tupleMembers = tc.evaluate(evaluator, caseSensitive);
 				if (tupleMembers == null) {
 					memberList = null;
 				} else {

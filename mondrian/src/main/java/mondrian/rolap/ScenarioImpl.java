@@ -181,14 +181,14 @@ public final class ScenarioImpl implements Scenario {
      * @param member Wrapper member
      * @return Wrapped scenario
      */
-    static Scenario forMember(final RolapMember member) {
+    static Scenario forMember(final RolapMember member, boolean caseSensitive) {
         if (isScenario(member.getHierarchy())) {
             final Formula formula = ((RolapCalculatedMember) member)
                 .getFormula();
             final ResolvedFunCallImpl resolvedFunCall =
                 (ResolvedFunCallImpl) formula.getExpression();
             final Calc calc = resolvedFunCall.getFunDef()
-                .compileCall(null, null);
+                .compileCall(null, null, caseSensitive);
             return ((ScenarioCalc) calc).getScenario();
         } else {
             return null;
@@ -492,7 +492,7 @@ public final class ScenarioImpl implements Scenario {
         }
 
         @Override
-		public Object evaluate(Evaluator evaluator) {
+		public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
             // Evaluate current member in the given scenario by expanding in
             // terms of the writeback cells.
 

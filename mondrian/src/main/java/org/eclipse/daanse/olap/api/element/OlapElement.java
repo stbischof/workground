@@ -28,9 +28,9 @@ import mondrian.olap.api.Segment;
  */
 public interface OlapElement {
     String getUniqueName();
-    String getName();
+    String getName(boolean caseSensitive);
 
-    String getDescription();
+    String getDescription(boolean caseSensitive);
 
     /**
      * Looks up a child element, returning null if it does not exist.
@@ -44,9 +44,9 @@ public interface OlapElement {
      * Returns the name of this element qualified by its class, for example
      * "hierarchy 'Customers'".
      */
-    String getQualifiedName();
+    String getQualifiedName(boolean caseSensitive);
 
-    String getCaption();
+    String getCaption(boolean caseSensitive);
 
     /**
      * Returns the value of a property (caption or description) of
@@ -55,9 +55,9 @@ public interface OlapElement {
      * @param locale Locale
      * @return Localized caption or description
      */
-    String getLocalized(LocalizedProperty prop, Locale locale);
+    String getLocalized(LocalizedProperty prop, Locale locale, boolean caseSensitive);
 
-    Hierarchy getHierarchy();
+    Hierarchy getHierarchy(boolean caseSensitive);
 
     /**
      * Returns the dimension of a this expression, or null if no dimension is
@@ -85,7 +85,7 @@ public interface OlapElement {
      * has no dimension (well, actually it is [Product] x [Gender], but we
      * can't represent that, so we return null);</p>
      */
-    Dimension getDimension();
+    Dimension getDimension(boolean caseSensitive);
 
     /**
      * Returns whether this element is visible to end-users.

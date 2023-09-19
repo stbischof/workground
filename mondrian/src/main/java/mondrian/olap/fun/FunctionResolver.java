@@ -60,7 +60,7 @@ public interface FunctionResolver {
     FunctionDefinition resolve(
         Exp[] args,
         Validator validator,
-        List<Conversion> conversions);
+        List<Conversion> conversions, boolean caseSensitive);
 
     /**
      * Returns whether a particular argument must be a scalar expression.

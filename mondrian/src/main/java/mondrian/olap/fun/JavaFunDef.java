@@ -95,14 +95,14 @@ public class JavaFunDef extends FunDefBase {
     @Override
 	public Calc compileCall(
         ResolvedFunCall call,
-        ExpCompiler compiler)
+        ExpCompiler compiler, boolean caseSensitive)
     {
         final Calc[] calcs = new Calc[parameterCategories.length];
         final Class<?>[] parameterTypes = method.getParameterTypes();
         for (int i = 0; i < calcs.length;i++) {
             calcs[i] =
                 JavaFunDef.compileTo(
-                    compiler, call.getArgs()[i], parameterTypes[i]);
+                    compiler, call.getArgs()[i], parameterTypes[i], caseSensitive);
         }
         return new JavaMethodCalc(call, calcs, method);
     }
@@ -179,15 +179,15 @@ public class JavaFunDef extends FunDefBase {
      * @param clazz Desired class
      * @return compiled expression
      */
-    private static Calc compileTo(ExpCompiler compiler, Exp exp, Class clazz) {
+    private static Calc compileTo(ExpCompiler compiler, Exp exp, Class clazz, boolean caseSensitive) {
         if (clazz == String.class) {
-            return compiler.compileString(exp);
+            return compiler.compileString(exp, caseSensitive);
         } else if (clazz == Date.class) {
-            return compiler.compileDateTime(exp);
+            return compiler.compileDateTime(exp, caseSensitive);
         } else if (clazz == boolean.class) {
-            return compiler.compileBoolean(exp);
+            return compiler.compileBoolean(exp, caseSensitive);
         } else if (clazz == byte.class) {
-            final IntegerCalc integerCalc = compiler.compileInteger(exp);
+            final IntegerCalc integerCalc = compiler.compileInteger(exp, caseSensitive);
             if (integerCalc.getResultStyle() == ResultStyle.VALUE_NOT_NULL) {
                 // We know that the calculation will never return a null value,
                 // so generate optimized code.
@@ -212,7 +212,7 @@ public class JavaFunDef extends FunDefBase {
                 };
             }
         } else if (clazz == char.class) {
-            final StringCalc stringCalc = compiler.compileString(exp);
+            final StringCalc stringCalc = compiler.compileString(exp, caseSensitive);
             return new AbstractCalc2(exp, stringCalc) {
                 @Override
 				public Object evaluate(Evaluator evaluator) {
@@ -227,7 +227,7 @@ public class JavaFunDef extends FunDefBase {
                 }
             };
         } else if (clazz == short.class) {
-            final IntegerCalc integerCalc = compiler.compileInteger(exp);
+            final IntegerCalc integerCalc = compiler.compileInteger(exp, caseSensitive);
             if (integerCalc.getResultStyle() == ResultStyle.VALUE_NOT_NULL) {
                 return new AbstractCalc2(exp, integerCalc) {
                     @Override
@@ -249,9 +249,9 @@ public class JavaFunDef extends FunDefBase {
                 };
             }
         } else if (clazz == int.class) {
-            return compiler.compileInteger(exp);
+            return compiler.compileInteger(exp, caseSensitive);
         } else if (clazz == long.class) {
-            final IntegerCalc integerCalc = compiler.compileInteger(exp);
+            final IntegerCalc integerCalc = compiler.compileInteger(exp, caseSensitive);
             if (integerCalc.getResultStyle() == ResultStyle.VALUE_NOT_NULL) {
                 return new AbstractCalc2(exp, integerCalc) {
                     @Override
@@ -273,7 +273,7 @@ public class JavaFunDef extends FunDefBase {
                 };
             }
         } else if (clazz == float.class) {
-            final DoubleCalc doubleCalc = compiler.compileDouble(exp);
+            final DoubleCalc doubleCalc = compiler.compileDouble(exp, caseSensitive);
             if (doubleCalc.getResultStyle() == ResultStyle.VALUE_NOT_NULL) {
                 return new AbstractCalc2(exp, doubleCalc) {
                     @Override
@@ -291,9 +291,9 @@ public class JavaFunDef extends FunDefBase {
                 };
             }
         } else if (clazz == double.class) {
-            return compiler.compileDouble(exp);
+            return compiler.compileDouble(exp, caseSensitive);
         } else if (clazz == Object.class) {
-            return compiler.compileScalar(exp, false);
+            return compiler.compileScalar(exp, false, caseSensitive);
         } else {
             throw Util.newInternal("expected primitive type, got " + clazz);
         }

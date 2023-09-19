@@ -148,8 +148,8 @@ public class AbstractExpCompiler implements ExpCompiler {
      * Uses the current ResultStyle to compile the expression.
      */
     @Override
-    public Calc<?> compile(Exp exp) {
-        return exp.accept(this);
+    public Calc<?> compile(Exp exp, boolean caseSensitive) {
+        return exp.accept(this, caseSensitive);
     }
 
     /**
@@ -161,7 +161,7 @@ public class AbstractExpCompiler implements ExpCompiler {
     public Calc<?> compileAs(
             Exp exp,
             Type resultType,
-            List<ResultStyle> preferredResultTypes)
+            List<ResultStyle> preferredResultTypes, boolean caseSensitive)
     {
         if (preferredResultTypes == null) {
             throw new IllegalArgumentException("preferredResultTypes should not be null");
@@ -186,27 +186,27 @@ public class AbstractExpCompiler implements ExpCompiler {
         final List<ResultStyle> save = resultStyles;
         try {
             resultStyles = preferredResultTypes;
-            if (resultType != null && resultType != exp.getType()) {
+            if (resultType != null && resultType != exp.getType(caseSensitive)) {
                 if (resultType instanceof MemberType) {
-                    return compileMember(exp);
+                    return compileMember(exp, caseSensitive);
                 }
                 if (resultType instanceof LevelType) {
-                    return compileLevel(exp);
+                    return compileLevel(exp, caseSensitive);
                 } else if (resultType instanceof HierarchyType) {
-                    return compileHierarchy(exp);
+                    return compileHierarchy(exp, caseSensitive);
                 } else if (resultType instanceof DimensionType) {
-                    return compileDimension(exp);
+                    return compileDimension(exp, caseSensitive);
                 } else if (resultType instanceof ScalarType) {
-                    return compileScalar(exp, false);
+                    return compileScalar(exp, false, caseSensitive);
                 }
             }
-            final Calc<?> calc = compile(exp);
+            final Calc<?> calc = compile(exp, caseSensitive);
             if (substitutions > 0) {
                 final TupleIteratorCalc tupleIteratorCalc = (TupleIteratorCalc) calc;
                 if (tupleIteratorCalc == null) {
                     resultStyles =
                             Collections.singletonList(ResultStyle.ITERABLE);
-                    return compile(exp);
+                    return compile(exp, caseSensitive);
                 }
                 return tupleIteratorCalc;
             }
@@ -217,21 +217,21 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public MemberCalc compileMember(Exp exp) {
-        final Type type = exp.getType();
+    public MemberCalc compileMember(Exp exp, boolean caseSensitive) {
+        final Type type = exp.getType(caseSensitive);
         if (type instanceof HierarchyType) {
-            final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
-            return hierarchyToMember(hierarchyCalc);
+            final HierarchyCalc hierarchyCalc = compileHierarchy(exp, caseSensitive);
+            return hierarchyToMember(hierarchyCalc, caseSensitive);
         }
         if (type instanceof NullType) {
             throw MondrianResource.instance().NullNotSupported.ex();
         } else if (type instanceof DimensionType) {
-            final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
-            return hierarchyToMember(hierarchyCalc);
+            final HierarchyCalc hierarchyCalc = compileHierarchy(exp, caseSensitive);
+            return hierarchyToMember(hierarchyCalc, caseSensitive);
         }
         assert type instanceof MemberType : type;
 
-        Calc<?>calc= compile(exp);
+        Calc<?>calc= compile(exp, caseSensitive);
 
         if(calc instanceof MemberCalc membCalc) {
         	return membCalc;
@@ -242,9 +242,9 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     private MemberCalc hierarchyToMember(
-            HierarchyCalc hierarchyCalc)
+            HierarchyCalc hierarchyCalc, boolean caseSensitive)
     {
-        final Hierarchy hierarchy = hierarchyCalc.getType().getHierarchy();
+        final Hierarchy hierarchy = hierarchyCalc.getType().getHierarchy(caseSensitive);
         if (hierarchy != null) {
             return new HierarchyCurrentMemberFunDef.CurrentMemberFixedCalc(
                     TypeUtil.toMemberType(hierarchyCalc.getType()),
@@ -256,17 +256,17 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public LevelCalc compileLevel(Exp exp) {
-        final Type type = exp.getType();
+    public LevelCalc compileLevel(Exp exp, boolean caseSensitive) {
+        final Type type = exp.getType(caseSensitive);
         if (type instanceof MemberType) {
             // <Member> --> <Member>.Level
-            final MemberCalc memberCalc = compileMember(exp);
+            final MemberCalc memberCalc = compileMember(exp, caseSensitive);
             return new MemberLevelFunDef.MemberLevelCalcImpl(
                     LevelType.forType(type),
                     memberCalc);
         }
         assert type instanceof LevelType;
-		Calc<?> calc = compile(exp);
+		Calc<?> calc = compile(exp, caseSensitive);
 
 		if (calc instanceof LevelCalc lCalc) {
 			return lCalc;
@@ -276,16 +276,16 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public DimensionCalc compileDimension(Exp exp) {
-        final Type type = exp.getType();
+    public DimensionCalc compileDimension(Exp exp, boolean caseSensitive) {
+        final Type type = exp.getType(caseSensitive);
         if (type instanceof HierarchyType) {
-            final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
+            final HierarchyCalc hierarchyCalc = compileHierarchy(exp, caseSensitive);
             return new HierarchyDimensionFunDef.DimensionCalcImpl(
                     new DimensionType(type.getDimension()),
                     hierarchyCalc);
         }
         assert type instanceof DimensionType : type;
-        Calc<?> calc=	compile(exp);
+        Calc<?> calc=	compile(exp, caseSensitive);
 
         if(calc instanceof DimensionCalc dimCalc) {
         	return dimCalc;
@@ -294,8 +294,8 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public HierarchyCalc compileHierarchy(Exp exp) {
-        final Type type = exp.getType();
+    public HierarchyCalc compileHierarchy(Exp exp, boolean caseSensitive) {
+        final Type type = exp.getType(caseSensitive);
         if (type instanceof DimensionType) {
             // <Dimension> --> unique Hierarchy else error
             // Resolve at compile time if constant
@@ -307,32 +307,32 @@ public class AbstractExpCompiler implements ExpCompiler {
                     return ConstantHierarchyCalc.of(hierarchy);
                 }
             }
-            final DimensionCalc dimensionCalc = compileDimension(exp);
+            final DimensionCalc dimensionCalc = compileDimension(exp, caseSensitive);
             return new DimensionDefaultHierarchyCalc(
             		HierarchyType.forType(type),
                     dimensionCalc);
         }
         if (type instanceof MemberType) {
             // <Member> --> <Member>.Hierarchy
-            final MemberCalc memberCalc = compileMember(exp);
+            final MemberCalc memberCalc = compileMember(exp, caseSensitive);
             return new MemberHierarchyFunDef.MemberHirarchyCalcImpl(
             		HierarchyType.forType(type),
                     memberCalc);
         }
         if (type instanceof LevelType) {
             // <Level> --> <Level>.Hierarchy
-            final LevelCalc levelCalc = compileLevel(exp);
+            final LevelCalc levelCalc = compileLevel(exp, caseSensitive);
             return new LevelHierarchyFunDef.LevelHirarchyCalc(
             		HierarchyType.forType(type),
                     levelCalc);
         }
         assert type instanceof HierarchyType;
-        return (HierarchyCalc) compile(exp);
+        return (HierarchyCalc) compile(exp, caseSensitive);
     }
 
     @Override
-    public IntegerCalc compileInteger(Exp exp) {
-        final Calc<?> calc = compileScalar(exp, false);
+    public IntegerCalc compileInteger(Exp exp, boolean caseSensitive) {
+        final Calc<?> calc = compileScalar(exp, false, caseSensitive);
         final Type type = calc.getType();
         if (type instanceof DecimalType decimalType
                 && decimalType.getScale() == 0)
@@ -349,7 +349,7 @@ public class AbstractExpCompiler implements ExpCompiler {
 		if (type instanceof NumericType) {
 			if (calc instanceof org.eclipse.daanse.olap.calc.api.ConstantCalc<?> constantCalc) {
 
-				Object o = constantCalc.evaluate(evaluator);
+				Object o = constantCalc.evaluate(evaluator, caseSensitive);
 				Integer i = null;
 				if (o != null) {
 					Number n = (Number) o;
@@ -357,7 +357,7 @@ public class AbstractExpCompiler implements ExpCompiler {
 				}
 				return new ConstantIntegerCalc(new DecimalType(Integer.MAX_VALUE, 0), i);
 			} else if (calc instanceof DoubleCalc doubleCalc) {
-				return new DoubleToIntegerCalc(exp.getType(),  doubleCalc);
+				return new DoubleToIntegerCalc(exp.getType(caseSensitive),  doubleCalc);
 			}
 
 		} else {
@@ -368,13 +368,13 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
 	@Override
-	public StringCalc compileString(Exp exp) {
-		Calc<?> calc = compileScalar(exp, false);
+	public StringCalc compileString(Exp exp, boolean caseSensitive) {
+		Calc<?> calc = compileScalar(exp, false, caseSensitive);
 
 		if (calc instanceof StringCalc stringCalc) {
 			return stringCalc;
 		}else if (calc instanceof org.eclipse.daanse.olap.calc.api.ConstantCalc cc) {
-			Object o = cc.evaluate(null);
+			Object o = cc.evaluate(null, caseSensitive);
 			String s = null;
 			if (o != null) {
 				s = o.toString();
@@ -386,9 +386,9 @@ public class AbstractExpCompiler implements ExpCompiler {
 	}
 
 	@Override
-	public DateTimeCalc compileDateTime(Exp exp) {
+	public DateTimeCalc compileDateTime(Exp exp, boolean caseSensitive) {
 
-		Calc<?> calc = compileScalar(exp, false);
+		Calc<?> calc = compileScalar(exp, false, caseSensitive);
 		if (calc instanceof DateTimeCalc dtc) {
 			return dtc;
 		}
@@ -396,13 +396,13 @@ public class AbstractExpCompiler implements ExpCompiler {
 	}
 
     @Override
-    public TupleListCalc compileList(Exp exp) {
-        return compileList(exp, false);
+    public TupleListCalc compileList(Exp exp, boolean caseSensitive) {
+        return compileList(exp, false, caseSensitive);
     }
 
     @Override
-    public TupleListCalc compileList(Exp exp, boolean mutable) {
-        if (!(exp.getType() instanceof SetType)) {
+    public TupleListCalc compileList(Exp exp, boolean mutable, boolean caseSensitive) {
+        if (!(exp.getType(caseSensitive) instanceof SetType)) {
             throw new IllegalArgumentException("must be a set: " + exp);
         }
         final List<ResultStyle> resultStyleList;
@@ -411,12 +411,12 @@ public class AbstractExpCompiler implements ExpCompiler {
         } else {
             resultStyleList = ResultStyle.LIST_ONLY;
         }
-        Calc<?> calc = compileAs(exp, null, resultStyleList);
+        Calc<?> calc = compileAs(exp, null, resultStyleList, caseSensitive);
         if (calc instanceof TupleListCalc tupleListCalc) {
             return tupleListCalc;
         }
         if (calc == null) {
-            calc = compileAs(exp, null, ResultStyle.ITERABLE_ANY);
+            calc = compileAs(exp, null, ResultStyle.ITERABLE_ANY, caseSensitive);
             assert calc != null;
         }
         if (calc instanceof TupleListCalc tupleListCalc) {
@@ -443,26 +443,26 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public TupleIteratorCalc compileIter(Exp exp) {
+    public TupleIteratorCalc compileIter(Exp exp, boolean caseSensitive) {
         TupleIteratorCalc calc =
-                (TupleIteratorCalc) compileAs(exp, null, ResultStyle.ITERABLE_ONLY);
+                (TupleIteratorCalc) compileAs(exp, null, ResultStyle.ITERABLE_ONLY, caseSensitive);
         if (calc == null) {
-            calc = (TupleIteratorCalc) compileAs(exp, null, ResultStyle.ANY_ONLY);
+            calc = (TupleIteratorCalc) compileAs(exp, null, ResultStyle.ANY_ONLY, caseSensitive);
             assert calc != null;
         }
         return calc;
     }
 
     @Override
-    public BooleanCalc compileBoolean(Exp exp) {
-        final Calc<?> calc = compileScalar(exp, false);
+    public BooleanCalc compileBoolean(Exp exp, boolean caseSensitive) {
+        final Calc<?> calc = compileScalar(exp, false, caseSensitive);
         if (calc instanceof BooleanCalc bc) {
             return bc;
         }
         //
         if (calc instanceof ConstantCalc constantCalc)
         {
-        	Object o=constantCalc.evaluate(null);
+        	Object o=constantCalc.evaluate(null, caseSensitive);
 
         	Boolean b = null;
         	if( o ==null) {
@@ -480,21 +480,21 @@ public class AbstractExpCompiler implements ExpCompiler {
 
 
         if (calc instanceof DoubleCalc doubleCalc) {
-            return new DoubleToBooleanCalc(exp.getType(),  doubleCalc);
+            return new DoubleToBooleanCalc(exp.getType(caseSensitive),  doubleCalc);
         } else if (calc instanceof IntegerCalc integerCalc) {
-            return new IntgegerToBooleanCalc(exp.getType(),  integerCalc);
+            return new IntgegerToBooleanCalc(exp.getType(caseSensitive),  integerCalc);
         } else {
-            return new UnknownToBooleanCalc(exp.getType(),  calc);
+            return new UnknownToBooleanCalc(exp.getType(caseSensitive),  calc);
         }
     }
 
     @Override
-    public DoubleCalc compileDouble(Exp exp) {
-        final Calc<?> calc = compileScalar(exp, false);
+    public DoubleCalc compileDouble(Exp exp, boolean caseSensitive) {
+        final Calc<?> calc = compileScalar(exp, false, caseSensitive);
         if (calc instanceof ConstantCalc constantCalc
-                && !(calc.evaluate(null) instanceof Double))
+                && !(calc.evaluate(null, caseSensitive) instanceof Double))
         {
-        	Object o=constantCalc.evaluate(null);
+        	Object o=constantCalc.evaluate(null, caseSensitive);
 
         	Double d = null;
         	if( o ==null) {
@@ -514,7 +514,7 @@ public class AbstractExpCompiler implements ExpCompiler {
             return doubleCalc;
         }
         if (calc instanceof IntegerCalc integerCalc) {
-            return new IntegerToDoubleCalc(exp.getType(),  integerCalc);
+            return new IntegerToDoubleCalc(exp.getType(caseSensitive),  integerCalc);
         }
 
 		return new UnknownToDoubleCalc(new NumericType(), calc);
@@ -523,22 +523,22 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public TupleCalc compileTuple(Exp exp) {
-        return (TupleCalc) compile(exp);
+    public TupleCalc compileTuple(Exp exp, boolean caseSensitive) {
+        return (TupleCalc) compile(exp, caseSensitive);
     }
 
     @Override
-    public Calc<?> compileScalar(Exp exp, boolean specific) {
-        final Type type = exp.getType();
+    public Calc<?> compileScalar(Exp exp, boolean specific, boolean caseSensitive) {
+        final Type type = exp.getType(caseSensitive);
         if (type instanceof MemberType) {
-            final MemberCalc calc = compileMember(exp);
+            final MemberCalc calc = compileMember(exp, caseSensitive);
             return memberToScalar(calc);
         }
         if ((type instanceof DimensionType) || (type instanceof HierarchyType)) {
-            final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
-            return hierarchyToScalar(hierarchyCalc);
+            final HierarchyCalc hierarchyCalc = compileHierarchy(exp, caseSensitive);
+            return hierarchyToScalar(hierarchyCalc, caseSensitive);
         } else if (type instanceof TupleType tupleType) {
-            final TupleCalc tupleCalc = compileTuple(exp);
+            final TupleCalc tupleCalc = compileTuple(exp, caseSensitive);
             final TupleValueCalc scalarCalc =
                     new TupleValueCalc(
                             tupleType.getValueType(),
@@ -548,24 +548,24 @@ public class AbstractExpCompiler implements ExpCompiler {
         } else if (type instanceof ScalarType) {
             if (specific) {
                 if (type instanceof BooleanType) {
-                    return compileBoolean(exp);
+                    return compileBoolean(exp, caseSensitive);
                 } else if (type instanceof NumericType) {
-                    return compileDouble(exp);
+                    return compileDouble(exp, caseSensitive);
                 } else if (type instanceof StringType) {
-                    return compileString(exp);
+                    return compileString(exp, caseSensitive);
                 } else {
-                    return compile(exp);
+                    return compile(exp, caseSensitive);
                 }
             } else {
-                return compile(exp);
+                return compile(exp, caseSensitive);
             }
         } else {
-            return compile(exp);
+            return compile(exp, caseSensitive);
         }
     }
 
-    private Calc<?> hierarchyToScalar(HierarchyCalc hierarchyCalc) {
-        final MemberCalc memberCalc = hierarchyToMember(hierarchyCalc);
+    private Calc<?> hierarchyToScalar(HierarchyCalc hierarchyCalc, boolean caseSensitive) {
+        final MemberCalc memberCalc = hierarchyToMember(hierarchyCalc, caseSensitive);
         return memberToScalar(memberCalc);
     }
 
@@ -578,7 +578,7 @@ public class AbstractExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public ParameterSlot registerParameter(Parameter parameter) {
+    public ParameterSlot registerParameter(Parameter parameter, boolean caseSensitive) {
         final ParameterSlot slot = parameterSlots.get(parameter);
         if (slot != null) {
             return slot;
@@ -594,7 +594,7 @@ public class AbstractExpCompiler implements ExpCompiler {
         Exp defaultExp = parameter.getDefaultExp();
         Calc<?> calc;
         if (type instanceof ScalarType) {
-            if (!defaultExp.getType().equals(type)) {
+            if (!defaultExp.getType(caseSensitive).equals(type)) {
                 defaultExp =
                         new UnresolvedFunCallImpl(
                                 "Cast",
@@ -606,9 +606,9 @@ public class AbstractExpCompiler implements ExpCompiler {
                                                         TypeUtil.typeToCategory(type)))});
                 defaultExp = getValidator().validate(defaultExp, true);
             }
-            calc = compileScalar(defaultExp, true);
+            calc = compileScalar(defaultExp, true, caseSensitive);
         } else {
-            calc = compileAs(defaultExp, type, resultStyles);
+            calc = compileAs(defaultExp, type, resultStyles, caseSensitive);
         }
         slot2.setDefaultValueCalc(calc);
         return slot2;
@@ -655,9 +655,9 @@ public class AbstractExpCompiler implements ExpCompiler {
 		}
 
 		@Override
-		public Double evaluate(Evaluator evaluator) {
+		public Double evaluate(Evaluator evaluator, boolean caseSensitive) {
 
-			Object o = getFirstChildCalc().evaluate(evaluator);
+			Object o = getFirstChildCalc().evaluate(evaluator, caseSensitive);
 			if (o == null) {
 				return FunUtil.DOUBLE_NULL;
 				// null;

@@ -115,18 +115,18 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
         return a2;
     }
 
-    public Object accept(MdxVisitor visitor) {
+    public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         final Object o = visitor.visit(this);
 
         if (visitor.shouldVisitChildren()) {
             // visit the expression which forms the axis
-            exp.accept(visitor);
+            exp.accept(visitor, caseSensitive);
         }
         return o;
     }
 
     @Override
-    public Calc compile(ExpCompiler compiler, ResultStyle resultStyle) {
+    public Calc compile(ExpCompiler compiler, ResultStyle resultStyle, boolean caseSensitive) {
         Exp expInner = this.exp;
         if (axisOrdinal.isFilter()) {
             expInner = normalizeSlicerExpression(expInner);
@@ -138,7 +138,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
         case MUTABLE_LIST:
             return compiler.compileList(expInner, true);
         case ITERABLE:
-            return compiler.compileIter(expInner);
+            return compiler.compileIter(expInner, caseSensitive);
         default:
             throw Util.unexpected(resultStyle);
         }
@@ -239,9 +239,9 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
     }
 
     @Override
-    public void resolve(Validator validator) {
-        exp = validator.validate(exp, false);
-        final Type type = exp.getType();
+    public void resolve(Validator validator, boolean caseSensitive) {
+        exp = validator.validate(exp, false, caseSensitive);
+        final Type type = exp.getType(caseSensitive);
         if (!TypeUtil.isSet(type)) {
             // If expression is a member or a tuple, implicitly convert it
             // into a set. Dimensions and hierarchies can be converted to
@@ -256,7 +256,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
                         "{}",
                         Syntax.Braces,
                         new Exp[] {exp});
-                exp = validator.validate(exp, false);
+                exp = validator.validate(exp, false, caseSensitive);
             } else {
                 throw MondrianResource.instance().MdxAxisIsNotSet.ex(
                     axisOrdinal.name());
@@ -270,12 +270,12 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
     }
 
     @Override
-	public void unparse(PrintWriter pw) {
+	public void unparse(PrintWriter pw, boolean caseSensitive) {
         if (nonEmpty) {
             pw.print("NON EMPTY ");
         }
         if (exp != null) {
-            exp.unparse(pw);
+            exp.unparse(pw, caseSensitive);
         }
         if (dimensionProperties.length > 0) {
             pw.print(" DIMENSION PROPERTIES ");
@@ -284,7 +284,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
                 if (i > 0) {
                     pw.print(", ");
                 }
-                dimensionProperty.unparse(pw);
+                dimensionProperty.unparse(pw, caseSensitive);
             }
         }
         if (!axisOrdinal.isFilter()) {
@@ -319,9 +319,9 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
     }
 
     @Override
-    public void validate(Validator validator) {
+    public void validate(Validator validator, boolean caseSensitive) {
         if (axisOrdinal.isFilter() && exp != null) {
-            exp = validator.validate(exp, false);
+            exp = validator.validate(exp, false, caseSensitive);
         }
     }
 

@@ -48,7 +48,7 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
     }
 
     @Override
-	public Type getType() {
+	public Type getType(boolean caseSensitive) {
         return parameter.getType();
     }
 
@@ -84,13 +84,13 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
-        return ((ParameterCompilable) parameter).compile(compiler);
+	public Calc accept(ExpCompiler compiler, boolean caseSensitive) {
+        return ((ParameterCompilable) parameter).compile(compiler, caseSensitive);
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
-        return visitor.visit(this);
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
+        return visitor.visit(this, caseSensitive);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
      * @param pw PrintWriter
      */
     @Override
-	public void unparse(PrintWriter pw) {
+	public void unparse(PrintWriter pw, boolean caseSensitive) {
         // Is this the first time we've seen a statement parameter? If so,
         // we will generate a call to the Parameter() function, to define
         // the parameter.
@@ -131,11 +131,11 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
                 pw.print(Category.instance.getName(category).toUpperCase());
                 break;
             case Category.MEMBER:
-                pw.print(uniqueName(type));
+                pw.print(uniqueName(type, caseSensitive));
                 break;
             case Category.SET:
                 Type elementType = ((SetType) type).getElementType();
-                pw.print(uniqueName(elementType));
+                pw.print(uniqueName(elementType, caseSensitive));
                 break;
             default:
                 throw Category.instance.badValue(category);
@@ -143,7 +143,7 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
             pw.print(", ");
             final Object value = parameter.getValue();
             if (value == null) {
-                parameter.getDefaultExp().unparse(pw);
+                parameter.getDefaultExp().unparse(pw, caseSensitive);
             } else if (value instanceof String s) {
                 pw.print(Util.quoteForMdx(s));
             } else if (value instanceof List list) {
@@ -177,11 +177,11 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
      * @param type Type
      * @return Most specific description of type
      */
-    private String uniqueName(Type type) {
+    private String uniqueName(Type type, boolean caseSensitive) {
         if (type.getLevel() != null) {
             return type.getLevel().getUniqueName();
-        } else if (type.getHierarchy() != null) {
-            return type.getHierarchy().getUniqueName();
+        } else if (type.getHierarchy(caseSensitive) != null) {
+            return type.getHierarchy(caseSensitive).getUniqueName();
         } else {
             return type.getDimension().getUniqueName();
         }

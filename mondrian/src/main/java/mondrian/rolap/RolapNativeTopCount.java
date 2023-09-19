@@ -85,23 +85,23 @@ public class RolapNativeTopCount extends RolapNativeSet {
          * eliminating empty tuples.
          */
         @Override
-		protected boolean isJoinRequired() {
+		protected boolean isJoinRequired(boolean caseSensitive) {
             return orderByExpr != null;
         }
 
         @Override
-        public boolean supportsAggTables() {
+        public boolean supportsAggTables(boolean caseSensitive) {
             // We can only safely use agg tables if we can limit
             // results to those with data (i.e. if we would be
             // joining to a fact table).
-            return isJoinRequired();
+            return isJoinRequired(caseSensitive);
         }
 
         @Override
 		public void addConstraint(
             SqlQuery sqlQuery,
             RolapCube baseCube,
-            AggStar aggStar)
+            AggStar aggStar, boolean caseSensitive)
         {
             assert isValid();
             if (orderByExpr != null) {
@@ -109,7 +109,7 @@ public class RolapNativeTopCount extends RolapNativeSet {
                     new RolapNativeSql(
                         sqlQuery, aggStar, getEvaluator(), null);
                 final StringBuilder orderBySql =
-                    sql.generateTopCountOrderBy(orderByExpr);
+                    sql.generateTopCountOrderBy(orderByExpr, caseSensitive);
                 boolean nullable =
                     deduceNullability(orderByExpr);
                 final String orderByAlias =
@@ -122,8 +122,8 @@ public class RolapNativeTopCount extends RolapNativeSet {
                     nullable,
                     true);
             }
-            if (isJoinRequired()) {
-                super.addConstraint(sqlQuery, baseCube, aggStar);
+            if (isJoinRequired(baseCube.getContext().getConfig().caseSensitive())) {
+                super.addConstraint(sqlQuery, baseCube, aggStar, caseSensitive);
             } else if (args.length == 1) {
                 args[0].addConstraint(sqlQuery, baseCube, null);
             }
@@ -171,7 +171,7 @@ public class RolapNativeTopCount extends RolapNativeSet {
 	NativeEvaluator createEvaluator(
         RolapEvaluator evaluator,
         FunctionDefinition fun,
-        Exp[] args)
+        Exp[] args, boolean caseSensitive)
     {
         if (!isEnabled() || !isValidContext(evaluator)) {
             return null;
@@ -193,7 +193,7 @@ public class RolapNativeTopCount extends RolapNativeSet {
 
         // extract the set expression
         List<CrossJoinArg[]> allArgs =
-            crossJoinArgFactory().checkCrossJoinArg(evaluator, args[0]);
+            crossJoinArgFactory().checkCrossJoinArg(evaluator, args[0], caseSensitive);
 
         // checkCrossJoinArg returns a list of CrossJoinArg arrays.  The first
         // array is the CrossJoin dimensions.  The second array, if any,
@@ -236,7 +236,7 @@ public class RolapNativeTopCount extends RolapNativeSet {
         Exp orderByExpr = null;
         if (args.length == 3) {
             orderByExpr = args[2];
-            StringBuilder orderBySQL = sql.generateTopCountOrderBy(args[2]);
+            StringBuilder orderBySQL = sql.generateTopCountOrderBy(args[2], caseSensitive);
             if (orderBySQL == null) {
                 alertNonNativeTopCount(
                     "Cannot convert order by expression to SQL.");

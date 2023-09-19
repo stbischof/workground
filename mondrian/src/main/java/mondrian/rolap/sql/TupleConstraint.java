@@ -37,7 +37,7 @@ public interface TupleConstraint extends SqlConstraint {
     public void addConstraint(
         SqlQuery sqlQuery,
         RolapCube baseCube,
-        AggStar aggStar);
+        AggStar aggStar, boolean caseSensitive);
 
     /**
      * Will be called multiple times for every "group by" level in
@@ -83,5 +83,5 @@ public interface TupleConstraint extends SqlConstraint {
     /**
      * @return true if the constraint can leverage an aggregate table
      */
-    public boolean supportsAggTables();
+    public boolean supportsAggTables(boolean caseSensitive);
 }

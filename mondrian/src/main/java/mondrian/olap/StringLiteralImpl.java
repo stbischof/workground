@@ -36,7 +36,7 @@ public class StringLiteralImpl extends AbstractLiteralImpl<String> implements St
 	}
 
 	@Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
 		return visitor.visit(this);
 	}
 

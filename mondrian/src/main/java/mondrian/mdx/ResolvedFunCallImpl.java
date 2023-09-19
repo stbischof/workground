@@ -71,7 +71,8 @@ public final class ResolvedFunCallImpl extends ExpBase implements  ResolvedFunCa
 
     @Override
 	public String toString() {
-        return Util.unparse(this);
+        return Util.unparse(this, true);
+        //TODO UTILS
     }
 
     @Override
@@ -105,6 +106,7 @@ public final class ResolvedFunCallImpl extends ExpBase implements  ResolvedFunCa
 	public Exp[] getArgs() {
         return args;
     }
+
 
     /**
      * Returns the number of arguments.
@@ -149,39 +151,39 @@ public final class ResolvedFunCallImpl extends ExpBase implements  ResolvedFunCa
     }
 
     @Override
-	public final Type getType() {
+	public final Type getType(boolean caseSensitive) {
         return returnType;
     }
 
     @Override
-	public Exp accept(Validator validator) {
+	public Exp accept(Validator validator, boolean caseSensitive) {
         // even though the function has already been validated, we need
         // to walk through the arguments to determine which measures are
         // referenced
         Exp[] newArgs = new Exp[args.length];
         FunUtil.resolveFunArgs(
-            validator, funDef, args, newArgs, getFunName(), getSyntax());
+            validator, funDef, args, newArgs, getFunName(), getSyntax(), caseSensitive);
 
         return this;
     }
 
     @Override
-	public void unparse(PrintWriter pw) {
-        funDef.unparse(args, pw);
+	public void unparse(PrintWriter pw, boolean caseSensitive) {
+        funDef.unparse(args, pw, caseSensitive);
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
-        return funDef.compileCall(this, compiler);
+	public Calc accept(ExpCompiler compiler, boolean caseSensitive) {
+        return funDef.compileCall(this, compiler, caseSensitive);
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
-        final Object o = visitor.visit(this);
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
+        final Object o = visitor.visit(this, caseSensitive);
         if (visitor.shouldVisitChildren()) {
             // visit the call's arguments
             for (Exp arg : args) {
-                arg.accept(visitor);
+                arg.accept(visitor, caseSensitive);
             }
         }
         return o;

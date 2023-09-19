@@ -53,7 +53,7 @@ public sealed interface QueryPart permits
      *
      * @param pw writer
      */
-    void unparse(PrintWriter pw);
+    void unparse(PrintWriter pw, boolean caseSensitive);
 
     /**
      * Returns the plan that Mondrian intends to use to execute this query.

@@ -1620,14 +1620,15 @@ public class RolapHierarchy extends HierarchyBase {
             if (!(s instanceof NameSegment nameSegment)) {
                 return null;
             }
-            if (Util.equalName(nameSegment.getName(), dimension.getName())) {
+            if (Util.equalName(nameSegment.getName(), dimension.getName(), schemaReader.getContext().getConfig().caseSensitive())) {
                 return dimension;
             }
             // Archaic form <dimension>.<hierarchy>, e.g. [Time.Weekly].[1997]
             if (!MondrianProperties.instance().SsasCompatibleNaming.get()
                 && Util.equalName(
                     nameSegment.getName(),
-                new StringBuilder(dimension.getName()).append(".").append(subName).toString()))
+                new StringBuilder(dimension.getName()).append(".").append(subName).toString(),
+                schemaReader.getContext().getConfig().caseSensitive()))
             {
                 return RolapHierarchy.this;
             }

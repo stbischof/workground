@@ -97,7 +97,7 @@ public class SqlContextConstraint
             Query query = context.getQuery();
             Set<RolapCube> baseCubes = new HashSet<>();
             List<RolapCube> baseCubeList = new ArrayList<>();
-            if (!findVirtualCubeBaseCubes(query, baseCubes, baseCubeList)) {
+            if (!findVirtualCubeBaseCubes(query, baseCubes, baseCubeList, cube.getContext().getConfig().caseSensitive())) {
                 return false;
             }
             if (levels == null) {
@@ -107,7 +107,7 @@ public class SqlContextConstraint
         }
 
         if (SqlConstraintUtils.measuresConflictWithMembers(
-                context.getQuery().getMeasuresMembers(), context.getMembers()))
+                context.getQuery().getMeasuresMembers(), context.getMembers(), cube.getContext().getConfig().caseSensitive()))
         {
             // one or more dimension members referenced within measure calcs
             // conflict with the context members.  Not safe to apply
@@ -144,7 +144,7 @@ public class SqlContextConstraint
     private static boolean findVirtualCubeBaseCubes(
         Query query,
         Set<RolapCube> baseCubes,
-        List<RolapCube> baseCubeList)
+        List<RolapCube> baseCubeList, boolean caseSensitive)
     {
         // Gather the unique set of level-to-column maps corresponding
         // to the underlying star/cube where the measure column
@@ -156,7 +156,7 @@ public class SqlContextConstraint
             Cube cube = query.getCube();
             Dimension dimension = cube.getDimensions()[0];
             query.addMeasuresMembers(
-                dimension.getHierarchy().getDefaultMember());
+                dimension.getHierarchy(caseSensitive).getDefaultMember());
         }
         for (Member member : query.getMeasuresMembers()) {
             if (member instanceof RolapStoredMeasure rolapStoredMeasure) {
@@ -318,7 +318,7 @@ public class SqlContextConstraint
 	public void addConstraint(
         SqlQuery sqlQuery,
         RolapCube baseCube,
-        AggStar aggStar)
+        AggStar aggStar, boolean caseSensitive)
     {
         SqlConstraintUtils.addContextConstraint(
             sqlQuery, aggStar, evaluator, baseCube, strict);
@@ -332,7 +332,7 @@ public class SqlContextConstraint
      * that contains the requested members) with the fact table for NON EMPTY
      * optimization.
      */
-    protected boolean isJoinRequired() {
+    protected boolean isJoinRequired(boolean caseSensitive) {
         Member[] members = evaluator.getMembers();
         // members[0] is the Measure, so loop starts at 1
         for (int i = 1; i < members.length; i++) {
@@ -353,7 +353,7 @@ public class SqlContextConstraint
         AggStar aggStar,
         RolapLevel level)
     {
-        if (!isJoinRequired()) {
+        if (!isJoinRequired(baseCube.getContext().getConfig().caseSensitive())) {
             return;
         }
         SqlConstraintUtils.joinLevelTableToFactTable(
@@ -378,7 +378,7 @@ public class SqlContextConstraint
     }
 
     @Override
-    public boolean supportsAggTables() {
+    public boolean supportsAggTables(boolean caseSensitive) {
         return true;
     }
 }

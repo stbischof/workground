@@ -752,7 +752,7 @@ public class RolapCell implements Cell {
         }
 
         @Override
-		public Object visit(MemberExpressionImpl memberExpr) {
+		public Object visit(MemberExpressionImpl memberExpr, boolean caseSensitive) {
             handleMember(memberExpr.getMember());
             return null;
         }
@@ -791,7 +791,7 @@ public class RolapCell implements Cell {
                 handleMember(((RolapCubeMember) member).member);
             } else if (member instanceof RolapHierarchy.RolapCalculatedMeasure measure)
             {
-                measure.getFormula().getExpression().accept(this);
+                measure.getFormula().getExpression().accept(this, cube.getContext().getConfig().caseSensitive());
             } else if (member instanceof RolapMember) {
                 // regular RolapMember - fine
             } else {

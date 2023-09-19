@@ -90,7 +90,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0));
         final Calc calc =
             call.getArgCount() > 1

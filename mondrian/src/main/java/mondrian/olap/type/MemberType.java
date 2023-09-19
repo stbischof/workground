@@ -30,9 +30,10 @@ public class MemberType implements Type {
     private final Level level;
     private final Member member;
     private final String digest;
+    private final boolean caseSensitive;
 
     public static final MemberType Unknown =
-        new MemberType(null, null, null, null);
+        new MemberType(null, null, null, null, true);
 
     /**
      * Creates a type representing a member.
@@ -46,23 +47,24 @@ public class MemberType implements Type {
         Dimension dimension,
         Hierarchy hierarchy,
         Level level,
-        Member member)
+        Member member, boolean caseSensitive)
     {
         this.dimension = dimension;
         this.hierarchy = hierarchy;
         this.level = level;
         this.member = member;
+        this.caseSensitive = caseSensitive;
         if (member != null) {
             Util.assertPrecondition(level != null);
             Util.assertPrecondition(member.getLevel() == level);
         }
         if (level != null) {
             Util.assertPrecondition(hierarchy != null);
-            Util.assertPrecondition(level.getHierarchy() == hierarchy);
+            Util.assertPrecondition(level.getHierarchy(caseSensitive) == hierarchy);
         }
         if (hierarchy != null) {
             Util.assertPrecondition(dimension != null);
-            Util.assertPrecondition(hierarchy.getDimension() == dimension);
+            Util.assertPrecondition(hierarchy.getDimension(caseSensitive) == dimension);
         }
         StringBuilder buf = new StringBuilder("MemberType<");
         if (member != null) {
@@ -78,34 +80,34 @@ public class MemberType implements Type {
         this.digest = buf.toString();
     }
 
-    public static MemberType forDimension(Dimension dimension) {
-        return new MemberType(dimension, null, null, null);
+    public static MemberType forDimension(Dimension dimension, boolean caseSensitive) {
+        return new MemberType(dimension, null, null, null, caseSensitive);
     }
 
-    public static MemberType forHierarchy(Hierarchy hierarchy) {
+    public static MemberType forHierarchy(Hierarchy hierarchy, boolean caseSensitive) {
         final Dimension dimension;
         if (hierarchy == null) {
             dimension = null;
         } else {
-            dimension = hierarchy.getDimension();
+            dimension = hierarchy.getDimension(caseSensitive);
         }
-        return new MemberType(dimension, hierarchy, null, null);
+        return new MemberType(dimension, hierarchy, null, null, caseSensitive);
     }
 
-    public static MemberType forLevel(Level level) {
+    public static MemberType forLevel(Level level, boolean caseSensitive) {
         final Dimension dimension;
         final Hierarchy hierarchy;
         if (level == null) {
             dimension = null;
             hierarchy = null;
         } else {
-            dimension = level.getDimension();
-            hierarchy = level.getHierarchy();
+            dimension = level.getDimension(caseSensitive);
+            hierarchy = level.getHierarchy(caseSensitive);
         }
-        return new MemberType(dimension, hierarchy, level, null);
+        return new MemberType(dimension, hierarchy, level, null, caseSensitive);
     }
 
-    public static MemberType forMember(Member member) {
+    public static MemberType forMember(Member member, boolean caseSensitive) {
         final Dimension dimension;
         final Hierarchy hierarchy;
         final Level level;
@@ -114,11 +116,11 @@ public class MemberType implements Type {
             hierarchy = null;
             level = null;
         } else {
-            dimension = member.getDimension();
-            hierarchy = member.getHierarchy();
+            dimension = member.getDimension(caseSensitive);
+            hierarchy = member.getHierarchy(caseSensitive);
             level = member.getLevel();
         }
-        return new MemberType(dimension, hierarchy, level, member);
+        return new MemberType(dimension, hierarchy, level, member, caseSensitive);
     }
 
     @Override
@@ -127,7 +129,7 @@ public class MemberType implements Type {
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return hierarchy;
     }
 
@@ -152,7 +154,7 @@ public class MemberType implements Type {
             || (!definitely
                 && this.hierarchy == null
                 && (this.dimension == null
-                    || this.dimension == hierarchy.getDimension()));
+                    || this.dimension == hierarchy.getDimension(caseSensitive)));
     }
 
     public Type getValueType() {
@@ -166,25 +168,25 @@ public class MemberType implements Type {
         return dimension;
     }
 
-    public static MemberType forType(Type type) {
+    public static MemberType forType(Type type, boolean caseSensitive) {
         if (type instanceof MemberType) {
             return (MemberType) type;
         } else {
             return new MemberType(
                 type.getDimension(),
-                type.getHierarchy(),
+                type.getHierarchy(caseSensitive),
                 type.getLevel(),
-                null);
+                null, caseSensitive);
         }
     }
 
     @Override
-	public Type computeCommonType(Type type, int[] conversionCount) {
+	public Type computeCommonType(Type type, int[] conversionCount, boolean caseSensitive) {
         if (type instanceof ScalarType) {
-            return getValueType().computeCommonType(type, conversionCount);
+            return getValueType().computeCommonType(type, conversionCount, caseSensitive);
         }
         if (type instanceof TupleType) {
-            return type.computeCommonType(this, conversionCount);
+            return type.computeCommonType(this, conversionCount, caseSensitive);
         }
         if (!(type instanceof MemberType that)) {
             return null;
@@ -199,18 +201,18 @@ public class MemberType implements Type {
         {
             return new MemberType(
                 this.getDimension(),
-                this.getHierarchy(),
+                this.getHierarchy(caseSensitive),
                 this.getLevel(),
-                null);
+                null, caseSensitive);
         }
-        if (this.getHierarchy() != null
-            && this.getHierarchy().equals(that.getHierarchy()))
+        if (this.getHierarchy(caseSensitive) != null
+            && this.getHierarchy(caseSensitive).equals(that.getHierarchy(caseSensitive)))
         {
             return new MemberType(
                 this.getDimension(),
-                this.getHierarchy(),
+                this.getHierarchy(caseSensitive),
                 null,
-                null);
+                null, caseSensitive);
         }
         if (this.getDimension() != null
             && this.getDimension().equals(that.getDimension()))
@@ -219,20 +221,20 @@ public class MemberType implements Type {
                 this.getDimension(),
                 null,
                 null,
-                null);
+                null, caseSensitive);
         }
         return MemberType.Unknown;
     }
 
     @Override
-	public boolean isInstance(Object value) {
+	public boolean isInstance(Object value, boolean caseSensitive) {
         return value instanceof Member
             && (level == null
             || ((Member) value).getLevel().equals(level))
             && (hierarchy == null
-            || ((Member) value).getHierarchy().equals(hierarchy))
+            || ((Member) value).getHierarchy(caseSensitive).equals(hierarchy))
             && (dimension == null
-            || ((Member) value).getDimension().equals(dimension));
+            || ((Member) value).getDimension(caseSensitive).equals(dimension));
     }
 
     @Override

@@ -79,7 +79,7 @@ public class MemberExtractingVisitor extends MdxVisitorImpl {
     }
 
     @Override
-	public Object visit(ParameterExpression parameterExpr) {
+	public Object visit(ParameterExpression parameterExpr, boolean caseSensitive) {
         final Parameter parameter = parameterExpr.getParameter();
         final Type type = parameter.getType();
         if (type instanceof mondrian.olap.type.MemberType) {
@@ -89,14 +89,14 @@ public class MemberExtractingVisitor extends MdxVisitorImpl {
                     addMember(member);
                 }
             } else {
-               parameter.getDefaultExp().accept(this);
+               parameter.getDefaultExp().accept(this, caseSensitive);
             }
         }
         return null;
     }
 
     @Override
-	public Object visit(MemberExpressionImpl memberExpr) {
+	public Object visit(MemberExpressionImpl memberExpr, boolean caseSensitive) {
         Member member = memberExpr.getMember();
         if (!member.isMeasure() && !member.isCalculated()) {
             addMember(member);
@@ -104,9 +104,9 @@ public class MemberExtractingVisitor extends MdxVisitorImpl {
             if (activeMembers.add(member)) {
                 Exp exp = member.getExpression();
                 finder.found = false;
-                exp.accept(finder);
+                exp.accept(finder, caseSensitive);
                 if (! finder.found) {
-                    exp.accept(this);
+                    exp.accept(this, caseSensitive);
                 }
                 activeMembers.remove(member);
             }
@@ -134,12 +134,12 @@ public class MemberExtractingVisitor extends MdxVisitorImpl {
     }
 
     @Override
-	public Object visit(ResolvedFunCallImpl funCall) {
+	public Object visit(ResolvedFunCallImpl funCall, boolean caseSensitive) {
         if (funCall == call) {
             turnOffVisitChildren();
         } else if (MemberExtractingVisitor.blacklist.contains(funCall.getFunName())) {
             for (Exp arg : funCall.getArgs()) {
-                arg.accept(new MemberExtractingVisitor(memberSet, call, true));
+                arg.accept(new MemberExtractingVisitor(memberSet, call, true), caseSensitive);
             }
             turnOffVisitChildren();
         }

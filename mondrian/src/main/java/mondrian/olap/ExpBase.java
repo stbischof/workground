@@ -43,14 +43,15 @@ public abstract class ExpBase
         Exp[] exps,
         String start,
         String mid,
-        String end)
+        String end,
+        boolean caseSensitive)
     {
         pw.print(start);
         for (int i = 0; i < exps.length; i++) {
             if (i > 0) {
                 pw.print(mid);
             }
-            exps[i].unparse(pw);
+            exps[i].unparse(pw, caseSensitive);
         }
         pw.print(end);
     }
@@ -64,7 +65,7 @@ public abstract class ExpBase
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpCompiler compiler, boolean caseSensitive) {
         throw new UnsupportedOperationException(this.toString());
     }
 }

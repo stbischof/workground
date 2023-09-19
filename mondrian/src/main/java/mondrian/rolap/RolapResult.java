@@ -599,7 +599,7 @@ public class RolapResult extends ResultBase {
                   for ( Member m : tuple0 ) {
                     if ( m.isCalculated() ) {
                       CalculatedMeasureVisitor visitor = new CalculatedMeasureVisitor();
-                      m.getExpression().accept( visitor );
+                      m.getExpression().accept( visitor, getCube().getContext().getConfig().caseSensitive() );
                       Dimension dimension = visitor.dimension;
                       if ( removeDimension( dimension, nonAllMembers ) ) {
                         redo = true;
@@ -830,7 +830,7 @@ public final Execution getExecution() {
     }
 
     @Override
-	public Object visit( MemberExpressionImpl memberExpr ) {
+	public Object visit( MemberExpressionImpl memberExpr, boolean caseSensitive) {
       Member member = memberExpr.getMember();
       dimension = member.getHierarchy().getDimension();
       return null;

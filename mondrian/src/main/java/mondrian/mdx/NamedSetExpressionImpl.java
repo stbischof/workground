@@ -132,10 +132,10 @@ public class NamedSetExpressionImpl extends ExpBase implements Exp, NamedSetExpr
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         Object o = visitor.visit(this);
         if (visitor.shouldVisitChildren()) {
-            namedSet.getExp().accept(visitor);
+            namedSet.getExp().accept(visitor, caseSensitive);
         }
         return o;
     }

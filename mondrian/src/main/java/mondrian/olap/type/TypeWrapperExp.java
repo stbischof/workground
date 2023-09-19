@@ -63,7 +63,7 @@ public class TypeWrapperExp implements Exp {
     }
 
     @Override
-    public Object accept(MdxVisitor visitor) {
+    public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 

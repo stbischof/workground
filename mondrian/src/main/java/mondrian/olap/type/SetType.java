@@ -90,13 +90,13 @@ public class SetType implements Type {
         return elementType.usesHierarchy(hierarchy, definitely);
     }
 
-    public List<Hierarchy> getHierarchies() {
+    public List<Hierarchy> getHierarchies(boolean caseSensitive) {
         if(elementType instanceof TupleType tupleType) {
             return tupleType.getHierarchies();
         }
         else { //MemberType
             ArrayList<Hierarchy> result = new ArrayList<>();
-            result.add(this.getHierarchy());
+            result.add(this.getHierarchy(caseSensitive));
             return result;
         }
     }
@@ -109,10 +109,10 @@ public class SetType implements Type {
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return elementType == null
             ? null
-            : elementType.getHierarchy();
+            : elementType.getHierarchy(caseSensitive);
     }
 
     @Override

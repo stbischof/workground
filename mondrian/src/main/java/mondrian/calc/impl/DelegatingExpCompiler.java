@@ -84,79 +84,79 @@ public class DelegatingExpCompiler implements ExpCompiler {
     public Calc compileAs(
             Exp exp,
             Type resultType,
-            List<ResultStyle> preferredResultTypes)
+            List<ResultStyle> preferredResultTypes, boolean caseSensitive)
     {
-        return parent.compileAs(wrap(exp), resultType, preferredResultTypes);
+        return parent.compileAs(wrap(exp), resultType, preferredResultTypes, caseSensitive);
     }
 
     @Override
-    public MemberCalc compileMember(Exp exp) {
-        final MemberCalc calc = parent.compileMember(wrap(exp));
+    public MemberCalc compileMember(Exp exp, boolean caseSensitive) {
+        final MemberCalc calc = parent.compileMember(wrap(exp), caseSensitive);
         return (MemberCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public LevelCalc compileLevel(Exp exp) {
-        final LevelCalc calc = parent.compileLevel(wrap(exp));
+    public LevelCalc compileLevel(Exp exp, boolean caseSensitive) {
+        final LevelCalc calc = parent.compileLevel(wrap(exp), caseSensitive);
         return (LevelCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public DimensionCalc compileDimension(Exp exp) {
-        final DimensionCalc calc = parent.compileDimension(wrap(exp));
+    public DimensionCalc compileDimension(Exp exp, boolean caseSensitive) {
+        final DimensionCalc calc = parent.compileDimension(wrap(exp), caseSensitive);
         return (DimensionCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public HierarchyCalc compileHierarchy(Exp exp) {
-        final HierarchyCalc calc = parent.compileHierarchy(wrap(exp));
+    public HierarchyCalc compileHierarchy(Exp exp, boolean caseSensitive) {
+        final HierarchyCalc calc = parent.compileHierarchy(wrap(exp), caseSensitive);
         return (HierarchyCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public IntegerCalc compileInteger(Exp exp) {
-        final IntegerCalc calc = parent.compileInteger(wrap(exp));
+    public IntegerCalc compileInteger(Exp exp, boolean caseSensitive) {
+        final IntegerCalc calc = parent.compileInteger(wrap(exp), caseSensitive);
         return (IntegerCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public StringCalc compileString(Exp exp) {
-        final StringCalc calc = parent.compileString(wrap(exp));
+    public StringCalc compileString(Exp exp, boolean caseSensitive) {
+        final StringCalc calc = parent.compileString(wrap(exp), caseSensitive);
         return (StringCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public DateTimeCalc compileDateTime(Exp exp) {
-        final DateTimeCalc calc = parent.compileDateTime(wrap(exp));
+    public DateTimeCalc compileDateTime(Exp exp, boolean caseSensitive) {
+        final DateTimeCalc calc = parent.compileDateTime(wrap(exp), caseSensitive);
         return (DateTimeCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public final TupleListCalc compileList(Exp exp) {
-        return compileList(exp, false);
+    public final TupleListCalc compileList(Exp exp, boolean caseSensitive) {
+        return compileList(exp, false, caseSensitive);
     }
 
     @Override
-    public TupleListCalc compileList(Exp exp, boolean mutable) {
+    public TupleListCalc compileList(Exp exp, boolean mutable, boolean caseSensitive) {
         final TupleListCalc calc = parent.compileList(wrap(exp), mutable);
         return (TupleListCalc) afterCompile(exp, calc, mutable);
     }
 
     @Override
-    public TupleIteratorCalc compileIter(Exp exp) {
-        final TupleIteratorCalc calc = parent.compileIter(wrap(exp));
+    public TupleIteratorCalc compileIter(Exp exp, boolean caseSensitive) {
+        final TupleIteratorCalc calc = parent.compileIter(wrap(exp), caseSensitive);
         return (TupleIteratorCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public BooleanCalc compileBoolean(Exp exp) {
-        final BooleanCalc calc = parent.compileBoolean(wrap(exp));
+    public BooleanCalc compileBoolean(Exp exp, boolean caseSensitive) {
+        final BooleanCalc calc = parent.compileBoolean(wrap(exp), caseSensitive);
         return (BooleanCalc) afterCompile(exp, calc, false);
     }
 
     @Override
-    public DoubleCalc compileDouble(Exp exp) {
-        final DoubleCalc calc = parent.compileDouble(wrap(exp));
+    public DoubleCalc compileDouble(Exp exp, boolean caseSensitive) {
+        final DoubleCalc calc = parent.compileDouble(wrap(exp), caseSensitive);
         return (DoubleCalc) afterCompile(exp, calc, false);
     }
 
@@ -167,14 +167,14 @@ public class DelegatingExpCompiler implements ExpCompiler {
     }
 
     @Override
-    public Calc compileScalar(Exp exp, boolean scalar) {
-        final Calc calc = parent.compileScalar(wrap(exp), scalar);
+    public Calc compileScalar(Exp exp, boolean scalar, boolean caseSensitive) {
+        final Calc calc = parent.compileScalar(wrap(exp), scalar, caseSensitive);
         return afterCompile(exp, calc, false);
     }
 
     @Override
-    public ParameterSlot registerParameter(Parameter parameter) {
-        return parent.registerParameter(parameter);
+    public ParameterSlot registerParameter(Parameter parameter, boolean caseSensitive) {
+        return parent.registerParameter(parameter, caseSensitive);
     }
 
     @Override
@@ -250,8 +250,8 @@ public class DelegatingExpCompiler implements ExpCompiler {
         }
 
         @Override
-        public Object accept(MdxVisitor visitor) {
-            return e.accept(visitor);
+        public Object accept(MdxVisitor visitor, boolean caseSensitive) {
+            return e.accept(visitor, caseSensitive);
         }
 
         @Override

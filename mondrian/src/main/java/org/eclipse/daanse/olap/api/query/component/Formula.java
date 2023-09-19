@@ -39,7 +39,7 @@ public non-sealed interface Formula extends QueryPart {
 
     Member getMdxMember();
 
-    Number getSolveOrder();
+    Number getSolveOrder(boolean caseSensitive);
 
     void compile();
 
@@ -51,9 +51,9 @@ public non-sealed interface Formula extends QueryPart {
 
     MemberProperty[] getPemberProperties();
 
-    void accept(Validator validator);
+    void accept(Validator validator, boolean caseSensitive);
 
-    Object accept(MdxVisitor visitor);
+    Object accept(MdxVisitor visitor, boolean caseSensitive);
 
     void createElement(Query q);
 

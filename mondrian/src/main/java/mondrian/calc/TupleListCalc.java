@@ -28,5 +28,5 @@ public interface TupleListCalc extends TupleIteratorCalc {
      * @param evaluator Evaluation context
      * @return A list of tuples, never null.
      */
-    TupleList evaluateList(Evaluator evaluator);
+    TupleList evaluateList(Evaluator evaluator, boolean caseSensitive);
 }

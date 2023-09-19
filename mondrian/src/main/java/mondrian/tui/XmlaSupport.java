@@ -1014,7 +1014,8 @@ public class XmlaSupport {
         XmlaResponse response =
             new DefaultXmlaResponse(resBuf, "UTF-8", responseMimeType);
 
-        handler.process(request, response);
+        handler.process(request, response, true);
+        //TODO UTILS
 
         // Even though it is not used, it is important that entry is in scope
         // until after request has returned. Prevents role's lock box entry from

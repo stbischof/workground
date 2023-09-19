@@ -1849,7 +1849,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             if (needConnection()) {
@@ -1948,7 +1948,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             RowsetDefinition[] rowsetDefinitions =
@@ -2098,7 +2098,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (PropertyDefinition propertyDefinition
@@ -2206,7 +2206,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             List<Enumeration> enumerators = getEnumerators();
@@ -2307,7 +2307,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             MondrianServer mondrianServer = MondrianServer.forId(null);
@@ -2392,7 +2392,7 @@ public enum RowsetDefinition {
                 "");
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             populate(
@@ -2446,7 +2446,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-                XmlaResponse response, OlapConnection connection, List<Row> rows)
+                XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
                 throws XmlaException
         {
             if (catIter(connection, catalogNameCond).iterator().hasNext()) {
@@ -2522,7 +2522,7 @@ public enum RowsetDefinition {
 
         @Override
 		public void populateImpl(
-            XmlaResponse response, OlapConnection connection, List<Row> rows)
+            XmlaResponse response, OlapConnection connection, List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             //Don't need catNameCond() condition. Have to return all catalogs.
@@ -2704,7 +2704,7 @@ public enum RowsetDefinition {
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (Catalog catalog
@@ -3104,7 +3104,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             // Identifies the (base) data types supported by the data provider.
@@ -3268,7 +3268,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (Catalog catalog
@@ -3399,7 +3399,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (Catalog catalog
@@ -3578,7 +3578,7 @@ TODO: see above
 		public void populateImpl(
                 XmlaResponse response,
                 OlapConnection connection,
-                List<Row> rows)
+                List<Row> rows, boolean caseSensitive)
                 throws XmlaException, SQLException
         {
             mondrian.rolap.RolapConnection rolapConnection =
@@ -3754,7 +3754,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (Catalog catalog : catIter(connection, catNameCond())) {
@@ -3862,7 +3862,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException
         {
             // mondrian doesn't support actions. It's not an error to ask for
@@ -4063,7 +4063,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -4354,7 +4354,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -4615,7 +4615,7 @@ TODO: see above
 		public void populateImpl(
                 XmlaResponse response,
                 OlapConnection connection,
-                List<Row> rows)
+                List<Row> rows, boolean caseSensitive)
                 throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -4836,7 +4836,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             final XmlaHandler.XmlaExtra extra = getExtra(connection);
@@ -5141,7 +5141,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -5552,7 +5552,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -5923,7 +5923,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -6267,20 +6267,20 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Catalog catalog
                 : catIter(connection, catNameCond(), catalogCond))
             {
-                populateCatalog(connection, catalog, rows);
+                populateCatalog(connection, catalog, rows, caseSensitive);
             }
         }
 
         protected void populateCatalog(
             OlapConnection connection,
             Catalog catalog,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Schema schema : filter(catalog.getSchemas(), schemaNameCond)) {
@@ -6291,9 +6291,9 @@ TODO: see above
                         // restrictions other than TREE_OP are relevant
                         // (or allowed??).
                         outputUniqueMemberName(
-                            connection, catalog, cube, rows);
+                            connection, catalog, cube, rows, caseSensitive);
                     } else {
-                        populateCube(connection, catalog, cube, rows);
+                        populateCube(connection, catalog, cube, rows, caseSensitive);
                     }
                 }
             }
@@ -6303,7 +6303,7 @@ TODO: see above
             OlapConnection connection,
             Catalog catalog,
             Cube cube,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             if (isRestricted(LevelUniqueName)) {
@@ -6322,14 +6322,14 @@ TODO: see above
                     // Get members of this level, without access control, but
                     // including calculated members.
                     List<Member> members = level.getMembers();
-                    outputMembers(connection, members, catalog, cube, rows);
+                    outputMembers(connection, members, catalog, cube, rows, caseSensitive);
                 }
             } else {
                 for (Dimension dimension
                     : filter(cube.getDimensions(), dimensionUnameCond))
                 {
                     populateDimension(
-                        connection, catalog, cube, dimension, rows);
+                        connection, catalog, cube, dimension, rows, caseSensitive);
                 }
             }
         }
@@ -6339,14 +6339,14 @@ TODO: see above
             Catalog catalog,
             Cube cube,
             Dimension dimension,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             for (Hierarchy hierarchy
                 : filter(dimension.getHierarchies(), hierarchyUnameCond))
             {
                 populateHierarchy(
-                    connection, catalog, cube, hierarchy, rows);
+                    connection, catalog, cube, hierarchy, rows, caseSensitive);
             }
         }
 
@@ -6355,7 +6355,7 @@ TODO: see above
             Catalog catalog,
             Cube cube,
             Hierarchy hierarchy,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             if (isRestricted(LevelNumber)) {
@@ -6382,7 +6382,7 @@ TODO: see above
 
                 Level level = levels.get(levelNumber);
                 List<Member> members = level.getMembers();
-                outputMembers(connection, members, catalog, cube, rows);
+                outputMembers(connection, members, catalog, cube, rows, caseSensitive);
             } else {
                 // At this point we get ALL of the members associated with
                 // the Hierarchy (rather than getting them one at a time).
@@ -6391,7 +6391,7 @@ TODO: see above
                 for (Level level : hierarchy.getLevels()) {
                     outputMembers(
                         connection, level.getMembers(),
-                        catalog, cube, rows);
+                        catalog, cube, rows, caseSensitive);
                 }
             }
         }
@@ -6415,12 +6415,12 @@ TODO: see above
             Cube cube,
             Member member,
             int treeOp,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws SQLException
         {
             // Visit node itself.
             if (mask(treeOp, TreeOp.SELF.xmlaOrdinal())) {
-                outputMember(connection, member, catalog, cube, rows);
+                outputMember(connection, member, catalog, cube, rows, caseSensitive);
             }
             // Visit node's siblings (not including itself).
             if (mask(treeOp, TreeOp.SIBLINGS.xmlaOrdinal())) {
@@ -6438,7 +6438,7 @@ TODO: see above
                     populateMember(
                         connection, catalog,
                         cube, sibling,
-                        TreeOp.SELF.xmlaOrdinal(), rows);
+                        TreeOp.SELF.xmlaOrdinal(), rows, caseSensitive);
                 }
             }
             // Visit node's descendants or its immediate children, but not both.
@@ -6449,7 +6449,7 @@ TODO: see above
                         cube, child,
                         TreeOp.SELF.xmlaOrdinal() |
                         TreeOp.DESCENDANTS.xmlaOrdinal(),
-                        rows);
+                        rows, caseSensitive);
                 }
             } else if (mask(
                     treeOp, TreeOp.CHILDREN.xmlaOrdinal()))
@@ -6458,7 +6458,7 @@ TODO: see above
                     populateMember(
                         connection, catalog,
                         cube, child,
-                        TreeOp.SELF.xmlaOrdinal(), rows);
+                        TreeOp.SELF.xmlaOrdinal(), rows, caseSensitive);
                 }
             }
             // Visit node's ancestors or its immediate parent, but not both.
@@ -6469,7 +6469,7 @@ TODO: see above
                         connection, catalog,
                         cube, parent,
                         TreeOp.SELF.xmlaOrdinal() |
-                        TreeOp.ANCESTORS.xmlaOrdinal(), rows);
+                        TreeOp.ANCESTORS.xmlaOrdinal(), rows, caseSensitive);
                 }
             } else if (mask(treeOp, TreeOp.PARENT.xmlaOrdinal())) {
                 final Member parent = member.getParentMember();
@@ -6477,7 +6477,7 @@ TODO: see above
                     populateMember(
                         connection, catalog,
                         cube, parent,
-                        TreeOp.SELF.xmlaOrdinal(), rows);
+                        TreeOp.SELF.xmlaOrdinal(), rows, caseSensitive);
                 }
             }
         }
@@ -6500,11 +6500,11 @@ TODO: see above
             List<Member> members,
             final Catalog catalog,
             Cube cube,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws SQLException
         {
             for (Member member : members) {
-                outputMember(connection, member, catalog, cube, rows);
+                outputMember(connection, member, catalog, cube, rows, caseSensitive);
             }
         }
 
@@ -6512,7 +6512,7 @@ TODO: see above
             final OlapConnection connection,
             final Catalog catalog,
             Cube cube,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws SQLException
         {
             final Object unameRestrictions =
@@ -6538,9 +6538,9 @@ TODO: see above
                     }
                     populateMember(
                         connection, catalog,
-                        cube, member, treeOp, rows);
+                        cube, member, treeOp, rows, caseSensitive);
                 } else {
-                    outputMember(connection, member, catalog, cube, rows);
+                    outputMember(connection, member, catalog, cube, rows, caseSensitive);
                 }
             }
         }
@@ -6550,7 +6550,7 @@ TODO: see above
             Member member,
             final Catalog catalog,
             Cube cube,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws SQLException
         {
             if (!memberNameCond.test(member)) {
@@ -6560,7 +6560,7 @@ TODO: see above
                 return;
             }
 
-            getExtra(connection).checkMemberOrdinal(member);
+            getExtra(connection).checkMemberOrdinal(member, caseSensitive);
 
             // Check whether the member is visible, otherwise do not dump.
             Boolean visible =
@@ -6741,25 +6741,25 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, OlapException
         {
             for (Catalog catalog
                 : catIter(connection, catNameCond(), catalogCond))
             {
-                processCatalog(connection, catalog, rows);
+                processCatalog(connection, catalog, rows, caseSensitive);
             }
         }
 
         private void processCatalog(
             OlapConnection connection,
             Catalog catalog,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws OlapException
         {
             for (Schema schema : filter(catalog.getSchemas(), schemaNameCond)) {
                 for (Cube cube : filter(sortedCubes(schema), cubeNameCond)) {
-                    populateNamedSets(cube, catalog, rows);
+                    populateNamedSets(cube, catalog, rows, caseSensitive);
                 }
             }
         }
@@ -6767,14 +6767,14 @@ TODO: see above
         private void populateNamedSets(
             Cube cube,
             Catalog catalog,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
         {
             for (NamedSet namedSet : filter(cube.getSets(), setNameCond)) {
                 mondrian.olap4j.MondrianOlap4jNamedSet mondrianOlap4jNamedSet =
                         (mondrian.olap4j.MondrianOlap4jNamedSet)namedSet;
 
                 SetBase setBase = (SetBase)mondrianOlap4jNamedSet.getNamedSet();
-                String dimensions = setBase.getHierarchies()
+                String dimensions = setBase.getHierarchies(caseSensitive)
                     .stream().map(it -> it.getUniqueName()).collect(Collectors.joining(","));
 
                 Row row = new Row();
@@ -6961,7 +6961,7 @@ TODO: see above
 		public void populateImpl(
                 XmlaResponse response,
                 OlapConnection connection,
-                List<Row> rows)
+                List<Row> rows, boolean caseSensitive)
                 throws XmlaException, OlapException
         {
             for (Catalog catalog
@@ -7071,7 +7071,7 @@ TODO: see above
 		public void populateImpl(
                 XmlaResponse response,
                 OlapConnection connection,
-                List<Row> rows)
+                List<Row> rows, boolean caseSensitive)
                 throws XmlaException, SQLException
         {
             for (Catalog catalog
@@ -7284,7 +7284,7 @@ TODO: see above
 		public void populateImpl(
             XmlaResponse response,
             OlapConnection connection,
-            List<Row> rows)
+            List<Row> rows, boolean caseSensitive)
             throws XmlaException, SQLException
         {
             // Default PROPERTY_TYPE is MDPROP_MEMBER.

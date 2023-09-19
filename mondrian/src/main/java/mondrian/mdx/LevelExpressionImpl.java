@@ -84,7 +84,7 @@ public class LevelExpressionImpl extends ExpBase implements Exp, LevelExpression
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         return visitor.visit(this);
     }
 

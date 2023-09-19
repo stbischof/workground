@@ -85,7 +85,7 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
 
     // implement OlapElement
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
         return name;
     }
 
@@ -96,22 +96,22 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
     }
 
     @Override
-	public String getQualifiedName() {
-        return MondrianResource.instance().MdxCubeName.str(getName());
+	public String getQualifiedName(boolean caseSensitive) {
+        return MondrianResource.instance().MdxCubeName.str(getName(caseSensitive));
     }
 
     @Override
-	public Dimension getDimension() {
+	public Dimension getDimension(boolean caseSensitive) {
         return null;
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return null;
     }
 
     @Override
-	public String getDescription() {
+	public String getDescription(boolean caseSensitive) {
         return description;
     }
 
@@ -121,12 +121,12 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
     }
 
     @Override
-	public Hierarchy lookupHierarchy(NameSegment s, boolean unique) {
+	public Hierarchy lookupHierarchy(NameSegment s, boolean unique, boolean caseSensitive) {
         for (Dimension dimension : dimensions) {
             Hierarchy[] hierarchies = dimension.getHierarchies();
             for (Hierarchy hierarchy : hierarchies) {
                 String nameInner = unique
-                    ? hierarchy.getUniqueName() : hierarchy.getName();
+                    ? hierarchy.getUniqueName() : hierarchy.getName(caseSensitive);
                 if (nameInner.equals(s.getName())) {
                     return hierarchy;
                 }
@@ -141,7 +141,8 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
         Segment s,
         MatchType matchType)
     {
-        Dimension mdxDimension = lookupDimension(s);
+        boolean caseSensitive = schemaReader.getContext().getConfig().caseSensitive();
+        Dimension mdxDimension = lookupDimension(s, caseSensitive);
         if (mdxDimension != null) {
             return mdxDimension;
         }
@@ -150,7 +151,7 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
 
         // Look for hierarchies named '[dimension.hierarchy]'.
         if (s instanceof NameSegment nameSegment) {
-            Hierarchy hierarchy = lookupHierarchy(nameSegment, false);
+            Hierarchy hierarchy = lookupHierarchy(nameSegment, false, caseSensitive);
             if (hierarchy != null) {
                 return hierarchy;
             }
@@ -182,12 +183,12 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
      * @param s Name segment
      * @return Dimension, or null if not found
      */
-    public Dimension lookupDimension(Segment s) {
+    public Dimension lookupDimension(Segment s, boolean caseSensitive) {
         if (!(s instanceof NameSegment nameSegment)) {
             return null;
         }
         for (Dimension dimension : dimensions) {
-            if (Util.equalName(dimension.getName(), nameSegment.getName())) {
+            if (Util.equalName(dimension.getName(caseSensitive), nameSegment.getName(), caseSensitive)) {
                 return dimension;
             }
         }

@@ -69,8 +69,8 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public boolean isParentChildLeaf() {
-        return member.isParentChildLeaf();
+	public boolean isParentChildLeaf(boolean caseSensitive) {
+        return member.isParentChildLeaf(caseSensitive);
     }
 
     @Override
@@ -129,8 +129,8 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public List<Member> getAncestorMembers() {
-        return member.getAncestorMembers();
+	public List<Member> getAncestorMembers(boolean caseSensitive) {
+        return member.getAncestorMembers(caseSensitive);
     }
 
     @Override
@@ -139,23 +139,23 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public Object getPropertyValue(String propertyName) {
-        return member.getPropertyValue(propertyName);
+	public Object getPropertyValue(String propertyName, boolean caseSensitive) {
+        return member.getPropertyValue(propertyName, caseSensitive);
     }
 
     @Override
-	public Object getPropertyValue(String propertyName, boolean matchCase) {
+	public Object getPropertyValue(String propertyName, boolean matchCase, boolean caseSensitive) {
         return member.getPropertyValue(propertyName, matchCase);
     }
 
     @Override
-	public String getPropertyFormattedValue(String propertyName) {
-        return member.getPropertyFormattedValue(propertyName);
+	public String getPropertyFormattedValue(String propertyName, boolean caseSensitive) {
+        return member.getPropertyFormattedValue(propertyName, caseSensitive);
     }
 
     @Override
-	public synchronized void setProperty(String name, Object value) {
-        member.setProperty(name, value);
+	public synchronized void setProperty(String name, Object value, boolean caseSensitive) {
+        member.setProperty(name, value, caseSensitive);
     }
 
     @Override
@@ -174,8 +174,8 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public boolean isHidden() {
-        return member.isHidden();
+	public boolean isHidden(boolean caseSensitive) {
+        return member.isHidden(caseSensitive);
     }
 
     @Override
@@ -200,13 +200,13 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public String getName() {
-        return member.getName();
+	public String getName(boolean caseSensitive) {
+        return member.getName(caseSensitive);
     }
 
     @Override
-	public String getDescription() {
-        return member.getDescription();
+	public String getDescription(boolean caseSensitive) {
+        return member.getDescription(caseSensitive);
     }
 
     @Override
@@ -227,13 +227,13 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public String getCaption() {
-        return member.getCaption();
+	public String getCaption(boolean caseSensitive) {
+        return member.getCaption(caseSensitive);
     }
 
     @Override
-	public Dimension getDimension() {
-        return member.getDimension();
+	public Dimension getDimension(boolean caseSensitive) {
+        return member.getDimension(caseSensitive);
     }
 
     @Override

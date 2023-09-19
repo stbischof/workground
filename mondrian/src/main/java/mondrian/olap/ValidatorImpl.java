@@ -72,7 +72,7 @@ abstract class ValidatorImpl implements Validator {
     }
 
     @Override
-	public Exp validate(Exp exp, boolean scalar) {
+	public Exp validate(Exp exp, boolean scalar, boolean caseSensitive) {
         Exp resolved;
         try {
             resolved = (Exp) resolvedNodes.get(exp);
@@ -83,7 +83,7 @@ abstract class ValidatorImpl implements Validator {
             throw Util.newInternal(
                 e,
                 new StringBuilder("Infinite recursion encountered while validating '")
-                .append(Util.unparse(exp)).append("'").toString());
+                .append(Util.unparse(exp, caseSensitive)).append("'").toString());
         }
         if (resolved == null) {
             try {
@@ -102,9 +102,9 @@ abstract class ValidatorImpl implements Validator {
         }
 
         if (scalar) {
-            final Type type = resolved.getType();
+            final Type type = resolved.getType(caseSensitive);
             if (!TypeUtil.canEvaluate(type)) {
-                String exprString = Util.unparse(resolved);
+                String exprString = Util.unparse(resolved, caseSensitive);
                 throw MondrianResource.instance().MdxMemberExpIsSet.ex(
                     exprString);
             }
@@ -149,7 +149,7 @@ abstract class ValidatorImpl implements Validator {
     }
 
     @Override
-	public void validate(QueryAxis axis) {
+	public void validate(QueryAxis axis, boolean caseSensitive) {
         final QueryAxisImpl resolved = (QueryAxisImpl) resolvedNodes.get(axis);
         if (resolved != null) {
             return; // already resolved
@@ -157,7 +157,7 @@ abstract class ValidatorImpl implements Validator {
         try {
             stack.push(axis);
             resolvedNodes.put(axis, placeHolder);
-            axis.resolve(this);
+            axis.resolve(this, caseSensitive);
             resolvedNodes.put(axis, axis);
         } finally {
             stack.pop();
@@ -165,7 +165,7 @@ abstract class ValidatorImpl implements Validator {
     }
 
     @Override
-	public void validate(Formula formula) {
+	public void validate(Formula formula, boolean caseSensitive) {
         final Formula resolved = (Formula) resolvedNodes.get(formula);
         if (resolved != null) {
             return; // already resolved
@@ -173,7 +173,7 @@ abstract class ValidatorImpl implements Validator {
         try {
             stack.push(formula);
             resolvedNodes.put(formula, placeHolder);
-            formula.accept(this);
+            formula.accept(this, caseSensitive);
             resolvedNodes.put(formula, formula);
         } finally {
             stack.pop();
@@ -184,7 +184,7 @@ abstract class ValidatorImpl implements Validator {
 	public FunctionDefinition getDef(
         Exp[] args,
         String funName,
-        Syntax syntax)
+        Syntax syntax, boolean caseSensitive)
     {
         // Compute signature first. It makes debugging easier.
         final String signature =
@@ -205,7 +205,7 @@ abstract class ValidatorImpl implements Validator {
         List<FunctionResolver.Conversion> matchConversionList = null;
         for (FunctionResolver resolver : resolvers) {
             conversionList.clear();
-            FunctionDefinition def = resolver.resolve(args, this, conversionList);
+            FunctionDefinition def = resolver.resolve(args, this, conversionList, caseSensitive);
             if (def != null) {
                 int conversionCost = sumConversionCost(conversionList);
                 if (conversionCost < minConversionCost) {
@@ -268,11 +268,11 @@ abstract class ValidatorImpl implements Validator {
 
     @Override
 	public boolean canConvert(
-        int ordinal, Exp fromExp, int to, List<FunctionResolver.Conversion> conversions)
+        int ordinal, Exp fromExp, int to, List<FunctionResolver.Conversion> conversions, boolean caseSensitive)
     {
         return TypeUtil.canConvert(
             ordinal,
-            fromExp.getType(),
+            fromExp.getType(caseSensitive),
             to,
             conversions);
     }

@@ -28,5 +28,5 @@ public interface TupleIteratorCalc extends Calc<Object> {
      * @param evaluator Evaluation context
      * @return An Iterable of members or tuples, never null.
      */
-    TupleIterable evaluateIterable(Evaluator evaluator);
+    TupleIterable evaluateIterable(Evaluator evaluator, boolean caseSensitive);
 }

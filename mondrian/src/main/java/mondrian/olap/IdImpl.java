@@ -137,7 +137,7 @@ public class IdImpl
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean b) {
         return visitor.visit(this);
     }
 
@@ -203,7 +203,7 @@ public class IdImpl
          * @return Whether matches
          */
         @Override
-        public abstract boolean matches(String name);
+        public abstract boolean matches(String name, boolean caseSensitive);
 
         /**
          * Appends this segment to a StringBuilder.
@@ -290,12 +290,12 @@ public class IdImpl
         }
 
         @Override
-		public boolean matches(String name) {
+		public boolean matches(String name, boolean caseSensitive) {
             switch (getQuoting()) {
             case UNQUOTED:
-                return Util.equalName(this.name, name);
+                return Util.equalName(this.name, name, caseSensitive);
             case QUOTED:
-                return Util.equalName(this.name, name);
+                return Util.equalName(this.name, name, caseSensitive);
             default:
                 return false;
             }
@@ -367,7 +367,7 @@ public class IdImpl
         }
 
         @Override
-		public boolean matches(String name) {
+		public boolean matches(String name, boolean caseSensitive) {
             return false;
         }
     }

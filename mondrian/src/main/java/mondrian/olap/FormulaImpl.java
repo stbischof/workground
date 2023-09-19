@@ -127,7 +127,7 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
      *   formula
      */
     @Override
-    public void accept(Validator validator) {
+    public void accept(Validator validator, boolean caseSensitive) {
         final boolean scalar = isMember;
         exp = validator.validate(exp, scalar);
         String idInner = this.id.toString();
@@ -148,7 +148,7 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
         // Get the format expression from the property list, or derive it from
         // the formula.
         if (isMember) {
-            Exp formatExp = getFormatExp(validator);
+            Exp formatExp = getFormatExp(validator, caseSensitive);
             if (formatExp != null) {
                 mdxMember.setProperty(
                     Property.FORMAT_EXP_PARSED.name, formatExp);
@@ -421,8 +421,8 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
         return this.exp = exp;
     }
 
-    private Exp getMemberProperty(String name) {
-        return MemberPropertyImpl.get(memberProperties, name);
+    private Exp getMemberProperty(String name, boolean caseSensitive) {
+        return MemberPropertyImpl.get(memberProperties, name, caseSensitive);
     }
 
     /**
@@ -444,8 +444,8 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
      *   or is not a number or is not constant
      */
     @Override
-    public Number getSolveOrder() {
-        return getIntegerMemberProperty(Property.SOLVE_ORDER.name);
+    public Number getSolveOrder(boolean caseSensitive) {
+        return getIntegerMemberProperty(Property.SOLVE_ORDER.name, caseSensitive);
     }
 
     /**
@@ -458,8 +458,8 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
      * @return Value of the property, or null if the property is not set, or its
      *   value is not an integer, or its value is not a constant.
      */
-    private Number getIntegerMemberProperty(String name) {
-        Exp expInner = getMemberProperty(name);
+    private Number getIntegerMemberProperty(String name, boolean caseSensitive) {
+        Exp expInner = getMemberProperty(name, caseSensitive);
         if (expInner != null && expInner.getType() instanceof NumericType) {
             return quickEval(expInner);
         }
@@ -503,11 +503,11 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
      * first member it finds.
      * @param validator
      */
-    private Exp getFormatExp(Validator validator) {
+    private Exp getFormatExp(Validator validator, boolean caseSensitive) {
         // If they have specified a format string (which they can do under
         // several names) return that.
         for (String prop : Property.FORMAT_PROPERTIES) {
-            Exp formatExp = getMemberProperty(prop);
+            Exp formatExp = getMemberProperty(prop, caseSensitive);
             if (formatExp != null) {
                 return formatExp;
             }
@@ -539,7 +539,7 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
         // Burrow into the expression. If we find a member, use its format
         // string.
         try {
-            exp.accept(new FormatFinder(validator));
+            exp.accept(new FormatFinder(validator), caseSensitive);
             return null;
         } catch (FoundOne foundOne) {
             return foundOne.exp;
@@ -579,12 +579,12 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
      * @param visitor Visitor
      */
     @Override
-    public Object accept(MdxVisitor visitor) {
+    public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         final Object o = visitor.visit(this);
 
         if (visitor.shouldVisitChildren()) {
             // visit the expression
-            exp.accept(visitor);
+            exp.accept(visitor, caseSensitive);
         }
         return o;
     }
@@ -613,7 +613,7 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
         }
 
         @Override
-		public Object visit(MemberExpressionImpl memberExpr) {
+		public Object visit(MemberExpressionImpl memberExpr, boolean caseSensitive) {
             Member member = memberExpr.getMember();
             returnFormula(member);
             if (member.isCalculated()
@@ -621,11 +621,11 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
                     && !hasCyclicReference(memberExpr))
             {
                 Formula formula = rolapCalculatedMember.getFormula();
-                formula.accept(validator);
+                formula.accept(validator, caseSensitive);
                 returnFormula(member);
             }
 
-            return super.visit(memberExpr);
+            return super.visit(memberExpr, caseSensitive);
         }
 
         /**

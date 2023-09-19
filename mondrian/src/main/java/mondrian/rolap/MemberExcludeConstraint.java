@@ -128,7 +128,7 @@ class MemberExcludeConstraint implements TupleConstraint {
     }
 
     @Override
-    public boolean supportsAggTables() {
+    public boolean supportsAggTables(boolean caseSensitive) {
         return true;
     }
 }

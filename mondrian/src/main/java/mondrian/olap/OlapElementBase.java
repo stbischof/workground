@@ -87,11 +87,11 @@ public abstract class OlapElementBase
      * If no caption is defined, the name is returned.
      */
     @Override
-	public String getCaption() {
+	public String getCaption(boolean caseSensitive) {
         if (caption != null) {
             return caption;
         } else {
-            return getName();
+            return getName(caseSensitive);
         }
     }
 
@@ -108,7 +108,7 @@ public abstract class OlapElementBase
     }
 
     @Override
-	public String getLocalized(LocalizedProperty prop, Locale locale) {
+	public String getLocalized(LocalizedProperty prop, Locale locale, boolean caseSensitive) {
         if (this instanceof MetaElement metaElement) {
             final Map<String, Object> metaMap = metaElement.getMetadata();
 
@@ -144,9 +144,9 @@ public abstract class OlapElementBase
         // No annotation. Fall back to the default caption/description.
         switch (prop) {
         case CAPTION:
-            return getCaption();
+            return getCaption(caseSensitive);
         case DESCRIPTION:
-            return getDescription();
+            return getDescription(caseSensitive);
         default:
             throw Util.unexpected(prop);
         }

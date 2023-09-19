@@ -69,7 +69,7 @@ public interface MdxVisitor {
      *
      * @see ResolvedFunCallImpl#accept(MdxVisitor)
      */
-    Object visit(ResolvedFunCallImpl call);
+    Object visit(ResolvedFunCallImpl call, boolean caseSensitive);
 
     /**
      * Visits an Id.
@@ -83,7 +83,7 @@ public interface MdxVisitor {
      *
      * @see ParameterExpression )
      */
-    Object visit(ParameterExpression parameterExpr);
+    Object visit(ParameterExpression parameterExpr, boolean caseSensitive);
 
     /**
      * Visits a DimensionExpr.
@@ -111,7 +111,7 @@ public interface MdxVisitor {
      *
      * @see MemberExpressionImpl#accept(MdxVisitor)
      */
-    Object visit(MemberExpressionImpl memberExpr);
+    Object visit(MemberExpressionImpl memberExpr, boolean caseSensitive);
 
     /**
      * Visits a NamedSetExpr.

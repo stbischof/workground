@@ -425,7 +425,7 @@ class IdBatchResolverTest  {
 
     public Set<String> batchResolve(TestingContext context,String mdx) {
         IdBatchResolver batchResolver = makeTestBatchResolver(context,mdx);
-        Map<QueryPart, QueryPart> resolvedIdents = batchResolver.resolve();
+        Map<QueryPart, QueryPart> resolvedIdents = batchResolver.resolve(context.getContext().getConfig().caseSensitive());
         Set<String> resolvedNames = getResolvedNames(resolvedIdents);
         return resolvedNames;
     }

@@ -26,8 +26,8 @@ public enum Syntax {
      */
     Function {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
-            ExpBase.unparseList(pw, args, new StringBuilder(fun).append("(").toString(), ", ", ")");
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
+            ExpBase.unparseList(pw, args, new StringBuilder(fun).append("(").toString(), ", ", ")", caseSensitive);
         }
     },
 
@@ -36,9 +36,9 @@ public enum Syntax {
      */
     Property {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             Util.assertTrue(args.length >= 1);
-            args[0].unparse(pw); // 'this'
+            args[0].unparse(pw, caseSensitive); // 'this'
             pw.print(".");
             pw.print(fun);
         }
@@ -59,9 +59,9 @@ public enum Syntax {
      */
     Method {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             Util.assertTrue(args.length >= 1);
-            args[0].unparse(pw); // 'this'
+            args[0].unparse(pw,caseSensitive); // 'this'
             pw.print(".");
             pw.print(fun);
             pw.print("(");
@@ -69,7 +69,7 @@ public enum Syntax {
                 if (i > 1) {
                     pw.print(", ");
                 }
-                args[i].unparse(pw);
+                args[i].unparse(pw, caseSensitive);
             }
             pw.print(")");
         }
@@ -93,11 +93,11 @@ public enum Syntax {
      */
     Infix {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             if (needParen(args)) {
-                ExpBase.unparseList(pw, args, "(", new StringBuilder(" ").append(fun).append(" ").toString(), ")");
+                ExpBase.unparseList(pw, args, "(", new StringBuilder(" ").append(fun).append(" ").toString(), ")", caseSensitive);
             } else {
-                ExpBase.unparseList(pw, args, "", new StringBuilder(" ").append(fun).append(" ").toString(), "");
+                ExpBase.unparseList(pw, args, "", new StringBuilder(" ").append(fun).append(" ").toString(), "", caseSensitive);
             }
         }
 
@@ -116,11 +116,11 @@ public enum Syntax {
      */
     Prefix {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             if (needParen(args)) {
-                ExpBase.unparseList(pw, args, new StringBuilder("(").append(fun).append(" ").toString(), null, ")");
+                ExpBase.unparseList(pw, args, new StringBuilder("(").append(fun).append(" ").toString(), null, ")", caseSensitive);
             } else {
-                ExpBase.unparseList(pw, args, new StringBuilder(fun).append(" ").toString(), null, "");
+                ExpBase.unparseList(pw, args, new StringBuilder(fun).append(" ").toString(), null, "", caseSensitive);
             }
         }
 
@@ -138,11 +138,11 @@ public enum Syntax {
      */
     Postfix {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             if (needParen(args)) {
-                ExpBase.unparseList(pw, args, "(", null, new StringBuilder(" ").append(fun).append(")").toString());
+                ExpBase.unparseList(pw, args, "(", null, new StringBuilder(" ").append(fun).append(")").toString(), caseSensitive);
             } else {
-                ExpBase.unparseList(pw, args, "", null, " " + fun);
+                ExpBase.unparseList(pw, args, "", null, " " + fun, caseSensitive);
             }
         }
 
@@ -167,8 +167,8 @@ public enum Syntax {
         }
 
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
-            ExpBase.unparseList(pw, args, "{", ", ", "}");
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
+            ExpBase.unparseList(pw, args, "{", ", ", "}", caseSensitive);
         }
     },
 
@@ -185,8 +185,8 @@ public enum Syntax {
         }
 
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
-            ExpBase.unparseList(pw, args, "(", ", ", ")");
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
+            ExpBase.unparseList(pw, args, "(", ", ", ")", caseSensitive);
         }
     },
 
@@ -195,20 +195,20 @@ public enum Syntax {
      */
     Case {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             if (fun.equals("_CaseTest")) {
                 pw.print("CASE");
                 int j = 0;
                 int clauseCount = (args.length - j) / 2;
                 for (int i = 0; i < clauseCount; i++) {
                     pw.print(" WHEN ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                     pw.print(" THEN ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                 }
                 if (j < args.length) {
                     pw.print(" ELSE ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                 }
                 Util.assertTrue(j == args.length);
                 pw.print(" END");
@@ -217,17 +217,17 @@ public enum Syntax {
 
                 pw.print("CASE ");
                 int j = 0;
-                args[j++].unparse(pw);
+                args[j++].unparse(pw, caseSensitive);
                 int clauseCount = (args.length - j) / 2;
                 for (int i = 0; i < clauseCount; i++) {
                     pw.print(" WHEN ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                     pw.print(" THEN ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                 }
                 if (j < args.length) {
                     pw.print(" ELSE ");
-                    args[j++].unparse(pw);
+                    args[j++].unparse(pw, caseSensitive);
                 }
                 Util.assertTrue(j == args.length);
                 pw.print(" END");
@@ -259,11 +259,11 @@ public enum Syntax {
      */
     Cast {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             pw.print("CAST(");
-            args[0].unparse(pw);
+            args[0].unparse(pw, caseSensitive);
             pw.print(" AS ");
-            args[1].unparse(pw);
+            args[1].unparse(pw, caseSensitive);
             pw.print(")");
         }
 
@@ -298,7 +298,7 @@ public enum Syntax {
      */
     Empty {
         @Override
-		public void unparse(String fun, Exp[] args, PrintWriter pw) {
+		public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
             assert args.length == 0;
         }
         @Override
@@ -314,7 +314,7 @@ public enum Syntax {
      * @param args Arguments to the function
      * @param pw Writer
      */
-    public void unparse(String fun, Exp[] args, PrintWriter pw) {
+    public void unparse(String fun, Exp[] args, PrintWriter pw, boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 

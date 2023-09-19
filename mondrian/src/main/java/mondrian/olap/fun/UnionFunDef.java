@@ -48,20 +48,20 @@ public class UnionFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
         String allString = FunUtil.getLiteralArg(call, 2, "DISTINCT", UnionFunDef.ReservedWords);
         final boolean all = allString.equalsIgnoreCase("ALL");
         // todo: do at validate time
-        FunUtil.checkCompatible(call.getArg(0), call.getArg(1), null);
+        FunUtil.checkCompatible(call.getArg(0), call.getArg(1), null, caseSensitive);
         final TupleListCalc listCalc0 =
-            compiler.compileList(call.getArg(0));
+            compiler.compileList(call.getArg(0), caseSensitive);
         final TupleListCalc listCalc1 =
-            compiler.compileList(call.getArg(1));
+            compiler.compileList(call.getArg(1), caseSensitive);
         return new AbstractListCalc(call.getType(), new Calc[] {listCalc0, listCalc1}) {
             @Override
-			public TupleList evaluateList(Evaluator evaluator) {
-                TupleList list0 = listCalc0.evaluateList(evaluator);
-                TupleList list1 = listCalc1.evaluateList(evaluator);
+			public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
+                TupleList list0 = listCalc0.evaluateList(evaluator, caseSensitive);
+                TupleList list1 = listCalc1.evaluateList(evaluator, caseSensitive);
                 return union(list0, list1, all);
             }
         };

@@ -89,38 +89,38 @@ public class UnresolvedFunCallImpl extends ExpBase implements UnresolvedFunCall 
     }
 
     @Override
-	public Type getType() {
+	public Type getType(boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-	public void unparse(PrintWriter pw) {
-        syntax.unparse(name, args, pw);
+	public void unparse(PrintWriter pw, boolean caseSensitive) {
+        syntax.unparse(name, args, pw, caseSensitive);
     }
 
     @Override
-	public Object accept(MdxVisitor visitor) {
+	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
         final Object o = visitor.visit(this);
         if (visitor.shouldVisitChildren()) {
             // visit the call's arguments
             for (Exp arg : args) {
-                arg.accept(visitor);
+                arg.accept(visitor, caseSensitive);
             }
         }
         return o;
     }
 
     @Override
-	public Exp accept(Validator validator) {
+	public Exp accept(Validator validator, boolean caseSensitive) {
         Exp[] newArgs = new Exp[args.length];
         FunctionDefinition funDef =
             FunUtil.resolveFunArgs(
-                validator, null, args, newArgs, name, syntax);
-        return funDef.createCall(validator, newArgs);
+                validator, null, args, newArgs, name, syntax, caseSensitive);
+        return funDef.createCall(validator, newArgs, caseSensitive);
     }
 
     @Override
-	public Calc accept(ExpCompiler compiler) {
+	public Calc accept(ExpCompiler compiler, boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 

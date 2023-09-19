@@ -41,10 +41,10 @@ public class ExpCacheDescriptor {
      * @param calc Compiled expression
      * @param evaluator Evaluator
      */
-    public ExpCacheDescriptor(Exp exp, Calc calc, Evaluator evaluator) {
+    public ExpCacheDescriptor(Exp exp, Calc calc, Evaluator evaluator, boolean caseSensitive) {
         this.calc = calc;
         this.exp = exp;
-        computeDepends(calc, evaluator);
+        computeDepends(calc, evaluator, caseSensitive);
     }
 
     /**
@@ -53,8 +53,8 @@ public class ExpCacheDescriptor {
      * @param exp Expression
      * @param evaluator Evaluator
      */
-    public ExpCacheDescriptor(Exp exp, Evaluator evaluator) {
-        this(exp, new BetterExpCompiler(evaluator, null));
+    public ExpCacheDescriptor(Exp exp, Evaluator evaluator, boolean caseSensitive) {
+        this(exp, new BetterExpCompiler(evaluator, null), caseSensitive);
     }
 
     /**
@@ -63,26 +63,26 @@ public class ExpCacheDescriptor {
      * @param exp Expression
      * @param compiler Compiler
      */
-    public ExpCacheDescriptor(Exp exp, ExpCompiler compiler) {
+    public ExpCacheDescriptor(Exp exp, ExpCompiler compiler, boolean caseSensitive) {
         this.exp = exp;
 
         // Compile expression.
-        Calc calcInner = compiler.compile(exp);
+        Calc calcInner = compiler.compile(exp, caseSensitive);
         if (calcInner == null) {
             // now allow conversions
-            calcInner = compiler.compileAs(exp, null, ResultStyle.ANY_ONLY);
+            calcInner = compiler.compileAs(exp, null, ResultStyle.ANY_ONLY, caseSensitive);
         }
         this.calc = calcInner;
 
         // Compute list of dependent dimensions.
-        computeDepends(calcInner, compiler.getEvaluator());
+        computeDepends(calcInner, compiler.getEvaluator(), caseSensitive);
     }
 
-    private void computeDepends(Calc calc, Evaluator evaluator) {
+    private void computeDepends(Calc calc, Evaluator evaluator, boolean caseSensitive) {
         final List<Integer> ordinalList = new ArrayList<>();
         final Member[] members = evaluator.getMembers();
         for (int i = 0; i < members.length; i++) {
-            Hierarchy hierarchy = members[i].getHierarchy();
+            Hierarchy hierarchy = members[i].getHierarchy(caseSensitive);
             if (calc.dependsOn(hierarchy)) {
                 ordinalList.add(i);
             }
@@ -101,8 +101,8 @@ public class ExpCacheDescriptor {
         return calc;
     }
 
-    public Object evaluate(Evaluator evaluator) {
-        return calc.evaluate(evaluator);
+    public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
+        return calc.evaluate(evaluator, caseSensitive);
     }
 
     /**

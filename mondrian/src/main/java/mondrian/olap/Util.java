@@ -467,12 +467,10 @@ public class Util extends XOMUtil {
      * {@link MondrianProperties#CaseSensitive case sensitive option}.
      * Names may be null.
      */
-    public static boolean equalName(String s, String t) {
+    public static boolean equalName(String s, String t, boolean caseSensitive) {
         if (s == null) {
             return t == null;
         }
-        boolean caseSensitive =
-            MondrianProperties.instance().CaseSensitive.get();
         return caseSensitive ? s.equals(t) : s.equalsIgnoreCase(t);
     }
 
@@ -652,7 +650,7 @@ public class Util extends XOMUtil {
             StringBuilder buf = new StringBuilder(64);
             buf.append("Util.lookupCompound: ");
             buf.append("parent.name=");
-            buf.append(parent.getName());
+            buf.append(parent.getName(schemaReader.getContext().getConfig().caseSensitive()));
             buf.append(", category=");
             buf.append(Category.instance.getName(category));
             buf.append(", names=");
@@ -715,7 +713,7 @@ public class Util extends XOMUtil {
             // last child
             if (child instanceof Member bestChild
                 && !matchType.isExact()
-                && !Util.equalName(child.getName(), name.getName()))
+                && !Util.equalName(child.getName(schemaReader.getContext().getConfig().caseSensitive()), name.getName(), schemaReader.getContext().getConfig().caseSensitive()))
             {
                 for (int j = i + 1; j < names.size(); j++) {
                     List<Member> childrenList =
@@ -739,7 +737,7 @@ public class Util extends XOMUtil {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug(
                         "Util.lookupCompound: parent.name={} has no child with name={}",
-                        parent.getName(), name);
+                        parent.getName(schemaReader.getContext().getConfig().caseSensitive()), name);
                 }
 
                 if (!failIfNotFound) {
@@ -760,7 +758,7 @@ public class Util extends XOMUtil {
         if (LOGGER.isDebugEnabled() && parent != null) {
             LOGGER.debug(
                 "Util.lookupCompound: found child.name={}, child.class={}",
-                parent.getName(), parent.getClass().getName());
+                parent.getName(schemaReader.getContext().getConfig().caseSensitive()), parent.getClass().getName());
         }
 
         switch (category) {
@@ -768,7 +766,7 @@ public class Util extends XOMUtil {
             if (parent instanceof Dimension) {
                 return parent;
             } else if (parent instanceof Hierarchy) {
-                return parent.getDimension();
+                return parent.getDimension(schemaReader.getContext().getConfig().caseSensitive());
             } else if (failIfNotFound) {
                 throw Util.newError(
                     new StringBuilder("Can not find dimension '").append(implode(names)).append("'").toString());
@@ -779,7 +777,7 @@ public class Util extends XOMUtil {
             if (parent instanceof Hierarchy) {
                 return parent;
             } else if (parent instanceof Dimension) {
-                return parent.getHierarchy();
+                return parent.getHierarchy(schemaReader.getContext().getConfig().caseSensitive());
             } else if (failIfNotFound) {
                 throw Util.newError(
                     new StringBuilder("Can not find hierarchy '").append(implode(names)).append("'").toString());
@@ -933,7 +931,7 @@ public class Util extends XOMUtil {
                     nameLen--;
                 }
                 if (olapElement != null) {
-                    olapElement = olapElement.getHierarchy().getNullMember();
+                    olapElement = olapElement.getHierarchy(schemaReader.getContext().getConfig().caseSensitive()).getNullMember();
                 } else {
                     throw MondrianResource.instance().MdxChildObjectNotFound.ex(
                             fullName, cube.getQualifiedName());
@@ -1054,7 +1052,7 @@ public class Util extends XOMUtil {
             int rc;
             // when searching on the ALL hierarchy, match must be exact
             if (matchType.isExact() || hierarchy.hasAll()) {
-                rc = rootMember.getName().compareToIgnoreCase(memberName.getName());
+                rc = rootMember.getName(reader.getContext().getConfig().caseSensitive()).compareToIgnoreCase(memberName.getName());
             } else {
                 rc = FunUtil.compareSiblingMembers(
                     rootMember,
@@ -1107,10 +1105,10 @@ public class Util extends XOMUtil {
      * Finds a named level in this hierarchy. Returns null if there is no
      * such level.
      */
-    public static Level lookupHierarchyLevel(Hierarchy hierarchy, String s) {
+    public static Level lookupHierarchyLevel(Hierarchy hierarchy, String s, boolean caseSensitive) {
         final Level[] levels = hierarchy.getLevels();
         for (Level level : levels) {
-            if (level.getName().equalsIgnoreCase(s)) {
+            if (level.getName(caseSensitive).equalsIgnoreCase(s)) {
                 return level;
             }
         }
@@ -1129,7 +1127,7 @@ public class Util extends XOMUtil {
         Member parent = member.getParentMember();
         List<Member> siblings =
             (parent == null)
-            ? reader.getHierarchyRootMembers(member.getHierarchy())
+            ? reader.getHierarchyRootMembers(member.getHierarchy(reader.getContext().getConfig().caseSensitive()))
             : reader.getMemberChildren(parent);
 
         for (int i = 0; i < siblings.size(); i++) {
@@ -1920,12 +1918,12 @@ public class Util extends XOMUtil {
     }
 
     // TODO: move to IdentifierSegment
-    public static boolean matches(IdentifierSegment segment, String name) {
+    public static boolean matches(IdentifierSegment segment, String name, boolean caseSensitive) {
         switch (segment.getQuoting()) {
         case KEY:
             return false; // FIXME
         case QUOTED:
-            return equalName(segment.getName(), name);
+            return equalName(segment.getName(), name, caseSensitive);
         case UNQUOTED:
             return segment.getName().equalsIgnoreCase(name);
         default:
@@ -1934,31 +1932,31 @@ public class Util extends XOMUtil {
     }
 
     public static boolean matches(
-        Member member, List<Segment> nameParts)
+        Member member, List<Segment> nameParts, boolean caseSensitive)
     {
         if (Util.equalName(Util.implode(nameParts),
-            member.getUniqueName()))
+            member.getUniqueName(), caseSensitive))
         {
             // exact match
             return true;
         }
         Segment segment = nameParts.get(nameParts.size() - 1);
         while (member.getParentMember() != null) {
-            if (!segment.matches(member.getName())) {
+            if (!segment.matches(member.getName(caseSensitive), caseSensitive)) {
                 return false;
             }
             member = member.getParentMember();
             nameParts = nameParts.subList(0, nameParts.size() - 1);
             segment = nameParts.get(nameParts.size() - 1);
         }
-        if (segment.matches(member.getName())) {
+        if (segment.matches(member.getName(caseSensitive), caseSensitive)) {
             return Util.equalName(
-                member.getHierarchy().getUniqueName(),
-                Util.implode(nameParts.subList(0, nameParts.size() - 1)));
+                member.getHierarchy(caseSensitive).getUniqueName(),
+                Util.implode(nameParts.subList(0, nameParts.size() - 1)), caseSensitive);
         } else if (member.isAll()) {
             return Util.equalName(
-                member.getHierarchy().getUniqueName(),
-                Util.implode(nameParts));
+                member.getHierarchy(caseSensitive).getUniqueName(),
+                Util.implode(nameParts), caseSensitive);
         } else {
             return false;
         }
@@ -2450,20 +2448,20 @@ public class Util extends XOMUtil {
     /**
      * Converts an expression to a string.
      */
-    public static String unparse(Exp exp) {
+    public static String unparse(Exp exp, boolean caseSensitive) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        exp.unparse(pw);
+        exp.unparse(pw, caseSensitive);
         return sw.toString();
     }
 
     /**
      * Converts an query to a string.
      */
-    public static String unparse(Query query) {
+    public static String unparse(Query query, boolean caseSensitive) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new QueryPrintWriter(sw);
-        query.unparse(pw);
+        query.unparse(pw, caseSensitive);
         return sw.toString();
     }
 
@@ -2963,7 +2961,7 @@ public class Util extends XOMUtil {
             }
 
             @Override
-			public Exp validate(Exp exp, boolean scalar) {
+			public Exp validate(Exp exp, boolean scalar, boolean caseSensitive) {
                 return exp;
             }
 
@@ -2983,12 +2981,12 @@ public class Util extends XOMUtil {
             }
 
             @Override
-			public void validate(Formula formula) {
+			public void validate(Formula formula, boolean c) {
                 //empty
             }
 
             @Override
-			public FunctionDefinition getDef(Exp[] args, String name, Syntax syntax) {
+			public FunctionDefinition getDef(Exp[] args, String name, Syntax syntax, boolean caseSensitive) {
                 // Very simple resolution. Assumes that there is precisely
                 // one resolver (i.e. no overloading) and no argument
                 // conversions are necessary.
@@ -2997,7 +2995,7 @@ public class Util extends XOMUtil {
                 final List<FunctionResolver.Conversion> conversionList =
                     new ArrayList<>();
                 final FunctionDefinition def =
-                    resolver.resolve(args, this, conversionList);
+                    resolver.resolve(args, this, conversionList, caseSensitive);
                 assert conversionList.isEmpty();
                 return def;
             }
@@ -3011,7 +3009,7 @@ public class Util extends XOMUtil {
 			public boolean canConvert(
                 int ordinal, Exp fromExp,
                 int to,
-                List<FunctionResolver.Conversion> conversions)
+                List<FunctionResolver.Conversion> conversions, boolean caseSensitive)
             {
                 return true;
             }

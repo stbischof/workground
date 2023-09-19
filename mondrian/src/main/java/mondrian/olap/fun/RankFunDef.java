@@ -64,49 +64,49 @@ public class RankFunDef extends FunDefBase {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     switch ( call.getArgCount() ) {
       case 2:
-        return compileCall2( call, compiler );
+        return compileCall2( call, compiler, caseSensitive );
       case 3:
-        return compileCall3( call, compiler );
+        return compileCall3( call, compiler, caseSensitive );
       default:
         throw Util.newInternal( "invalid arg count " + call.getArgCount() );
     }
   }
 
-  public Calc compileCall3( ResolvedFunCall call, ExpCompiler compiler ) {
-    final Type type0 = call.getArg( 0 ).getType();
-    final TupleListCalc tupleListCalc = compiler.compileList( call.getArg( 1 ) );
-    final Calc keyCalc = compiler.compileScalar( call.getArg( 2 ), true );
+  public Calc compileCall3( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
+    final Type type0 = call.getArg( 0 ).getType(caseSensitive);
+    final TupleListCalc tupleListCalc = compiler.compileList( call.getArg( 1 ), caseSensitive );
+    final Calc keyCalc = compiler.compileScalar( call.getArg( 2 ), true, caseSensitive );
     Calc sortedListCalc = new SortedListCalc( call.getType(), tupleListCalc, keyCalc );
-    final ExpCacheDescriptor cacheDescriptor = new ExpCacheDescriptor( call, sortedListCalc, compiler.getEvaluator() );
+    final ExpCacheDescriptor cacheDescriptor = new ExpCacheDescriptor( call, sortedListCalc, compiler.getEvaluator(), caseSensitive );
     if ( type0 instanceof TupleType ) {
-      final TupleCalc tupleCalc = compiler.compileTuple( call.getArg( 0 ) );
+      final TupleCalc tupleCalc = compiler.compileTuple( call.getArg( 0 ), caseSensitive );
       return new Rank3TupleCalc( call, tupleCalc, keyCalc, cacheDescriptor );
     } else {
-      final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ) );
+      final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ), caseSensitive );
       return new Rank3MemberCalc( call, memberCalc, keyCalc, cacheDescriptor );
     }
   }
 
-  public Calc compileCall2( ResolvedFunCall call, ExpCompiler compiler ) {
-    final boolean tuple = call.getArg( 0 ).getType() instanceof TupleType;
+  public Calc compileCall2( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
+    final boolean tuple = call.getArg( 0 ).getType(caseSensitive) instanceof TupleType;
     final Exp listExp = call.getArg( 1 );
-    final TupleListCalc listCalc0 = compiler.compileList( listExp );
+    final TupleListCalc listCalc0 = compiler.compileList( listExp, caseSensitive );
     Calc listCalc1 = new RankedListCalc( listCalc0, tuple );
     final Calc listCalc;
     if ( MondrianProperties.instance().EnableExpCache.get() ) {
-      final ExpCacheDescriptor key = new ExpCacheDescriptor( listExp, listCalc1, compiler.getEvaluator() );
-      listCalc = new CacheCalc( listExp.getType(), key );
+      final ExpCacheDescriptor key = new ExpCacheDescriptor( listExp, listCalc1, compiler.getEvaluator(), caseSensitive );
+      listCalc = new CacheCalc( listExp.getType(caseSensitive), key );
     } else {
       listCalc = listCalc1;
     }
     if ( tuple ) {
-      final TupleCalc tupleCalc = compiler.compileTuple( call.getArg( 0 ) );
+      final TupleCalc tupleCalc = compiler.compileTuple( call.getArg( 0 ), caseSensitive );
       return new Rank2TupleCalc( call, tupleCalc, listCalc );
     } else {
-      final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ) );
+      final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ), caseSensitive );
       return new Rank2MemberCalc( call, memberCalc, listCalc );
     }
   }
@@ -122,13 +122,13 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Integer evaluate( Evaluator evaluator ) {
+	public Integer evaluate( Evaluator evaluator, boolean caseSensitive ) {
       evaluator.getTiming().markStart( RankFunDef.TIMING_NAME );
       try {
         // Get member or tuple.
         // If the member is null (or the tuple contains a null member)
         // the result is null (even if the list is null).
-        final Member[] members = tupleCalc.evaluate( evaluator );
+        final Member[] members = tupleCalc.evaluate( evaluator, caseSensitive );
         if ( members == null ) {
           return null;
         }
@@ -139,7 +139,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         // list, so returns an error "Formula error - dimension count is
         // not valid - in the Rank function". We will naturally return 0,
         // which I think is better.
-        final RankedTupleList rankedTupleList = (RankedTupleList) listCalc.evaluate( evaluator );
+        final RankedTupleList rankedTupleList = (RankedTupleList) listCalc.evaluate( evaluator, caseSensitive );
         if ( rankedTupleList == null ) {
           return 0;
         }
@@ -166,14 +166,14 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Integer evaluate( Evaluator evaluator ) {
+	public Integer evaluate( Evaluator evaluator, boolean caseSensitive ) {
       evaluator.getTiming().markStart( RankFunDef.TIMING_NAME );
       try {
 
         // Get member or tuple.
         // If the member is null (or the tuple contains a null member)
         // the result is null (even if the list is null).
-        final Member member = memberCalc.evaluate( evaluator );
+        final Member member = memberCalc.evaluate( evaluator, caseSensitive );
         if ( member == null || member.isNull() ) {
           return null;
         }
@@ -182,7 +182,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         // list, so returns an error "Formula error - dimension count is
         // not valid - in the Rank function". We will naturally return 0,
         // which I think is better.
-        RankedMemberList rankedMemberList = (RankedMemberList) listCalc.evaluate( evaluator );
+        RankedMemberList rankedMemberList = (RankedMemberList) listCalc.evaluate( evaluator, caseSensitive );
         if ( rankedMemberList == null ) {
           return 0;
         }
@@ -211,10 +211,10 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Integer evaluate( Evaluator evaluator ) {
+	public Integer evaluate( Evaluator evaluator, boolean caseSensitive ) {
       evaluator.getTiming().markStart( RankFunDef.TIMING_NAME );
       try {
-        Member[] members = tupleCalc.evaluate( evaluator );
+        Member[] members = tupleCalc.evaluate( evaluator, caseSensitive );
         if ( members == null ) {
           return null;
         }
@@ -250,7 +250,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         Object value;
         try {
           evaluator.setContext( members );
-          value = sortCalc.evaluate( evaluator );
+          value = sortCalc.evaluate( evaluator, caseSensitive );
         } finally {
           evaluator.restore( savepoint );
         }
@@ -295,10 +295,10 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Integer evaluate( Evaluator evaluator ) {
+	public Integer evaluate( Evaluator evaluator, boolean caseSensitive ) {
       evaluator.getTiming().markStart( RankFunDef.TIMING_NAME );
       try {
-        Member member = memberCalc.evaluate( evaluator );
+        Member member = memberCalc.evaluate( evaluator, caseSensitive );
         if ( member == null || member.isNull() ) {
           return null;
         }
@@ -326,7 +326,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         evaluator.setContext( member );
         Object value;
         try {
-          value = sortCalc.evaluate( evaluator );
+          value = sortCalc.evaluate( evaluator, caseSensitive );
         } finally {
           evaluator.restore( savepoint );
         }
@@ -404,7 +404,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Object evaluate( Evaluator evaluator ) {
+	public Object evaluate( Evaluator evaluator, boolean caseSensitive ) {
       // Save the state of the evaluator.
       final int savepoint = evaluator.savepoint();
       RuntimeException exception = null;
@@ -421,7 +421,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
         // Construct an array containing the value of the expression
         // for each member.
 
-        list = tupleListCalc.evaluateList( evaluator );
+        list = tupleListCalc.evaluateList( evaluator, caseSensitive );
         assert list != null;
         if ( list.isEmpty() ) {
           return list.getArity() == 1 ? new MemberSortResult( new Object[0], Collections.<Member, Integer>emptyMap() )
@@ -433,7 +433,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
           tupleValueMap = null;
           for ( Member member : list.slice( 0 ) ) {
             evaluator.setContext( member );
-            final Object keyValue = keyCalc.evaluate( evaluator );
+            final Object keyValue = keyCalc.evaluate( evaluator, caseSensitive );
             if ( keyValue instanceof RuntimeException runtimeException ) {
               if ( exception == null ) {
                 exception = runtimeException;
@@ -457,7 +457,7 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
           memberValueMap = null;
           for ( List<Member> tuple : list ) {
             evaluator.setContext( tuple );
-            final Object keyValue = keyCalc.evaluate( evaluator );
+            final Object keyValue = keyCalc.evaluate( evaluator, caseSensitive );
             if ( keyValue instanceof RuntimeException runtimeException) {
               if ( exception == null ) {
                 exception = runtimeException;
@@ -628,10 +628,10 @@ public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
     }
 
     @Override
-	public Object evaluate( Evaluator evaluator ) {
+	public Object evaluate( Evaluator evaluator, boolean caseSensitive ) {
       // Construct an array containing the value of the expression
       // for each member.
-      TupleList tupleList = tupleListCalc.evaluateList( evaluator );
+      TupleList tupleList = tupleListCalc.evaluateList( evaluator, caseSensitive );
       assert tupleList != null;
       if ( tuple ) {
         return new RankedTupleList( tupleList );

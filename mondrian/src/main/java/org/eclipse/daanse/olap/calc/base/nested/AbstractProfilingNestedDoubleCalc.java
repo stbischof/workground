@@ -25,7 +25,7 @@ import mondrian.olap.type.Type;
 
 /**
  * Abstract implementation of the {@link org.eclipse.daanse.olap.calc.api.IntegerCalc} interface.
- * 
+ *
  * Handles nested child and profiling
  *
  */
@@ -34,7 +34,7 @@ extends AbstractProfilingNestedCalc<Double,C>
 implements DoubleCalc
 {
     /**
-     * {@inheritDoc} 
+     * {@inheritDoc}
      *
      */
     protected AbstractProfilingNestedDoubleCalc(Type type, C[] calcs) {
@@ -43,8 +43,8 @@ implements DoubleCalc
     }
 
     @Override
-    public Double evaluate(Evaluator evaluator) {
-        final Double d = evaluate(evaluator);
+    public Double evaluate(Evaluator evaluator, boolean caseSensitive) {
+        final Double d = evaluate(evaluator, caseSensitive);
         if (d == FunUtil.DOUBLE_NULL) {
             return null;
         }
