@@ -106,7 +106,7 @@ public class UdfResolver implements FunctionResolver {
 	public FunctionDefinition resolve(
         Exp[] args,
         Validator validator,
-        List<Conversion> conversions)
+        List<Conversion> conversions, boolean caseSensitive)
     {
         final Type[] parameterTypes = udf.getParameterTypes();
         if (args.length != parameterTypes.length) {
@@ -117,11 +117,11 @@ public class UdfResolver implements FunctionResolver {
         for (int i = 0; i < parameterTypes.length; i++) {
             Type parameterType = parameterTypes[i];
             final Exp arg = args[i];
-            final Type argType = arg.getType();
+            final Type argType = arg.getType(caseSensitive);
             final int parameterCategory =
                 TypeUtil.typeToCategory(parameterType);
             if (!validator.canConvert(
-                    i, arg, parameterCategory, conversions))
+                    i, arg, parameterCategory, conversions, caseSensitive))
             {
                 return null;
             }
@@ -162,12 +162,12 @@ public class UdfResolver implements FunctionResolver {
         }
 
         @Override
-		public Type getResultType(Validator validator, Exp[] args) {
+		public Type getResultType(Validator validator, Exp[] args, boolean caseSensitive) {
             return returnType;
         }
 
         @Override
-		public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
+		public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
             final Exp[] args = call.getArgs();
             Calc[] calcs = new Calc[args.length];
             UserDefinedFunction.Argument[] expCalcs =
@@ -176,15 +176,15 @@ public class UdfResolver implements FunctionResolver {
                 Exp arg = args[i];
                 final Calc calc = calcs[i] = compiler.compileAs(
                     arg,
-                    FunDefBase.castType(arg.getType(), parameterCategories[i]),
-                    ResultStyle.ANY_LIST);
+                    FunDefBase.castType(arg.getType(caseSensitive), parameterCategories[i]),
+                    ResultStyle.ANY_LIST, caseSensitive);
                 calcs[i] = calc;
-                final Calc scalarCalc = compiler.compileScalar(arg, true);
+                final Calc scalarCalc = compiler.compileScalar(arg, true, caseSensitive);
                 final TupleListCalc tupleListCalc;
                 final TupleIteratorCalc tupleIteratorCalc;
-                if (arg.getType() instanceof SetType) {
+                if (arg.getType(caseSensitive) instanceof SetType) {
                     tupleListCalc = compiler.compileList(arg, true);
-                    tupleIteratorCalc = compiler.compileIter(arg);
+                    tupleIteratorCalc = compiler.compileIter(arg, caseSensitive);
                 } else {
                     tupleListCalc = null;
                     tupleIteratorCalc = null;
@@ -195,18 +195,18 @@ public class UdfResolver implements FunctionResolver {
             // Create a new instance of the UDF, because some UDFs use member
             // variables as state.
             UserDefinedFunction udf2 = factory.create();
-            if (call.getType() instanceof SetType) {
-                return new ListCalcImpl(call, calcs, udf2, expCalcs);
-            } else if(call.getType() instanceof BooleanType) {
+            if (call.getType(caseSensitive) instanceof SetType) {
+                return new ListCalcImpl(call, calcs, udf2, expCalcs, caseSensitive);
+            } else if(call.getType(caseSensitive) instanceof BooleanType) {
                 return new BooleanScalarUserDefinedFunctionCalcImpl(call, calcs, udf2, expCalcs);
             }else {
-                return new ScalarCalcImpl(call, calcs, udf2, expCalcs);
+                return new ScalarCalcImpl(call, calcs, udf2, expCalcs, caseSensitive);
             }
         }
     }
 
 
-    
+
     /**
      * Expression that evaluates a scalar user-defined function.
      */
@@ -219,9 +219,9 @@ public class UdfResolver implements FunctionResolver {
             ResolvedFunCall call,
             Calc[] calcs,
             UserDefinedFunction udf,
-            UserDefinedFunction.Argument[] args)
+            UserDefinedFunction.Argument[] args, boolean caseSensitive)
         {
-            super(call.getType());
+            super(call.getType(caseSensitive));
             this.calcs = calcs;
             this.udf = udf;
             this.args = args;
@@ -233,7 +233,7 @@ public class UdfResolver implements FunctionResolver {
         }
 
         @Override
-		public Object evaluate(Evaluator evaluator) {
+		public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
             try {
                 return udf.execute(evaluator, args);
             } catch (CellRequestQuantumExceededException e) {
@@ -247,7 +247,7 @@ public class UdfResolver implements FunctionResolver {
         }
 
         @Override
-		public boolean dependsOn(Hierarchy hierarchy) {
+		public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
             // Be pessimistic. This effectively disables expression caching.
             return true;
         }
@@ -264,15 +264,15 @@ public class UdfResolver implements FunctionResolver {
             ResolvedFunCall call,
             Calc[] calcs,
             UserDefinedFunction udf,
-            UserDefinedFunction.Argument[] args)
+            UserDefinedFunction.Argument[] args, boolean caseSensitive)
         {
-            super(call.getType(), calcs);
+            super(call.getType(caseSensitive), calcs);
             this.udf = udf;
             this.args = args;
         }
 
         @Override
-		public TupleList evaluateList(Evaluator evaluator) {
+		public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
             final List list = (List) udf.execute(evaluator, args);
 
             // If arity is 1, assume they have returned a list of members.
@@ -305,7 +305,7 @@ public class UdfResolver implements FunctionResolver {
         }
 
         @Override
-        public boolean dependsOn(Hierarchy hierarchy) {
+        public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
             // Be pessimistic. This effectively disables expression caching.
             return true;
         }

@@ -107,7 +107,7 @@ public interface Calc<E> {
      * @return Whether this expression's result depends upon the current member
      *   of the hierarchy
      */
-    boolean dependsOn(Hierarchy hierarchy);
+    boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive);
 
     /**
      * Returns the type.

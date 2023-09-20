@@ -187,12 +187,12 @@ public class RoleImpl implements Role {
      * @pre access == Access.ALL || access == Access.NONE
      * @pre isMutable()
      */
-    public void grant(Cube cube, Access access) {
+    public void grant(Cube cube, Access access, boolean caseSensitive) {
         Util.assertPrecondition(cube != null, "cube != null");
         checkAccess(access);
         Util.assertPrecondition(isMutable(), "isMutable()");
         LOGGER.trace(
-            "Grant {} on cube {}", access, cube.getName());
+            "Grant {} on cube {}", access, cube.getName(caseSensitive));
         cubeGrants.put(cube, access);
         // Set the schema's access to 'custom' if no rules already exist.
         final Access schemaAccess =
@@ -206,20 +206,20 @@ public class RoleImpl implements Role {
         hashCache.add(
             new Object[] {
                 cube.getClass().getName(),
-                cube.getName(),
+                cube.getName(caseSensitive),
                 access.name()});
         hash = 0;
     }
 
     @Override
-	public Access getAccess(Cube cube) {
+	public Access getAccess(Cube cube, boolean caseSensitive) {
         checkCube(cube);
         // Check for explicit rules.
         // Both 'custom' and 'all' are good enough
         Access access = cubeGrants.get(cube);
         if (access != null) {
             LOGGER.trace(
-                "Access level {} granted to cube {}", access, cube.getName());
+                "Access level {} granted to cube {}", access, cube.getName(caseSensitive));
             return access;
         }
         // Check for inheritance from the parent schema
@@ -229,13 +229,13 @@ public class RoleImpl implements Role {
             LOGGER.trace(
                 "Access level {} granted to cube {} because of the grant to schema {}",
                 access,
-                cube.getName(),
+                cube.getName(caseSensitive),
                 cube.getSchema().getName());
             return Access.ALL;
         }
         // Deny access
         LOGGER.trace(
-            "Access denided to cube {}", cube.getName());
+            "Access denided to cube {}", cube.getName(caseSensitive));
         return Access.NONE;
     }
 
@@ -250,7 +250,7 @@ public class RoleImpl implements Role {
      * || access == Access.NONE
      * @pre isMutable()
      */
-    public void grant(Dimension dimension, Access access) {
+    public void grant(Dimension dimension, Access access, boolean caseSensitive) {
         checkDimension(dimension);
         checkAccess(access);
         Util.assertPrecondition(isMutable(), "isMutable()");
@@ -264,7 +264,7 @@ public class RoleImpl implements Role {
         hashCache.add(
             new Object[] {
                 dimension.getClass().getName(),
-                dimension.getName(),
+                dimension.getName(caseSensitive),
                 access.name()});
         hash = 0;
     }
@@ -423,14 +423,14 @@ public class RoleImpl implements Role {
         Access access,
         Level topLevel,
         Level bottomLevel,
-        RollupPolicy rollupPolicy)
+        RollupPolicy rollupPolicy, boolean caseSensitive)
     {
         assert hierarchy != null;
         assert access != null;
         assert (access == Access.CUSTOM)
             || (topLevel == null && bottomLevel == null);
-        assert topLevel == null || topLevel.getHierarchy() == hierarchy;
-        assert bottomLevel == null || bottomLevel.getHierarchy() == hierarchy;
+        assert topLevel == null || topLevel.getHierarchy(caseSensitive) == hierarchy;
+        assert bottomLevel == null || bottomLevel.getHierarchy(caseSensitive) == hierarchy;
         assert isMutable();
         assert rollupPolicy != null;
         LOGGER.trace(
@@ -442,23 +442,23 @@ public class RoleImpl implements Role {
                 this, hierarchy, access, topLevel, bottomLevel, rollupPolicy));
         // Cascade the access right to 'custom' on the parent dim if necessary
         final Access dimAccess =
-            toAccess(dimensionGrants.get(hierarchy.getDimension()));
+            toAccess(dimensionGrants.get(hierarchy.getDimension(caseSensitive)));
         if (dimAccess == Access.NONE) {
             LOGGER.trace(
                 "Cascading grant CUSTOM on dimension {} because of the grant to hierarchy {}",
-                hierarchy.getDimension().getUniqueName(), hierarchy.getUniqueName());
-            grant(hierarchy.getDimension(), Access.CUSTOM);
+                hierarchy.getDimension(caseSensitive).getUniqueName(), hierarchy.getUniqueName());
+            grant(hierarchy.getDimension(caseSensitive), Access.CUSTOM, caseSensitive);
         }
         hashCache.add(
             new Object[] {
                 hierarchy.getClass().getName(),
-                hierarchy.getName(),
+                hierarchy.getName(caseSensitive),
                 access.name()});
         hash = 0;
     }
 
     @Override
-	public Access getAccess(Hierarchy hierarchy) {
+	public Access getAccess(Hierarchy hierarchy, boolean caseSensitive) {
         if (hierarchy == null) {
             throw new IllegalArgumentException("hierarchy should not be null");
         }
@@ -470,13 +470,13 @@ public class RoleImpl implements Role {
         }
         // There was no explicit rule for this particular hierarchy.
         // Let's check the parent dimension.
-        Access access = getAccess(hierarchy.getDimension());
+        Access access = getAccess(hierarchy.getDimension(caseSensitive));
         if (access == Access.ALL) {
             // Access levels of 'none' and 'custom' are not enough.
             LOGGER.trace(
                 "Access level ALL  granted to hierarchy {} because of the grant to dimension {}",
                 hierarchy.getUniqueName(),
-                hierarchy.getDimension().getUniqueName());
+                hierarchy.getDimension(caseSensitive).getUniqueName());
             return Access.ALL;
         }
         // Access denied, since we know that the dimension check has
@@ -487,20 +487,20 @@ public class RoleImpl implements Role {
     }
 
     @Override
-	public HierarchyAccess getAccessDetails(Hierarchy hierarchy) {
+	public HierarchyAccess getAccessDetails(Hierarchy hierarchy, boolean caseSensitive) {
         Util.assertPrecondition(hierarchy != null, "hierarchy != null");
         if (hierarchyGrants.containsKey(hierarchy)) {
             return hierarchyGrants.get(hierarchy);
         }
         final Access hierarchyAccess;
         final Access schemaGrant =
-            schemaGrants.get(hierarchy.getDimension().getSchema());
+            schemaGrants.get(hierarchy.getDimension(caseSensitive).getSchema());
         if (schemaGrant != null) {
             if (schemaGrant == Access.ALL) {
                 hierarchyAccess = Access.ALL;
             } else {
               // Let's check the parent dimension
-              Access dimAccess = getAccess( hierarchy.getDimension() );
+              Access dimAccess = getAccess( hierarchy.getDimension(caseSensitive) );
               hierarchyAccess = dimAccess == Access.ALL ? Access.ALL : Access.NONE;
             }
         } else {
@@ -516,12 +516,12 @@ public class RoleImpl implements Role {
     }
 
     @Override
-	public Access getAccess(Level level) {
+	public Access getAccess(Level level, boolean caseSensitive) {
         if (level == null) {
             throw new IllegalArgumentException("level should not be null");
         }
         HierarchyAccessImpl hierarchyAccess =
-                hierarchyGrants.get(level.getHierarchy());
+                hierarchyGrants.get(level.getHierarchy(caseSensitive));
         if (hierarchyAccess != null
             && hierarchyAccess.access != Access.NONE
             && checkLevelIsOkWithRestrictions(hierarchyAccess, level)) {
@@ -530,18 +530,18 @@ public class RoleImpl implements Role {
                     "Access level {} granted to level {} because of the grant to hierarchy {}",
                     hierarchyAccess.access,
                     level.getUniqueName(),
-                    level.getHierarchy().getUniqueName());
+                    level.getHierarchy(caseSensitive).getUniqueName());
                 return hierarchyAccess.access;
         }
         // No information could be deducted from the parent hierarchy.
         // Let's use the parent dimension.
         Access access =
-            getAccess(level.getDimension());
+            getAccess(level.getDimension(caseSensitive));
         LOGGER.trace(
             "Access level {} granted to level {} because of the grant to dimension {}",
             access,
             level.getUniqueName(),
-            level.getDimension().getUniqueName());
+            level.getDimension(caseSensitive).getUniqueName());
         return access;
     }
 
@@ -573,27 +573,27 @@ public class RoleImpl implements Role {
      * @pre isMutable()
      * @pre getAccess(member.getHierarchy()) == Access.CUSTOM
      */
-    public void grant(Member member, Access access) {
+    public void grant(Member member, Access access, boolean caseSensitive) {
         Util.assertPrecondition(member != null, "member != null");
         assert isMutable();
-        if (getAccess(member.getHierarchy()) != Access.CUSTOM) {
+        if (getAccess(member.getHierarchy(caseSensitive), caseSensitive) != Access.CUSTOM) {
             throw new IllegalArgumentException("Access should not be CUSTOM");
         }
         HierarchyAccessImpl hierarchyAccess =
-            hierarchyGrants.get(member.getHierarchy());
+            hierarchyGrants.get(member.getHierarchy(caseSensitive));
         assert hierarchyAccess != null;
         assert hierarchyAccess.access == Access.CUSTOM;
-        hierarchyAccess.grant(this, member, access);
+        hierarchyAccess.grant(this, member, access, caseSensitive);
         hashCache.add(
             new Object[] {
                 member.getClass().getName(),
-                member.getName(),
+                member.getName(caseSensitive),
                 access.name()});
         hash = 0;
     }
 
     @Override
-	public Access getAccess(Member member) {
+	public Access getAccess(Member member, boolean caseSensitive) {
         if (member == null) {
             throw new IllegalArgumentException("member should be not null");
         }
@@ -604,12 +604,12 @@ public class RoleImpl implements Role {
         // Check if the parent hierarchy has any access
         // rules for this.
         final HierarchyAccessImpl hierarchyAccess =
-            hierarchyGrants.get(member.getHierarchy());
+            hierarchyGrants.get(member.getHierarchy(caseSensitive));
         if (hierarchyAccess != null) {
-            return hierarchyAccess.getAccess(member);
+            return hierarchyAccess.getAccess(member, caseSensitive);
         }
         // Then let's check ask the parent level.
-        Access access = getAccess(member.getLevel());
+        Access access = getAccess(member.getLevel(), caseSensitive);
         LOGGER.trace(
             "Access level {} granted to level {} because of the grant to level {}",
             access,
@@ -628,18 +628,18 @@ public class RoleImpl implements Role {
     }
 
     @Override
-	public boolean canAccess(OlapElement olapElement) {
+	public boolean canAccess(OlapElement olapElement, boolean caseSensitive) {
         Util.assertPrecondition(olapElement != null, "olapElement != null");
         if (olapElement instanceof Member member) {
-            return getAccess(member) != Access.NONE;
+            return getAccess(member, caseSensitive) != Access.NONE;
         } else if (olapElement instanceof Level level) {
-            return getAccess(level) != Access.NONE;
+            return getAccess(level, caseSensitive) != Access.NONE;
         } else if (olapElement instanceof NamedSet namedSet) {
             return getAccess(namedSet) != Access.NONE;
         } else if (olapElement instanceof Hierarchy hierarchy) {
-            return getAccess(hierarchy) != Access.NONE;
+            return getAccess(hierarchy, caseSensitive) != Access.NONE;
         } else if (olapElement instanceof Cube cube) {
-            return getAccess(cube) != Access.NONE;
+            return getAccess(cube, caseSensitive) != Access.NONE;
         } else if (olapElement instanceof Dimension dimension) {
             return getAccess(dimension) != Access.NONE;
         } else {
@@ -653,9 +653,9 @@ public class RoleImpl implements Role {
      * @param hierarchy Hierarchy
      * @return element representing all access to a given hierarchy
      */
-    public static HierarchyAccess createAllAccess(Hierarchy hierarchy) {
+    public static HierarchyAccess createAllAccess(Hierarchy hierarchy, boolean caseSensitive) {
         return new HierarchyAccessImpl(
-            Util.createRootRole(hierarchy.getDimension().getSchema()),
+            Util.createRootRole(hierarchy.getDimension(caseSensitive).getSchema()),
             hierarchy, Access.ALL, null, null, RollupPolicy.FULL);
     }
 
@@ -762,8 +762,8 @@ public class RoleImpl implements Role {
          * @param member Member
          * @param access Access
          */
-        void grant(RoleImpl role, Member member, Access access) {
-            Util.assertTrue(member.getHierarchy() == hierarchy);
+        void grant(RoleImpl role, Member member, Access access, boolean caseSensitive) {
+            Util.assertTrue(member.getHierarchy(caseSensitive) == hierarchy);
 
             // Remove any existing grants to descendants of "member"
             for (Iterator<MemberAccess> memberIter =
@@ -858,7 +858,7 @@ public class RoleImpl implements Role {
                 }
                 // Also set custom access for the parent hierarchy.
                 final Access hierarchyAccess =
-                    role.getAccess(member.getLevel().getHierarchy());
+                    role.getAccess(member.getLevel().getHierarchy(caseSensitive), caseSensitive);
                 if (hierarchyAccess == Access.NONE) {
                     LOGGER.trace(
                         "Cascading grant CUSTOM on hierarchy {} because of the grant to member {}",
@@ -869,7 +869,7 @@ public class RoleImpl implements Role {
                         Access.CUSTOM,
                         topLevel,
                         bottomLevel,
-                        rollupPolicy);
+                        rollupPolicy, caseSensitive);
                 }
             }
         }
@@ -880,7 +880,7 @@ public class RoleImpl implements Role {
         }
 
         @Override
-		public Access getAccess(Member member) {
+		public Access getAccess(Member member, boolean caseSensitive) {
             if (this.access != Access.CUSTOM) {
                 return this.access;
             }
@@ -950,7 +950,7 @@ public class RoleImpl implements Role {
             }
             // Check for inherited access from ancestors.
             // "Custom" is not good enough. We are looking for "all" access.
-            accessInner = role.getAccess(member.getLevel());
+            accessInner = role.getAccess(member.getLevel(), caseSensitive);
             if (accessInner == Access.ALL) {
                 LOGGER.trace(
                     "Access ALL granted to member {} because its level {} is of access level ALL",
@@ -964,7 +964,7 @@ public class RoleImpl implements Role {
             if (memberGrants.size() == 0) {
                 LOGGER.trace(
                     "Access level ALL granted to member {} because it lies between the permitted level bounds and there are no explicit member grants defined in hierarchy {}",
-                    member.getUniqueName(), member.getHierarchy().getUniqueName());
+                    member.getUniqueName(), member.getHierarchy(caseSensitive).getUniqueName());
                 return Access.ALL;
             }
             // No access
@@ -1092,8 +1092,8 @@ public class RoleImpl implements Role {
         }
 
         @Override
-		public Access getAccess(Member member) {
-            return hierarchyAccess.getAccess(member);
+		public Access getAccess(Member member, boolean caseSensitive) {
+            return hierarchyAccess.getAccess(member, caseSensitive);
         }
 
         @Override
@@ -1162,12 +1162,12 @@ public class RoleImpl implements Role {
         }
 
         @Override
-        public Access getAccess(Member member) {
+        public Access getAccess(Member member, boolean caseSensitive) {
             Access access = memberAccessMap.get(member);
             if (access != null) {
                 return access;
             }
-            access = hierarchyAccess.getAccess(member);
+            access = hierarchyAccess.getAccess(member, caseSensitive);
             memberAccessMap.put(member, access);
             return access;
         }

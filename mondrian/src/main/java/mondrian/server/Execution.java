@@ -128,7 +128,8 @@ public class Execution {
 
   private String getMdx() {
     final Query query = statement.query;
-    return query != null ? Util.unparse( query ) : null;
+    return query != null ? Util.unparse( query, true ) : null;
+    //TODO UTILS
   }
 
   public void tracePhase( int hitCount, int missCount, int pendingCount ) {
@@ -342,7 +343,7 @@ public class Execution {
     final SegmentCacheManager mgr = locus.getServer().getAggregationManager().getCacheMgr(null);
     mgr.execute( new SegmentCacheManager.Command<Void>() {
       @Override
-	public Void call() throws Exception {
+	public Void call(boolean caseSensitive) throws Exception {
         mgr.getIndexRegistry().cancelExecutionSegments( Execution.this );
         return null;
       }

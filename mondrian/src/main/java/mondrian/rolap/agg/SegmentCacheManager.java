@@ -752,7 +752,7 @@ public class SegmentCacheManager {
     private final MDCUtil mdc = new MDCUtil();
 
     public abstract Locus getLocus();
-    public abstract T call() throws Exception;
+    public abstract T call(boolean caseSensitive) throws Exception;
 
     @Override
     public void setContextMap() {
@@ -786,12 +786,12 @@ public class SegmentCacheManager {
     }
 
     @Override
-	public FlushResult call() {
-      final List<Member> measures = CacheControlImpl.findMeasures( region );
+	public FlushResult call(boolean caseSensitive) {
+      final List<Member> measures = CacheControlImpl.findMeasures( region, caseSensitive );
       final SegmentColumn[] flushRegion = CacheControlImpl.findAxisValues( region );
-      final List<RolapStar> starList = CacheControlImpl.getStarList( region );
+      final List<RolapStar> starList = CacheControlImpl.getStarList( region, caseSensitive );
 
-      final List<SegmentHeader> headers = getIntersectingHeaders( measures, flushRegion );
+      final List<SegmentHeader> headers = getIntersectingHeaders( measures, flushRegion, caseSensitive );
 
       // If flushRegion is empty, this means we must clear all
       // segments for the region's measures.
@@ -900,7 +900,7 @@ public class SegmentCacheManager {
      * For each measure and each star, ask the index
      * which headers intersect.
      */
-    private List<SegmentHeader> getIntersectingHeaders( List<Member> measures, SegmentColumn[] flushRegion ) {
+    private List<SegmentHeader> getIntersectingHeaders( List<Member> measures, SegmentColumn[] flushRegion, boolean caseSensitive ) {
       final List<SegmentHeader> headers =
         new ArrayList<>();
       for ( Member member : measures ) {
@@ -912,11 +912,11 @@ public class SegmentCacheManager {
           cacheMgr.indexRegistry.getIndex( star );
         headers.addAll(
           index.intersectRegion(
-            member.getDimension().getSchema().getName(),
-            ( (RolapSchema) member.getDimension().getSchema() )
+            member.getDimension(caseSensitive).getSchema().getName(),
+            ( (RolapSchema) member.getDimension(caseSensitive).getSchema() )
               .getChecksum(),
-            storedMeasure.getCube().getName(),
-            storedMeasure.getName(),
+            storedMeasure.getCube().getName(caseSensitive),
+            storedMeasure.getName(caseSensitive),
             storedMeasure.getCube().getStar()
               .getFactTable().getAlias(),
             flushRegion ) );
@@ -944,9 +944,9 @@ public class SegmentCacheManager {
     }
 
     @Override
-	public Void call() {
+	public Void call(boolean caseSensitive) {
       final List<RolapStar> starList =
-        CacheControlImpl.getStarList( region );
+        CacheControlImpl.getStarList( region, caseSensitive );
       starList.sort( Comparator.comparing( o -> o.getFactTable().getAlias() ) );
       for ( RolapStar star : starList ) {
         indexRegistry.getIndex( star )
@@ -984,7 +984,7 @@ public class SegmentCacheManager {
   private static class ShutdownCommand extends Command<String> {
 
     @Override
-	public String call() throws Exception {
+	public String call(boolean caseSensitive) throws Exception {
       throw new PleaseShutdownException();
     }
 
@@ -1040,7 +1040,8 @@ public class SegmentCacheManager {
             if ( message instanceof Command<?> command ) {
               try {
                 Locus.push( command.getLocus() );
-                Object result = command.call();
+                Object result = command.call(true);
+                //TODO UTILS
                 responseMap.put(
                   command,
                   Pair.of( result, null ) );
@@ -1363,7 +1364,7 @@ public class SegmentCacheManager {
               command =
                 new Command<>() {
                   @Override
-				public Void call() {
+				public Void call(boolean caseSensitive) {
                     cacheMgr.externalSegmentCreated(
                       e.getSource(),
                       server );
@@ -1380,7 +1381,7 @@ public class SegmentCacheManager {
               command =
                 new Command<>() {
                   @Override
-				public Void call() {
+				public Void call(boolean caseSensitive) {
                     cacheMgr.externalSegmentDeleted(
                       e.getSource(),
                       server );
@@ -1542,7 +1543,7 @@ public class SegmentCacheManager {
     }
 
     @Override
-	public PeekResponse call() {
+	public PeekResponse call(boolean caseSensitive) {
       final RolapStar.Measure measure = request.getMeasure();
       final RolapStar star = measure.getStar();
       final RolapSchema schema = star.getSchema();

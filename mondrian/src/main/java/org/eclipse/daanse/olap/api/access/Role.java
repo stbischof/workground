@@ -58,7 +58,7 @@ public interface Role {
      * @pre cube != null
      * @post return == Access.ALL || return == Access.NONE
      */
-    Access getAccess(Cube cube);
+    Access getAccess(Cube cube, boolean caseSensitive);
 
 
     /**
@@ -77,7 +77,7 @@ public interface Role {
      *   || return == Access.ALL
      *   || return == Access.CUSTOM
      */
-    Access getAccess(Hierarchy hierarchy);
+    Access getAccess(Hierarchy hierarchy, boolean caseSensitive);
 
     /**
      * Returns the details of this hierarchy's access, or null if the hierarchy
@@ -85,7 +85,7 @@ public interface Role {
      *
      * @pre hierarchy != null
      */
-    HierarchyAccess getAccessDetails(Hierarchy hierarchy);
+    HierarchyAccess getAccessDetails(Hierarchy hierarchy, boolean caseSensitive);
 
     /**
      * Returns the access this role has to a given level.
@@ -93,7 +93,7 @@ public interface Role {
      * @pre level != null
      * @post Access.instance().isValid(return)
      */
-    Access getAccess(Level level);
+    Access getAccess(Level level, boolean caseSensitive);
 
     /**
      * Returns the access this role has to a given member.
@@ -104,7 +104,7 @@ public interface Role {
      *    || return == Access.ALL
      *    || return == Access.CUSTOM
      */
-    Access getAccess(Member member);
+    Access getAccess(Member member, boolean caseSensitive);
 
     /**
      * Returns the access this role has to a given named set.
@@ -119,7 +119,7 @@ public interface Role {
      * Returns whether this role is allowed to see a given element.
      * @pre olapElement != null
      */
-    boolean canAccess(OlapElement olapElement);
+    boolean canAccess(OlapElement olapElement, boolean caseSensitive);
 
 
 }

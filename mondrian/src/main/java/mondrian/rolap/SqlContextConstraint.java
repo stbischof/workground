@@ -156,7 +156,7 @@ public class SqlContextConstraint
             Cube cube = query.getCube();
             Dimension dimension = cube.getDimensions()[0];
             query.addMeasuresMembers(
-                dimension.getHierarchy(caseSensitive).getDefaultMember());
+                dimension.getHierarchy(caseSensitive).getDefaultMember(caseSensitive));
         }
         for (Member member : query.getMeasuresMembers()) {
             if (member instanceof RolapStoredMeasure rolapStoredMeasure) {
@@ -225,7 +225,7 @@ public class SqlContextConstraint
     * {@link mondrian.rolap.sql.MemberChildrenConstraint#addMemberConstraint(mondrian.rolap.sql.SqlQuery, mondrian.rolap.RolapCube, mondrian.rolap.aggmatcher.AggStar, java.util.List)} will
     * never accept a calculated member as parent.
     */
-    SqlContextConstraint(RolapEvaluator evaluator, boolean strict) {
+    SqlContextConstraint(RolapEvaluator evaluator, boolean strict, boolean caseSensitive) {
         this.evaluator = evaluator.push();
         this.strict = strict;
         cacheKey = new ArrayList<>();
@@ -238,13 +238,13 @@ public class SqlContextConstraint
         members.addAll(
             Arrays.asList(
                 SqlConstraintUtils.expandMultiPositionSlicerMembers(
-                    evaluator.getMembers(), evaluator)));
+                    evaluator.getMembers(), evaluator, caseSensitive)));
 
         // Now we'll need to expand the aggregated members
         expandedMembers.addAll(
             SqlConstraintUtils.expandSupportedCalculatedMembers(
                 members,
-                evaluator).getMembers());
+                evaluator, caseSensitive).getMembers());
         cacheKey.add(expandedMembers);
         cacheKey.add(evaluator.getSlicerTuples());
 
@@ -252,7 +252,7 @@ public class SqlContextConstraint
         Map<Level, List<RolapMember>> roleMembers =
             SqlConstraintUtils.getRoleConstraintMembers(
                 this.getEvaluator().getSchemaReader(),
-                this.getEvaluator().getMembers());
+                this.getEvaluator().getMembers(), caseSensitive);
         for (List<RolapMember> list : roleMembers.values()) {
             cacheKey.addAll(list);
         }
@@ -283,7 +283,7 @@ public class SqlContextConstraint
         try {
             evaluator.setContext(parent);
             SqlConstraintUtils.addContextConstraint(
-                sqlQuery, aggStar, evaluator, baseCube, strict);
+                sqlQuery, aggStar, evaluator, baseCube, strict, baseCube.getContext().getConfig().caseSensitive());
         } finally {
             evaluator.restore(savepoint);
         }
@@ -304,7 +304,7 @@ public class SqlContextConstraint
         List<RolapMember> parents)
     {
         SqlConstraintUtils.addContextConstraint(
-            sqlQuery, aggStar, evaluator, baseCube, strict);
+            sqlQuery, aggStar, evaluator, baseCube, strict, baseCube.getContext().getConfig().caseSensitive());
         boolean exclude = false;
         SqlConstraintUtils.addMemberConstraint(
             sqlQuery, baseCube, aggStar, parents, true, false, exclude);
@@ -321,7 +321,7 @@ public class SqlContextConstraint
         AggStar aggStar, boolean caseSensitive)
     {
         SqlConstraintUtils.addContextConstraint(
-            sqlQuery, aggStar, evaluator, baseCube, strict);
+            sqlQuery, aggStar, evaluator, baseCube, strict, caseSensitive);
     }
 
     /**

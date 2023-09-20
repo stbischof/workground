@@ -44,7 +44,7 @@ public interface Hierarchy extends OlapElement, MetaElement {
      *
      * @post return != null
      */
-    Member getDefaultMember();
+    Member getDefaultMember(boolean caseSensitive);
     /**
      * Returns the "All" member of this hierarchy.
      *
@@ -59,7 +59,7 @@ public interface Hierarchy extends OlapElement, MetaElement {
      *
      * @post return != null
      */
-    Member getNullMember();
+    Member getNullMember(boolean caseSensitive);
 
     boolean hasAll();
 
@@ -68,7 +68,7 @@ public interface Hierarchy extends OlapElement, MetaElement {
      * calculated member is created, and <code>formula</code> must not be null.
      */
     Member createMember(
-        Member parent, Level level, String name, Formula formula);
+        Member parent, Level level, String name, Formula formula, boolean caseSensitive);
 
     /**
      * Returns the unique name of this hierarchy, always including the dimension

@@ -67,7 +67,7 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
 
     // implementes MemberCache
     @Override
-	public RolapMember removeMember(Object key) {
+	public RolapMember removeMember(Object key, boolean caseSensitive) {
         return null;
     }
 
@@ -120,41 +120,41 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
 
     // implement MemberReader
     @Override
-	public List<RolapMember> getMembers() {
+	public List<RolapMember> getMembers(boolean caseSensitive) {
         System.out.println("NoCache getMembers");
         List<RolapMember> v = new ArrayList<>();
         RolapLevel[] levels = (RolapLevel[]) getHierarchy().getLevels();
         // todo: optimize by walking to children for members we know about
         for (RolapLevel level : levels) {
             List<RolapMember> membersInLevel =
-                getMembersInLevel(level);
+                getMembersInLevel(level, caseSensitive);
             v.addAll(membersInLevel);
         }
         return v;
     }
 
     @Override
-	public List<RolapMember> getRootMembers() {
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
         LOGGER.debug("Getting root members");
-        return source.getRootMembers();
+        return source.getRootMembers(caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        final RolapLevel level)
+        final RolapLevel level, boolean caseSensitive)
     {
         TupleConstraint constraint =
-            sqlConstraintFactory.getLevelMembersConstraint(null);
-        return getMembersInLevel(level, constraint);
+            sqlConstraintFactory.getLevelMembersConstraint(null, caseSensitive);
+        return getMembersInLevel(level, constraint, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        final RolapLevel level, final TupleConstraint constraint)
+        final RolapLevel level, final TupleConstraint constraint, boolean caseSensitive)
     {
         LOGGER.debug("Entering getMembersInLevel");
         return source.getMembersInLevel(
-            level, constraint);
+            level, constraint, caseSensitive);
     }
 
     @Override
@@ -167,59 +167,59 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     @Override
 	public void getMemberChildren(
         final RolapMember parentMember,
-        final List<RolapMember> children)
+        final List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-                sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMember, children, constraint);
+                sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMember, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         final RolapMember parentMember,
         final List<RolapMember> children,
-        final MemberChildrenConstraint constraint)
+        final MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         List<RolapMember> parentMembers = new ArrayList<>();
         parentMembers.add(parentMember);
-        return getMemberChildren(parentMembers, children, constraint);
+        return getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public void getMemberChildren(
         final List<RolapMember> parentMembers,
-        final List<RolapMember> children)
+        final List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMembers, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         final List<RolapMember> parentMembers,
         final List<RolapMember> children,
-        final MemberChildrenConstraint constraint)
+        final MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         assert (constraint != null);
         LOGGER.debug("Entering getMemberChildren");
         return
             source.getMemberChildren(
-                parentMembers, children, constraint);
+                parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public RolapMember lookupMember(
         final List<Segment> uniqueNameParts,
-        final boolean failIfNotFound)
+        final boolean failIfNotFound, boolean caseSensitive)
     {
-        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound);
+        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getChildrenFromCache(
         final RolapMember member,
-        final MemberChildrenConstraint constraint)
+        final MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         return null;
     }
@@ -227,7 +227,7 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     @Override
 	public List<RolapMember> getLevelMembersFromCache(
         final RolapLevel level,
-        final TupleConstraint constraint)
+        final TupleConstraint constraint, boolean caseSensitive)
     {
         return null;
     }
@@ -249,19 +249,19 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     }
 
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         if (n == 0 || member.isNull()) {
             return member;
         } else {
-            SiblingIterator iter = new SiblingIterator(this, member);
+            SiblingIterator iter = new SiblingIterator(this, member, caseSensitive);
             if (n > 0) {
                 RolapMember sibling = null;
                 while (n-- > 0) {
                     if (!iter.hasNext()) {
-                        return (RolapMember) member.getHierarchy()
-                            .getNullMember();
+                        return (RolapMember) member.getHierarchy(caseSensitive)
+                            .getNullMember(caseSensitive);
                     }
-                    sibling = iter.nextMember();
+                    sibling = iter.nextMember(caseSensitive);
                 }
                 return sibling;
             } else {
@@ -269,10 +269,10 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
                 RolapMember sibling = null;
                 while (n-- > 0) {
                     if (!iter.hasPrevious()) {
-                        return (RolapMember) member.getHierarchy()
-                            .getNullMember();
+                        return (RolapMember) member.getHierarchy(caseSensitive)
+                            .getNullMember(caseSensitive);
                     }
-                    sibling = iter.previousMember();
+                    sibling = iter.previousMember(caseSensitive);
                 }
                 return sibling;
             }
@@ -284,23 +284,23 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
         final RolapLevel level,
         final RolapMember startMember,
         final RolapMember endMember,
-        final List<RolapMember> list)
+        final List<RolapMember> list, boolean caseSensitive)
     {
         assert startMember != null : "pre";
         assert endMember != null : "pre";
         assert startMember.getLevel() == endMember.getLevel()
             : "pre: startMember.getLevel() == endMember.getLevel()";
 
-        if (compare(startMember, endMember, false) > 0) {
+        if (compare(startMember, endMember, false, caseSensitive) > 0) {
             return;
         }
         list.add(startMember);
         if (startMember.equals(endMember)) {
             return;
         }
-        SiblingIterator siblings = new SiblingIterator(this, startMember);
+        SiblingIterator siblings = new SiblingIterator(this, startMember, caseSensitive);
         while (siblings.hasNext()) {
-            final RolapMember member = siblings.nextMember();
+            final RolapMember member = siblings.nextMember(caseSensitive);
             list.add(member);
             if (member.equals(endMember)) {
                 return;
@@ -320,7 +320,8 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
 	public int compare(
         final RolapMember m1,
         final RolapMember m2,
-        final boolean siblingsAreEqual)
+        final boolean siblingsAreEqual,
+        boolean caseSensitive)
     {
         if (Objects.equals(m1, m2)) {
             return 0;
@@ -332,7 +333,7 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
             } else if (m1.getParentMember() == null) {
                 // at this point we know that both parent members are null.
                 int pos1 = -1, pos2 = -1;
-                List<RolapMember> siblingList = getRootMembers();
+                List<RolapMember> siblingList = getRootMembers(caseSensitive);
                 for (int i = 0, n = siblingList.size(); i < n; i++) {
                     RolapMember child = siblingList.get(i);
                     if (child.equals(m1)) {
@@ -354,7 +355,7 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
                 return pos1 < pos2 ? -1 : 1;
             } else {
                 List<RolapMember> children = new ArrayList<>();
-                getMemberChildren(m1.getParentMember(), children);
+                getMemberChildren(m1.getParentMember(), children, caseSensitive);
                 int pos1 = -1, pos2 = -1;
                 for (int i = 0, n = children.size(); i < n; i++) {
                     RolapMember child = children.get(i);
@@ -380,15 +381,15 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
         int levelDepth1 = m1.getLevel().getDepth();
         int levelDepth2 = m2.getLevel().getDepth();
         if (levelDepth1 < levelDepth2) {
-            final int c = compare(m1, m2.getParentMember(), false);
+            final int c = compare(m1, m2.getParentMember(), false, caseSensitive);
             return (c == 0) ? -1 : c;
 
         } else if (levelDepth1 > levelDepth2) {
-            final int c = compare(m1.getParentMember(), m2, false);
+            final int c = compare(m1.getParentMember(), m2, false, caseSensitive);
             return (c == 0) ? 1 : c;
 
         } else {
-            return compare(m1.getParentMember(), m2.getParentMember(), false);
+            return compare(m1.getParentMember(), m2.getParentMember(), false, caseSensitive);
         }
     }
 
@@ -404,17 +405,17 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
         private List<? extends Member> siblings;
         private int position;
 
-        SiblingIterator(MemberReader reader, RolapMember member) {
+        SiblingIterator(MemberReader reader, RolapMember member, boolean caseSensitive) {
             this.reader = reader;
             RolapMember parent = member.getParentMember();
             List<RolapMember> siblingList;
             if (parent == null) {
-                siblingList = reader.getRootMembers();
+                siblingList = reader.getRootMembers(caseSensitive);
                 this.parentIterator = null;
             } else {
                 siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
-                this.parentIterator = new SiblingIterator(reader, parent);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
+                this.parentIterator = new SiblingIterator(reader, parent, caseSensitive);
             }
             this.siblings = siblingList;
             this.position = -1;
@@ -436,18 +437,18 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
                 && parentIterator.hasNext();
         }
 
-        Object next() {
-            return nextMember();
+        Object next(boolean caseSensitive) {
+            return nextMember(caseSensitive);
         }
 
-        RolapMember nextMember() {
+        RolapMember nextMember(boolean caseSensitive) {
             if (++this.position >= this.siblings.size()) {
                 if (parentIterator == null) {
                     throw Util.newInternal("there is no next member");
                 }
-                RolapMember parent = parentIterator.nextMember();
+                RolapMember parent = parentIterator.nextMember(caseSensitive);
                 List<RolapMember> siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
                 this.siblings = siblingList;
                 this.position = 0;
             }
@@ -460,18 +461,18 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
                 && parentIterator.hasPrevious();
         }
 
-        Object previous() {
-            return previousMember();
+        Object previous(boolean caseSensitive) {
+            return previousMember(caseSensitive);
         }
 
-        RolapMember previousMember() {
+        RolapMember previousMember(boolean caseSensitive) {
             if (--this.position < 0) {
                 if (parentIterator == null) {
                     throw Util.newInternal("there is no next member");
                 }
-                RolapMember parent = parentIterator.previousMember();
+                RolapMember parent = parentIterator.previousMember(caseSensitive);
                 List<RolapMember> siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
                 this.siblings = siblingList;
                 this.position = this.siblings.size() - 1;
             }
@@ -485,13 +486,13 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     }
 
     @Override
-	public RolapMember getDefaultMember() {
+	public RolapMember getDefaultMember(boolean caseSensitive) {
         RolapMember defaultMember =
-            (RolapMember) getHierarchy().getDefaultMember();
+            (RolapMember) getHierarchy().getDefaultMember(caseSensitive);
         if (defaultMember != null) {
             return defaultMember;
         }
-        return getRootMembers().get(0);
+        return getRootMembers(caseSensitive).get(0);
     }
 
     @Override
@@ -507,18 +508,18 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     }
 
     @Override
-	public RolapMember substitute(RolapMember member) {
+	public RolapMember substitute(RolapMember member, boolean caseSensitive) {
         return member;
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
         // This method deals with ragged hierarchies but not access-controlled
         // hierarchies - assume these have RestrictedMemberReader possibly
         // wrapped in a SubstitutingMemberReader.
         RolapMember parentMember = member.getParentMember();
         // Skip over hidden parents.
-        while (parentMember != null && parentMember.isHidden()) {
+        while (parentMember != null && parentMember.isHidden(caseSensitive)) {
             parentMember = parentMember.getParentMember();
         }
         return parentMember;
@@ -535,10 +536,10 @@ public class NoCacheMemberReader implements MemberReader, MemberCache {
     protected void readMemberChildren(
         List<RolapMember> members,
         List<RolapMember> result,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         List<RolapMember> children = new ConcatenableList<>();
-        source.getMemberChildren(members, children, constraint);
+        source.getMemberChildren(members, children, constraint, caseSensitive);
         // Put them in a temporary hash table first. Register them later, when
         // we know their size (hence their 'cost' to the cache pool).
         Map<RolapMember, List<RolapMember>> tempMap =

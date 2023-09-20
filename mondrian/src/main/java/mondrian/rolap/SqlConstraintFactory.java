@@ -60,18 +60,18 @@ public class SqlConstraintFactory {
     }
 
     public MemberChildrenConstraint getMemberChildrenConstraint(
-        Evaluator context)
+        Evaluator context, boolean caseSensitive)
     {
         if (!enabled(context)
             || !SqlContextConstraint.isValidContext(context, false))
         {
             return DefaultMemberChildrenConstraint.instance();
         }
-        return new SqlContextConstraint((RolapEvaluator) context, false);
+        return new SqlContextConstraint((RolapEvaluator) context, false, caseSensitive);
     }
 
-    public TupleConstraint getLevelMembersConstraint(Evaluator context) {
-        return getLevelMembersConstraint(context, null);
+    public TupleConstraint getLevelMembersConstraint(Evaluator context, boolean caseSensitive) {
+        return getLevelMembersConstraint(context, null, caseSensitive);
     }
 
     /**
@@ -85,30 +85,30 @@ public class SqlConstraintFactory {
      */
     public TupleConstraint getLevelMembersConstraint(
         Evaluator context,
-        Level[] levels)
+        Level[] levels, boolean caseSensitive)
     {
         // consider refactoring to eliminate unnecessary array
         assert levels == null || levels.length == 1
             : "Multi-element Level arrays are not expected here.";
-        if (useDefaultTupleConstraint(context, levels)) {
+        if (useDefaultTupleConstraint(context, levels, caseSensitive)) {
             return DefaultTupleConstraint.instance();
         }
         if (context.isNonEmpty()) {
             Set<CrossJoinArg> joinArgs =
                 new CrossJoinArgFactory(false).buildConstraintFromAllAxes(
-                    (RolapEvaluator) context);
+                    (RolapEvaluator) context, caseSensitive);
             if (joinArgs.size() > 0) {
                 return new RolapNativeCrossJoin.NonEmptyCrossJoinConstraint(
                     joinArgs.toArray(
                         new CrossJoinArg[joinArgs.size()]),
-                    (RolapEvaluator) context);
+                    (RolapEvaluator) context, caseSensitive);
             }
         }
-        return new SqlContextConstraint((RolapEvaluator) context, false);
+        return new SqlContextConstraint((RolapEvaluator) context, false, caseSensitive);
     }
 
     private boolean useDefaultTupleConstraint(
-        Evaluator context, Level[] levels)
+        Evaluator context, Level[] levels, boolean caseSensitive)
     {
         if (context == null) {
             return true;
@@ -130,7 +130,7 @@ public class SqlConstraintFactory {
             long totalCard = 1;
             for (Level level : levels) {
                 totalCard *=
-                    getLevelCardinality((RolapLevel) level);
+                    getLevelCardinality((RolapLevel) level, caseSensitive);
                 if (totalCard > threshold) {
                     return false;
                 }
@@ -141,11 +141,11 @@ public class SqlConstraintFactory {
 
     public MemberChildrenConstraint getChildByNameConstraint(
         RolapMember parent,
-        NameSegment childName)
+        NameSegment childName, boolean caseSensitive)
     {
         // Ragged hierarchies span multiple levels, so SQL WHERE does not work
         // there
-        if (useDefaultMemberChildrenConstraint(parent)) {
+        if (useDefaultMemberChildrenConstraint(parent, caseSensitive)) {
             return DefaultMemberChildrenConstraint.instance();
         }
         return new ChildByNameConstraint(childName);
@@ -153,49 +153,49 @@ public class SqlConstraintFactory {
 
     public MemberChildrenConstraint getChildrenByNamesConstraint(
         RolapMember parent,
-        List<NameSegment> childNames)
+        List<NameSegment> childNames, boolean caseSensitive)
     {
-        if (useDefaultMemberChildrenConstraint(parent)) {
+        if (useDefaultMemberChildrenConstraint(parent, caseSensitive)) {
             return DefaultMemberChildrenConstraint.instance();
         }
         return new ChildByNameConstraint(childNames);
     }
 
-    private boolean useDefaultMemberChildrenConstraint(RolapMember parent) {
+    private boolean useDefaultMemberChildrenConstraint(RolapMember parent, boolean caseSensitive) {
         int threshold = MondrianProperties.instance()
             .LevelPreCacheThreshold.get();
         return !enabled
-            || parent.getHierarchy().isRagged()
-            || (!isDegenerate(parent.getLevel())
+            || parent.getHierarchy(caseSensitive).isRagged()
+            || (!isDegenerate(parent.getLevel(), caseSensitive)
             && threshold > 0
-            && getChildLevelCardinality(parent) < threshold);
+            && getChildLevelCardinality(parent, caseSensitive) < threshold);
     }
 
-    private boolean isDegenerate(Level level) {
+    private boolean isDegenerate(Level level, boolean caseSensitive) {
         if (level instanceof RolapCubeLevel) {
             RolapCubeHierarchy hier = (RolapCubeHierarchy)level
-                .getHierarchy();
+                .getHierarchy(caseSensitive);
             return hier.isUsingCubeFact();
         }
         return false;
     }
 
-    private int getChildLevelCardinality(RolapMember parent) {
+    private int getChildLevelCardinality(RolapMember parent, boolean caseSensitive) {
         RolapLevel level = (RolapLevel)parent.getLevel().getChildLevel();
         if (level == null) {
             // couldn't determine child level, give most pessimistic answer
             return Integer.MAX_VALUE;
         }
-        return getLevelCardinality(level);
+        return getLevelCardinality(level, caseSensitive);
     }
 
-    private int getLevelCardinality(RolapLevel level) {
-        return getSchemaReader(level)
+    private int getLevelCardinality(RolapLevel level, boolean caseSensitive) {
+        return getSchemaReader(level, caseSensitive)
             .getLevelCardinality(level, true, true);
     }
 
-    private SchemaReader getSchemaReader(RolapLevel level) {
-        return level.getHierarchy().getRolapSchema().getSchemaReader();
+    private SchemaReader getSchemaReader(RolapLevel level, boolean caseSensitive) {
+        return level.getHierarchy(caseSensitive).getRolapSchema().getSchemaReader();
     }
 
     /**

@@ -604,7 +604,7 @@ public class RolapSchema implements Schema {
             } else if (ParameterTypeEnum.NUMERIC.equals(xmlParameter.type())) {
                 type = new NumericType();
             } else {
-                type = new MemberType(null, null, null, null);
+                type = new MemberType(null, null, null, null, context.getConfig().caseSensitive());
             }
             final String description = xmlParameter.description();
             final boolean modifiable = xmlParameter.modifiable();
@@ -775,7 +775,7 @@ public class RolapSchema implements Schema {
         if (cube == null) {
             throw Util.newError(new StringBuilder("Unknown cube '").append(cubeGrant.cube()).append("'").toString());
         }
-        role.grant(cube, getAccess(cubeGrant.access(), cubeAllowed));
+        role.grant(cube, getAccess(cubeGrant.access(), cubeAllowed), context.getConfig().caseSensitive());
 
         SchemaReader reader = cube.getSchemaReader(null);
         for (org.eclipse.daanse.olap.rolap.dbmapper.model.api.DimensionGrant grant
@@ -785,7 +785,7 @@ public class RolapSchema implements Schema {
                 lookup(cube, reader, Category.DIMENSION, grant.dimension());
             role.grant(
                 dimension,
-                getAccess(grant.access().name(), dimensionAllowed));
+                getAccess(grant.access().name(), dimensionAllowed), context.getConfig().caseSensitive());
         }
 
         for (org.eclipse.daanse.olap.rolap.dbmapper.model.api.HierarchyGrant hierarchyGrant
@@ -827,7 +827,7 @@ public class RolapSchema implements Schema {
             rollupPolicy = RollupPolicy.FULL;
         }
         role.grant(
-            hierarchy, hierarchyAccess, topLevel, bottomLevel, rollupPolicy);
+            hierarchy, hierarchyAccess, topLevel, bottomLevel, rollupPolicy, context.getConfig().caseSensitive());
 
         final boolean ignoreInvalidMembers =
             MondrianProperties.instance().IgnoreInvalidMembers.get();
@@ -854,14 +854,14 @@ public class RolapSchema implements Schema {
                     membersRejected++;
                     continue;
                 }
-                if (member.getHierarchy() != hierarchy) {
+                if (member.getHierarchy(context.getConfig().caseSensitive()) != hierarchy) {
                     throw Util.newError(
                         new StringBuilder("Member '").append(member)
                         .append("' is not in hierarchy '").append(hierarchy).append("'").toString());
                 }
                 role.grant(
                     member,
-                    getAccess(memberGrant.access().getValue(), memberAllowed));
+                    getAccess(memberGrant.access().getValue(), memberAllowed), context.getConfig().caseSensitive());
             }
         }
 
@@ -873,7 +873,7 @@ public class RolapSchema implements Schema {
                     "Rolling back grants of Hierarchy '{}' to NONE, because it contains no valid restricted members",
                     hierarchy.getUniqueName());
             }
-            role.grant(hierarchy, Access.NONE, null, null, rollupPolicy);
+            role.grant(hierarchy, Access.NONE, null, null, rollupPolicy, context.getConfig().caseSensitive());
         }
     }
 
@@ -1061,7 +1061,7 @@ public class RolapSchema implements Schema {
      */
     protected void addCube(final RolapCube cube) {
         mapNameToCube.put(
-            Util.normalizeName(cube.getName()),
+            Util.normalizeName(cube.getName(context.getConfig().caseSensitive())),
             cube);
     }
 
@@ -1306,7 +1306,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
                 if (o instanceof MemberReader) {
                     return (MemberReader) o;
                 } else if (o instanceof MemberSource) {
-                    return new CacheMemberReader((MemberSource) o);
+                    return new CacheMemberReader((MemberSource) o, context.getConfig().caseSensitive());
                 } else {
                     throw Util.newInternal(
                         new StringBuilder("member reader class ").append(clazz)
@@ -1328,7 +1328,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
                 "while instantiating member reader '" + memberReaderClass);
         } else {
             SqlMemberSource source = new SqlMemberSource(hierarchy);
-            Dimension dimension = hierarchy.getDimension();
+            Dimension dimension = hierarchy.getDimension(context.getConfig().caseSensitive());
             if (dimension.isHighCardinality()) {
                 String msg = MondrianResource.instance()
                     .HighCardinalityInDimension.str(
@@ -1339,7 +1339,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
                 return new NoCacheMemberReader(source);
             } else {
                 LOGGER.debug(
-                    "Normal cardinality for {}", hierarchy.getDimension());
+                    "Normal cardinality for {}", hierarchy.getDimension(context.getConfig().caseSensitive()));
                 if (MondrianProperties.instance().DisableCaching.get()) {
                     // If the cell cache is disabled, we can't cache
                     // the members or else we get undefined results,

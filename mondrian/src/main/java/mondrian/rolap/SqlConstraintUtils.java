@@ -100,7 +100,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    *          Evaluator
    */
   public static void addContextConstraint( SqlQuery sqlQuery, AggStar aggStar, Evaluator evaluator, RolapCube baseCube,
-      boolean restrictMemberTypes ) {
+      boolean restrictMemberTypes, boolean caseSensitive ) {
    if ( evaluator instanceof RolapEvaluator rEvaluator) {
       if (baseCube == null) {
           baseCube = rEvaluator.getCube();
@@ -115,7 +115,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       }
 
       TupleConstraintStruct expandedSet =
-          makeContextConstraintSet(rEvaluator, restrictMemberTypes, disjointSlicerTuples);
+          makeContextConstraintSet(rEvaluator, restrictMemberTypes, disjointSlicerTuples, caseSensitive);
 
       //This part is needed in case when constrain contains a calculated measure.
       Member[] members = expandedSet.getMembersArray();
@@ -176,7 +176,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
           String expr = getColumnExpr(sqlQuery, aggStar, column);
 
           if (mapOfSlicerMembers == null) {
-              mapOfSlicerMembers = getSlicerMemberMap(evaluator);
+              mapOfSlicerMembers = getSlicerMemberMap(evaluator, caseSensitive);
           }
 
           final Expression keyForSlicerMap = column.getExpression();
@@ -191,8 +191,8 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
 
                   if (!slicerMembers.isEmpty()) {
                       // get level
-                      final int levelIndex = slicerMembers.get(0).getHierarchy().getLevels().length - 1;
-                      RolapLevel levelForWhere = (RolapLevel) slicerMembers.get(0).getHierarchy().getLevels()[levelIndex];
+                      final int levelIndex = slicerMembers.get(0).getHierarchy(caseSensitive).getLevels().length - 1;
+                      RolapLevel levelForWhere = (RolapLevel) slicerMembers.get(0).getHierarchy(caseSensitive).getLevels()[levelIndex];
                       // build where constraint
                       final String where =
                           generateSingleValueInExpr(sqlQuery, baseCube, aggStar, slicerMembers, levelForWhere,
@@ -216,12 +216,12 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       }
 
       // force Role based Access filtering
-      addRoleAccessConstraints(sqlQuery, aggStar, restrictMemberTypes, baseCube, evaluator);
+      addRoleAccessConstraints(sqlQuery, aggStar, restrictMemberTypes, baseCube, evaluator, caseSensitive);
   }
   }
 
   private static TupleConstraintStruct makeContextConstraintSet( Evaluator evaluator, boolean restrictMemberTypes,
-      boolean isTuple ) {
+      boolean isTuple, boolean caseSensitive ) {
     // Add constraint using the current evaluator context
     List<Member> members = Arrays.asList( evaluator.getNonAllMembers() );
 
@@ -233,14 +233,14 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     TupleConstraintStruct expandedSet = expandSupportedCalculatedMembers( members, evaluator, isTuple );
     members = expandedSet.getMembers();
 
-    members = getUniqueOrdinalMembers( members );
+    members = getUniqueOrdinalMembers( members, caseSensitive );
 
     if ( restrictMemberTypes ) {
       if ( containsCalculatedMember( members, true ) ) {
         throw Util.newInternal( "can not restrict SQL to calculated Members" );
       }
     } else {
-      members = removeCalculatedAndDefaultMembers( members );
+      members = removeCalculatedAndDefaultMembers( members, caseSensitive );
     }
 
     expandedSet.setMembers( members );
@@ -282,14 +282,14 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     sqlQuery.addWhere( buffer.toString() );
 
     // force Role based Access filtering
-    addRoleAccessConstraints( sqlQuery, aggStar, restrictMemberTypes, baseCube, evaluator );
+    addRoleAccessConstraints( sqlQuery, aggStar, restrictMemberTypes, baseCube, evaluator, baseCube.getContext().getConfig().caseSensitive() );
   }
 
   public static boolean useTupleSlicer( RolapEvaluator evaluator ) {
     return evaluator.isDisjointSlicerTuple() || evaluator.isMultiLevelSlicerTuple();
   }
 
-  public static Map<RolapLevel, List<RolapMember>> getRolesConstraints( Evaluator evaluator ) {
+  public static Map<RolapLevel, List<RolapMember>> getRolesConstraints( Evaluator evaluator, boolean caseSensitive ) {
     Member[] mm = evaluator.getMembers();
     SchemaReader schemaReader = evaluator.getSchemaReader();
     Map<RolapLevel, List<RolapMember>> roleConstraints = new LinkedHashMap<>( mm.length );
@@ -297,7 +297,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       boolean isRolesMember =
           ( member instanceof LimitedRollupMember ) || ( member instanceof MultiCardinalityDefaultMember );
       if ( isRolesMember ) {
-        List<Level> hierarchyLevels = schemaReader.getHierarchyLevels( member.getHierarchy() );
+        List<Level> hierarchyLevels = schemaReader.getHierarchyLevels( member.getHierarchy(caseSensitive) );
         for ( Level affectedLevel : hierarchyLevels ) {
           List<Member> availableMembers = schemaReader.getLevelMembers( affectedLevel, false );
           List<RolapMember> slicerMembers = new ArrayList<>( availableMembers.size() );
@@ -349,15 +349,15 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     return tupleList.size() < piatory;
   }
 
-  public static boolean hasMultipleLevelSlicer( Evaluator evaluator ) {
+  public static boolean hasMultipleLevelSlicer( Evaluator evaluator, boolean caseSensitive ) {
     Map<Dimension, Level> levels = new HashMap<>();
     List<Member> slicerMembers =
-        expandSupportedCalculatedMembers( ( (RolapEvaluator) evaluator ).getSlicerMembers(), evaluator ).getMembers();
+        expandSupportedCalculatedMembers( ( (RolapEvaluator) evaluator ).getSlicerMembers(), evaluator, caseSensitive ).getMembers();
     for ( Member member : slicerMembers ) {
       if ( member.isAll() ) {
         continue;
       }
-      Level before = levels.put( member.getDimension(), member.getLevel() );
+      Level before = levels.put( member.getDimension(caseSensitive), member.getLevel() );
       if ( before != null && !before.equals( member.getLevel() ) ) {
         return true;
       }
@@ -504,14 +504,14 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     }
   }
 
-  public static Map<Level, List<RolapMember>> getRoleConstraintMembers( SchemaReader schemaReader, Member[] members ) {
+  public static Map<Level, List<RolapMember>> getRoleConstraintMembers( SchemaReader schemaReader, Member[] members, boolean caseSensitive ) {
     // LinkedHashMap keeps insert-order
     Map<Level, List<RolapMember>> roleMembers = new LinkedHashMap<>();
     Role role = schemaReader.getRole();
     for ( Member member : members ) {
       if ( member instanceof LimitedRollupMember || member instanceof MultiCardinalityDefaultMember ) {
         // iterate relevant levels to get accessible members
-        List<Level> hierarchyLevels = schemaReader.getHierarchyLevels( member.getHierarchy() );
+        List<Level> hierarchyLevels = schemaReader.getHierarchyLevels( member.getHierarchy(caseSensitive) );
         for ( Level affectedLevel : hierarchyLevels ) {
           List<RolapMember> slicerMembers = new ArrayList<>();
           boolean hasCustom = false;
@@ -536,9 +536,9 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
   }
 
   private static void addRoleAccessConstraints( SqlQuery sqlQuery, AggStar aggStar, boolean restrictMemberTypes,
-      RolapCube baseCube, Evaluator evaluator ) {
+      RolapCube baseCube, Evaluator evaluator, boolean caseSensitive ) {
     Map<Level, List<RolapMember>> roleMembers =
-        getRoleConstraintMembers( evaluator.getSchemaReader(), evaluator.getMembers() );
+        getRoleConstraintMembers( evaluator.getSchemaReader(), evaluator.getMembers(), caseSensitive );
     for ( Map.Entry<Level, List<RolapMember>> entry : roleMembers.entrySet() ) {
       final String where =
           generateSingleValueInExpr( sqlQuery, baseCube, aggStar, entry.getValue(), (RolapCubeLevel) entry.getKey(),
@@ -565,15 +565,15 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    * This map is used by addContextConstraint() to get the set of slicer members associated with each column in the cell
    * request's constrained columns array, {@link CellRequest#getConstrainedColumns}
    */
-  private static Map<Expression, Set<RolapMember>> getSlicerMemberMap( Evaluator evaluator ) {
+  private static Map<Expression, Set<RolapMember>> getSlicerMemberMap( Evaluator evaluator, boolean caseSensitive ) {
     Map<Expression, Set<RolapMember>> mapOfSlicerMembers =
         new HashMap<>();
     List<Member> slicerMembers = ( (RolapEvaluator) evaluator ).getSlicerMembers();
     List<Member> expandedSlicers =
-        evaluator.isEvalAxes() ? expandSupportedCalculatedMembers( slicerMembers, evaluator.push() ).getMembers()
+        evaluator.isEvalAxes() ? expandSupportedCalculatedMembers( slicerMembers, evaluator.push(), caseSensitive ).getMembers()
             : slicerMembers;
 
-    if ( hasMultiPositionSlicer( expandedSlicers ) ) {
+    if ( hasMultiPositionSlicer( expandedSlicers, caseSensitive ) ) {
       for ( Member slicerMember : expandedSlicers ) {
         if ( slicerMember.isMeasure() ) {
           continue;
@@ -600,10 +600,10 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     addSlicedMemberToMap( mapOfSlicerMembers, slicerMember.getParentMember() );
   }
 
-  public static boolean hasMultiPositionSlicer( List<Member> slicerMembers ) {
+  public static boolean hasMultiPositionSlicer( List<Member> slicerMembers, boolean caseSensitive ) {
     Map<Hierarchy, Member> mapOfSlicerMembers = new HashMap<>();
     for ( Member slicerMember : slicerMembers ) {
-      Hierarchy hierarchy = slicerMember.getHierarchy();
+      Hierarchy hierarchy = slicerMember.getHierarchy(caseSensitive);
       if ( mapOfSlicerMembers.containsKey( hierarchy ) ) {
         // We have found a second member in this hierarchy
         return true;
@@ -613,31 +613,31 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     return false;
   }
 
-  public static TupleConstraintStruct expandSupportedCalculatedMembers( List<Member> members, Evaluator evaluator ) {
-    return expandSupportedCalculatedMembers( members, evaluator, false );
+  public static TupleConstraintStruct expandSupportedCalculatedMembers( List<Member> members, Evaluator evaluator, boolean caseSensitive ) {
+    return expandSupportedCalculatedMembers( members, evaluator, false, caseSensitive );
   }
 
   public static TupleConstraintStruct expandSupportedCalculatedMembers( List<Member> members, Evaluator evaluator,
-      boolean disjointSlicerTuples ) {
+      boolean disjointSlicerTuples, boolean caseSensitive ) {
     TupleConstraintStruct expandedSet = new TupleConstraintStruct();
     for ( Member member : members ) {
-      expandSupportedCalculatedMember( member, evaluator, disjointSlicerTuples, expandedSet );
+      expandSupportedCalculatedMember( member, evaluator, disjointSlicerTuples, expandedSet, caseSensitive );
     }
     return expandedSet;
   }
 
   public static void expandSupportedCalculatedMember( Member member, Evaluator evaluator,
-      TupleConstraintStruct expandedSet ) {
-    expandSupportedCalculatedMember( member, evaluator, false, expandedSet );
+      TupleConstraintStruct expandedSet, boolean caseSensitive ) {
+    expandSupportedCalculatedMember( member, evaluator, false, expandedSet, caseSensitive );
   }
 
   public static void expandSupportedCalculatedMember( Member member, Evaluator evaluator, boolean disjointSlicerTuples,
-      TupleConstraintStruct expandedSet ) {
+      TupleConstraintStruct expandedSet, boolean caseSensitive ) {
     if ( member.isCalculated() && isSupportedCalculatedMember( member ) ) {
       expandExpressions( member, null, evaluator, expandedSet );
     } else if ( member instanceof RolapResult.CompoundSlicerRolapMember ) {
       if ( !disjointSlicerTuples ) {
-        expandedSet.addMember( replaceCompoundSlicerPlaceholder( member, (RolapEvaluator) evaluator ) );
+        expandedSet.addMember( replaceCompoundSlicerPlaceholder( member, (RolapEvaluator) evaluator, caseSensitive) );
       }
     } else {
       // just the member
@@ -645,8 +645,8 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     }
   }
 
-  static Member replaceCompoundSlicerPlaceholder( Member member, RolapEvaluator evaluator ) {
-    Set<Member> slicerMembers = evaluator.getSlicerMembersByHierarchy().get( member.getHierarchy() );
+  static Member replaceCompoundSlicerPlaceholder( Member member, RolapEvaluator evaluator, boolean caseSensitive ) {
+    Set<Member> slicerMembers = evaluator.getSlicerMembersByHierarchy().get( member.getHierarchy(caseSensitive) );
     if ( slicerMembers != null && !slicerMembers.isEmpty() ) {
       return slicerMembers.iterator().next();
     }
@@ -757,13 +757,13 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    *
    * @return Unique ordinal cube members
    */
-  protected static List<Member> getUniqueOrdinalMembers( List<Member> members ) {
+  protected static List<Member> getUniqueOrdinalMembers( List<Member> members, boolean caseSensitive ) {
     ArrayList<Integer> currentOrdinals = new ArrayList<>();
     ArrayList<Member> uniqueMembers = new ArrayList<>();
 
     for ( Member member : members ) {
       final RolapMemberBase m = (RolapMemberBase) member;
-      int ordinal = m.getHierarchyOrdinal();
+      int ordinal = m.getHierarchyOrdinal(caseSensitive);
       if ( !currentOrdinals.contains( ordinal ) ) {
         uniqueMembers.add( member );
         currentOrdinals.add( ordinal );
@@ -773,7 +773,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     return uniqueMembers;
   }
 
-  protected static Member[] expandMultiPositionSlicerMembers( Member[] members, Evaluator evaluator ) {
+  protected static Member[] expandMultiPositionSlicerMembers( Member[] members, Evaluator evaluator, boolean caseSensitive) {
     Map<Hierarchy, Set<Member>> mapOfSlicerMembers = null;
     if ( evaluator instanceof RolapEvaluator rolapEvaluator) {
       // get the slicer members from the evaluator
@@ -784,7 +784,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       // Iterate the given list of members, removing any whose hierarchy
       // has multiple members on the slicer axis
       for ( Member member : members ) {
-        Hierarchy hierarchy = member.getHierarchy();
+        Hierarchy hierarchy = member.getHierarchy(caseSensitive);
         if ( !mapOfSlicerMembers.containsKey( hierarchy ) || mapOfSlicerMembers.get( hierarchy ).size() < 2
             || member instanceof RolapResult.CompoundSlicerRolapMember ) {
           listOfMembers.add( member );
@@ -825,19 +825,19 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    * @return Members with calculated members removed (except those that are leaves in a parent-child hierarchy) and with
    *         members that are the default member of their hierarchy
    */
-  static List<Member> removeCalculatedAndDefaultMembers( List<Member> members ) {
+  static List<Member> removeCalculatedAndDefaultMembers( List<Member> members, boolean caseSensitive ) {
     List<Member> memberList = new ArrayList<>( members.size() );
     Iterator<Member> iterator = members.iterator();
     if ( iterator.hasNext() ) {
       Member firstMember = iterator.next();
-      if ( !isMemberCalculated( firstMember ) ) {
+      if ( !isMemberCalculated( firstMember, caseSensitive ) ) {
         memberList.add( firstMember );
       }
 
       Member curMember;
       while ( iterator.hasNext() ) {
         curMember = iterator.next();
-        if ( !isMemberCalculated( curMember ) && !isMemberDefault( curMember ) ) {
+        if ( !isMemberCalculated( curMember, caseSensitive ) && !isMemberDefault( curMember, caseSensitive ) ) {
           memberList.add( curMember );
         }
       }
@@ -846,15 +846,15 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     return memberList;
   }
 
-  private static boolean isMemberCalculated( Member member ) {
+  private static boolean isMemberCalculated( Member member, boolean caseSensitive ) {
     // Skip calculated members (except if leaf of parent-child hier)
-    return member.isCalculated() && !member.isParentChildLeaf();
+    return member.isCalculated() && !member.isParentChildLeaf(caseSensitive);
   }
 
-  private static boolean isMemberDefault( Member member ) {
+  private static boolean isMemberDefault( Member member, boolean caseSensitive ) {
     // Remove members that are the default for their hierarchy,
     // except for the measures hierarchy.
-    return member.getHierarchy().getDefaultMember().equals( member );
+    return member.getHierarchy(caseSensitive).getDefaultMember(caseSensitive).equals( member );
   }
 
   static List<Member> removeCalculatedMembers( List<Member> members ) {
@@ -1177,7 +1177,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
         // add the level to the FROM clause if this is the
         // first parent-children group we're generating sql for
         if ( firstParent ) {
-          RolapHierarchy hierarchy = level.getHierarchy();
+          RolapHierarchy hierarchy = level.getHierarchy(baseCube.getContext().getConfig().caseSensitive());
 
           // this method can be called within the context of shared
           // members, outside of the normal rolap star, therefore
@@ -1210,7 +1210,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
         ++levelCount;
 
         condition2.append( constrainLevel( level, sqlQuery, baseCube, aggStar, getColumnValue( level.nameExp != null
-            ? gp.getName() : gp.getKey(), sqlQuery.getDialect(), level.getDatatype() ), false ) );
+            ? gp.getName(baseCube.getContext().getConfig().caseSensitive()) : gp.getKey(), sqlQuery.getDialect(), level.getDatatype() ), false ) );
         if ( gp.getLevel() == fromLevel ) {
           // SQL is completely generated for this parent
           break;
@@ -1648,7 +1648,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
     // REVIEW: The following code mostly uses the name column (or name
     // expression) of the level. Shouldn't it use the key column (or key
     // expression)?
-    RolapHierarchy hierarchy = level.getHierarchy();
+    RolapHierarchy hierarchy = level.getHierarchy(baseCube.getContext().getConfig().caseSensitive());
     if ( column != null ) {
       if ( aggStar != null ) {
         // this assumes that the name column is identical to the
@@ -1764,7 +1764,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       if ( m.isNull() ) {
         return "1 = 0";
       }
-      if ( m.isCalculated() && !m.isParentChildLeaf() ) {
+      if ( m.isCalculated() && !m.isParentChildLeaf(baseCube.getContext().getConfig().caseSensitive()) ) {
         if ( restrictMemberTypes ) {
           throw Util.newInternal( new StringBuilder(ADD_MEMBER_CONSTRAINT_CANNOT_RESTRICT_SQL_TO_CALCULATED_MEMBER)
               .append(m).toString() );
@@ -1782,7 +1782,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
       }
 
       RolapLevel level = m.getLevel();
-      RolapHierarchy hierarchy = level.getHierarchy();
+      RolapHierarchy hierarchy = level.getHierarchy(baseCube.getContext().getConfig().caseSensitive());
 
       // this method can be called within the context of shared members,
       // outside of the normal rolap star, therefore we need to
@@ -1881,7 +1881,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
   public static boolean measuresConflictWithMembers( Set<Member> measures, Member[] members, boolean caseSensitive ) {
     Set<Member> membersNestedInMeasures = getMembersNestedInMeasures( measures, caseSensitive );
     for ( Member memberInMeasure : membersNestedInMeasures ) {
-      if ( !anyMemberOverlaps( members, memberInMeasure ) ) {
+      if ( !anyMemberOverlaps( members, memberInMeasure, caseSensitive ) ) {
         return true;
       }
     }
@@ -1921,11 +1921,11 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
    * the set of members that will be used to constrain the native query, in which case we may exclude members
    * incorrectly.
    */
-  private static boolean anyMemberOverlaps( Member[] members, Member memberInMeasure ) {
+  private static boolean anyMemberOverlaps( Member[] members, Member memberInMeasure, boolean caseSensitive ) {
     boolean memberIsCovered = false;
     boolean encounteredHierarchy = false;
     for ( Member memberCheckedForConflict : members ) {
-      final boolean sameHierarchy = memberInMeasure.getHierarchy().equals( memberCheckedForConflict.getHierarchy() );
+      final boolean sameHierarchy = memberInMeasure.getHierarchy(caseSensitive).equals( memberCheckedForConflict.getHierarchy(caseSensitive) );
       boolean childOrEqual = false;
       if ( sameHierarchy ) {
         encounteredHierarchy = true;

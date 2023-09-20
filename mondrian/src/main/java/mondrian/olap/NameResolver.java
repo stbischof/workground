@@ -99,12 +99,12 @@ public final class NameResolver {
                     case EXACT_SCHEMA:
                         break;
                     case BEFORE:
-                        if (!Util.matches(segment, child.getName(), caseSensitive)) {
+                        if (!Util.matches(segment, child.getName(caseSensitive), caseSensitive)) {
                             matchType = MatchType.LAST;
                         }
                         break;
                     case AFTER:
-                        if (!Util.matches(segment, child.getName(), caseSensitive)) {
+                        if (!Util.matches(segment, child.getName(caseSensitive), caseSensitive)) {
                             matchType = MatchType.FIRST;
                         }
                         break;
@@ -208,7 +208,7 @@ public final class NameResolver {
                     return formulaMember.getParentMember().isChildOrEqualTo(
                         (Member) parent);
                 } else if (parent instanceof Hierarchy) {
-                    return formulaMember.getParentMember().getHierarchy()
+                    return formulaMember.getParentMember().getHierarchy(caseSensitive)
                         .equals(parent);
                 } else {
                     return parent.getUniqueName().equals(
@@ -216,8 +216,8 @@ public final class NameResolver {
                 }
             } else {
                 // If parent is not a member, member must be a root member.
-                return parent.equals(formulaMember.getHierarchy())
-                    || parent.equals(formulaMember.getDimension());
+                return parent.equals(formulaMember.getHierarchy(caseSensitive))
+                    || parent.equals(formulaMember.getDimension(caseSensitive));
             }
         } else {
             return parent instanceof Cube;

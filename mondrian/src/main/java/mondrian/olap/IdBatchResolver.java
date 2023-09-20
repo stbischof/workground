@@ -88,12 +88,12 @@ public final class IdBatchResolver {
     // first on segment length (shortest to longest), then alphabetically.
     private  SortedSet<Id> identifiers = new TreeSet<>(new IdComparator());
 
-    public IdBatchResolver(QueryImpl query) {
+    public IdBatchResolver(QueryImpl query, boolean caseSensitive) {
         this.query = query;
         formulas = query.getFormulas();
         axes = query.getAxes();
         cube = query.getCube();
-        initOlapElementNames();
+        initOlapElementNames(caseSensitive);
         initIdentifiers(query.getConnection().getContext().getConfig().caseSensitive());
     }
 
@@ -103,14 +103,14 @@ public final class IdBatchResolver {
      * will be used to help determine whether identifiers correspond to
      * a dimension/hierarchy/level.
      */
-    private void initOlapElementNames() {
+    private void initOlapElementNames(boolean caseSensitive) {
         dimensionUniqueNames.addAll(
-            getOlapElementNames(cube.getDimensions(), true));
+            getOlapElementNames(cube.getDimensions(), true, caseSensitive));
         for (Dimension dim : cube.getDimensions()) {
             hierarchyUniqueNames.addAll(
-                getOlapElementNames(dim.getHierarchies(), true));
+                getOlapElementNames(dim.getHierarchies(), true, caseSensitive));
             for (Hierarchy hier : dim.getHierarchies()) {
-                levelNames.addAll(getOlapElementNames(hier.getLevels(), false));
+                levelNames.addAll(getOlapElementNames(hier.getLevels(), false, caseSensitive));
             }
         }
     }
@@ -182,8 +182,8 @@ public final class IdBatchResolver {
             if (exp == null) {
                 exp = lookupExp(parent);
             }
-            Member parentMember = getMemberFromExp(exp);
-            if (!supportedMember(parentMember)) {
+            Member parentMember = getMemberFromExp(exp, caseSensitive);
+            if (!supportedMember(parentMember, caseSensitive)) {
                 continue;
             }
             resolvedIdentifiers.put(parent, (QueryPart)exp);
@@ -208,7 +208,7 @@ public final class IdBatchResolver {
 
         if (!childNameSegments.isEmpty()) {
             List<Member> childMembers =
-                lookupChildrenByNames(parentMember, childNameSegments);
+                lookupChildrenByNames(parentMember, childNameSegments, caseSensitive);
             addChildrenToResolvedMap(
                 resolvedIdentifiers, children, childMembers, caseSensitive);
         }
@@ -239,7 +239,7 @@ public final class IdBatchResolver {
         for (Member child : childMembers) {
             for (Id childId : children) {
                 if (!resolvedIdentifiers.containsKey(childId)
-                    && getLastSegment(childId).matches(child.getName(), caseSensitive))
+                    && getLastSegment(childId).matches(child.getName(caseSensitive), caseSensitive))
                 {
                     resolvedIdentifiers.put(
                         childId, (QueryPart)Util.createExpr(child));
@@ -253,13 +253,13 @@ public final class IdBatchResolver {
      */
     private List<Member> lookupChildrenByNames(
         Member parentMember,
-        List<NameSegment> childNameSegments)
+        List<NameSegment> childNameSegments, boolean caseSensitive)
     {
         try {
             return query.getSchemaReader(true)
                 .lookupMemberChildrenByNames(
                     parentMember,
-                    childNameSegments, MatchType.EXACT);
+                    childNameSegments, MatchType.EXACT, caseSensitive);
         } catch (Exception e) {
             LOGGER.info(
                 String.format(
@@ -324,10 +324,10 @@ public final class IdBatchResolver {
             && !id.getSegments().get(0).matches("Measures", caseSensitive);
     }
 
-    private boolean supportedMember(Member member) {
+    private boolean supportedMember(Member member, boolean caseSensitive) {
         return !(member == null
             || member.equals(
-                member.getHierarchy().getNullMember())
+                member.getHierarchy(caseSensitive).getNullMember(caseSensitive))
             || member.isMeasure());
     }
 
@@ -337,10 +337,10 @@ public final class IdBatchResolver {
      * Returns the member associated with a MemberExpr.
      * For all other Exp returns null.
      */
-    private Member getMemberFromExp(Exp exp) {
+    private Member getMemberFromExp(Exp exp, boolean caseSensitive) {
         if (exp instanceof DimensionExpression dimensionExpr) {
             Hierarchy hier = dimensionExpr
-                .getDimension().getHierarchy();
+                .getDimension().getHierarchy(caseSensitive);
             if (hier.hasAll()) {
                 return hier.getAllMember();
             }
@@ -362,7 +362,7 @@ public final class IdBatchResolver {
      * flag uniqueName.
      */
     private Collection<String> getOlapElementNames(
-        OlapElement[] olapElements, final boolean uniqueName)
+        OlapElement[] olapElements, final boolean uniqueName, boolean caseSensitive)
     {
         return CollectionUtils.collect(
             Arrays.asList(olapElements),
@@ -370,7 +370,7 @@ public final class IdBatchResolver {
                 @Override
 				public Object transform(Object o) {
                     return uniqueName ? ((OlapElement)o).getUniqueName()
-                        : ((OlapElement)o).getName();
+                        : ((OlapElement)o).getName(caseSensitive);
                 }
             });
     }

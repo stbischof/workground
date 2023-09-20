@@ -46,7 +46,7 @@ public interface Aggregator {
      *
      * @return result of applying this aggregator to a set of members/tuples
      */
-    Object aggregate(Evaluator evaluator, TupleList members, Calc calc);
+    Object aggregate(Evaluator evaluator, TupleList members, Calc calc, boolean caseSensitive);
 
     /**
      * Tells Mondrian if this aggregator can perform fast aggregation

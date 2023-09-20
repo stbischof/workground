@@ -123,13 +123,13 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         super(
             cubeDimension,
             subName,
-            applyPrefix(cubeDim, rolapHierarchy.getCaption()),
+            applyPrefix(cubeDim, rolapHierarchy.getCaption(factCube.getContext().getConfig().caseSensitive())),
             rolapHierarchy.isVisible(),
-            applyPrefix(cubeDim, rolapHierarchy.getDescription()),
+            applyPrefix(cubeDim, rolapHierarchy.getDescription(factCube.getContext().getConfig().caseSensitive())),
             rolapHierarchy.getDisplayFolder(),
             rolapHierarchy.hasAll(),
             null,
-            rolapHierarchy.getMetadata());
+            rolapHierarchy.getMetadata(), factCube.getContext().getConfig().caseSensitive());
         this.ordinal = ordinal;
         final boolean cubeIsVirtual = cubeDimension.getCube().isVirtual();
         if (!cubeIsVirtual) {
@@ -355,7 +355,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         Member parent,
         Level level,
         String name,
-        Formula formula)
+        Formula formula, boolean caseSensitive)
     {
         RolapLevel rolapLevel = ((RolapCubeLevel)level).getRolapLevel();
         if (formula == null) {
@@ -364,21 +364,21 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 rolapParent = ((RolapCubeMember)parent).getRolapMember();
             }
             RolapMember member =
-                new RolapMemberBase(rolapParent, rolapLevel, name);
+                new RolapMemberBase(rolapParent, rolapLevel, name, getCube().getContext().getConfig().caseSensitive());
             return new RolapCubeMember(
                 (RolapCubeMember) parent, member,
                 (RolapCubeLevel) level);
-        } else if (level.getDimension().isMeasures()) {
+        } else if (level.getDimension(getCube().getContext().getConfig().caseSensitive()).isMeasures()) {
             RolapCalculatedMeasure member =
                 new RolapCalculatedMeasure(
-                    (RolapMember) parent, rolapLevel, name, formula);
+                    (RolapMember) parent, rolapLevel, name, formula, getCube().getContext().getConfig().caseSensitive());
             return new RolapCubeMember(
                 (RolapCubeMember) parent, member,
                 (RolapCubeLevel) level);
         } else {
             RolapCalculatedMember member =
                 new RolapCalculatedMember(
-                    (RolapMember) parent, rolapLevel, name, formula);
+                    (RolapMember) parent, rolapLevel, name, formula, getCube().getContext().getConfig().caseSensitive());
             return new RolapCubeMember(
                 (RolapCubeMember) parent, member,
                 (RolapCubeLevel) level);
@@ -405,12 +405,12 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 
     // override with stricter return type; make final, important for performance
     @Override
-	public final RolapCubeMember getDefaultMember() {
+	public final RolapCubeMember getDefaultMember(boolean caseSensitive) {
         if (currentDefaultMember == null) {
-            reader.getRootMembers();
+            reader.getRootMembers(getCube().getContext().getConfig().caseSensitive());
             currentDefaultMember =
                 bootstrapLookup(
-                    (RolapMember) rolapHierarchy.getDefaultMember());
+                    (RolapMember) rolapHierarchy.getDefaultMember(caseSensitive));
         }
         return currentDefaultMember;
     }
@@ -439,13 +439,13 @@ public class RolapCubeHierarchy extends RolapHierarchy {
     }
 
     @Override
-	public Member getNullMember() {
+	public Member getNullMember(boolean caseSensitive) {
         // use lazy initialization to get around bootstrap issues
         if (currentNullMember == null) {
             currentNullMember =
                 new RolapCubeMember(
                     null,
-                    (RolapMember) rolapHierarchy.getNullMember(),
+                    (RolapMember) rolapHierarchy.getNullMember(caseSensitive),
                     currentNullLevel);
         }
         return currentNullMember;
@@ -476,21 +476,21 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 
         RolapCubeLevel level =
             new RolapCubeLevel(
-                (RolapLevel)rolapHierarchy.getDefaultMember().getLevel(),
+                (RolapLevel)rolapHierarchy.getDefaultMember(getCube().getContext().getConfig().caseSensitive()).getLevel(),
                 this);
         currentDefaultMember =
             new RolapCubeMember(
                 null,
-                (RolapMember) rolapHierarchy.getDefaultMember(),
+                (RolapMember) rolapHierarchy.getDefaultMember(getCube().getContext().getConfig().caseSensitive()),
                 level);
     }
 
     @Override
-	void init(CubeDimension xmlDimension) {
+	void init(CubeDimension xmlDimension, boolean caseSensitive) {
         // first init shared hierarchy
-        rolapHierarchy.init(xmlDimension);
+        rolapHierarchy.init(xmlDimension, caseSensitive);
         // second init cube hierarchy
-        super.init(xmlDimension);
+        super.init(xmlDimension, caseSensitive);
     }
 
     /**
@@ -635,9 +635,9 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         }
 
         @Override
-		public List<RolapMember> getRootMembers() {
+		public List<RolapMember> getRootMembers(boolean caseSensitive) {
             if (rootMembers == null) {
-                rootMembers = getMembersInLevel(cubeLevels[0]);
+                rootMembers = getMembersInLevel(cubeLevels[0], caseSensitive);
             }
             return rootMembers;
         }
@@ -646,7 +646,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 		protected void readMemberChildren(
             List<RolapMember> parentMembers,
             List<RolapMember> children,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             List<RolapMember> rolapChildren = new ArrayList<>();
             List<RolapMember> rolapParents = new ArrayList<>();
@@ -671,10 +671,10 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 (constraint instanceof SqlContextConstraint);
             if (joinReq) {
                 super.readMemberChildren(
-                    parentMembers, rolapChildren, constraint);
+                    parentMembers, rolapChildren, constraint, getCube().getContext().getConfig().caseSensitive());
             } else {
                 rolapHierarchy.getMemberReader().getMemberChildren(
-                    rolapParents, rolapChildren, constraint);
+                    rolapParents, rolapChildren, constraint, getCube().getContext().getConfig().caseSensitive());
             }
 
             // now lookup or create RolapCubeMember
@@ -734,7 +734,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 {
                     final RolapMember member = entry.getKey();
                     if (rolapCubeCacheHelper.getChildrenFromCache(
-                            member, constraint) == null)
+                            member, constraint, caseSensitive) == null)
                     {
                         final List<RolapMember> cacheList = entry.getValue();
                         if (enableCache) {
@@ -750,7 +750,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 		public Map<? extends Member, Access> getMemberChildren(
             List<RolapMember> parentMembers,
             List<RolapMember> children,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             synchronized (cacheHelper) {
                 checkCacheStatus();
@@ -759,7 +759,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 for (RolapMember parentMember : parentMembers) {
                     List<RolapMember> list =
                         rolapCubeCacheHelper.getChildrenFromCache(
-                            parentMember, constraint);
+                            parentMember, constraint, caseSensitive);
                     if (list == null) {
                         // the null member has no children
                         if (!parentMember.isNull()) {
@@ -770,7 +770,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                     }
                 }
                 if (!missed.isEmpty()) {
-                    readMemberChildren(missed, children, constraint);
+                    readMemberChildren(missed, children, constraint, caseSensitive);
                 }
             }
             return Util.toNullValuesMap(children);
@@ -780,14 +780,14 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         @Override
 		public List<RolapMember> getMembersInLevel(
             RolapLevel level,
-            TupleConstraint constraint)
+            TupleConstraint constraint, boolean caseSensitive)
         {
             synchronized (cacheHelper) {
                 checkCacheStatus();
 
                 List<RolapMember> members =
                     rolapCubeCacheHelper.getLevelMembersFromCache(
-                        level, constraint);
+                        level, constraint, caseSensitive);
                 if (members != null) {
                     return members;
                 }
@@ -801,11 +801,11 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 if (!joinReq) {
                     list =
                         rolapHierarchy.getMemberReader().getMembersInLevel(
-                            cubeLevel.getRolapLevel(), constraint);
+                            cubeLevel.getRolapLevel(), constraint, getCube().getContext().getConfig().caseSensitive());
                 } else {
                     list =
                         super.getMembersInLevel(
-                            level, constraint);
+                            level, constraint, caseSensitive);
                 }
                 List<RolapMember> newlist = new ArrayList<>();
                 for (RolapMember member : list) {
@@ -997,15 +997,15 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         }
 
         @Override
-		public List<RolapMember> getRootMembers() {
-            return getMembersInLevel(cubeLevels[0]);
+		public List<RolapMember> getRootMembers(boolean caseSensitive) {
+            return getMembersInLevel(cubeLevels[0], caseSensitive);
         }
 
         @Override
 		protected void readMemberChildren(
             List<RolapMember> parentMembers,
             List<RolapMember> children,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             List<RolapMember> rolapChildren = new ArrayList<>();
             List<RolapMember> rolapParents = new ArrayList<>();
@@ -1028,10 +1028,10 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 (constraint instanceof SqlContextConstraint);
             if (joinReq) {
                 super.readMemberChildren(
-                    parentMembers, rolapChildren, constraint);
+                    parentMembers, rolapChildren, constraint, caseSensitive);
             } else {
                 rolapHierarchy.getMemberReader().getMemberChildren(
-                    rolapParents, rolapChildren, constraint);
+                    rolapParents, rolapChildren, constraint, getCube().getContext().getConfig().caseSensitive());
             }
 
             // now lookup or create RolapCubeMember
@@ -1078,7 +1078,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 		public Map<? extends Member, Access> getMemberChildren(
             List<RolapMember> parentMembers,
             List<RolapMember> children,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             List<RolapMember> missed = new ArrayList<>();
             for (RolapMember parentMember : parentMembers) {
@@ -1088,7 +1088,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 }
             }
             if (!missed.isEmpty()) {
-                readMemberChildren(missed, children, constraint);
+                readMemberChildren(missed, children, constraint, caseSensitive);
             }
             return Util.toNullValuesMap(children);
         }
@@ -1097,7 +1097,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         @Override
 		public List<RolapMember> getMembersInLevel(
             final RolapLevel level,
-            TupleConstraint constraint)
+            TupleConstraint constraint, boolean caseSensitive)
         {
 
                 // if a join is required, we need to pass in the RolapCubeLevel
@@ -1110,11 +1110,11 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                     list =
                         rolapHierarchy.getMemberReader().getMembersInLevel(
                             ((RolapCubeLevel) level).getRolapLevel(),
-                            constraint);
+                            constraint, getCube().getContext().getConfig().caseSensitive());
                 } else {
                     list =
                         super.getMembersInLevel(
-                            level, constraint);
+                            level, constraint, caseSensitive);
                 }
 
                 return new UnsupportedList<>() {
@@ -1209,7 +1209,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
             boolean parentChild,
             SqlStatement stmt,
             Object key,
-            int columnOffset)
+            int columnOffset, boolean caseSensitive)
             throws SQLException
         {
             final RolapCubeMember parentCubeMember =
@@ -1226,7 +1226,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                     parent,
                     childCubeLevel.getRolapLevel(),
                     value, captionValue, parentChild, stmt, key,
-                    columnOffset);
+                    columnOffset, caseSensitive);
             return
                 memberReader.lookupCubeMember(
                     parentCubeMember,
@@ -1249,7 +1249,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         }
 
         @Override
-		public RolapMember allMember() {
+		public RolapMember allMember(boolean caseSensitive) {
             return getHierarchy().getAllMember();
         }
     }

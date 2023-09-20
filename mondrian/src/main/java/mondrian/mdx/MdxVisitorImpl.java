@@ -90,7 +90,7 @@ public class MdxVisitorImpl implements MdxVisitor {
     }
 
     @Override
-	public Object visit(HierarchyExpressionImpl hierarchyExpr) {
+	public Object visit(HierarchyExpressionImpl hierarchyExpr, boolean caseSensitive) {
         // do nothing
         return null;
     }

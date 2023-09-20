@@ -49,11 +49,11 @@ public class RolapCalculatedMember extends RolapMemberBase {
         RolapMember parentMember,
         RolapLevel level,
         String name,
-        Formula formula)
+        Formula formula, boolean caseSensitive)
     {
         // A calculated measure has MemberType.FORMULA because FORMULA
         // overrides MEASURE.
-        super(parentMember, level, name, null, MemberType.FORMULA);
+        super(parentMember, level, name, null, MemberType.FORMULA, caseSensitive);
         this.formula = formula;
         this.metadata = Collections.emptyMap();
     }
@@ -88,7 +88,7 @@ public class RolapCalculatedMember extends RolapMemberBase {
     @Override
 	public boolean isCalculatedInQuery() {
         final String memberScope =
-            (String) getPropertyValue(Property.MEMBER_SCOPE.name);
+            (String) getPropertyValue(Property.MEMBER_SCOPE.name, getBaseCube().getContext().getConfig().caseSensitive());
         return memberScope == null
             || memberScope.equals("QUERY");
     }

@@ -73,7 +73,7 @@ public interface MemberSource {
      * <p>If this object {@link #setCache supports cache-writeaback}, also
      * writes these members to the cache.
      */
-    List<RolapMember> getMembers();
+    List<RolapMember> getMembers(boolean caseSensitive);
     /**
      * Returns all members of this hierarchy which do not have a parent,
      * sorted by ordinal.
@@ -83,7 +83,7 @@ public interface MemberSource {
      *
      * @return {@link List} of {@link RolapMember}s
      */
-    List<RolapMember> getRootMembers();
+    List<RolapMember> getRootMembers(boolean caseSensitive);
 
     /**
      * Writes all children <code>parentMember</code> to <code>children</code>.
@@ -93,7 +93,8 @@ public interface MemberSource {
      */
     void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children);
+        List<RolapMember> children,
+        boolean caseSensitive);
 
     /**
      * Returns all members which are a child of one of the members in
@@ -104,7 +105,7 @@ public interface MemberSource {
      */
     void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children);
+        List<RolapMember> children, boolean caseSensitive);
 
     /**
      * Returns an estimate of number of members in this hierarchy.
@@ -116,5 +117,5 @@ public interface MemberSource {
      */
     RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound);
+        boolean failIfNotFound, boolean caseSensitive);
 }

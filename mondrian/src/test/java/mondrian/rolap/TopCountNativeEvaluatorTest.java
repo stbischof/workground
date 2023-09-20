@@ -56,7 +56,7 @@ class TopCountNativeEvaluatorTest {
         RolapNativeTopCount nativeTopCount = new RolapNativeTopCount();
 
         assertNull(
-                nativeTopCount.createEvaluator(null, null, null),
+                nativeTopCount.createEvaluator(null, null, null, true),
                 "Native evaluator should not be created when "
                         + "'mondrian.native.topcount.enable' is 'false'");
     }
@@ -68,7 +68,7 @@ class TopCountNativeEvaluatorTest {
             .isValidContext(any(RolapEvaluator.class));
 
         assertNull(
-            nativeTopCount.createEvaluator(null, null, null), "Native evaluator should not be created when "
+            nativeTopCount.createEvaluator(null, null, null, true), "Native evaluator should not be created when "
                         + "evaluation context is invalid");
     }
 
@@ -94,7 +94,7 @@ class TopCountNativeEvaluatorTest {
 
         assertNull(
             nativeTopCount.createEvaluator(
-                null, mockFunctionDef(), arguments),  "Native evaluator should not be created when "
+                null, mockFunctionDef(), arguments, true),  "Native evaluator should not be created when "
                         + "two parameters are passed");
     }
 

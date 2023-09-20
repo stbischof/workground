@@ -542,12 +542,12 @@ public Result execute( QueryImpl query ) {
       execution.checkCancelOrTimeout();
 
       if ( LOGGER.isDebugEnabled() ) {
-        LOGGER.debug( Util.unparse( query ) );
+        LOGGER.debug( Util.unparse( query, context.getConfig().caseSensitive() ) );
       }
 
       if ( RolapUtil.MDX_LOGGER.isDebugEnabled() ) {
         RolapUtil.MDX_LOGGER.debug( new StringBuilder().append(currId)
-            .append(": ").append(Util.unparse( query )).toString() );
+            .append(": ").append(Util.unparse( query,  context.getConfig().caseSensitive() )).toString() );
       }
 
       final Locus locus = new Locus( execution, null, "Loading cells" );
@@ -560,7 +560,7 @@ public Result execute( QueryImpl query ) {
         int i = 0;
         for ( QueryAxis axis : query.getAxes() ) {
           if ( axis.isNonEmpty() ) {
-            result = new NonEmptyResult( result, execution, i );
+            result = new NonEmptyResult( result, execution, i, context.getConfig().caseSensitive() );
           }
           ++i;
         }
@@ -587,7 +587,7 @@ public Result execute( QueryImpl query ) {
       }
       String queryString;
       try {
-        queryString = Util.unparse( query );
+        queryString = Util.unparse( query, context.getConfig().caseSensitive() );
       } catch ( Exception e1 ) {
         queryString = "?";
       }
@@ -837,7 +837,7 @@ public Context getContext() {
      * @param execution Execution context
      * @param axis      Which axis to make non-empty
      */
-    NonEmptyResult( Result result, Execution execution, int axis ) {
+    NonEmptyResult( Result result, Execution execution, int axis, boolean caseSensitive ) {
       super( execution, result.getAxes().clone() );
 
       this.underlying = result;
@@ -851,11 +851,11 @@ public Context getContext() {
 
       final TupleList filteredTupleList;
       if ( !tupleList.isEmpty()
-        && tupleList.get( 0 ).get( 0 ).getDimension()
+        && tupleList.get( 0 ).get( 0 ).getDimension(caseSensitive)
         .isHighCardinality() ) {
           String msg = MondrianResource.instance()
               .HighCardinalityInDimension.str(
-                  tupleList.get( 0 ).get( 0 ).getDimension()
+                  tupleList.get( 0 ).get( 0 ).getDimension(caseSensitive)
                       .getUniqueName() );
           LOGGER.warn(msg);
           filteredTupleList =

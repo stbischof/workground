@@ -78,7 +78,7 @@ public class MemberExpressionImpl extends ExpBase implements Exp, MemberExpressi
     }
 
     @Override
-	public Exp accept(Validator validator) {
+	public Exp accept(Validator validator, boolean caseSensitive) {
         return this;
     }
 

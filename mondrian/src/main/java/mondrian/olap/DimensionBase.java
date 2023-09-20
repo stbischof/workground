@@ -68,12 +68,12 @@ public abstract class DimensionBase
     }
 
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
         return name;
     }
 
     @Override
-	public String getDescription() {
+	public String getDescription(boolean caseSensitive) {
         return description;
     }
 
@@ -83,12 +83,12 @@ public abstract class DimensionBase
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return hierarchies[0];
     }
 
     @Override
-	public Dimension getDimension() {
+	public Dimension getDimension(boolean caseSensitive) {
         return this;
     }
 
@@ -98,7 +98,7 @@ public abstract class DimensionBase
     }
 
     @Override
-	public String getQualifiedName() {
+	public String getQualifiedName(boolean caseSensitive) {
         return MondrianResource.instance().MdxDimensionName.str(
             getUniqueName());
     }
@@ -123,10 +123,11 @@ public abstract class DimensionBase
         // looking for level - we can check that by checking of hierarchy and
         // dimension name is the same.
         //
+        boolean caseSensitive = schemaReader.getContext().getConfig().caseSensitive();
         if (!MondrianProperties.instance().SsasCompatibleNaming.get()) {
-            if (oe == null || oe.getName().equalsIgnoreCase(getName())) {
+            if (oe == null || oe.getName(caseSensitive).equalsIgnoreCase(getName(caseSensitive))) {
                 OlapElement oeLevel =
-                    getHierarchy().lookupChild(schemaReader, s, matchType);
+                    getHierarchy(caseSensitive).lookupChild(schemaReader, s, matchType);
                 if (oeLevel != null) {
                     return oeLevel; // level match overrides hierarchy match
                 }
@@ -157,7 +158,7 @@ public abstract class DimensionBase
 
     private Hierarchy lookupHierarchy(NameSegment s, boolean caseSensitive) {
         for (Hierarchy hierarchy : hierarchies) {
-            if (Util.equalName(hierarchy.getName(), s.getName(), caseSensitive)) {
+            if (Util.equalName(hierarchy.getName(caseSensitive), s.getName(), caseSensitive)) {
                 return hierarchy;
             }
         }

@@ -61,14 +61,14 @@ public class VisualTotalsFunDef extends FunDefBase {
 
     @Override
 	protected Exp validateArg(
-        Validator validator, Exp[] args, int i, int category)
+        Validator validator, Exp[] args, int i, int category, boolean caseSensitive)
     {
         final Exp validatedArg =
-            super.validateArg(validator, args, i, category);
+            super.validateArg(validator, args, i, category, caseSensitive);
         if (i == 0) {
             // The function signature guarantees that we have a set of members
             // or a set of tuples.
-            final SetType setType = (SetType) validatedArg.getType();
+            final SetType setType = (SetType) validatedArg.getType(caseSensitive);
             final Type elementType = setType.getElementType();
             if (!(elementType instanceof MemberType)) {
                 throw MondrianResource.instance().VisualTotalsAppliedToTuples
@@ -79,13 +79,13 @@ public class VisualTotalsFunDef extends FunDefBase {
     }
 
     @Override
-	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler) {
-        final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0));
+	public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive) {
+        final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0), caseSensitive);
         final StringCalc stringCalc =
             call.getArgCount() > 1
-            ? compiler.compileString(call.getArg(1))
+            ? compiler.compileString(call.getArg(1), caseSensitive)
             : null;
-        return new CalcImpl(call, tupleListCalc, stringCalc);
+        return new CalcImpl(call, tupleListCalc, stringCalc, caseSensitive);
     }
 
     /**
@@ -96,17 +96,17 @@ public class VisualTotalsFunDef extends FunDefBase {
         private final StringCalc stringCalc;
 
         public CalcImpl(
-        		ResolvedFunCall call, TupleListCalc tupleListCalc, StringCalc stringCalc)
+        		ResolvedFunCall call, TupleListCalc tupleListCalc, StringCalc stringCalc, boolean caseSensitive)
         {
-            super(call.getType(), new Calc[] {tupleListCalc, stringCalc});
+            super(call.getType(caseSensitive), new Calc[] {tupleListCalc, stringCalc});
             this.tupleListCalc = tupleListCalc;
             this.stringCalc = stringCalc;
         }
 
         @Override
-		public TupleList evaluateList(Evaluator evaluator) {
+		public TupleList evaluateList(Evaluator evaluator, boolean caseSensitive) {
             final List<Member> list =
-                tupleListCalc.evaluateList(evaluator).slice(0);
+                tupleListCalc.evaluateList(evaluator, caseSensitive).slice(0);
             final List<Member> resultList = new ArrayList<>(list);
             final int memberCount = list.size();
             for (int i = memberCount - 1; i >= 0; --i) {
@@ -118,7 +118,7 @@ public class VisualTotalsFunDef extends FunDefBase {
                     {
                         resultList.set(
                             i,
-                            createMember(member, i, resultList, evaluator));
+                            createMember(member, i, resultList, evaluator, caseSensitive));
                     }
                 }
             }
@@ -129,22 +129,22 @@ public class VisualTotalsFunDef extends FunDefBase {
             Member member,
             int i,
             final List<Member> list,
-            Evaluator evaluator)
+            Evaluator evaluator, boolean caseSensitive)
         {
-            final String name = member.getName();;
+            final String name = member.getName(caseSensitive);;
             final String caption;
             if (stringCalc != null) {
-                final String namePattern = stringCalc.evaluate(evaluator);
-                caption = VisualTotalsFunDef.substitute(namePattern, member.getCaption());
+                final String namePattern = stringCalc.evaluate(evaluator, caseSensitive);
+                caption = VisualTotalsFunDef.substitute(namePattern, member.getCaption(caseSensitive));
             } else {
-                caption = member.getCaption();
+                caption = member.getCaption(caseSensitive);
             }
             final List<Member> childMemberList =
                 followingDescendants(member, i + 1, list);
             final Exp exp = makeExpr(childMemberList);
             final Validator validator = evaluator.getQuery().createValidator();
-            final Exp validatedExp = exp.accept(validator);
-            return new VisualTotalMember(member, name, caption, validatedExp);
+            final Exp validatedExp = exp.accept(validator, caseSensitive);
+            return new VisualTotalMember(member, name, caption, validatedExp, caseSensitive);
         }
 
         private List<Member> followingDescendants(
@@ -226,12 +226,12 @@ public class VisualTotalsFunDef extends FunDefBase {
             Member member,
             String name,
             String caption,
-            final Exp exp)
+            final Exp exp, boolean caseSensitive)
         {
             super(
                 (RolapMember) member.getParentMember(),
                 (RolapLevel) member.getLevel(),
-                RolapUtil.sqlNullValue, name, member.getMemberType() ==  MemberType.ALL ? MemberType.ALL : MemberType.FORMULA);
+                RolapUtil.sqlNullValue, name, member.getMemberType() ==  MemberType.ALL ? MemberType.ALL : MemberType.FORMULA, caseSensitive);
             this.member = member;
             this.caption = caption;
             this.exp = exp;
@@ -266,7 +266,7 @@ public class VisualTotalsFunDef extends FunDefBase {
         }
 
         @Override
-        public String getCaption() {
+        public String getCaption(boolean caseSensitive) {
             return caption;
         }
 
@@ -299,7 +299,7 @@ public class VisualTotalsFunDef extends FunDefBase {
         {
             final Exp exp = makeExpr(childMembers);
             final Validator validator = evaluator.getQuery().createValidator();
-            final Exp validatedExp = exp.accept(validator);
+            final Exp validatedExp = exp.accept(validator, caseSensitive);
             setExpression(validatedExp);
         }
 
@@ -330,7 +330,7 @@ public class VisualTotalsFunDef extends FunDefBase {
         }
 
         @Override
-		public String getQualifiedName() {
+		public String getQualifiedName(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 

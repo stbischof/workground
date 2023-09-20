@@ -272,7 +272,7 @@ public abstract class FunDefBase implements FunctionDefinition {
         int[] categories = getParameterCategories();
         Util.assertTrue(categories.length == args.length);
         for (int i = 0; i < args.length; i++) {
-            args[i] = validateArg(validator, args, i, categories[i]);
+            args[i] = validateArg(validator, args, i, categories[i], caseSensitive);
         }
         final Type type = getResultType(validator, args, caseSensitive);
         if (type == null) {
@@ -297,7 +297,7 @@ public abstract class FunDefBase implements FunctionDefinition {
         Validator validator,
         Exp[] args,
         int i,
-        int category)
+        int category, boolean caseSensitive)
     {
         return args[i];
     }

@@ -281,10 +281,10 @@ public class RolapResult extends ResultBase {
 
         mondrian.olap.type.Type memberType1 =
                 new mondrian.olap.type.MemberType(
-                        hierarchy.getDimension(),
+                        hierarchy.getDimension(getCube().getContext().getConfig().caseSensitive()),
                         hierarchy,
                         null,
-                        null);
+                        null, getCube().getContext().getConfig().caseSensitive());
         SetType setType = new SetType(memberType1);
         mondrian.calc.TupleListCalc tupleListCalc =
                 new mondrian.calc.impl.AbstractListCalc(
@@ -292,7 +292,7 @@ public class RolapResult extends ResultBase {
                 {
                   @Override
 				public TupleList evaluateList(
-                          Evaluator evaluator)
+                          Evaluator evaluator, boolean caseSensitive)
                   {
                     ArrayList<Member> children = new ArrayList<>();
                     Member expandingMember = ((RolapEvaluator) evaluator).getExpanding();
@@ -311,7 +311,7 @@ public class RolapResult extends ResultBase {
                   }
 
                   @Override
-				public boolean dependsOn(Hierarchy hierarchy) {
+				public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
                     return true;
                   }
                 };
@@ -323,20 +323,20 @@ public class RolapResult extends ResultBase {
                         new mondrian.olap.fun.FunDefBase("$x", "x", "In") {
                           @Override
 						public Calc compileCall(
-                                  ResolvedFunCall call, mondrian.calc.ExpCompiler compiler)
+                                  ResolvedFunCall call, mondrian.calc.ExpCompiler compiler, boolean caseSensitive)
                           {
                             return partialCalc;
                           }
 
                           @Override
-						public void unparse(Exp[] args, PrintWriter pw) {
+						public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
                             pw.print("$RollupAccessibleChildren()");
                           }
                         },
                         new Exp[0],
                         returnType);
 
-        final TupleIterable iterable = ( (TupleIteratorCalc) calc ).evaluateIterable( evaluator );
+        final TupleIterable iterable = ( (TupleIteratorCalc) calc ).evaluateIterable( evaluator, cube.getContext().getConfig().caseSensitive() );
         TupleCursor cursor;
         if ( iterable instanceof TupleList list ) {
           cursor = list.tupleCursor();
@@ -344,7 +344,7 @@ public class RolapResult extends ResultBase {
           // Iterable
           cursor = iterable.tupleCursor();
         }
-        HierarchyAccess hierarchyAccess = mondrian.olap.RoleImpl.createAllAccess(hierarchy);
+        HierarchyAccess hierarchyAccess = mondrian.olap.RoleImpl.createAllAccess(hierarchy, cube.getContext().getConfig().caseSensitive());
         int currentIteration = 0;
         while ( cursor.forward() ) {
           CancellationChecker.checkCancelOrTimeout( currentIteration++, execution );
@@ -404,7 +404,7 @@ public class RolapResult extends ResultBase {
       // Determine Slicer
       //
       axisMembers.setSlicer( true );
-      loadMembers( emptyNonAllMembers, evaluator, query.getSlicerAxis(), query.getSlicerCalc(), axisMembers );
+      loadMembers( emptyNonAllMembers, evaluator, query.getSlicerAxis(), query.getSlicerCalc(), axisMembers, cube.getContext().getConfig().caseSensitive() );
       axisMembers.setSlicer( false );
 
       // Save unadulterated context for the next time we need to evaluate
@@ -414,7 +414,7 @@ public class RolapResult extends ResultBase {
       if ( !axisMembers.isEmpty() ) {
         evaluator.setSlicerContext( axisMembers.getMembers(), axisMembers.getMembersByHierarchy() );
         for ( Hierarchy h : axisMembers.getMembersByHierarchy().keySet() ) {
-          if ( h.getDimension().isMeasures() ) {
+          if ( h.getDimension(getCube().getContext().getConfig().caseSensitive()).isMeasures() ) {
             // A Measure was explicitly declared in the
             // Slicer, don't need to worry about Measures
             // for this query.
@@ -437,7 +437,7 @@ public class RolapResult extends ResultBase {
       do {
         TupleIterable tupleIterable =
             evalExecute( nonAllMembers, nonAllMembers.size() - 1, savedEvaluator, query.getSlicerAxis(),
-                query.getSlicerCalc() );
+                query.getSlicerCalc(), cube.getContext().getConfig().caseSensitive() );
         // Materialize the iterable as a list. Although it may take
         // memory, we need the first member below, and besides, slicer
         // axes are generally small.
@@ -457,8 +457,8 @@ public class RolapResult extends ResultBase {
         internalSlicerEvaluator = this.evaluator;
         if ( tupleList.size() > 1 ) {
           tupleList = removeUnaryMembersFromTupleList( tupleList, evaluator );
-          tupleList = AggregateFunDef.AggregateCalc.optimizeTupleList( evaluator, tupleList, false );
-          evaluator.setSlicerTuples( tupleList );
+          tupleList = AggregateFunDef.AggregateCalc.optimizeTupleList( evaluator, tupleList, false, getCube().getContext().getConfig().caseSensitive() );
+          evaluator.setSlicerTuples( tupleList, cube.getContext().getConfig().caseSensitive() );
 
           final Calc valueCalc = new ValueCalc( new ScalarType() ) ;
 
@@ -466,18 +466,18 @@ public class RolapResult extends ResultBase {
 
           final Calc calcCached = new GenericCalc( query.getSlicerCalc().getType() ) {
             @Override
-			public Object evaluate( Evaluator evaluator ) {
+			public Object evaluate( Evaluator evaluator, boolean caseSensitive ) {
               try {
                 evaluator.getTiming().markStart( "EvalForSlicer" );
                 TupleList list =
                     AbstractAggregateFunDef.processUnrelatedDimensions( ( (RolapEvaluator) evaluator )
-                        .getOptimizedSlicerTuples( null ), evaluator );
+                        .getOptimizedSlicerTuples( null ), evaluator, cube.getContext().getConfig().caseSensitive() );
                 for ( Member member : prevSlicerMembers ) {
-                  if ( evaluator.getContext( member.getHierarchy() ) instanceof CompoundSlicerRolapMember ) {
+                  if ( evaluator.getContext( member.getHierarchy(caseSensitive) ) instanceof CompoundSlicerRolapMember ) {
                     evaluator.setContext( member );
                   }
                 }
-                return AggregateFunDef.AggregateCalc.aggregate( valueCalc, evaluator, list );
+                return AggregateFunDef.AggregateCalc.aggregate( valueCalc, evaluator, list, caseSensitive );
               } finally {
                 evaluator.getTiming().markEnd( "EvalForSlicer" );
               }
@@ -486,17 +486,17 @@ public class RolapResult extends ResultBase {
 
             // depend on the full evaluation context
             @Override
-			public boolean dependsOn( Hierarchy hierarchy ) {
+			public boolean dependsOn( Hierarchy hierarchy, boolean caseSensitive ) {
               return true;
             }
           };
 
           final ExpCacheDescriptor cacheDescriptor =
-              new ExpCacheDescriptor( query.getSlicerAxis().getSet(), calcCached, evaluator );
+              new ExpCacheDescriptor( query.getSlicerAxis().getSet(), calcCached, evaluator, getCube().getContext().getConfig().caseSensitive() );
           // Generate a cached calculation for slicer aggregation
           // This is so critical for performance that we should consider creating an
           // optimized query level slicer cache.
-          final Calc calc = new CacheCalc( query.getSlicerAxis().getSet().getType(), cacheDescriptor );
+          final Calc calc = new CacheCalc( query.getSlicerAxis().getSet().getType(cube.getContext().getConfig().caseSensitive()), cacheDescriptor );
 
           // replace the slicer set with a placeholder to avoid
           // interaction between the aggregate calc we just created
@@ -507,13 +507,13 @@ public class RolapResult extends ResultBase {
           if ( tupleList.get( 0 ).size() > 1 ) {
             for ( int i = 1; i < tupleList.get( 0 ).size(); i++ ) {
               Member placeholder =
-                  setPlaceholderSlicerAxis( (RolapMember) tupleList.get( 0 ).get( i ), calc, false, tupleList );
+                  setPlaceholderSlicerAxis( (RolapMember) tupleList.get( 0 ).get( i ), calc, false, tupleList, getCube().getContext().getConfig().caseSensitive() );
               prevSlicerMembers.add( evaluator.setContext( placeholder ) );
             }
           }
 
           Member placeholder =
-              setPlaceholderSlicerAxis( (RolapMember) tupleList.get( 0 ).get( 0 ), calc, true, tupleList );
+              setPlaceholderSlicerAxis( (RolapMember) tupleList.get( 0 ).get( 0 ), calc, true, tupleList, getCube().getContext().getConfig().caseSensitive() );
 
           Util.explain( evaluator.root.statement.getProfileHandler(), "Axis (FILTER):", query.getSlicerCalc(), evaluator
               .getTiming() );
@@ -536,7 +536,7 @@ public class RolapResult extends ResultBase {
       for ( int i = 0; i < axes.length; i++ ) {
         final QueryAxis axis = query.getAxes()[i];
         final Calc calc = query.getAxisCalcs()[i];
-        loadMembers( emptyNonAllMembers, evaluator, axis, calc, axisMembers );
+        loadMembers( emptyNonAllMembers, evaluator, axis, calc, axisMembers, cube.getContext().getConfig().caseSensitive() );
       }
 
       if ( !axisMembers.isEmpty() ) {
@@ -563,7 +563,7 @@ public class RolapResult extends ResultBase {
           for ( int i = 0; i < axes.length; i++ ) {
             final QueryAxis axis = query.getAxes()[i];
             final Calc calc = query.getAxisCalcs()[i];
-            loadMembers( nonAllMembers, evaluator, axis, calc, axisMembers );
+            loadMembers( nonAllMembers, evaluator, axis, calc, axisMembers, cube.getContext().getConfig().caseSensitive() );
             evaluator.restore( savepoint );
           }
         } finally {
@@ -588,7 +588,7 @@ public class RolapResult extends ResultBase {
               QueryAxis axis = query.getAxes()[i];
               final Calc calc = query.getAxisCalcs()[i];
               TupleIterable tupleIterable =
-                  evalExecute( nonAllMembers, nonAllMembers.size() - 1, evaluator, axis, calc );
+                  evalExecute( nonAllMembers, nonAllMembers.size() - 1, evaluator, axis, calc, cube.getContext().getConfig().caseSensitive() );
 
               if ( !nonAllMembers.isEmpty() ) {
                 final TupleIterator tupleIterator = tupleIterable.tupleIterator();
@@ -695,22 +695,22 @@ public class RolapResult extends ResultBase {
    * slicer.
    */
   private Member setPlaceholderSlicerAxis( final RolapMember member, final Calc calc, boolean setAxis,
-      TupleList tupleList ) {
+      TupleList tupleList, boolean caseSensitive ) {
     ValueFormatter formatter;
-    if ( member.getDimension().isMeasures() ) {
+    if ( member.getDimension(getCube().getContext().getConfig().caseSensitive()).isMeasures() ) {
       formatter = ( (RolapMeasure) member ).getFormatter();
     } else {
       formatter = null;
     }
 
     CompoundSlicerRolapMember placeholderMember =
-        new CompoundSlicerRolapMember( (RolapMember) member.getHierarchy().getNullMember(), calc, formatter,
+        new CompoundSlicerRolapMember( (RolapMember) member.getHierarchy(caseSensitive).getNullMember(caseSensitive), calc, formatter,
             tupleList );
 
     placeholderMember.setProperty( Property.FORMAT_STRING.getName(), member.getPropertyValue( Property.FORMAT_STRING
-        .getName() ) );
+        .getName(), getCube().getContext().getConfig().caseSensitive() ), getCube().getContext().getConfig().caseSensitive() );
     placeholderMember.setProperty( Property.FORMAT_EXP_PARSED.getName(), member.getPropertyValue(
-        Property.FORMAT_EXP_PARSED.getName() ) );
+        Property.FORMAT_EXP_PARSED.getName(), getCube().getContext().getConfig().caseSensitive() ), getCube().getContext().getConfig().caseSensitive() );
 
     if ( setAxis ) {
       TupleList dummyList = TupleCollections.createList( 1 );
@@ -797,7 +797,7 @@ public class RolapResult extends ResultBase {
   protected boolean removeDimension( Dimension dimension, List<List<Member>> memberLists ) {
     for ( int i = 0; i < memberLists.size(); i++ ) {
       List<Member> memberList = memberLists.get( i );
-      if ( memberList.get( 0 ).getDimension().equals( dimension ) ) {
+      if ( memberList.get( 0 ).getDimension(getCube().getContext().getConfig().caseSensitive()).equals( dimension ) ) {
         memberLists.remove( i );
         return true;
       }
@@ -823,16 +823,16 @@ public final Execution getExecution() {
     }
 
     @Override
-	public Object visit( HierarchyExpressionImpl hierarchyExpr ) {
+	public Object visit( HierarchyExpressionImpl hierarchyExpr, boolean caseSensitive ) {
       Hierarchy hierarchy = hierarchyExpr.getHierarchy();
-      dimension = hierarchy.getDimension();
+      dimension = hierarchy.getDimension(caseSensitive);
       return null;
     }
 
     @Override
 	public Object visit( MemberExpressionImpl memberExpr, boolean caseSensitive) {
       Member member = memberExpr.getMember();
-      dimension = member.getHierarchy().getDimension();
+      dimension = member.getHierarchy(caseSensitive).getDimension(caseSensitive);
       return null;
     }
   }
@@ -842,10 +842,10 @@ public final Execution getExecution() {
     List<Member> mList = new ArrayList<>();
     for ( ListIterator<List<Member>> it = nonAllMembers.listIterator(); it.hasNext(); ) {
       List<Member> ms = it.next();
-      Hierarchy h = ms.get( 0 ).getHierarchy();
+      Hierarchy h = ms.get( 0 ).getHierarchy(getCube().getContext().getConfig().caseSensitive());
       mList.clear();
       for ( Member m : axisMembers ) {
-        if ( m.getHierarchy().equals( h ) ) {
+        if ( m.getHierarchy(getCube().getContext().getConfig().caseSensitive()).equals( h ) ) {
           mList.add( m );
         }
       }
@@ -858,14 +858,14 @@ public final Execution getExecution() {
   }
 
   protected void loadMembers(List<List<Member>> nonAllMembers, RolapEvaluator evaluator, QueryAxis axis, Calc calc,
-                             AxisMemberList axisMembers ) {
+                             AxisMemberList axisMembers, boolean caseSensitive ) {
     int attempt = 0;
     evaluator.setCellReader( batchingReader );
     while ( true ) {
       axisMembers.clearAxisCount();
       final int savepoint = evaluator.savepoint();
       try {
-        evalLoad( nonAllMembers, nonAllMembers.size() - 1, evaluator, axis, calc, axisMembers );
+        evalLoad( nonAllMembers, nonAllMembers.size() - 1, evaluator, axis, calc, axisMembers, caseSensitive );
       } catch ( CellRequestQuantumExceededException e ) {
         // Safe to ignore. Need to call 'phase' and loop again.
         // Decrement count because it wasn't a recursive formula that
@@ -891,15 +891,15 @@ public final Execution getExecution() {
   }
 
   void evalLoad( List<List<Member>> nonAllMembers, int cnt, Evaluator evaluator, QueryAxis axis, Calc calc,
-      AxisMemberList axisMembers ) {
+      AxisMemberList axisMembers, boolean caseSensitive ) {
     final int savepoint = evaluator.savepoint();
     try {
       if ( cnt < 0 ) {
-        executeAxis( evaluator, axis, calc, false, axisMembers );
+        executeAxis( evaluator, axis, calc, false, axisMembers, caseSensitive );
       } else {
         for ( Member m : nonAllMembers.get( cnt ) ) {
           evaluator.setContext( m );
-          evalLoad( nonAllMembers, cnt - 1, evaluator, axis, calc, axisMembers );
+          evalLoad( nonAllMembers, cnt - 1, evaluator, axis, calc, axisMembers, caseSensitive );
         }
       }
     } finally {
@@ -908,12 +908,12 @@ public final Execution getExecution() {
   }
 
   TupleIterable evalExecute( List<List<Member>> nonAllMembers, int cnt, RolapEvaluator evaluator, QueryAxis queryAxis,
-      Calc calc ) {
+      Calc calc, boolean caseSensitive ) {
     final int savepoint = evaluator.savepoint();
     final int arity = calc == null ? 0 : calc.getType().getArity();
     if ( cnt < 0 ) {
       try {
-        return executeAxis( evaluator, queryAxis, calc, true, null );
+        return executeAxis( evaluator, queryAxis, calc, true, null, caseSensitive );
       } finally {
         evaluator.restore( savepoint );
       }
@@ -924,7 +924,7 @@ public final Execution getExecution() {
         TupleList axisResult = TupleCollections.emptyList( arity );
         for ( Member m : nonAllMembers.get( cnt ) ) {
           evaluator.setContext( m );
-          TupleIterable axis = evalExecute( nonAllMembers, cnt - 1, evaluator, queryAxis, calc );
+          TupleIterable axis = evalExecute( nonAllMembers, cnt - 1, evaluator, queryAxis, calc, caseSensitive );
           boolean ordered = false;
           if ( queryAxis != null ) {
             ordered = queryAxis.isOrdered();
@@ -957,8 +957,8 @@ public final Execution getExecution() {
       if ( em.isCalculated() ) {
         continue;
       }
-      Hierarchy h = em.getHierarchy();
-      Dimension d = h.getDimension();
+      Hierarchy h = em.getHierarchy(getCube().getContext().getConfig().caseSensitive());
+      Dimension d = h.getDimension(getCube().getContext().getConfig().caseSensitive());
       if ( d.getDimensionType() == DimensionType.TIME_DIMENSION) {
         continue;
       }
@@ -1040,7 +1040,7 @@ public Cell getCell( int[] pos ) {
   }
 
   private TupleIterable executeAxis( Evaluator evaluator, QueryAxis queryAxis, Calc axisCalc, boolean construct,
-      AxisMemberList axisMembers ) {
+      AxisMemberList axisMembers, boolean caseSensitive ) {
     if ( queryAxis == null ) {
       // Create an axis containing one position with no members (not
       // the same as an empty axis).
@@ -1050,19 +1050,20 @@ public Cell getCell( int[] pos ) {
     try {
       evaluator.setNonEmpty( queryAxis.isNonEmpty() );
       evaluator.setEvalAxes( true );
-      final TupleIterable iterable = ( (TupleIteratorCalc) axisCalc ).evaluateIterable( evaluator );
+      final TupleIterable iterable = ( (TupleIteratorCalc) axisCalc ).evaluateIterable( evaluator,
+          getCube().getContext().getConfig().caseSensitive() );
       if ( axisCalc.getClass().getName().indexOf( "OrderFunDef" ) != -1 ) {
         queryAxis.setOrdered( true );
       }
       if ( iterable instanceof TupleList list ) {
         if (!construct && axisMembers != null ) {
-          axisMembers.mergeTupleList( list );
+          axisMembers.mergeTupleList( list, caseSensitive );
         }
       } else {
         // Iterable
         TupleCursor cursor = iterable.tupleCursor();
         if (!construct && axisMembers != null ) {
-          axisMembers.mergeTupleIter( cursor );
+          axisMembers.mergeTupleIter( cursor, caseSensitive );
         }
       }
       return iterable;
@@ -1153,7 +1154,7 @@ public Cell getCell( int[] pos ) {
         evaluatorInner.restore( savepoint );
 
         evaluatorInner.setCellReader( batchingReader );
-        Object preliminaryValue = calc.evaluate( evaluatorInner );
+        Object preliminaryValue = calc.evaluate( evaluatorInner, getCube().getContext().getConfig().caseSensitive() );
 
         if ( preliminaryValue instanceof TupleIterable iterable ) {
           final TupleCursor cursor = iterable.tupleCursor();
@@ -1187,7 +1188,7 @@ public Cell getCell( int[] pos ) {
 
       evaluatorInner.restore( savepoint );
       evaluatorInner.setCellReader( aggregatingReader );
-      return calc.evaluate( evaluatorInner );
+      return calc.evaluate( evaluatorInner, getCube().getContext().getConfig().caseSensitive() );
     } finally {
       evaluatorInner.restore( savepoint );
     }
@@ -1353,7 +1354,7 @@ public Cell getCell( int[] pos ) {
     // noinspection LoopStatementThatDoesntLoop
     List<Member> tuple = !tupleList.isEmpty() ? tupleList.get( 0 ) : null;
     if ( tuple != null && !tuple.isEmpty() ) {
-      Dimension dimension = tuple.get( 0 ).getDimension();
+      Dimension dimension = tuple.get( 0 ).getDimension(getCube().getContext().getConfig().caseSensitive());
       highCardinality = dimension.isHighCardinality();
       if ( highCardinality ) {
         String msg = MondrianResource.instance().HighCardinalityInDimension.str(dimension.getUniqueName());
@@ -1502,7 +1503,7 @@ public Cell getCell( int[] pos ) {
       Position position = axes[i].getPositions().get( pos[i] );
       for ( Member member : position ) {
         RolapMember m = (RolapMember) member;
-        int ordinal = m.getHierarchy().getOrdinalInCube();
+        int ordinal = m.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getOrdinalInCube();
         members[ordinal] = m;
       }
     }
@@ -1617,16 +1618,16 @@ public Cell getCell( int[] pos ) {
       this.totalCellCount = 1;
     }
 
-    void mergeTupleList( TupleList list ) {
-      mergeTupleIter( list.tupleCursor() );
+    void mergeTupleList( TupleList list, boolean caseSensitive ) {
+      mergeTupleIter( list.tupleCursor(), caseSensitive );
     }
 
-    private void mergeTupleIter( TupleCursor cursor ) {
+    private void mergeTupleIter( TupleCursor cursor, boolean caseSensitive ) {
       int currentIteration = 0;
       Execution execution = Locus.peek().execution;
       while ( cursor.forward() ) {
         CancellationChecker.checkCancelOrTimeout( currentIteration++, execution );
-        mergeTuple( cursor );
+        mergeTuple( cursor, caseSensitive );
       }
     }
 
@@ -1640,42 +1641,42 @@ public Cell getCell( int[] pos ) {
       }
     }
 
-    private void mergeTuple( final TupleCursor cursor ) {
+    private void mergeTuple( final TupleCursor cursor, boolean caseSensitive ) {
       final int arity = cursor.getArity();
       for ( int i = 0; i < arity; i++ ) {
-        mergeMember( cursor.member( i ) );
+        mergeMember( cursor.member( i ), caseSensitive );
       }
     }
 
-    private void mergeMember( final Member member ) {
+    private void mergeMember( final Member member, boolean caseSensitive ) {
       this.axisCount++;
       if ( !countOnly ) {
         if ( isSlicer ) {
-          if ( !contains( member ) ) {
-            addMember( member );
+          if ( !contains( member, caseSensitive ) ) {
+            addMember( member, caseSensitive );
           }
         } else {
           if ( member.isNull() || member.isMeasure() || member.isCalculated() || member.isAll()) {
             return;
           }
           Member topParent = getTopParent( member );
-          if ( !contains( topParent ) ) {
-            addMember( topParent );
+          if ( !contains( topParent, caseSensitive ) ) {
+            addMember( topParent, caseSensitive );
           }
         }
       }
     }
 
-    private boolean contains( Member member ) {
-      if ( !membersByHierarchy.containsKey( member.getHierarchy() ) ) {
+    private boolean contains( Member member, boolean caseSensitive ) {
+      if ( !membersByHierarchy.containsKey( member.getHierarchy(caseSensitive) ) ) {
         return false;
       }
-      return membersByHierarchy.get( member.getHierarchy() ).contains( member );
+      return membersByHierarchy.get( member.getHierarchy(caseSensitive) ).contains( member );
     }
 
-    private void addMember( Member member ) {
+    private void addMember( Member member, boolean caseSensitive ) {
       members.add( member );
-      Hierarchy hierarchy = member.getHierarchy();
+      Hierarchy hierarchy = member.getHierarchy(caseSensitive);
       membersByHierarchy.computeIfAbsent(hierarchy, k -> new HashSet<>()).add( member );
     }
 
@@ -1733,7 +1734,7 @@ public Cell getCell( int[] pos ) {
     @Override
 	protected Evaluator.SetEvaluator evaluateSet( final Exp exp, boolean create ) {
       // Sanity check: This expression HAS to return a set.
-      if ( !( exp.getType() instanceof SetType ) ) {
+      if ( !( exp.getType(cube.getContext().getConfig().caseSensitive()) instanceof SetType ) ) {
         throw Util.newInternal( "Trying to evaluate set but expression does not return a set" );
       }
 
@@ -2341,7 +2342,8 @@ public Cell getCell( int[] pos ) {
       int index = -1;
       for ( List<org.eclipse.daanse.olap.api.element.Member> subList : tupleList ) {
         if ( index == -1 ) {
-          if (!subList.isEmpty() && member2.getHierarchy().equals( subList.get( 0 ).getHierarchy() ) ) {
+          boolean caseSensitive = getCube().getContext().getConfig().caseSensitive();
+          if (!subList.isEmpty() && member2.getHierarchy(caseSensitive).equals( subList.get( 0 ).getHierarchy(caseSensitive) ) ) {
                   index = 0;
           }
           if ( index == -1 ) {

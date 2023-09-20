@@ -1012,7 +1012,7 @@ class XmlaBasicTest extends XmlaBaseTestCase {
             }
 
             @Override
-			public Access getAccess(Cube cube) {
+			public Access getAccess(Cube cube, boolean caseSensitive) {
                 return Access.ALL;
             }
 
@@ -1022,7 +1022,7 @@ class XmlaBasicTest extends XmlaBaseTestCase {
             }
 
             @Override
-			public boolean canAccess(OlapElement olapElement) {
+			public boolean canAccess(OlapElement olapElement, boolean caseSensitive) {
                 return true;
             }
 
@@ -1037,7 +1037,7 @@ class XmlaBasicTest extends XmlaBaseTestCase {
             }
 
             @Override
-			public Access getAccess(Hierarchy hierarchy) {
+			public Access getAccess(Hierarchy hierarchy, boolean caseSensitive) {
                 String mname = "[Customers]";
                 if (hierarchy.getUniqueName().equals(mname)) {
                     return Access.CUSTOM;
@@ -1047,12 +1047,12 @@ class XmlaBasicTest extends XmlaBaseTestCase {
             }
 
             @Override
-			public HierarchyAccess getAccessDetails(Hierarchy hierarchy) {
+			public HierarchyAccess getAccessDetails(Hierarchy hierarchy, boolean caseSensitive) {
                 String hname = "[Customers]";
                 if (hierarchy.getUniqueName().equals(hname)) {
                     return new HierarchyAccess() {
                         @Override
-						public Access getAccess(Member member) {
+						public Access getAccess(Member member, boolean caseSensitive) {
                             String mname =
                                 "[Customers].[Mexico]";
                             //Members inherit access from their parents. If you deny access to California, you won't be able to see San Francisco.
@@ -1088,17 +1088,17 @@ class XmlaBasicTest extends XmlaBaseTestCase {
                     };
 
                 } else {
-                    return RoleImpl.createAllAccess(hierarchy);
+                    return RoleImpl.createAllAccess(hierarchy, context.getContext().getConfig().caseSensitive());
                 }
             }
 
             @Override
-			public Access getAccess(Level level) {
+			public Access getAccess(Level level, boolean caseSensitive) {
                 return Access.ALL;
             }
 
             @Override
-			public Access getAccess(Member member) {
+			public Access getAccess(Member member, boolean caseSensitive) {
                 String mname = "[Customers].[All Customers]";
                 if (member.getUniqueName().equals(mname)) {
                     return Access.ALL;

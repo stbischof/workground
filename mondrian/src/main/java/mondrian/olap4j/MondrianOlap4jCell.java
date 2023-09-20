@@ -70,7 +70,8 @@ public class MondrianOlap4jCell implements Cell {
     @Override
 	public int getOrdinal() {
         return (Integer) cell.getPropertyValue(
-            mondrian.olap.Property.CELL_ORDINAL.name);
+            mondrian.olap.Property.CELL_ORDINAL.name, true);
+        //TODO UTILS
     }
 
     @Override
@@ -86,7 +87,8 @@ public class MondrianOlap4jCell implements Cell {
 	public Object getPropertyValue(Property property) {
         // We assume that mondrian properties have the same name as olap4j
         // properties.
-        return cell.getPropertyValue(property.getName());
+        return cell.getPropertyValue(property.getName(), true);
+        //TODO UTILS
     }
 
     @Override
@@ -143,7 +145,8 @@ public class MondrianOlap4jCell implements Cell {
             new ArrayList<>(),
             false,
             null,
-            null);
+            null, true);
+        //TODO UTILS
     }
 
     /**
@@ -172,19 +175,19 @@ public class MondrianOlap4jCell implements Cell {
         List<OlapElement> fields,
         boolean extendedContext,
         Logger logger,
-        int[] rowCountSlot)
+        int[] rowCountSlot, boolean caseSensitive)
         throws OlapException
     {
         if (!cell.canDrillThrough()) {
             return null;
         }
         if (rowCountSlot != null) {
-            rowCountSlot[0] = cell.getDrillThroughCount();
+            rowCountSlot[0] = cell.getDrillThroughCount(caseSensitive);
         }
         final SqlStatement sqlStmt =
             cell.drillThroughInternal(
                 maxRowCount, firstRowOrdinal, fields, extendedContext,
-                logger);
+                logger, caseSensitive);
         return sqlStmt.getWrappedResultSet();
     }
 
@@ -197,6 +200,7 @@ public class MondrianOlap4jCell implements Cell {
     {
         Scenario scenario =
             olap4jCellSet.olap4jStatement.olap4jConnection.getScenario();
-        cell.setValue(scenario, newValue, allocationPolicy, allocationArgs);
+        cell.setValue(scenario, newValue, allocationPolicy, true, allocationArgs);
+        //TODO UTILS
     }
 }

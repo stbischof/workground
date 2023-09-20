@@ -89,30 +89,31 @@ public class RolapBaseCubeMeasure
         MeasureDataTypeEnum datatype,
         Map<String, Object> metadata)
     {
-        super(parentMember, level, name, null, MemberType.MEASURE);
+        super(parentMember, level, name, null, MemberType.MEASURE, cube.getContext().getConfig().caseSensitive());
         assert metadata != null;
         this.cube = cube;
         this.metadata = metadata;
         this.caption = caption;
         this.expression = expression;
+        boolean caseSensitive = cube.getContext().getConfig().caseSensitive();
         if (description != null) {
             setProperty(
                 Property.DESCRIPTION_PROPERTY.name,
-                description);
+                description, caseSensitive);
         }
         if (formatString == null) {
             formatString = "";
         } else {
             setProperty(
                 Property.FORMAT_STRING.name,
-                formatString);
+                formatString, caseSensitive);
         }
         setProperty(
             Property.FORMAT_EXP_PARSED.name,
-            StringLiteralImpl.create(formatString));
+            StringLiteralImpl.create(formatString), caseSensitive);
         setProperty(
             Property.FORMAT_EXP.name,
-            formatString);
+            formatString, caseSensitive);
 
         // Validate aggregator.
         this.aggregator =
@@ -132,7 +133,7 @@ public class RolapBaseCubeMeasure
                 buf.toString());
         }
 
-        setProperty(Property.AGGREGATION_TYPE.name, aggregator);
+        setProperty(Property.AGGREGATION_TYPE.name, aggregator, caseSensitive);
         if (datatype == null) {
             if (aggregator == RolapAggregator.Count
                 || aggregator == RolapAggregator.DistinctCount)
@@ -145,7 +146,7 @@ public class RolapBaseCubeMeasure
         if (RolapBaseCubeMeasure.DataType.valueOf(datatype.getValue()) == null) {
             throw MondrianResource.instance().CastInvalidType.ex(datatype.getValue());
         }
-        setProperty(Property.DATATYPE.name, datatype.getValue());
+        setProperty(Property.DATATYPE.name, datatype.getValue(), caseSensitive);
     }
 
     @Override
@@ -188,7 +189,7 @@ public class RolapBaseCubeMeasure
     }
 
     public Datatype getDatatype() {
-        Object datatype = getPropertyValue(Property.DATATYPE.name);
+        Object datatype = getPropertyValue(Property.DATATYPE.name, getCube().getContext().getConfig().caseSensitive());
         try {
             return Datatype.fromValue((String) datatype);
         } catch (ClassCastException e) {

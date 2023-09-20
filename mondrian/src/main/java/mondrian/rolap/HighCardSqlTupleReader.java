@@ -91,8 +91,9 @@ protected void prepareTuples(
           -1, -1, null );
       }
 
+      boolean caseSensitive = context.getConfig().caseSensitive();
       for ( TargetBase target : targets ) {
-        target.open();
+        target.open(caseSensitive);
       }
 
       // determine how many enum targets we have
@@ -116,8 +117,8 @@ protected void prepareTuples(
 
       // Read first and second elements if exists (or marks
       // source as having "no more rows")
-      readNextTuple();
-      readNextTuple();
+      readNextTuple(context.getConfig().caseSensitive());
+      readNextTuple(context.getConfig().caseSensitive());
       success = true;
     } catch ( SQLException sqle ) {
       if ( stmt != null ) {
@@ -179,12 +180,12 @@ public TupleList readTuples(
    *
    * @return whether there are any more rows
    */
-  public boolean readNextTuple() {
+  public boolean readNextTuple(boolean caseSensitive) {
     if ( !this.moreRows ) {
       return false;
     }
     try {
-      this.moreRows = this.resultLoader.loadResult();
+      this.moreRows = this.resultLoader.loadResult(caseSensitive);
     } catch ( SQLException sqle ) {
       this.moreRows = false;
       throw this.resultLoader.handle( sqle );

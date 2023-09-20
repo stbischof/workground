@@ -106,7 +106,7 @@ public RolapEvaluatorRoot( Statement statement ) {
       RolapMember defaultMember = (RolapMember) schemaReader.getHierarchyDefaultMember( hierarchy );
       assert defaultMember != null;
 
-      if ( ScenarioImpl.isScenario( hierarchy ) && connection.getScenario() != null ) {
+      if ( ScenarioImpl.isScenario( hierarchy, cube.getContext().getConfig().caseSensitive() ) && connection.getScenario() != null ) {
         defaultMember = ( (ScenarioImpl) connection.getScenario() ).getMember();
       }
 

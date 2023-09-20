@@ -71,10 +71,10 @@ public abstract class ResultBase implements Result {
 
     // implement Result
     @Override
-	public void print(PrintWriter pw) {
+	public void print(PrintWriter pw, boolean caseSensitive) {
         for (int i = -1; i < axes.length; i++) {
             pw.println(new StringBuilder("Axis #").append(i + 1).append(":").toString());
-            printAxis(pw, i < 0 ? slicerAxis : axes[i]);
+            printAxis(pw, i < 0 ? slicerAxis : axes[i], caseSensitive);
         }
         // Usually there are 3 axes: {slicer, columns, rows}. Position is a
         // {column, row} pair. We call printRows with axis=2. When it recurses
@@ -106,13 +106,13 @@ public abstract class ResultBase implements Result {
         }
     }
 
-    private void printAxis(PrintWriter pw, Axis axis) {
+    private void printAxis(PrintWriter pw, Axis axis, boolean caseSensitive) {
         List<Position> positions = axis.getPositions();
         for (Position position : positions) {
             boolean firstTime = true;
             pw.print("{");
             for (Member member : position) {
-                if (member.getDimension().isHighCardinality()) {
+                if (member.getDimension(caseSensitive).isHighCardinality()) {
                     pw.println(" -- High cardinality dimension --}");
                     return;
                 }
@@ -138,7 +138,7 @@ public abstract class ResultBase implements Result {
      * @param hierarchy Hierarchy
      * @return current member of given hierarchy
      */
-    public Member getMember(int[] pos, Hierarchy hierarchy) {
+    public Member getMember(int[] pos, Hierarchy hierarchy, boolean caseSensitive) {
         for (int i = -1; i < axes.length; i++) {
             Axis axis = slicerAxis;
             int index = 0;
@@ -149,12 +149,12 @@ public abstract class ResultBase implements Result {
             List<Position> positions = axis.getPositions();
             Position position = positions.get(index);
             for (Member member : position) {
-                if (member.getHierarchy() == hierarchy) {
+                if (member.getHierarchy(caseSensitive) == hierarchy) {
                     return member;
                 }
             }
         }
-        return hierarchy.getHierarchy().getDefaultMember();
+        return hierarchy.getHierarchy(caseSensitive).getDefaultMember(caseSensitive);
     }
 
   public Execution getExecution() {

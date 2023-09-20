@@ -72,19 +72,19 @@ class XtdFunDef extends FunDefBase {
   }
 
   @Override
-public Type getResultType( Validator validator, Exp[] args ) {
+public Type getResultType( Validator validator, Exp[] args, boolean caseSensitive ) {
     if ( args.length == 0 ) {
       // With no args, the default implementation cannot
       // guess the hierarchy.
       RolapHierarchy defaultTimeHierarchy =
           ( (RolapCube) validator.getQuery().getCube() ).getTimeHierarchy( getName() );
-      return new SetType( MemberType.forHierarchy( defaultTimeHierarchy ) );
+      return new SetType( MemberType.forHierarchy( defaultTimeHierarchy, caseSensitive ) );
     }
-    final Type type = args[0].getType();
+    final Type type = args[0].getType(caseSensitive);
     if ( type.getDimension().getDimensionType() != DimensionType.TIME_DIMENSION) {
       throw MondrianResource.instance().TimeArgNeeded.ex( getName() );
     }
-    return super.getResultType( validator, args );
+    return super.getResultType( validator, args, caseSensitive );
   }
 
   private Level getLevel( Evaluator evaluator ) {
@@ -105,34 +105,34 @@ public Type getResultType( Validator validator, Exp[] args ) {
   }
 
   @Override
-public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler ) {
+public Calc compileCall( ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive ) {
     final Level level = getLevel( compiler.getEvaluator() );
     switch ( call.getArgCount() ) {
       case 0:
-        return new AbstractListCalc( call.getType(), new Calc[0] ) {
+        return new AbstractListCalc( call.getType(caseSensitive), new Calc[0] ) {
           @Override
-		public TupleList evaluateList( Evaluator evaluator ) {
+		public TupleList evaluateList( Evaluator evaluator, boolean caseSensitive ) {
             evaluator.getTiming().markStart( XtdFunDef.TIMING_NAME );
             try {
-              return new UnaryTupleList( FunUtil.periodsToDate( evaluator, level, null ) );
+              return new UnaryTupleList( FunUtil.periodsToDate( evaluator, level, null, caseSensitive ) );
             } finally {
               evaluator.getTiming().markEnd( XtdFunDef.TIMING_NAME );
             }
           }
 
           @Override
-		public boolean dependsOn( Hierarchy hierarchy ) {
-            return hierarchy.getDimension().getDimensionType() == mondrian.olap.DimensionType.TIME_DIMENSION;
+		public boolean dependsOn( Hierarchy hierarchy, boolean caseSensitive ) {
+            return hierarchy.getDimension(caseSensitive).getDimensionType() == mondrian.olap.DimensionType.TIME_DIMENSION;
           }
         };
       default:
-        final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ) );
-        return new AbstractListCalc( call.getType(), new Calc[] { memberCalc } ) {
+        final MemberCalc memberCalc = compiler.compileMember( call.getArg( 0 ), caseSensitive );
+        return new AbstractListCalc( call.getType(caseSensitive), new Calc[] { memberCalc } ) {
           @Override
-		public TupleList evaluateList( Evaluator evaluator ) {
+		public TupleList evaluateList( Evaluator evaluator, boolean caseSensitive ) {
             evaluator.getTiming().markStart( XtdFunDef.TIMING_NAME );
             try {
-              return new UnaryTupleList( FunUtil.periodsToDate( evaluator, level, memberCalc.evaluate( evaluator ) ) );
+              return new UnaryTupleList( FunUtil.periodsToDate( evaluator, level, memberCalc.evaluate( evaluator, caseSensitive ), caseSensitive ) );
             } finally {
               evaluator.getTiming().markEnd( XtdFunDef.TIMING_NAME );
             }

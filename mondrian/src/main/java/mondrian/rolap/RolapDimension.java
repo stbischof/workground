@@ -126,7 +126,7 @@ class RolapDimension extends DimensionBase {
         this.hierarchies = new RolapHierarchy[xmlDimension.hierarchies().size()];
         for (int i = 0; i < xmlDimension.hierarchies().size(); i++) {
             RolapHierarchy hierarchy = new RolapHierarchy(
-                cube, this, xmlDimension.hierarchies().get(i), xmlCubeDimension);
+                cube, this, xmlDimension.hierarchies().get(i), xmlCubeDimension, cube.getContext().getConfig().caseSensitive());
             hierarchies[i] = hierarchy;
         }
 
@@ -180,10 +180,10 @@ class RolapDimension extends DimensionBase {
     /**
      * Initializes a dimension within the context of a cube.
      */
-    void init(CubeDimension xmlDimension) {
+    void init(CubeDimension xmlDimension, boolean caseSensitive) {
         for (int i = 0; i < hierarchies.length; i++) {
             if (hierarchies[i] != null) {
-                ((RolapHierarchy) hierarchies[i]).init(xmlDimension);
+                ((RolapHierarchy) hierarchies[i]).init(xmlDimension, caseSensitive);
             }
         }
     }
@@ -200,13 +200,13 @@ class RolapDimension extends DimensionBase {
     RolapHierarchy newHierarchy(
         String subName,
         boolean hasAll,
-        RolapHierarchy closureFor)
+        RolapHierarchy closureFor, boolean caseSensitive)
     {
         RolapHierarchy hierarchy =
             new RolapHierarchy(
                 this, subName,
                 caption, visible, description, null, hasAll, closureFor,
-                Map.of());
+                Map.of(), caseSensitive);
         this.hierarchies = Util.append(this.hierarchies, hierarchy);
         return hierarchy;
     }
@@ -218,7 +218,7 @@ class RolapDimension extends DimensionBase {
      * dimension's default hierarchy (its first).
      */
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return hierarchies[0];
     }
 

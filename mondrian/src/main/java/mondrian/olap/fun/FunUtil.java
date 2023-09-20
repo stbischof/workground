@@ -1119,9 +1119,9 @@ public class FunUtil extends Util {
   static List<Member> periodsToDate(
     Evaluator evaluator,
     Level level,
-    Member member ) {
+    Member member, boolean caseSensitive ) {
     if ( member == null ) {
-      member = evaluator.getContext( level.getHierarchy() );
+      member = evaluator.getContext( level.getHierarchy(caseSensitive) );
     }
     Member m = member;
     while ( m != null ) {
@@ -1187,12 +1187,12 @@ public class FunUtil extends Util {
     }
     if ( member.getLevel().getDepth()
       < ancestorMember.getLevel().getDepth() ) {
-      return member.getHierarchy(caseSensitive).getNullMember();
+      return member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
     }
 
     Member cousin = FunUtil.cousin2( schemaReader, member, ancestorMember );
     if ( cousin == null ) {
-      cousin = member.getHierarchy(caseSensitive).getNullMember();
+      cousin = member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
     }
 
     return cousin;
@@ -1240,7 +1240,7 @@ public class FunUtil extends Util {
     int distance,
     Level targetLevel, boolean caseSensitive ) {
     if ( ( targetLevel != null )
-      && ( member.getHierarchy(caseSensitive) != targetLevel.getHierarchy() ) ) {
+      && ( member.getHierarchy(caseSensitive) != targetLevel.getHierarchy(caseSensitive) ) ) {
       throw MondrianResource.instance().MemberNotInLevelHierarchy.ex(
         member.getUniqueName(), targetLevel.getUniqueName() );
     }
@@ -1250,14 +1250,14 @@ public class FunUtil extends Util {
       return member;
     } else if ( distance < 0 ) {
       // Can't go backwards.
-      return member.getHierarchy(caseSensitive).getNullMember();
+      return member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
     }
 
     final List<Member> ancestors = new ArrayList<>();
     final SchemaReader schemaReader = evaluator.getSchemaReader();
     schemaReader.getMemberAncestors( member, ancestors );
 
-    Member result = member.getHierarchy(caseSensitive).getNullMember();
+    Member result = member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
 
     searchLoop:
     for ( int i = 0; i < ancestors.size(); i++ ) {
@@ -1269,7 +1269,7 @@ public class FunUtil extends Util {
             result = ancestorMember;
             break;
           } else {
-            result = member.getHierarchy(caseSensitive).getNullMember();
+            result = member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
             break;
           }
         }
@@ -1442,7 +1442,7 @@ public class FunUtil extends Util {
     if ( hierarchy == null ) {
       return FunUtil.NullMember;
     }
-    return hierarchy.getNullMember();
+    return hierarchy.getNullMember(caseSensitive);
   }
 
   /**
@@ -1769,13 +1769,13 @@ public class FunUtil extends Util {
     String string,
     int i,
     final Member[] members,
-    Hierarchy hierarchy ) {
+    Hierarchy hierarchy, boolean caseSensitive ) {
     IdentifierParser.MemberListBuilder builder =
       new IdentifierParser.MemberListBuilder(
         evaluator.getSchemaReader(), evaluator.getCube(), hierarchy ) {
         @Override
         public void memberComplete() {
-          members[ 0 ] = resolveMember( hierarchyList.get( 0 ) );
+          members[ 0 ] = resolveMember( hierarchyList.get( 0 ), caseSensitive );
           segmentList.clear();
         }
       };
@@ -1783,14 +1783,14 @@ public class FunUtil extends Util {
   }
 
   static Member parseMember(
-    Evaluator evaluator, String string, Hierarchy hierarchy ) {
+    Evaluator evaluator, String string, Hierarchy hierarchy, boolean caseSensitive ) {
     Member[] members = { null };
-    FunUtil.parseMember( evaluator, string, 0, members, hierarchy );
+    FunUtil.parseMember( evaluator, string, 0, members, hierarchy, caseSensitive );
     // todo: check for garbage at end of string
     final Member member = members[ 0 ];
     if ( member == null ) {
       throw MondrianResource.instance().MdxChildObjectNotFound.ex(
-        string, evaluator.getCube().getQualifiedName() );
+        string, evaluator.getCube().getQualifiedName(caseSensitive) );
     }
     return member;
   }
@@ -1894,7 +1894,7 @@ public class FunUtil extends Util {
     } else if ( eval != null ) {
       return eval.getContext( member.getHierarchy(caseSensitive) );
     } else {
-      return member.getHierarchy(caseSensitive).getDefaultMember();
+      return member.getHierarchy(caseSensitive).getDefaultMember(caseSensitive);
     }
   }
 
@@ -2037,22 +2037,22 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public Object getPropertyValue( String propertyName ) {
+	public Object getPropertyValue( String propertyName, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public Object getPropertyValue( String propertyName, boolean matchCase ) {
+	public Object getPropertyValue( String propertyName, boolean matchCase, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public String getPropertyFormattedValue( String propertyName ) {
+	public String getPropertyFormattedValue( String propertyName, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public void setProperty( String name, Object value ) {
+	public void setProperty( String name, Object value, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 
@@ -2072,7 +2072,7 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public boolean isHidden() {
+	public boolean isHidden(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
@@ -2096,12 +2096,12 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public String getDescription() {
+	public String getDescription(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
@@ -2112,17 +2112,17 @@ public class FunUtil extends Util {
     }
 
     @Override
-	public String getQualifiedName() {
+	public String getQualifiedName(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public String getCaption() {
+	public String getCaption(boolean caseSensitive) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-	public String getLocalized( LocalizedProperty prop, Locale locale ) {
+	public String getLocalized( LocalizedProperty prop, Locale locale, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 

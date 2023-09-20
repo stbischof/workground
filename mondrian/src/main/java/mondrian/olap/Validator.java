@@ -51,7 +51,7 @@ public interface Validator {
      *
      * <p>It must resolve to the same object (although sub-objects may change).
      */
-    void validate(ParameterExpressionImpl parameterExpr);
+    void validate(ParameterExpressionImpl parameterExpr, boolean caseSensitive);
 
     /**
      * Validates a child member property.

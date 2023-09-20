@@ -58,7 +58,7 @@ public class ParameterExpressionImpl extends ExpBase implements ParameterExpress
     }
 
     @Override
-	public Exp accept(Validator validator) {
+	public Exp accept(Validator validator, boolean caseSensitiv) {
         // There must be some Parameter with this name registered with the
         // Query.  After clone(), there will be many copies of the same
         // parameter, and we rely on this method to bring them down to one.

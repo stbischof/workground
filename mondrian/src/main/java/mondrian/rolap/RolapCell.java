@@ -145,20 +145,21 @@ public class RolapCell implements Cell {
         boolean extendedContext)
     {
         return getDrillThroughSQL(
-            new ArrayList<OlapElement>(), extendedContext, 0);
+            new ArrayList<OlapElement>(), extendedContext, 0, true);
+        //TODO UTILS
     }
 
     public String getDrillThroughSQL(
             List<OlapElement> fields,
-            boolean extendedContext)
+            boolean extendedContext, boolean caseSensitive)
     {
-        return getDrillThroughSQL(fields, extendedContext, 0);
+        return getDrillThroughSQL(fields, extendedContext, 0, caseSensitive);
     }
 
     public String getDrillThroughSQL(
         List<OlapElement> fields,
         boolean extendedContext,
-        int maxRowCount)
+        int maxRowCount, boolean caseSensitive)
     {
         if (!MondrianProperties.instance()
             .EnableDrillThrough.get())
@@ -177,7 +178,7 @@ public class RolapCell implements Cell {
         StarPredicate starPredicateSlicer =
             buildDrillthroughSlicerPredicate(
                 currentMembers,
-                result.getSlicerAxis());
+                result.getSlicerAxis(), caseSensitive);
         DrillThroughCellRequest cellRequest =
             RolapAggregationManager.makeDrillThroughRequest(
                 currentMembers, extendedContext, result.getCube(),
@@ -199,7 +200,7 @@ public class RolapCell implements Cell {
     }
 
     @Override
-	public int getDrillThroughCount() {
+	public int getDrillThroughCount(boolean caseSensitive) {
         final Member[] currentMembers = getMembersForDrillThrough();
         // Create a StarPredicate to represent the compound
         // slicer (if necessary)
@@ -209,7 +210,7 @@ public class RolapCell implements Cell {
         StarPredicate starPredicateSlicer =
             buildDrillthroughSlicerPredicate(
                 currentMembers,
-                result.getSlicerAxis());
+                result.getSlicerAxis(), caseSensitive);
         DrillThroughCellRequest cellRequest =
             RolapAggregationManager.makeDrillThroughRequest(
                 currentMembers, false, result.getCube(),
@@ -276,7 +277,7 @@ public class RolapCell implements Cell {
      */
     private StarPredicate buildDrillthroughSlicerPredicate(
         Member[] membersForDrillthrough,
-        Axis slicerAxis)
+        Axis slicerAxis, boolean caseSensitive)
     {
         List<Position> listOfPositions = slicerAxis.getPositions();
         // If the slicer has zero or one position(s),
@@ -291,7 +292,7 @@ public class RolapCell implements Cell {
         for (Position position : listOfPositions) {
             for (Member member : position) {
                 RolapHierarchy rolapHierarchy =
-                    (RolapHierarchy) member.getHierarchy();
+                    (RolapHierarchy) member.getHierarchy(caseSensitive);
                 // Check if the membersForDrillthrough constraint is identical
                 // to that of the position member
                 if (!membersForDrillthrough[rolapHierarchy.getOrdinalInCube()]
@@ -319,7 +320,7 @@ public class RolapCell implements Cell {
             // Iterate the members of the current position
             for (Member member : position) {
                 RolapHierarchy rolapHierarchy =
-                    (RolapHierarchy) member.getHierarchy();
+                    (RolapHierarchy) member.getHierarchy(caseSensitive);
                 // If the membersForDrillthrough is already constraining to
                 // this member, then there is no need to create additional
                 // predicate(s) for this member
@@ -527,14 +528,14 @@ public class RolapCell implements Cell {
         int firstRowOrdinal,
         List<OlapElement> fields,
         boolean extendedContext,
-        Logger logger)
+        Logger logger, boolean caseSensitive)
     {
         if (!canDrillThrough()) {
             throw Util.newError("Cannot do DrillThrough operation on the cell");
         }
 
         // Generate SQL.
-        String sql = getDrillThroughSQL(fields, extendedContext,  maxRowCount);
+        String sql = getDrillThroughSQL(fields, extendedContext,  maxRowCount, caseSensitive);
         if (logger != null && logger.isDebugEnabled()) {
             logger.debug("drill through sql: " + sql);
         }
@@ -578,7 +579,7 @@ public class RolapCell implements Cell {
     }
 
     @Override
-	public Object getPropertyValue(String propertyName) {
+	public Object getPropertyValue(String propertyName, boolean caseSensitive) {
         final boolean matchCase =
             MondrianProperties.instance().CaseSensitive.get();
         Property property = Property.lookup(propertyName, matchCase);
@@ -613,9 +614,9 @@ public class RolapCell implements Cell {
             case Property.ACTION_TYPE_ORDINAL:
                 return canDrillThrough() ? MDACTION_TYPE_DRILLTHROUGH : 0;
             case Property.DRILLTHROUGH_COUNT_ORDINAL:
-                return canDrillThrough() ? getDrillThroughCount() : -1;
+                return canDrillThrough() ? getDrillThroughCount(caseSensitive) : -1;
             case Property.BACK_COLOR_ORDINAL:
-                formatString = (String)getPropertyValue(Property.FORMAT_STRING.getName());
+                formatString = (String)getPropertyValue(Property.FORMAT_STRING.getName(), caseSensitive);
                 if(formatString == null) {
                     return null;
                 }
@@ -642,7 +643,7 @@ public class RolapCell implements Cell {
 //                }
 //                return backColor;
             case Property.FORE_COLOR_ORDINAL:
-                formatString = (String)getPropertyValue(Property.FORMAT_STRING.getName());
+                formatString = (String)getPropertyValue(Property.FORMAT_STRING.getName(), caseSensitive);
                 if(formatString == null) {
                     return null;
                 }
@@ -670,8 +671,8 @@ public class RolapCell implements Cell {
     }
 
     @Override
-	public Member getContextMember(Hierarchy hierarchy) {
-        return result.getMember(pos, hierarchy);
+	public Member getContextMember(Hierarchy hierarchy, boolean caseSensitive) {
+        return result.getMember(pos, hierarchy, caseSensitive);
     }
 
     @Override
@@ -679,6 +680,7 @@ public class RolapCell implements Cell {
         Scenario scenario,
         Object newValue,
         AllocationPolicy allocationPolicy,
+        boolean caseSensitive,
         Object... allocationArgs)
     {
         if (allocationPolicy == null) {
@@ -689,10 +691,10 @@ public class RolapCell implements Cell {
         final RolapMember[] members = result.getCellMembers(pos);
         for (int i = 0; i < members.length; i++) {
             Member member = members[i];
-            if (ScenarioImpl.isScenario(member.getHierarchy())) {
+            if (ScenarioImpl.isScenario(member.getHierarchy(caseSensitive), caseSensitive)) {
                 scenario =
-                    (Scenario) member.getPropertyValue(Property.SCENARIO.name);
-                members[i] = (RolapMember) member.getHierarchy().getAllMember();
+                    (Scenario) member.getPropertyValue(Property.SCENARIO.name, caseSensitive);
+                members[i] = (RolapMember) member.getHierarchy(caseSensitive).getAllMember();
             } else if (member.isCalculated()) {
                 throw Util.newError(
                     new StringBuilder("Cannot write to cell: one of the coordinates (")
@@ -758,7 +760,7 @@ public class RolapCell implements Cell {
         }
 
         @Override
-		public Object visit(ResolvedFunCallImpl call) {
+		public Object visit(ResolvedFunCallImpl call, boolean caseSensitive) {
             final FunctionDefinition def = call.getFunDef();
             final Exp[] args = call.getArgs();
             final String name = def.getName();
@@ -836,7 +838,7 @@ public class RolapCell implements Cell {
         }
 
         @Override
-		public Object visit(ParameterExpression parameterExpr) {
+		public Object visit(ParameterExpression parameterExpr, boolean caseSensitive) {
             // Not valid in general; might contain complex expression
             throw bomb;
         }

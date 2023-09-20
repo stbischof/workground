@@ -349,24 +349,24 @@ public class CompoundPredicateInfo {
     ResolvedFunCallImpl fun = (ResolvedFunCallImpl) member.getExpression();
 
     final Exp exp = fun.getArg( 0 );
-    final Type type = exp.getType();
+    final Type type = exp.getType(baseCube.getContext().getConfig().caseSensitive());
 
     if ( type instanceof SetType ) {
       return makeSetPredicate( exp, evaluator );
     } else if ( type.getArity() == 1 ) {
       return makeUnaryPredicate( member, baseCube, evaluator );
     } else {
-      throw MondrianResource.instance().UnsupportedCalculatedMember.ex( member.getName(), null );
+      throw MondrianResource.instance().UnsupportedCalculatedMember.ex( member.getName(baseCube.getContext().getConfig().caseSensitive()), null );
     }
   }
 
   private StarPredicate makeUnaryPredicate( RolapCubeMember member, RolapCube baseCube, Evaluator evaluator ) {
     TupleConstraintStruct constraint = new TupleConstraintStruct();
-    SqlConstraintUtils.expandSupportedCalculatedMember( member, evaluator, constraint );
+    SqlConstraintUtils.expandSupportedCalculatedMember( member, evaluator, constraint, baseCube.getContext().getConfig().caseSensitive() );
     List<Member> expandedMemberList = constraint.getMembers();
     for ( Member checkMember : expandedMemberList ) {
       if ( checkMember == null || checkMember.isCalculated() || !( checkMember instanceof RolapCubeMember ) ) {
-        throw MondrianResource.instance().UnsupportedCalculatedMember.ex( member.getName(), null );
+        throw MondrianResource.instance().UnsupportedCalculatedMember.ex( member.getName(baseCube.getContext().getConfig().caseSensitive()), null );
       }
     }
     List<StarPredicate> predicates = new ArrayList<>( expandedMemberList.size() );

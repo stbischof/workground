@@ -82,6 +82,8 @@ public class RolapLevel extends LevelBase {
 
     private final int flags;
 
+    private boolean caseSensitive;
+
     static final int FLAG_ALL = 0x02;
 
     /**
@@ -142,7 +144,7 @@ public class RolapLevel extends LevelBase {
         HideMemberCondition hideMemberCondition,
         LevelType levelType,
         String approxRowCount,
-        Map<String, Object> metadata)
+        Map<String, Object> metadata, boolean caseSensitive)
     {
         super(
             hierarchy, name, caption, visible, description, depth, levelType);
@@ -161,6 +163,7 @@ public class RolapLevel extends LevelBase {
         this.flags = flags;
         this.datatype = datatype;
         this.keyExp = keyExp;
+        this.caseSensitive = caseSensitive;
         if (nameExp != null) {
             if (nameExp instanceof Column) {
                 checkColumn((Column) nameExp);
@@ -219,7 +222,7 @@ public class RolapLevel extends LevelBase {
                     != levelProperty.getType())
                 {
                     throw Util.newError(
-                        new StringBuilder("Property ").append(this.getName()).append(".")
+                        new StringBuilder("Property ").append(this.getName(caseSensitive)).append(".")
                         .append(levelProperty.getName()).append(" overrides a ")
                         .append("property with the same name but different type").toString());
                 }
@@ -227,7 +230,7 @@ public class RolapLevel extends LevelBase {
         }
         this.inheritedProperties = list.toArray(new RolapProperty[list.size()]);
 
-        Dimension dim = hierarchy.getDimension();
+        Dimension dim = hierarchy.getDimension(caseSensitive);
         if (dim.getDimensionType() == DimensionType.TIME_DIMENSION) {
             if (!levelType.isTime() && !isAll()) {
                 throw MondrianResource.instance()
@@ -247,7 +250,7 @@ public class RolapLevel extends LevelBase {
     }
 
     @Override
-	public RolapHierarchy getHierarchy() {
+	public RolapHierarchy getHierarchy(boolean caseSensitive) {
         return (RolapHierarchy) hierarchy;
     }
 
@@ -352,7 +355,7 @@ public class RolapLevel extends LevelBase {
     RolapLevel(
         RolapHierarchy hierarchy,
         int depth,
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.Level xmlLevel)
+        org.eclipse.daanse.olap.rolap.dbmapper.model.api.Level xmlLevel, boolean caseSensitive)
     {
 
         this(
@@ -379,7 +382,7 @@ public class RolapLevel extends LevelBase {
                     ? "TimeHalfYears"
                     : xmlLevel.levelType().getValue()),
             xmlLevel.approxRowCount(),
-            RolapHierarchy.createMetadataMap(xmlLevel.annotations()));
+            RolapHierarchy.createMetadataMap(xmlLevel.annotations()), caseSensitive);
 
         if (!Util.isEmpty(xmlLevel.caption())) {
             setCaption(xmlLevel.caption());
@@ -481,7 +484,7 @@ public class RolapLevel extends LevelBase {
     void init(CubeDimension xmlDimension) {
         if (xmlClosure != null) {
             final RolapDimension dimension = ((RolapHierarchy) hierarchy)
-                .createClosedPeerDimension(this, xmlClosure);
+                .createClosedPeerDimension(this, xmlClosure, caseSensitive);
             closedPeerLevel =
                     (RolapLevel) dimension.getHierarchies()[0].getLevels()[1];
         }
@@ -591,7 +594,7 @@ public class RolapLevel extends LevelBase {
                         }})
                         .append(".").toString());
             }
-            return getHierarchy().getMemberReader().getMemberByKey(
+            return getHierarchy(caseSensitive).getMemberReader().getMemberByKey(
                 this, keyValues);
         }
         List<Member> levelMembers = schemaReader.getLevelMembers(this, true);
@@ -603,7 +606,7 @@ public class RolapLevel extends LevelBase {
                     (RolapMember) parent,
                     this,
                     name,
-                    matchType);
+                    matchType, caseSensitive);
         }
         return null;
     }
@@ -635,7 +638,7 @@ public class RolapLevel extends LevelBase {
             return false;
         }
         // does not work for measures
-        if (isMeasure()) {
+        if (isMeasure(caseSensitive)) {
             return false;
         }
         return true;
@@ -660,7 +663,7 @@ public class RolapLevel extends LevelBase {
     private boolean isTooRagged() {
         // Is this the special case of raggedness that native evaluation
         // is able to handle?
-        if (getDepth() == getHierarchy().getLevels().length - 1) {
+        if (getDepth() == getHierarchy(caseSensitive).getLevels().length - 1) {
             switch (getHideMemberCondition()) {
             case Never:
             case IfBlankName:
@@ -670,7 +673,7 @@ public class RolapLevel extends LevelBase {
             }
         }
         // Handle the general case in the traditional way.
-        return getHierarchy().isRagged();
+        return getHierarchy(caseSensitive).isRagged();
     }
 
 
@@ -688,10 +691,10 @@ public class RolapLevel extends LevelBase {
 
     public static RolapLevel lookupLevel(
         RolapLevel[] levels,
-        String levelName)
+        String levelName, boolean caseSensitive)
     {
         for (RolapLevel level : levels) {
-            if (level.getName().equals(levelName)) {
+            if (level.getName(caseSensitive).equals(levelName)) {
                 return level;
             }
         }

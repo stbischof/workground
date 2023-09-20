@@ -61,21 +61,21 @@ public abstract class HierarchyBase
         String caption,
         boolean visible,
         String description,
-        boolean hasAll)
+        boolean hasAll, boolean caseSensitive)
     {
         this.dimension = dimension;
         this.hasAll = hasAll;
         if (caption != null) {
             this.caption = caption;
         } else if (subName == null) {
-            this.caption = dimension.getCaption();
+            this.caption = dimension.getCaption(caseSensitive);
         } else {
             this.caption = subName;
         }
         this.description = description;
         this.visible = visible;
 
-        String nameInner = dimension.getName();
+        String nameInner = dimension.getName(caseSensitive);
         if (MondrianProperties.instance().SsasCompatibleNaming.get()) {
             if(dimension.getDimensionType() == DimensionType.MEASURES_DIMENSION) {
                 this.subName = subName;
@@ -132,12 +132,12 @@ public abstract class HierarchyBase
     }
 
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
         return name;
     }
 
     @Override
-	public String getQualifiedName() {
+	public String getQualifiedName(boolean caseSensitive) {
         return MondrianResource.instance().MdxHierarchyName.str(
             getUniqueName());
     }
@@ -145,12 +145,12 @@ public abstract class HierarchyBase
     public abstract boolean isRagged();
 
     @Override
-	public String getDescription() {
+	public String getDescription(boolean caseSensitive) {
         return description;
     }
 
     @Override
-	public Dimension getDimension() {
+	public Dimension getDimension(boolean caseSensitive) {
         return dimension;
     }
 
@@ -160,7 +160,7 @@ public abstract class HierarchyBase
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return this;
     }
 
@@ -184,7 +184,7 @@ public abstract class HierarchyBase
     {
         OlapElement oe;
         if (s instanceof NameSegment nameSegment) {
-            oe = Util.lookupHierarchyLevel(this, nameSegment.getName());
+            oe = Util.lookupHierarchyLevel(this, nameSegment.getName(), schemaReader.getContext().getConfig().caseSensitive());
             if (oe == null) {
                 oe = Util.lookupHierarchyRootMember(
                     schemaReader, this, nameSegment, matchType);
@@ -201,13 +201,13 @@ public abstract class HierarchyBase
             StringBuilder buf = new StringBuilder(64);
             buf.append("HierarchyBase.lookupChild: ");
             buf.append("name=");
-            buf.append(getName());
+            buf.append(getName(schemaReader.getContext().getConfig().caseSensitive()));
             buf.append(", childname=");
             buf.append(s);
             if (oe == null) {
                 buf.append(" returning null");
             } else {
-                buf.append(" returning elementname=").append(oe.getName());
+                buf.append(" returning elementname=").append(oe.getName(schemaReader.getContext().getConfig().caseSensitive()));
             }
             getLogger().debug(buf.toString());
         }

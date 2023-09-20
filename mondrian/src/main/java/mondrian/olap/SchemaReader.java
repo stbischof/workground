@@ -478,7 +478,7 @@ public interface SchemaReader {
     Member lookupMemberChildByName(
         Member parent,
         Segment childName,
-        MatchType matchType);
+        MatchType matchType, boolean caseSensitive);
 
     /**
      * Finds a list of child members with the given names.
@@ -486,7 +486,7 @@ public interface SchemaReader {
     List<Member> lookupMemberChildrenByNames(
         Member parent,
         List<NameSegment> childNames,
-        MatchType matchType);
+        MatchType matchType, boolean caseSensitive);
 
     /**
      * Returns an object which can evaluate an expression in native SQL, or

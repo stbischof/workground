@@ -106,7 +106,7 @@ public abstract class MultiResolver implements FunctionResolver {
 	public FunctionDefinition resolve(
         Exp[] args,
         Validator validator,
-        List<Conversion> conversions)
+        List<Conversion> conversions, boolean caseSensitive)
     {
 outer:
         for (String signature : signatures) {
@@ -117,7 +117,7 @@ outer:
             conversions.clear();
             for (int i = 0; i < args.length; i++) {
                 if (!validator.canConvert(
-                        i, args[i], parameterTypes[i], conversions))
+                        i, args[i], parameterTypes[i], conversions, caseSensitive))
                 {
                     continue outer;
                 }

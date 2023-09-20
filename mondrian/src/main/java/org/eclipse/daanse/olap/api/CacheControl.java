@@ -6,9 +6,9 @@
  *
  * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
  * ---- All changes after Fork in 2023 ------------------------
- * 
+ *
  * Project: Eclipse daanse
- * 
+ *
  * Copyright (c) 2023 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -266,7 +266,7 @@ public interface CacheControl {
      *
      * @param set a set of members
      */
-    void flush(MemberSet set);
+    void flush(MemberSet set, boolean caseSensitive);
 
     /**
      * Prints the state of the member cache as it pertains to a given member
@@ -450,7 +450,7 @@ public interface CacheControl {
          * Returns the dimensionality of a region.
          * @return a list of {@link org.eclipse.daanse.olap.api.element.Dimension} objects.
          */
-        List<Dimension> getDimensionality();
+        List<Dimension> getDimensionality(boolean caseSensitive);
     }
 
     /**

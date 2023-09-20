@@ -25,7 +25,7 @@ public interface RolapMember extends Member, RolapCalculation {
     @Override
 	RolapMember getParentMember();
     @Override
-	RolapHierarchy getHierarchy();
+	RolapHierarchy getHierarchy(boolean caseSensitive);
     @Override
 	RolapLevel getLevel();
 

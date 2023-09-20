@@ -96,12 +96,12 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
     }
 
     @Override
-	public Calc compileCall(ResolvedFunCall	call, ExpCompiler compiler) {
-        final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0));
+	public Calc compileCall(ResolvedFunCall	call, ExpCompiler compiler, boolean caseSensitive) {
+        final TupleListCalc tupleListCalc = compiler.compileList(call.getArg(0), caseSensitive);
         final Calc calc =
             call.getArgCount() > 1
-                ? compiler.compileScalar(call.getArg(1), true)
-                : new ValueCalc(call.getType());
+                ? compiler.compileScalar(call.getArg(1), true, caseSensitive)
+                : new ValueCalc(call.getType(caseSensitive));
         final Member member =
             call.getArgCount() > 1 ? getMember(call.getArg(1)) : null;
         return new AggregateCalc(calc.getType(), tupleListCalc, calc, member);
@@ -126,15 +126,15 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         }
 
         @Override
-		public Object evaluate(Evaluator evaluator) {
+		public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
             evaluator.getTiming().markStart(AggregateFunDef.TIMING_NAME);
             final int savepoint = evaluator.savepoint();
             try {
-                TupleList list = AbstractAggregateFunDef.evaluateCurrentList(tupleListCalc, evaluator);
+                TupleList list = AbstractAggregateFunDef.evaluateCurrentList(tupleListCalc, evaluator, caseSensitive);
                 if (member != null) {
                     evaluator.setContext(member);
                 }
-                return AggregateCalc.aggregate(calc, evaluator, list);
+                return AggregateCalc.aggregate(calc, evaluator, list, caseSensitive);
             } finally {
                 evaluator.restore(savepoint);
                 evaluator.getTiming().markEnd(AggregateFunDef.TIMING_NAME);
@@ -154,7 +154,8 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         public static Object aggregate(
             Calc calc,
             Evaluator evaluator,
-            TupleList tupleList)
+            TupleList tupleList,
+            boolean caseSensitive)
         {
             Aggregator aggregator =
                 (Aggregator) evaluator.getProperty(
@@ -180,7 +181,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                 try {
                     evaluator.setNonEmpty(false);
                     return rollup.aggregate(
-                        evaluator, tupleList, calc);
+                        evaluator, tupleList, calc, caseSensitive);
                 } finally {
                     evaluator.restore(savepoint);
                 }
@@ -222,7 +223,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                 // very slow.  May want to revisit this if someone
                 // improves the algorithm.
             } else {
-                tupleList = AggregateCalc.optimizeTupleList(evaluator, tupleList, true);
+                tupleList = AggregateCalc.optimizeTupleList(evaluator, tupleList, true, caseSensitive);
             }
 
             // Can't aggregate distinct-count values in the same way
@@ -246,7 +247,8 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
          */
         private static boolean canOptimize(
             Evaluator evaluator,
-            TupleList tupleList)
+            TupleList tupleList,
+            boolean caseSensitive)
         {
             // If members of this hierarchy are controlled by a role which
             // enforces a rollup policy of partial, we cannot safely
@@ -256,7 +258,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                 for (Member member : tupleList.get(0)) {
                     final RollupPolicy policy =
                         evaluator.getSchemaReader().getRole()
-                            .getAccessDetails(member.getHierarchy())
+                            .getAccessDetails(member.getHierarchy(caseSensitive), caseSensitive)
                             .getRollupPolicy();
                     if (policy == RollupPolicy.PARTIAL) {
                         return false;
@@ -267,9 +269,9 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         }
 
         public static TupleList optimizeTupleList(
-            Evaluator evaluator, TupleList tupleList, boolean checkSize)
+            Evaluator evaluator, TupleList tupleList, boolean checkSize, boolean caseSensitive)
         {
-            if (!AggregateCalc.canOptimize(evaluator, tupleList)) {
+            if (!AggregateCalc.canOptimize(evaluator, tupleList, caseSensitive)) {
                 return tupleList;
             }
 
@@ -287,7 +289,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                 AggregateCalc.optimizeChildren(
                     tupleList,
                     evaluator.getSchemaReader(),
-                    evaluator.getMeasureCube());
+                    evaluator.getMeasureCube(), caseSensitive);
             if (checkSize) {
                 AggregateCalc.checkIfAggregationSizeIsTooLarge(tupleList);
             }
@@ -380,8 +382,8 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         }
 
         @Override
-		public boolean dependsOn(Hierarchy hierarchy) {
-            if (hierarchy.getDimension().isMeasures()) {
+		public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
+            if (hierarchy.getDimension(caseSensitive).isMeasures()) {
                 return true;
             }
             return HirarchyDependsChecker.checkAnyDependsButFirst(getChildCalcs(), hierarchy);
@@ -417,7 +419,8 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         public static TupleList optimizeChildren(
             TupleList tuples,
             SchemaReader reader,
-            Cube baseCubeForMeasure)
+            Cube baseCubeForMeasure,
+            boolean caseSensitive)
         {
             Map<Member, Integer>[] membersOccurencesInTuple =
                 AggregateCalc.membersVersusOccurencesInTuple(tuples);
@@ -434,7 +437,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                         AggregateCalc.optimizeMemberSet(
                             new LinkedHashSet<>(members),
                             reader,
-                            baseCubeForMeasure);
+                            baseCubeForMeasure, caseSensitive);
                     if (sets[i].size() != originalSize) {
                         optimized = true;
                     }
@@ -484,7 +487,8 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
         private static Set<Member> optimizeMemberSet(
             Set<Member> members,
             SchemaReader reader,
-            Cube baseCubeForMeasure)
+            Cube baseCubeForMeasure,
+            boolean caseSensitive)
         {
             boolean didOptimize;
             Set<Member> membersToBeOptimized = new LinkedHashSet<>();
@@ -527,7 +531,7 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
                 }
                 if (childCountOfParent != -1
                     && membersToBeOptimized.size() == childCountOfParent
-                    && firstParentMember != null && AggregateCalc.canOptimize(firstParentMember, baseCubeForMeasure))
+                    && firstParentMember != null && AggregateCalc.canOptimize(firstParentMember, baseCubeForMeasure, caseSensitive))
                 {
                     optimizedMembers.add(firstParentMember);
                     didOptimize = true;
@@ -566,10 +570,10 @@ public class AggregateFunDef extends AbstractAggregateFunDef {
 
         private static boolean canOptimize(
             Member parentMember,
-            Cube baseCube)
+            Cube baseCube, boolean caseSensitive)
         {
             return AggregateCalc.dimensionJoinsToBaseCube(
-                parentMember.getDimension(), baseCube)
+                parentMember.getDimension(caseSensitive), baseCube)
                 || !parentMember.isAll();
         }
 

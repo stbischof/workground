@@ -51,14 +51,14 @@ class RolapMemberCalculation implements RolapCalculation {
     }
 
     @Override
-	public void setContextIn(RolapEvaluator evaluator) {
+	public void setContextIn(RolapEvaluator evaluator, boolean caseSensitive) {
         final RolapMember defaultMember =
-            evaluator.root.defaultMembers[getHierarchyOrdinal()];
+            evaluator.root.defaultMembers[getHierarchyOrdinal(caseSensitive)];
 
         // This method does not need to call RolapEvaluator.removeCalcMember.
         // That happens implicitly in setContext.
         evaluator.setContext(defaultMember);
-        evaluator.setExpanding(member);
+        evaluator.setExpanding(member, caseSensitive);
     }
 
     @Override
@@ -67,8 +67,8 @@ class RolapMemberCalculation implements RolapCalculation {
     }
 
     @Override
-	public int getHierarchyOrdinal() {
-        return member.getHierarchy().getOrdinalInCube();
+	public int getHierarchyOrdinal(boolean caseSensitive) {
+        return member.getHierarchy(caseSensitive).getOrdinalInCube();
     }
 
     @Override

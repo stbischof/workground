@@ -7,7 +7,7 @@
  * Copyright (C) 2001-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
 */
@@ -107,7 +107,7 @@ public interface Cell {
     /**
      * Returns the number of fact table rows which contributed to this Cell.
      */
-    int getDrillThroughCount();
+    int getDrillThroughCount(boolean caseSensitive);
 
     /**
      * Returns the value of a property.
@@ -115,7 +115,7 @@ public interface Cell {
      * @param propertyName Case-sensitive property name
      * @return Value of property
      */
-    Object getPropertyValue(String propertyName);
+    Object getPropertyValue(String propertyName, boolean caseSensitive);
 
     /**
      * Returns the context member for a particular dimension.
@@ -135,7 +135,7 @@ public interface Cell {
      * @param hierarchy Hierarchy
      * @return current member of given hierarchy
      */
-    Member getContextMember(Hierarchy hierarchy);
+    Member getContextMember(Hierarchy hierarchy, boolean caseSensitive);
 
     /**
      * Helper method to implement {@link org.olap4j.Cell#setValue}.
@@ -149,5 +149,6 @@ public interface Cell {
         Scenario scenario,
         Object newValue,
         AllocationPolicy allocationPolicy,
+        boolean caseSensitive,
         Object... allocationArgs);
 }

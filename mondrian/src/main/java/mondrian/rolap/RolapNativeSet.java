@@ -99,8 +99,8 @@ public abstract class RolapNativeSet extends RolapNative {
     SetConstraint(
       CrossJoinArg[] args,
       RolapEvaluator evaluator,
-      boolean strict ) {
-      super( evaluator, strict );
+      boolean strict, boolean caseSensitive ) {
+      super( evaluator, strict, caseSensitive );
       this.args = args;
     }
 
@@ -142,7 +142,7 @@ public abstract class RolapNativeSet extends RolapNative {
 
     private boolean levelIsOnBaseCube(
       final RolapCube baseCube, final RolapLevel level ) {
-      return baseCube.findBaseCubeHierarchy( level.getHierarchy() ) != null;
+      return baseCube.findBaseCubeHierarchy( level.getHierarchy(baseCube.getContext().getConfig().caseSensitive()) ) != null;
     }
 
     /**
@@ -206,7 +206,7 @@ public abstract class RolapNativeSet extends RolapNative {
         case ITERABLE:
           if (this.args !=null && this.args.length > 0) {
               CrossJoinArg arg = this.args[0];
-              if ( arg.getLevel().getDimension().isHighCardinality() ) {
+              if ( arg.getLevel().getDimension(caseSensitive).isHighCardinality() ) {
                   // If any of the dimensions is a HCD,
                   // use the proper tuple reader.
                   return executeList(
@@ -228,7 +228,7 @@ public abstract class RolapNativeSet extends RolapNative {
     protected TupleList executeList( final SqlTupleReader tr, boolean caseSensitive ) {
       tr.setMaxRows( maxRows );
       for ( CrossJoinArg arg : args ) {
-        addLevel( tr, arg );
+        addLevel( tr, arg, caseSensitive );
       }
 
       // Look up the result in cache; we can't return the cached
@@ -247,7 +247,7 @@ public abstract class RolapNativeSet extends RolapNative {
       // schemaReader would apply the roles, but we cache the lists over
       // its head.
       List<Object> key = new ArrayList<>();
-      key.add( tr.getCacheKey() );
+      key.add( tr.getCacheKey(caseSensitive) );
       key.addAll( Arrays.asList( args ) );
       key.add( maxRows );
       key.add( schemaReader.getRole() );
@@ -307,7 +307,7 @@ public abstract class RolapNativeSet extends RolapNative {
               ? setConstraint : null ) );
         str.setAllowHints( false );
         for ( CrossJoinArg arg : args ) {
-          addLevel( str, arg );
+          addLevel( str, arg , caseSensitive);
         }
 
         str.setMaxRows( maxRows - result.size() );
@@ -416,7 +416,7 @@ public abstract class RolapNativeSet extends RolapNative {
       };
     }
 
-    private void addLevel( TupleReader tr, CrossJoinArg arg ) {
+    private void addLevel( TupleReader tr, CrossJoinArg arg, boolean caseSensitive ) {
       RolapLevel level = arg.getLevel();
       if ( level == null ) {
         // Level can be null if the CrossJoinArg represent
@@ -428,8 +428,8 @@ public abstract class RolapNativeSet extends RolapNative {
         return;
       }
 
-      RolapHierarchy hierarchy = level.getHierarchy();
-      MemberReader mr = schemaReader.getMemberReader( hierarchy );
+      RolapHierarchy hierarchy = level.getHierarchy(caseSensitive);
+      MemberReader mr = schemaReader.getMemberReader( hierarchy, caseSensitive );
       MemberBuilder mb = mr.getMemberBuilder();
       Util.assertTrue( mb != null, "MemberBuilder not found" );
 
@@ -504,12 +504,12 @@ public abstract class RolapNativeSet extends RolapNative {
   protected void overrideContext(
     RolapEvaluator evaluator,
     CrossJoinArg[] cargs,
-    RolapStoredMeasure storedMeasure ) {
+    RolapStoredMeasure storedMeasure, boolean caseSensitive ) {
     SchemaReader schemaReader = evaluator.getSchemaReader();
     for ( CrossJoinArg carg : cargs ) {
       RolapLevel level = carg.getLevel();
       if ( level != null ) {
-        RolapHierarchy hierarchy = level.getHierarchy();
+        RolapHierarchy hierarchy = level.getHierarchy(caseSensitive);
 
         final Member contextMember;
         if ( hierarchy.hasAll()
@@ -527,7 +527,7 @@ public abstract class RolapNativeSet extends RolapNative {
           contextMember = new RestrictedMemberReader
             .MultiCardinalityDefaultMember(
             hierarchy.getMemberReader()
-              .getRootMembers().get( 0 ) );
+              .getRootMembers(caseSensitive).get( 0 ) );
         }
         evaluator.setContext( contextMember );
       }
@@ -540,7 +540,7 @@ public abstract class RolapNativeSet extends RolapNative {
 
   public interface SchemaReaderWithMemberReaderAvailable
     extends SchemaReader {
-    MemberReader getMemberReader( Hierarchy hierarchy );
+    MemberReader getMemberReader( Hierarchy hierarchy, boolean caseSensitive );
   }
 
   private static class SchemaReaderWithMemberReaderCache
@@ -554,9 +554,9 @@ public abstract class RolapNativeSet extends RolapNative {
     }
 
     @Override
-	public synchronized MemberReader getMemberReader( Hierarchy hierarchy ) {
+	public synchronized MemberReader getMemberReader( Hierarchy hierarchy, boolean caseSensitive ) {
       return hierarchyReaders.computeIfAbsent(hierarchy,
-          k -> ( (RolapHierarchy) hierarchy ).createMemberReader(schemaReader.getRole() ));
+          k -> ( (RolapHierarchy) hierarchy ).createMemberReader(schemaReader.getRole(), caseSensitive ));
     }
 
     @Override

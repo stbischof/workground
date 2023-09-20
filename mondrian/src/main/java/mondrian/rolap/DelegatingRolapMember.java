@@ -54,8 +54,8 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public RolapHierarchy getHierarchy() {
-        return member.getHierarchy();
+	public RolapHierarchy getHierarchy(boolean caseSensitive) {
+        return member.getHierarchy(caseSensitive);
     }
 
     @Override
@@ -222,8 +222,8 @@ public class DelegatingRolapMember extends RolapMemberBase {
     }
 
     @Override
-	public String getQualifiedName() {
-        return member.getQualifiedName();
+	public String getQualifiedName(boolean caseSensitive) {
+        return member.getQualifiedName(caseSensitive);
     }
 
     @Override

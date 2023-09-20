@@ -148,15 +148,15 @@ public class MemberCacheHelper implements MemberCache {
     @Override
 	public List<RolapMember> getChildrenFromCache(
         RolapMember member,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         if (constraint == null) {
             constraint =
-                sqlConstraintFactory.getMemberChildrenConstraint(null);
+                sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
         }
         if (constraint instanceof ChildByNameConstraint childByNameConstraint) {
             return findNamedChildrenInCache(
-                member, childByNameConstraint.getChildNames());
+                member, childByNameConstraint.getChildNames(), caseSensitive);
         }
         return mapMemberToChildren.get(member, constraint);
     }
@@ -166,7 +166,7 @@ public class MemberCacheHelper implements MemberCache {
      * in cache.  Returns null if the complete list is not found.
      */
     private List<RolapMember> findNamedChildrenInCache(
-        final RolapMember parent, final List<String> childNames)
+        final RolapMember parent, final List<String> childNames, boolean caseSensitive)
     {
         List<RolapMember> children =
             checkDefaultAndNamedChildrenCache(parent);
@@ -181,7 +181,7 @@ public class MemberCacheHelper implements MemberCache {
                 @Override
 				public boolean evaluate(Object member) {
                     return childNames.contains(
-                        ((RolapMember) member).getName());
+                        ((RolapMember) member).getName(caseSensitive));
                 }
             });
         boolean foundAll = children.size() == childNames.size();
@@ -239,10 +239,10 @@ public class MemberCacheHelper implements MemberCache {
     @Override
 	public List<RolapMember> getLevelMembersFromCache(
         RolapLevel level,
-        TupleConstraint constraint)
+        TupleConstraint constraint, boolean caseSensitive)
     {
         if (constraint == null) {
-            constraint = sqlConstraintFactory.getLevelMembersConstraint(null);
+            constraint = sqlConstraintFactory.getLevelMembersConstraint(null, caseSensitive);
         }
         return mapLevelToMembers.get(level, constraint);
     }
@@ -276,7 +276,7 @@ public class MemberCacheHelper implements MemberCache {
     }
 
     @Override
-	public synchronized RolapMember removeMember(Object key)
+	public synchronized RolapMember removeMember(Object key, boolean caseSensitive)
     {
         // Flush entries from the level-to-members map
         // for member's level and all child levels.
@@ -293,7 +293,7 @@ public class MemberCacheHelper implements MemberCache {
                 @Override
 				public void execute(
                     Iterator<Entry<Pair
-                        <RolapLevel, Object>, List<RolapMember>>> iterator)
+                        <RolapLevel, Object>, List<RolapMember>>> iterator, boolean caseSensitive)
                 {
                     while (iterator.hasNext()) {
                         Map.Entry<Pair
@@ -301,8 +301,8 @@ public class MemberCacheHelper implements MemberCache {
                             iterator.next();
                         final RolapLevel cacheLevel = entry.getKey().left;
                         if (cacheLevel.equalsOlapElement(levelRef)
-                            || (cacheLevel.getHierarchy()
-                            .equalsOlapElement(levelRef.getHierarchy())
+                            || (cacheLevel.getHierarchy(caseSensitive)
+                            .equalsOlapElement(levelRef.getHierarchy(caseSensitive))
                             && cacheLevel.getDepth()
                             >= levelRef.getDepth()))
                         {
@@ -310,7 +310,7 @@ public class MemberCacheHelper implements MemberCache {
                         }
                     }
                 }
-            });
+            }, caseSensitive);
 
         final RolapMember member = getMember(key);
         if (member == null) {
@@ -370,7 +370,7 @@ public class MemberCacheHelper implements MemberCache {
             {
             @Override
 			public void execute(
-                Iterator<Entry<RolapMember, Collection<RolapMember>>> iterator)
+                Iterator<Entry<RolapMember, Collection<RolapMember>>> iterator, boolean caseSensitive)
             {
                 while (iterator.hasNext()) {
                     Entry<RolapMember, Collection<RolapMember>> entry =
@@ -382,7 +382,7 @@ public class MemberCacheHelper implements MemberCache {
                         entry.getValue().remove(member);
                     }
                 }
-            } });
+            } }, caseSensitive);
             // drop it from the lookup-cache
             return mapKeyToMember.put(key, null);
         }

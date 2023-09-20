@@ -33,8 +33,8 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
 
   public static final RolapAggregator Sum = new RolapAggregator( "sum", index++, false ) {
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
-      return FunUtil.sum( evaluator, members, exp );
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
+      return FunUtil.sum( evaluator, members, exp, caseSensitive );
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
     }
 
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
       return FunUtil.count( evaluator, members, false );
     }
   };
 
   public static final RolapAggregator Min = new RolapAggregator( "min", index++, false ) {
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
-      return FunUtil.min( evaluator, members, exp );
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
+      return FunUtil.min( evaluator, members, exp, caseSensitive );
     }
 
     @Override
@@ -142,8 +142,8 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
 
   public static final RolapAggregator Max = new RolapAggregator( "max", index++, false ) {
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
-      return FunUtil.max( evaluator, members, exp );
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
+      return FunUtil.max( evaluator, members, exp, caseSensitive );
     }
 
     @Override
@@ -190,15 +190,15 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
 	public Aggregator getRollup() {
       return new RolapAggregator( "avg", index, false ) {
         @Override
-		public Object aggregate( Evaluator evaluator, TupleList members, Calc calc ) {
-          return FunUtil.avg( evaluator, members, calc );
+		public Object aggregate( Evaluator evaluator, TupleList members, Calc calc, boolean caseSensitive ) {
+          return FunUtil.avg( evaluator, members, calc, caseSensitive );
         }
       };
     }
 
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
-      return FunUtil.avg( evaluator, members, exp );
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
+      return FunUtil.avg( evaluator, members, exp, caseSensitive );
     }
   };
 
@@ -216,7 +216,7 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
     }
 
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 
@@ -254,7 +254,7 @@ public abstract class RolapAggregator extends EnumeratedValues.BasicValue implem
     }
 
     @Override
-	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp ) {
+	public Object aggregate( Evaluator evaluator, TupleList members, Calc exp, boolean caseSensitive ) {
       throw new UnsupportedOperationException();
     }
 

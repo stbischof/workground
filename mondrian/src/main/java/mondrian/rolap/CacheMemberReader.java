@@ -41,14 +41,14 @@ class CacheMemberReader implements MemberReader, MemberCache {
     /** Maps a {@link MemberKey} to a {@link RolapMember}. */
     private final Map<Object, RolapMember> mapKeyToMember;
 
-    CacheMemberReader(MemberSource source) {
+    CacheMemberReader(MemberSource source, boolean caseSensitive) {
         this.source = source;
         if (false) {
             // we don't want the reader to write back to our cache
             Util.discard(source.setCache(this));
         }
         this.mapKeyToMember = new HashMap<>();
-        this.members = source.getMembers();
+        this.members = source.getMembers(caseSensitive);
         for (int i = 0; i < members.size(); i++) {
             RolapMember member = RolapUtil.strip(members.get(i));
             ((RolapMemberBase) member).setOrdinal(i);
@@ -88,7 +88,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
 
     // implement MemberReader
     @Override
-	public List<RolapMember> getMembers() {
+	public List<RolapMember> getMembers(boolean caseSensitive) {
         return members;
     }
 
@@ -178,13 +178,13 @@ class CacheMemberReader implements MemberReader, MemberCache {
     @Override
 	public RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
-        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound);
+        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound, caseSensitive);
     }
 
     @Override
-	public List<RolapMember> getRootMembers() {
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
         List<RolapMember> list = new ArrayList<>();
         for (RolapMember member : members) {
             if (member.getParentMember() == null) {
@@ -196,7 +196,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
         List<RolapMember> list = new ArrayList<>();
         int levelDepth = level.getDepth();
@@ -211,9 +211,9 @@ class CacheMemberReader implements MemberReader, MemberCache {
     @Override
 	public List<RolapMember> getMembersInLevel(
         RolapLevel level,
-        TupleConstraint constraint)
+        TupleConstraint constraint, boolean caseSensitive)
     {
-        return getMembersInLevel(level);
+        return getMembersInLevel(level, caseSensitive);
     }
 
     @Override
@@ -231,7 +231,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
     @Override
 	public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         for (Member member : members) {
             if (member.getParentMember() == parentMember) {
@@ -244,16 +244,16 @@ class CacheMemberReader implements MemberReader, MemberCache {
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember member,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
-        getMemberChildren(member, children);
+        getMemberChildren(member, children, caseSensitive);
         return Util.toNullValuesMap(children);
     }
 
     @Override
 	public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         for (Member member : members) {
             if (parentMembers.contains(member.getParentMember())) {
@@ -266,14 +266,14 @@ class CacheMemberReader implements MemberReader, MemberCache {
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
-        getMemberChildren(parentMembers, children);
+        getMemberChildren(parentMembers, children, caseSensitive);
         return Util.toNullValuesMap(children);
     }
 
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         if (n >= 0) {
             for (int ordinal = member.getOrdinal(); ordinal < members.size();
                  ordinal++)
@@ -284,7 +284,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
                     return members.get(ordinal);
                 }
             }
-            return (RolapMember) member.getHierarchy().getNullMember();
+            return (RolapMember) member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
 
         } else {
             for (int ordinal = member.getOrdinal(); ordinal >= 0; ordinal--) {
@@ -294,7 +294,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
                     return members.get(ordinal);
                 }
             }
-            return (RolapMember) member.getHierarchy().getNullMember();
+            return (RolapMember) member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
         }
     }
 
@@ -303,7 +303,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> list)
+        List<RolapMember> list, boolean caseSensitive)
     {
         assert startMember != null;
         assert endMember != null;
@@ -325,7 +325,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
 	public int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual)
+        boolean siblingsAreEqual, boolean caseSensitive)
     {
         if (m1 == m2) {
             return 0;
@@ -347,17 +347,17 @@ class CacheMemberReader implements MemberReader, MemberCache {
     }
 
     @Override
-	public RolapMember getDefaultMember() {
+	public RolapMember getDefaultMember(boolean caseSensitive) {
         RolapMember defaultMember =
-            (RolapMember) getHierarchy().getDefaultMember();
+            (RolapMember) getHierarchy().getDefaultMember(caseSensitive);
         if (defaultMember != null) {
             return defaultMember;
         }
-        return getRootMembers().get(0);
+        return getRootMembers(caseSensitive).get(0);
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
         return member.getParentMember();
     }
 }

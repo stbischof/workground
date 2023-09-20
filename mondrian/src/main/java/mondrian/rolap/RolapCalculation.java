@@ -33,7 +33,7 @@ interface RolapCalculation {
      *
      * @param evaluator Evaluator
      */
-    void setContextIn(RolapEvaluator evaluator);
+    void setContextIn(RolapEvaluator evaluator, boolean caseSensitive);
 
     /**
      * Returns the solve order of this calculation. Identifies which order
@@ -48,7 +48,7 @@ interface RolapCalculation {
      *
      * @return Ordinal or calculation
      */
-    int getHierarchyOrdinal();
+    int getHierarchyOrdinal(boolean caseSensitive);
 
     /**
      * Returns whether this calculation is a member is computed from a

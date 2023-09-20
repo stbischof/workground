@@ -36,7 +36,7 @@ public abstract class AbstractProfilingNestedCalc<E, C extends Calc<?>> extends 
 	 * Holds the childCalcs witch are accessible using {@link #getChildCalcs()}.
 	 * Enhances its own {@link CalculationProfile} with the Children's
 	 * {@link CalculationProfile}.
-	 * 
+	 *
 	 * @param calcs Child {@link Calc}s that are needed to calculate this.
 	 */
 	protected AbstractProfilingNestedCalc(Type type, C[] childCalcs) {
@@ -74,7 +74,7 @@ public abstract class AbstractProfilingNestedCalc<E, C extends Calc<?>> extends 
 	}
 
 	@Override
-	public boolean dependsOn(Hierarchy hierarchy) {
+	public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
 		return HirarchyDependsChecker.checkAnyDependsOnChilds(getChildCalcs(), hierarchy);
 	}
 

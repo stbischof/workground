@@ -1445,11 +1445,11 @@ public class RolapStar {
             }
         }
 
-        synchronized void makeMeasure(RolapBaseCubeMeasure measure) {
+        synchronized void makeMeasure(RolapBaseCubeMeasure measure, boolean caseSensitive) {
             // Remove assertion to allow cube to be recreated
             RolapStar.Measure starMeasure = new RolapStar.Measure(
-                measure.getName(),
-                measure.getCube().getName(),
+                measure.getName(caseSensitive),
+                measure.getCube().getName(caseSensitive),
                 measure.getAggregator(),
                 this,
                 measure.getMondrianDefExpression(),
@@ -1493,7 +1493,7 @@ public class RolapStar {
                 // make a column for the name expression
                 nameColumn = makeColumnForLevelExpr(
                     level,
-                    level.getName(),
+                    level.getName(cube.getContext().getConfig().caseSensitive()),
                     level.getNameExp(),
                     Datatype.STRING,
                     null,
@@ -1505,8 +1505,8 @@ public class RolapStar {
             // select the column's name depending upon whether or not a
             // "named" column, above, has been created.
             String name = (level.getNameExp() == null)
-                ? level.getName()
-                : new StringBuilder(level.getName()).append(" (Key)").toString();
+                ? level.getName(cube.getContext().getConfig().caseSensitive())
+                : new StringBuilder(level.getName(cube.getContext().getConfig().caseSensitive())).append(" (Key)").toString();
 
             // If the nameColumn is not null, then it is associated with this
             // column.

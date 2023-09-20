@@ -371,7 +371,7 @@ public class FastBatchingCellReader implements CellReader {
                     cacheMgr.execute(
                         new SegmentCacheManager.Command<Void>() {
                             @Override
-							public Void call() throws Exception {
+							public Void call(boolean caseSensitive) throws Exception {
                                 SegmentCacheIndex index =
                                     cacheMgr.getIndexRegistry()
                                     .getIndex(segmentWithData.getStar());
@@ -1046,7 +1046,7 @@ class BatchLoader {
         }
 
         @Override
-		public LoadBatchResponse call() {
+		public LoadBatchResponse call(boolean caseSensitive) {
             return new BatchLoader(locus, cacheMgr, dialect, cube)
                 .load(cellRequests);
         }
@@ -1437,14 +1437,14 @@ class BatchLoader {
                 final StringBuilder buf = new StringBuilder(64);
                 buf.append(
                     "AggGen: Sorry, can not create SQL for virtual Cube \"")
-                    .append(cube == null ? null : cube.getName())
+                    .append(cube == null ? null : cube.getName(cube.getContext().getConfig().caseSensitive()))
                     .append("\", operation not currently supported");
                 String msg = buf.toString();
                 BATCH_LOGGER.error(msg);
 
             } else {
                 final AggGen aggGen =
-                    new AggGen(cube.getName(), cube.getStar(), columns);
+                    new AggGen(cube.getName(cube.getContext().getConfig().caseSensitive()), cube.getStar(), columns);
                 if (aggGen.isReady()) {
                     // PRINT TO STDOUT - DO NOT USE BATCH_LOGGER
                     LOGGER.debug(

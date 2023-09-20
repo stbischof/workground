@@ -491,7 +491,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         // and calculated sets
         createFormulaElements();
         Map<QueryPart, QueryPart> resolvedIdentifiers =
-            new IdBatchResolver(this).resolve(getConnection().getContext().getConfig().caseSensitive());
+            new IdBatchResolver(this, getConnection().getContext().getConfig().caseSensitive()).resolve(getConnection().getContext().getConfig().caseSensitive());
         final Validator validator = createValidator(resolvedIdentifiers);
         resolve(validator, getConnection().getContext().getConfig().caseSensitive()); // resolve self and children
         // Create a dummy result so we can use its evaluator
@@ -499,7 +499,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         ExpCompiler compiler =
             createCompiler(
                 evaluator, validator, Collections.singletonList(resultStyle));
-        compile(compiler);
+        compile(compiler, getConnection().getContext().getConfig().caseSensitive());
     }
 
     private void createFormulaElements() {
@@ -566,7 +566,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      *
      * @param compiler Compiler
      */
-    private void compile(ExpCompiler compiler) {
+    private void compile(ExpCompiler compiler, boolean caseSensitive) {
 
         if(this.subcube != null) {
 
@@ -587,7 +587,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 ArrayList<Exp> hierarchyExps = new ArrayList<>();
                 for(int j = 0; j < subcubeAxisExps.size(); j++) {
                     Exp subcubeAxisExp = subcubeAxisExps.get(j);
-                    subcubeAxisExp = subcubeAxisExp.accept(compiler.getValidator());
+                    subcubeAxisExp = subcubeAxisExp.accept(compiler.getValidator(), caseSensitive);
                     Hierarchy[] subcubeAxisHierarchies = collectHierarchies(subcubeAxisExp, getConnection().getContext().getConfig().caseSensitive());
                     if(Arrays.asList(subcubeAxisHierarchies).contains(hierarchy)) {
                         hierarchyExps.add(subcubeAxisExp);
@@ -630,7 +630,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                             new Exp[] {hierarchyAllMembersExp, resultExp}
                     );
 
-                    resultExp = resultExp.accept(compiler.getValidator());
+                    resultExp = resultExp.accept(compiler.getValidator(), caseSensitive);
 
                     Calc calc = compiler.compileList(resultExp, getConnection().getContext().getConfig().caseSensitive());
                     subcubeHierarchyCalcs.put(hierarchy, calc);
@@ -681,7 +681,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         if (axes != null) {
             Set<Integer> axisNames = new HashSet<>();
             for (QueryAxis axis : axes) {
-                validator.validate(axis);
+                validator.validate(axis, caseSensitive);
                 if (!axisNames.add(axis.getAxisOrdinal().logicalOrdinal())) {
                     throw MondrianResource.instance().DuplicateAxis.ex(
                         axis.getAxisName());
@@ -705,7 +705,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             }
         }
         if (slicerAxis != null) {
-            slicerAxis.validate(validator);
+            slicerAxis.validate(validator, caseSensitive);
         }
 
         // Make sure that no hierarchy is used on more than one axis.
@@ -1023,9 +1023,9 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 // the default value of the parameter, nor the same as the all
                 // member.
                 if (type.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()) != null) {
-                    value = type.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember();
+                    value = type.getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember(caseSensitive);
                 } else if (type.getDimension() != null) {
-                    value = type.getDimension().getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember();
+                    value = type.getDimension().getHierarchy(query.getConnection().getContext().getConfig().caseSensitive()).getNullMember(caseSensitive);
                 }
             }
             if (value instanceof String str) {
@@ -1363,7 +1363,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         for (final Formula formula : formulas) {
             if (formula.isMember()
                 && formula.getElement() != null
-                && getConnection().getRole().canAccess(formula.getElement()))
+                && getConnection().getRole().canAccess(formula.getElement(), getConnection().getContext().getConfig().caseSensitive()))
             {
                 definedMembers.add((Member) formula.getElement());
             }
@@ -1633,7 +1633,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
             if (!failIfNotFound && member == null) {
                 return null;
             }
-            if (getRole().canAccess(member)) {
+            if (getRole().canAccess(member, getContext().getConfig().caseSensitive())) {
                 return member;
             } else {
                 return null;
@@ -1745,7 +1745,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 if (!Util.matches(member, nameParts, getContext().getConfig().caseSensitive())) {
                     continue;
                 }
-                if (!query.getConnection().getRole().canAccess(member)) {
+                if (!query.getConnection().getRole().canAccess(member, getContext().getConfig().caseSensitive())) {
                     continue;
                 }
                 return member;
@@ -2197,7 +2197,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
 
         @Override
 		public NamedSet validate(Validator validator, boolean caseSensitive) {
-            Exp newExpr = expr.accept(validator);
+            Exp newExpr = expr.accept(validator, caseSensitive);
             final Type type = newExpr.getType(caseSensitive);
             if (type instanceof MemberType
                 || type instanceof TupleType)
@@ -2205,7 +2205,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 newExpr =
                     new UnresolvedFunCallImpl(
                         "{}", Syntax.Braces, new Exp[] {newExpr})
-                    .accept(validator);
+                    .accept(validator, caseSensitive);
             }
             this.expr = newExpr;
             return this;
@@ -2230,7 +2230,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
 
         @Override
-		public String getQualifiedName() {
+		public String getQualifiedName(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -2436,14 +2436,14 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     }
 
     private Member getSubcubeMember(Member member, boolean addNullMember) {
-        Hierarchy hierarchy = ((RolapMember)member).getHierarchy();
+        Hierarchy hierarchy = ((RolapMember)member).getHierarchy(getConnection().getContext().getConfig().caseSensitive());
         if(this.subcubeHierarchies.containsKey(hierarchy)) {
             HashMap<Member, Member> subcubeMembers = this.subcubeHierarchies.get(hierarchy);
             if(subcubeMembers.containsKey(member)) {
                 return subcubeMembers.get(member);
             }
             else if(addNullMember) {
-                return hierarchy.getNullMember();
+                return hierarchy.getNullMember(getConnection().getContext().getConfig().caseSensitive());
             }
             return null;
         }

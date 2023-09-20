@@ -61,15 +61,15 @@ public class Target extends TargetBase {
     }
 
     @Override
-	public void open() {
-        levels = (RolapLevel[]) level.getHierarchy().getLevels();
+	public void open(boolean caseSensitive) {
+        levels = (RolapLevel[]) level.getHierarchy(caseSensitive).getLevels();
         setList(new ArrayList<>());
         levelDepth = level.getDepth();
         parentChild = level.isParentChild();
     }
 
     @Override
-	int internalAddRow(SqlStatement stmt, int column)
+	int internalAddRow(SqlStatement stmt, int column, boolean caseSensitive)
         throws SQLException
     {
         RolapMember member = null;
@@ -81,7 +81,7 @@ public class Target extends TargetBase {
             for (int i = 0; i <= levelDepth; i++) {
                 RolapLevel childLevel = levels[i];
                 if (childLevel.isAll()) {
-                    member = memberBuilder.allMember();
+                    member = memberBuilder.allMember(caseSensitive);
                     continue;
                 }
 
@@ -114,7 +114,7 @@ public class Target extends TargetBase {
                     if (member == null) {
                         member = memberBuilder.makeMember(
                             parentMember, childLevel, value, captionValue,
-                            parentChild, stmt, key, column);
+                            parentChild, stmt, key, column, caseSensitive);
                     }
                 }
 
@@ -151,7 +151,8 @@ public class Target extends TargetBase {
             @Override
 			public int size() {
                 while (this.moreRows) {
-                    this.moreRows = sqlTupleReader.readNextTuple();
+                    this.moreRows = sqlTupleReader.readNextTuple(true);
+                    //TODO UTILS
                     if (limit > 0 && !asList && getList().size() > limit) {
 
                         LOGGER.debug(
@@ -183,7 +184,8 @@ public class Target extends TargetBase {
                 }
 
                 while (index >= getList().size() && this.moreRows) {
-                    this.moreRows = sqlTupleReader.readNextTuple();
+                    this.moreRows = sqlTupleReader.readNextTuple(true);
+                    //TODO UTILS
                     if (limit > 0 && getList().size() >= limit) {
                         // We have to offset the list, but we don't want to use
                         // a 0(n) operation. What we do is we calculate an

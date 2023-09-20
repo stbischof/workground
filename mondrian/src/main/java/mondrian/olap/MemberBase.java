@@ -38,6 +38,7 @@ public abstract class MemberBase
   protected Member parentMember;
   protected final Level level;
   protected String uniqueName;
+  protected boolean caseSensitive;
 
   /**
    * Combines member type and other properties, such as whether the member is the 'all' or 'null' member of its
@@ -78,14 +79,15 @@ public abstract class MemberBase
   protected MemberBase(
     Member parentMember,
     Level level,
-    MemberType memberType ) {
+    MemberType memberType, boolean caseSensitive ) {
     this.parentMember = parentMember;
     this.level = level;
+    this.caseSensitive = caseSensitive;
     this.flags = memberType.ordinal()
       | ( memberType == MemberType.ALL ? FLAG_ALL : 0 )
       | ( memberType == MemberType.NULL ? FLAG_NULL : 0 )
       | ( computeCalculated( memberType ) ? FLAG_CALCULATED : 0 )
-      | ( level.getHierarchy().getDimension().isMeasures()
+      | ( level.getHierarchy(caseSensitive).getDimension(caseSensitive).isMeasures()
       ? FLAG_MEASURE
       : 0 );
   }
@@ -96,7 +98,7 @@ public abstract class MemberBase
   }
 
   @Override
-public String getQualifiedName() {
+public String getQualifiedName(boolean caseSensitive) {
     return MondrianResource.instance().MdxMemberName.str( getUniqueName() );
   }
 
@@ -138,7 +140,7 @@ public Dimension getDimension(boolean caseSensitive) {
 
   @Override
 public Hierarchy getHierarchy(boolean caseSensitive) {
-    return level.getHierarchy();
+    return level.getHierarchy(caseSensitive);
   }
 
   @Override
@@ -189,7 +191,7 @@ public OlapElement lookupChild(
     Segment childName,
     MatchType matchType ) {
     return schemaReader.lookupMemberChildByName(
-      this, childName, matchType );
+      this, childName, matchType, schemaReader.getContext().getConfig().caseSensitive() );
   }
 
   // implement Member

@@ -49,8 +49,8 @@ public class RolapNativeFilter extends RolapNativeSet {
   static class FilterConstraint extends SetConstraint {
     Exp filterExpr;
 
-    public FilterConstraint( CrossJoinArg[] args, RolapEvaluator evaluator, Exp filterExpr ) {
-      super( args, evaluator, true );
+    public FilterConstraint( CrossJoinArg[] args, RolapEvaluator evaluator, Exp filterExpr, boolean caseSensitive ) {
+      super( args, evaluator, true, caseSensitive );
       this.filterExpr = filterExpr;
     }
 
@@ -84,10 +84,10 @@ public class RolapNativeFilter extends RolapNativeSet {
     }
 
     @Override
-	public void addConstraint( SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar ) {
+	public void addConstraint( SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar, boolean caseSensitive ) {
       // Use aggregate table to generate filter condition
       RolapNativeSql sql = new RolapNativeSql( sqlQuery, aggStar, getEvaluator(), args[0].getLevel() );
-      StringBuilder filterSql = sql.generateFilterCondition( filterExpr );
+      StringBuilder filterSql = sql.generateFilterCondition( filterExpr, caseSensitive );
       if ( filterSql != null ) {
         sqlQuery.addHaving( filterSql.toString() );
       }
@@ -95,7 +95,7 @@ public class RolapNativeFilter extends RolapNativeSet {
       if ( getEvaluator().isNonEmpty() || isJoinRequired(baseCube.getContext().getConfig().caseSensitive()) ) {
         // only apply context constraint if non empty, or
         // if a join is required to fulfill the filter condition
-        super.addConstraint( sqlQuery, baseCube, aggStar );
+        super.addConstraint( sqlQuery, baseCube, aggStar, caseSensitive );
       }
     }
 
@@ -112,7 +112,7 @@ public class RolapNativeFilter extends RolapNativeSet {
       }
 
       RolapCube cube = (RolapCube) evaluator.getCube();
-      this.addConstraint( testQuery, cube, sqlTupleReader.chooseAggStar( this, evaluator, cube ) );
+      this.addConstraint( testQuery, cube, sqlTupleReader.chooseAggStar( this, evaluator, cube ), context.getConfig().caseSensitive() );
       return testQuery.isSupported();
     }
 
@@ -128,7 +128,7 @@ public class RolapNativeFilter extends RolapNativeSet {
         return;
       }
 
-      RolapHierarchy hierarchy = level.getHierarchy();
+      RolapHierarchy hierarchy = level.getHierarchy(schemaReader.getContext().getConfig().caseSensitive());
       MemberReader mr = schemaReader.getMemberReader( hierarchy );
       MemberBuilder mb = mr.getMemberBuilder();
       Util.assertTrue( mb != null, "MemberBuilder not found" );
@@ -160,7 +160,7 @@ protected boolean restrictMemberTypes() {
   }
 
   @Override
-NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fun, Exp[] args ) {
+NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fun, Exp[] args, boolean caseSensitive ) {
     if ( !isEnabled() ) {
       return null;
     }
@@ -178,7 +178,7 @@ NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fu
     }
 
     // extract the set expression
-    List<CrossJoinArg[]> allArgs = crossJoinArgFactory().checkCrossJoinArg( evaluator, args[0] );
+    List<CrossJoinArg[]> allArgs = crossJoinArgFactory().checkCrossJoinArg( evaluator, args[0], caseSensitive );
 
     // checkCrossJoinArg returns a list of CrossJoinArg arrays. The first
     // array is the CrossJoin dimensions. The second array, if any,
@@ -204,7 +204,7 @@ NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fu
     SqlQuery sqlQuery = SqlQuery.newQuery( context, "NativeFilter" );
     RolapNativeSql sql = new RolapNativeSql( sqlQuery, null, evaluator, cjArgs[0].getLevel() );
     final Exp filterExpr = args[1];
-    StringBuilder filterExprStr = sql.generateFilterCondition( filterExpr );
+    StringBuilder filterExprStr = sql.generateFilterCondition( filterExpr, caseSensitive );
     if ( filterExprStr == null ) {
       return null;
     }
@@ -219,7 +219,7 @@ NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fu
 
     final int savepoint = evaluator.savepoint();
     try {
-      overrideContext( evaluator, cjArgs, sql.getStoredMeasure() );
+      overrideContext( evaluator, cjArgs, sql.getStoredMeasure(), caseSensitive );
 
       // no need to have any context if there is no measure, we are doing
       // a filter only on the current dimension. This prevents
@@ -229,7 +229,7 @@ NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fu
       if ( !evaluator.isNonEmpty() && sql.getStoredMeasure() == null ) {
         // No need to have anything on the context
         for ( Member m : evaluator.getMembers() ) {
-          evaluator.setContext( m.getLevel().getHierarchy().getDefaultMember() );
+          evaluator.setContext( m.getLevel().getHierarchy(caseSensitive).getDefaultMember(caseSensitive) );
         }
       }
       // Now construct the TupleConstraint that contains both the CJ
@@ -243,7 +243,7 @@ NativeEvaluator createEvaluator( RolapEvaluator evaluator, FunctionDefinition fu
         }
       }
 
-      FilterConstraint constraint = new FilterConstraint( combinedArgs, evaluator, filterExpr );
+      FilterConstraint constraint = new FilterConstraint( combinedArgs, evaluator, filterExpr, caseSensitive );
 
       if ( !constraint.isSuported( context ) ) {
         return null;

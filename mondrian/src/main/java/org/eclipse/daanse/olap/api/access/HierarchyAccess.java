@@ -9,7 +9,7 @@
  * All Rights Reserved.
  *
  * jhyde, Oct 5, 2002
- * 
+ *
  * Contributors:
  *   SmartCity Jena - refactor, clean API
  */
@@ -36,7 +36,7 @@ public interface HierarchyAccess {
      * @param member Member.
      * @return Return current role's access to member.
      */
-    Access getAccess(Member member);
+    Access getAccess(Member member, boolean caseSensitive);
 
     /**
      * Returns the depth of the highest level to which the current Role has

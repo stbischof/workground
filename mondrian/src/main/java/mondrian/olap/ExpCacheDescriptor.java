@@ -83,7 +83,7 @@ public class ExpCacheDescriptor {
         final Member[] members = evaluator.getMembers();
         for (int i = 0; i < members.length; i++) {
             Hierarchy hierarchy = members[i].getHierarchy(caseSensitive);
-            if (calc.dependsOn(hierarchy)) {
+            if (calc.dependsOn(hierarchy, caseSensitive)) {
                 ordinalList.add(i);
             }
         }

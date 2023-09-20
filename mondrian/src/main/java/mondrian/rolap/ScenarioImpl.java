@@ -182,7 +182,7 @@ public final class ScenarioImpl implements Scenario {
      * @return Wrapped scenario
      */
     static Scenario forMember(final RolapMember member, boolean caseSensitive) {
-        if (isScenario(member.getHierarchy())) {
+        if (isScenario(member.getHierarchy(caseSensitive), caseSensitive)) {
             final Formula formula = ((RolapCalculatedMember) member)
                 .getFormula();
             final ResolvedFunCallImpl resolvedFunCall =
@@ -207,7 +207,7 @@ public final class ScenarioImpl implements Scenario {
         // writeback enabled.
         for (RolapCube cube : schema.getCubeList()) {
             for (RolapHierarchy hierarchy : cube.getHierarchies()) {
-                if (isScenario(hierarchy)) {
+                if (isScenario(hierarchy, cube.getContext().getConfig().caseSensitive())) {
                     member =
                         cube.createCalculatedMember(
                             hierarchy,
@@ -227,8 +227,8 @@ public final class ScenarioImpl implements Scenario {
      * @param hierarchy Hierarchy
      * @return Whether hierarchy is the scenario hierarchy
      */
-    public static boolean isScenario(Hierarchy hierarchy) {
-        return hierarchy.getName().equals("Scenario");
+    public static boolean isScenario(Hierarchy hierarchy, boolean caseSensitive) {
+        return hierarchy.getName(caseSensitive).equals("Scenario");
     }
 
     /**
@@ -283,7 +283,7 @@ public final class ScenarioImpl implements Scenario {
                 assert member != null
                     : "fact count measure is required for writeback cubes";
             }
-            if (!member.equals(member.getHierarchy().getDefaultMember())) {
+            if (!member.equals(member.getHierarchy(cube.getContext().getConfig().caseSensitive()).getDefaultMember(cube.getContext().getConfig().caseSensitive()))) {
                 if (k++ > 0) {
                     buf.append(", ");
                 } else {
@@ -374,11 +374,11 @@ public final class ScenarioImpl implements Scenario {
             final List<RolapHierarchy> hierarchyList = cube.getHierarchies();
             this.membersByOrdinal = new Member[hierarchyList.size()];
             for (int i = 0; i < membersByOrdinal.length; i++) {
-                membersByOrdinal[i] = hierarchyList.get(i).getDefaultMember();
+                membersByOrdinal[i] = hierarchyList.get(i).getDefaultMember(cube.getContext().getConfig().caseSensitive());
             }
             for (RolapMember member : members) {
-                final RolapHierarchy hierarchy = member.getHierarchy();
-                if (isScenario(hierarchy)) {
+                final RolapHierarchy hierarchy = member.getHierarchy(cube.getContext().getConfig().caseSensitive());
+                if (isScenario(hierarchy, cube.getContext().getConfig().caseSensitive())) {
                     assert member.isAll();
                 }
                 // REVIEW The following works because Measures is the only
@@ -498,7 +498,7 @@ public final class ScenarioImpl implements Scenario {
 
             // First, evaluate in the null scenario.
             final Member defaultMember =
-                scenario.member.getHierarchy().getDefaultMember();
+                scenario.member.getHierarchy(caseSensitive).getDefaultMember(caseSensitive);
             final int savepoint = evaluator.savepoint();
             try {
                 evaluator.setContext(defaultMember);

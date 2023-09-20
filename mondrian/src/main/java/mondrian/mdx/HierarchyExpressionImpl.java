@@ -84,6 +84,6 @@ public class HierarchyExpressionImpl extends ExpBase implements Exp, HierarchyEx
 
     @Override
 	public Object accept(MdxVisitor visitor, boolean caseSensitive) {
-        return visitor.visit(this);
+        return visitor.visit(this, caseSensitive);
     }
 }

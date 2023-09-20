@@ -55,10 +55,10 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
         return list;
     }
 
-    private List<RolapMember> substitute(List<RolapMember> members) {
+    private List<RolapMember> substitute(List<RolapMember> members, boolean caseSensitive) {
         List<RolapMember> list = new ArrayList<>(members.size());
         for (RolapMember member : members) {
-            list.add(substitute(member));
+            list.add(substitute(member, caseSensitive));
         }
         return list;
     }
@@ -66,16 +66,16 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
     // ~ -- Implementations of MemberReader methods ---------------------------
 
     @Override
-    public RolapMember getLeadMember(RolapMember member, int n) {
+    public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         return substitute(
-            memberReader.getLeadMember(desubstitute(member), n));
+            memberReader.getLeadMember(desubstitute(member), n, caseSensitive), caseSensitive);
     }
 
     @Override
     public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
-        return substitute(memberReader.getMembersInLevel(level));
+        return substitute(memberReader.getMembersInLevel(level, caseSensitive), caseSensitive);
     }
 
     @Override
@@ -83,25 +83,25 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> list)
+        List<RolapMember> list, boolean caseSensitive)
     {
         memberReader.getMemberRange(
             level,
             desubstitute(startMember),
             desubstitute(endMember),
-            new SubstitutingMemberList(list));
+            new SubstitutingMemberList(list), caseSensitive);
     }
 
     @Override
     public int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual)
+        boolean siblingsAreEqual, boolean caseSensitive)
     {
         return memberReader.compare(
             desubstitute(m1),
             desubstitute(m2),
-            siblingsAreEqual);
+            siblingsAreEqual, caseSensitive);
     }
 
     @Override
@@ -116,34 +116,34 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
     }
 
     @Override
-    public List<RolapMember> getMembers() {
+    public List<RolapMember> getMembers(boolean caseSensitive) {
         // might make sense, but I doubt it
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<RolapMember> getRootMembers() {
-        return substitute(memberReader.getRootMembers());
+    public List<RolapMember> getRootMembers(boolean caseSensitive) {
+        return substitute(memberReader.getRootMembers(caseSensitive), caseSensitive);
     }
 
     @Override
     public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         memberReader.getMemberChildren(
             desubstitute(parentMember),
-            new SubstitutingMemberList(children));
+            new SubstitutingMemberList(children), caseSensitive);
     }
 
     @Override
     public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         memberReader.getMemberChildren(
             desubstitute(parentMembers),
-            new SubstitutingMemberList(children));
+            new SubstitutingMemberList(children), caseSensitive);
     }
 
     @Override
@@ -154,53 +154,53 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
     @Override
     public RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
         return substitute(
-            memberReader.lookupMember(uniqueNameParts, failIfNotFound));
+            memberReader.lookupMember(uniqueNameParts, failIfNotFound, caseSensitive), caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember member,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         return memberReader.getMemberChildren(
             desubstitute(member),
             new SubstitutingMemberList(children),
-            constraint);
+            constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         return memberReader.getMemberChildren(
             desubstitute(parentMembers),
             new SubstitutingMemberList(children),
-            constraint);
+            constraint, caseSensitive);
     }
 
     @Override
     public List<RolapMember> getMembersInLevel(
-        RolapLevel level, TupleConstraint constraint)
+        RolapLevel level, TupleConstraint constraint, boolean caseSensitive)
     {
         return substitute(
             memberReader.getMembersInLevel(
-                level, constraint));
+                level, constraint, caseSensitive), caseSensitive);
     }
 
     @Override
-    public RolapMember getDefaultMember() {
-        return substitute(memberReader.getDefaultMember());
+    public RolapMember getDefaultMember(boolean caseSensitive) {
+        return substitute(memberReader.getDefaultMember(caseSensitive), caseSensitive);
     }
 
     @Override
-    public RolapMember getMemberParent(RolapMember member) {
-        return substitute(memberReader.getMemberParent(desubstitute(member)));
+    public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
+        return substitute(memberReader.getMemberParent(desubstitute(member), caseSensitive), caseSensitive);
     }
 
     @Override
@@ -231,12 +231,14 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
 
         @Override
         public RolapMember set(int index, RolapMember element) {
-            return desubstitute(list.set(index, substitute(element)));
+            return desubstitute(list.set(index, substitute(element, true)));
+            //TODO UTILS
         }
 
         @Override
         public void add(int index, RolapMember element) {
-            list.add(index, substitute(element));
+            list.add(index, substitute(element, true));
+            //TODO UTILS
         }
 
         @Override
@@ -267,7 +269,7 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
             boolean parentChild,
             SqlStatement stmt,
             Object key,
-            int column) throws SQLException
+            int column, boolean caseSensitive) throws SQLException
         {
             return substitute(
                 memberReader.getMemberBuilder().makeMember(
@@ -278,12 +280,12 @@ public abstract class SubstitutingMemberReader extends DelegatingMemberReader {
                     parentChild,
                     stmt,
                     key,
-                    column));
+                    column, caseSensitive), caseSensitive);
         }
 
         @Override
-		public RolapMember allMember() {
-            return substitute(memberReader.getHierarchy().getAllMember());
+		public RolapMember allMember(boolean caseSensitive) {
+            return substitute(memberReader.getHierarchy().getAllMember(), caseSensitive);
         }
     }
 }

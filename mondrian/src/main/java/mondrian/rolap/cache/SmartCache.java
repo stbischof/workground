@@ -66,7 +66,7 @@ public interface SmartCache <K, V> {
      * exclusive write access while processing.
      * @param task The task to execute.
      */
-    void execute(SmartCacheTask<K, V> task);
+    void execute(SmartCacheTask<K, V> task, boolean caseSensitive);
 
     /**
      * Defines a task to be run over the entries of the cache.
@@ -74,6 +74,6 @@ public interface SmartCache <K, V> {
      */
     public interface SmartCacheTask<K, V> {
         void execute(
-            Iterator<Entry<K, V>> iterator);
+            Iterator<Entry<K, V>> iterator, boolean caseSensitive);
     }
 }

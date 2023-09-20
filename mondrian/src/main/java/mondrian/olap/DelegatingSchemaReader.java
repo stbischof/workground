@@ -321,18 +321,18 @@ public abstract class DelegatingSchemaReader implements SchemaReader {
 
     @Override
 	public Member lookupMemberChildByName(
-            Member member, Segment memberName, MatchType matchType)
+            Member member, Segment memberName, MatchType matchType, boolean caseSensitive)
     {
         return schemaReader.lookupMemberChildByName(
-            member, memberName, matchType);
+            member, memberName, matchType, caseSensitive);
     }
 
     @Override
 	public List<Member> lookupMemberChildrenByNames(
-        Member parent, List<NameSegment> childNames, MatchType matchType)
+        Member parent, List<NameSegment> childNames, MatchType matchType, boolean caseSensitive)
     {
         return schemaReader.lookupMemberChildrenByNames(
-            parent, childNames, matchType);
+            parent, childNames, matchType, caseSensitive);
     }
 
     @Override

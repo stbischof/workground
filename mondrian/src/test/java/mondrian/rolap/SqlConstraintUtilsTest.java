@@ -119,7 +119,7 @@ class SqlConstraintUtilsTest {
           msg + " - (list, eval)",
           expectedMembersList,
           SqlConstraintUtils.expandSupportedCalculatedMembers(
-              argMembersList, evaluator).getMembers());
+              argMembersList, evaluator, true).getMembers());
       assertSameContent(
           msg + " - (list, eval, false)",
           expectedMembersList,
@@ -149,7 +149,7 @@ class SqlConstraintUtilsTest {
           msg + " - (list, eval)",
           expectedListByDefault,
           SqlConstraintUtils.expandSupportedCalculatedMembers(
-              argMembersList, evaluator).getMembers());
+              argMembersList, evaluator, true).getMembers());
       assertSameContent(
           msg + " - (list, eval, false)",
           expectedListByDefault,
@@ -419,10 +419,10 @@ class SqlConstraintUtilsTest {
         RolapResult.CompoundSlicerRolapMember placeHolderMember =
             Mockito.mock(RolapResult.CompoundSlicerRolapMember.class);
         Mockito.doReturn(slicerHierarchy)
-        .when(placeHolderMember).getHierarchy();
+        .when(placeHolderMember).getHierarchy(connection.getContext().getConfig().caseSensitive());
         // tested call
         Member r = SqlConstraintUtils.replaceCompoundSlicerPlaceholder(
-            placeHolderMember, rolapEvaluator);
+            placeHolderMember, rolapEvaluator, connection.getContext().getConfig().caseSensitive());
         // test
         assertSame(expectedMember, r);
     }
@@ -437,7 +437,7 @@ class SqlConstraintUtilsTest {
         // tested call
         TupleConstraintStruct constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         List<Member> r = constraint.getMembers();
         // test
         assertNotNull(r);
@@ -455,7 +455,7 @@ class SqlConstraintUtilsTest {
         // tested call
         TupleConstraintStruct constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         List<Member> r = constraint.getMembers();
         // test
         assertNotNull(r);
@@ -473,7 +473,7 @@ class SqlConstraintUtilsTest {
         // tested call
         TupleConstraintStruct constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         List<Member> r = constraint.getMembers();
         // test
         assertNotNull(r);
@@ -499,7 +499,7 @@ class SqlConstraintUtilsTest {
         // tested call
         TupleConstraintStruct constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, true, constraint);
+            member, evaluator, true, constraint, true);
         r = constraint.getMembers();
         // test
         assertSameContent("",  aggregatedMembers, r);
@@ -510,7 +510,7 @@ class SqlConstraintUtilsTest {
         // tested call
         constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         r = constraint.getMembers();
         // test
         assertSameContent("",  aggregatedMembers, r);
@@ -522,7 +522,7 @@ class SqlConstraintUtilsTest {
         // tested call
         constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         r = constraint.getMembers();
         // test
         assertSameContent("",  aggregatedMembers, r);
@@ -534,7 +534,7 @@ class SqlConstraintUtilsTest {
         // tested call
         constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         r = constraint.getMembers();
         // test
         assertSameContent("",  aggregatedMembers, r);
@@ -551,7 +551,7 @@ class SqlConstraintUtilsTest {
         // tested call
         TupleConstraintStruct constraint = new TupleConstraintStruct();
         SqlConstraintUtils.expandSupportedCalculatedMember(
-            member, evaluator, constraint);
+            member, evaluator, constraint, true);
         List<Member> r = constraint.getMembers();
         // test
         assertNotNull(r);
@@ -641,7 +641,7 @@ class SqlConstraintUtilsTest {
       RolapResult.CompoundSlicerRolapMember placeHolderMember =
           Mockito.mock(RolapResult.CompoundSlicerRolapMember.class);
       Mockito.doReturn(slicerHierarchy)
-      .when(placeHolderMember).getHierarchy();
+      .when(placeHolderMember).getHierarchy(true);
 
       Member endMember0 = makeNoncalculatedMember("0");
 
@@ -790,10 +790,10 @@ class SqlConstraintUtilsTest {
         members.add(createMemberMock(false, false, hierarchy)); // 5:passed
         members.add(createMemberMock(true, false, hierarchy)); // 6:not passed
 
-        when(hierarchy.getDefaultMember()).thenReturn(members.get(4));
+        when(hierarchy.getDefaultMember(true)).thenReturn(members.get(4));
 
         List<Member> newMembers = SqlConstraintUtils
-            .removeCalculatedAndDefaultMembers(members);
+            .removeCalculatedAndDefaultMembers(members, true);
 
         assertEquals(4, newMembers.size());
         assertTrue(newMembers.contains(members.get(0)));
@@ -809,8 +809,8 @@ class SqlConstraintUtilsTest {
     {
         Member mock = mock(Member.class);
         when(mock.isCalculated()).thenReturn(isCalculated);
-        when(mock.isParentChildLeaf()).thenReturn(isParentChildLeaf);
-        when(mock.getHierarchy()).thenReturn(hierarchy);
+        when(mock.isParentChildLeaf(true)).thenReturn(isParentChildLeaf);
+        when(mock.getHierarchy(true)).thenReturn(hierarchy);
         return mock;
     }
 
@@ -841,7 +841,7 @@ class SqlConstraintUtilsTest {
       List<Member> members = new ArrayList<>();
       members.add( m );
       Map<Hierarchy, Set<Member>> membersByHierarchy = new HashMap<>();
-      membersByHierarchy.put( m.getHierarchy(), new HashSet<>(members) );
+      membersByHierarchy.put( m.getHierarchy(true), new HashSet<>(members) );
       e.setSlicerContext( members, membersByHierarchy );
     }
 }

@@ -48,7 +48,7 @@ public class MemberKeyConstraint
 
     @Override
 	public void addConstraint(
-        SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar)
+        SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar, boolean caseSensitive)
     {
         for (int i = 0; i < columnList.size(); i++) {
             Expression expression = columnList.get(i);

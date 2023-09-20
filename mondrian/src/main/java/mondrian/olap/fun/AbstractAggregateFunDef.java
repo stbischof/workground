@@ -49,7 +49,7 @@ public class AbstractAggregateFunDef extends FunDefBase {
 
     @Override
 	protected Exp validateArg(
-        Validator validator, Exp[] args, int i, int category)
+        Validator validator, Exp[] args, int i, int category, boolean caseSensitive)
     {
         // If expression cache is enabled, wrap first expression (the set)
         // in a function which will use the expression cache.
@@ -61,10 +61,10 @@ public class AbstractAggregateFunDef extends FunDefBase {
                         CacheFunDef.NAME,
                         Syntax.Function,
                         new Exp[] {arg});
-                return validator.validate(cacheCall, false);
+                return validator.validate(cacheCall, false, caseSensitive);
             }
         }
-        return super.validateArg(validator, args, i, category);
+        return super.validateArg(validator, args, i, category, caseSensitive);
     }
 
     /**
@@ -85,20 +85,20 @@ public class AbstractAggregateFunDef extends FunDefBase {
      */
     protected static TupleList evaluateCurrentList(
         TupleListCalc tupleListCalc,
-        Evaluator evaluator)
+        Evaluator evaluator, boolean caseSensitive)
     {
         final int savepoint = evaluator.savepoint();
         TupleList tuples;
         try {
             evaluator.setNonEmpty(false);
-            tuples = tupleListCalc.evaluateList(evaluator);
+            tuples = tupleListCalc.evaluateList(evaluator, caseSensitive);
         } finally {
             evaluator.restore(savepoint);
         }
         int currLen = tuples.size();
         TupleList dims;
         try {
-            dims = AbstractAggregateFunDef.processUnrelatedDimensions(tuples, evaluator);
+            dims = AbstractAggregateFunDef.processUnrelatedDimensions(tuples, evaluator, caseSensitive);
         } finally {
             evaluator.restore(savepoint);
         }
@@ -108,14 +108,14 @@ public class AbstractAggregateFunDef extends FunDefBase {
 
     protected TupleIterable evaluateCurrentIterable(
         TupleIteratorCalc tupleIteratorCalc,
-        Evaluator evaluator)
+        Evaluator evaluator, boolean caseSensitive)
     {
         final int savepoint = evaluator.savepoint();
         int currLen = 0;
         TupleIterable iterable;
         try {
             evaluator.setNonEmpty(false);
-            iterable = tupleIteratorCalc.evaluateIterable(evaluator);
+            iterable = tupleIteratorCalc.evaluateIterable(evaluator, caseSensitive);
         } finally {
             evaluator.restore(savepoint);
         }
@@ -151,7 +151,7 @@ public class AbstractAggregateFunDef extends FunDefBase {
      */
     public static TupleList processUnrelatedDimensions(
         TupleList tuplesForAggregation,
-        Evaluator evaluator)
+        Evaluator evaluator, boolean caseSensitive)
     {
         if (tuplesForAggregation.isEmpty()) {
             return tuplesForAggregation;
@@ -171,7 +171,7 @@ public class AbstractAggregateFunDef extends FunDefBase {
             if (baseCube == null) {
                 return tuplesForAggregation;
             }
-            if (virtualCube.shouldIgnoreUnrelatedDimensions(baseCube.getName()))
+            if (virtualCube.shouldIgnoreUnrelatedDimensions(baseCube.getName(caseSensitive)))
             {
                 return AbstractAggregateFunDef.ignoreUnrelatedDimensions(
                     tuplesForAggregation, baseCube);
@@ -258,17 +258,17 @@ public class AbstractAggregateFunDef extends FunDefBase {
             List<Member> tupleCopy = tuple;
             for (int j = 0; j < tuple.size(); j++) {
                 final Member member = tuple.get(j);
-                if (nonJoiningDimensions.contains(member.getDimension())) {
+                if (nonJoiningDimensions.contains(member.getDimension(baseCube.getContext().getConfig().caseSensitive()))) {
                     if (tupleCopy == tuple) {
                         // Avoid making a copy until we have to change a tuple.
                         tupleCopy = new ArrayList<>(tuple);
                     }
                     final Hierarchy hierarchy =
-                        member.getDimension().getHierarchy();
+                        member.getDimension(baseCube.getContext().getConfig().caseSensitive()).getHierarchy(baseCube.getContext().getConfig().caseSensitive());
                     if (hierarchy.hasAll()) {
                         tupleCopy.set(j, hierarchy.getAllMember());
                     } else {
-                        tupleCopy.set(j, hierarchy.getDefaultMember());
+                        tupleCopy.set(j, hierarchy.getDefaultMember(baseCube.getContext().getConfig().caseSensitive()));
                     }
                 }
             }

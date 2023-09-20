@@ -130,7 +130,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
         Exp expInner = this.exp;
         if (axisOrdinal.isFilter()) {
             expInner = normalizeSlicerExpression(expInner);
-            expInner = expInner.accept(compiler.getValidator());
+            expInner = expInner.accept(compiler.getValidator(), caseSensitive);
         }
         switch (resultStyle) {
         case LIST:

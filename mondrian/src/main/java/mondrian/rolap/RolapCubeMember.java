@@ -67,7 +67,7 @@ public class RolapCubeMember
         // expensive and use significantly more memory, so we don't do that.
         // That meakes each call to getUniqueName more expensive, so we try to
         // minimize the number of calls to this method.
-        return cubeLevel.getHierarchy().convertMemberName(
+        return cubeLevel.getHierarchy(caseSensitive).convertMemberName(
             member.getUniqueName());
     }
 
@@ -151,14 +151,14 @@ public class RolapCubeMember
 
     // override with stricter return type; final important for performance
     @Override
-	public final RolapCubeHierarchy getHierarchy() {
-        return cubeLevel.getHierarchy();
+	public final RolapCubeHierarchy getHierarchy( boolean caseSensitive) {
+        return cubeLevel.getHierarchy(caseSensitive);
     }
 
     // override with stricter return type; final important for performance
     @Override
-	public final RolapCubeDimension getDimension() {
-        return cubeLevel.getDimension();
+	public final RolapCubeDimension getDimension(boolean caseSensitive) {
+        return cubeLevel.getDimension(caseSensitive);
     }
 
     /**
@@ -177,23 +177,23 @@ public class RolapCubeMember
     }
 
     @Override
-	public synchronized void setProperty(String name, Object value) {
+	public synchronized void setProperty(String name, Object value, boolean caseSensitive) {
         synchronized (this) {
-            super.setProperty(name, value);
+            super.setProperty(name, value, caseSensitive);
         }
     }
 
     @Override
-	public Object getPropertyValue(String propertyName, boolean matchCase) {
+	public Object getPropertyValue(String propertyName, boolean matchCase, boolean caseSensitive) {
         // we need to wrap these children as rolap cube members
         Property property = Property.lookup(propertyName, matchCase);
         if (property != null) {
             switch (property.ordinal) {
             case Property.DIMENSION_UNIQUE_NAME_ORDINAL:
-                return getDimension().getUniqueName();
+                return getDimension(getCube().getContext().getConfig().caseSensitive()).getUniqueName();
 
             case Property.HIERARCHY_UNIQUE_NAME_ORDINAL:
-                return getHierarchy().getUniqueName();
+                return getHierarchy(getCube().getContext().getConfig().caseSensitive()).getUniqueName();
 
             case Property.LEVEL_UNIQUE_NAME_ORDINAL:
                 return getLevel().getUniqueName();
@@ -202,10 +202,10 @@ public class RolapCubeMember
                 return getUniqueName();
 
             case Property.MEMBER_NAME_ORDINAL:
-                return getName();
+                return getName(getCube().getContext().getConfig().caseSensitive());
 
             case Property.MEMBER_CAPTION_ORDINAL:
-                return getCaption();
+                return getCaption(getCube().getContext().getConfig().caseSensitive());
 
             case Property.PARENT_UNIQUE_NAME_ORDINAL:
                 return parentCubeMember == null
@@ -213,7 +213,7 @@ public class RolapCubeMember
                     : parentCubeMember.getUniqueName();
 
             case Property.MEMBER_KEY_ORDINAL, Property.KEY_ORDINAL:
-                return this == this.getHierarchy().getAllMember() ? 0
+                return this == this.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getAllMember() ? 0
                     : getKey();
             default:
                 return member.getPropertyValue(propertyName, matchCase);
@@ -224,8 +224,8 @@ public class RolapCubeMember
     }
 
     @Override
-	public Object getPropertyValue(String propertyName) {
-        return this.getPropertyValue(propertyName, true);
+	public Object getPropertyValue(String propertyName, boolean caseSensitive) {
+        return this.getPropertyValue(propertyName, true, caseSensitive);
     }
 
     @Override
@@ -242,9 +242,9 @@ public class RolapCubeMember
         if (exp instanceof ResolvedFunCallImpl fcall) {
             for (int i = 0; i < fcall.getArgCount(); i++) {
                 if (fcall.getArg(i) instanceof HierarchyExpressionImpl expr && expr.getHierarchy().equals(
-                    member.getHierarchy())) {
+                    member.getHierarchy(getCube().getContext().getConfig().caseSensitive()))) {
                     fcall.getArgs()[i] =
-                        new HierarchyExpressionImpl(this.getHierarchy());
+                        new HierarchyExpressionImpl(this.getHierarchy(getCube().getContext().getConfig().caseSensitive()));
                 }
             }
         }
@@ -258,7 +258,7 @@ public class RolapCubeMember
         MatchType matchType)
     {
         return
-            schemaReader.lookupMemberChildByName(this, childName, matchType);
+            schemaReader.lookupMemberChildByName(this, childName, matchType, schemaReader.getContext().getConfig().caseSensitive());
     }
 
 }

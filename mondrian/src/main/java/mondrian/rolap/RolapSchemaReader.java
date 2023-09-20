@@ -105,7 +105,7 @@ public class RolapSchemaReader
     @Override
 	public List<Member> getHierarchyRootMembers(Hierarchy hierarchy) {
         final HierarchyAccess hierarchyAccess =
-            role.getAccessDetails(hierarchy);
+            role.getAccessDetails(hierarchy, context.getConfig().caseSensitive());
         final Level[] levels = hierarchy.getLevels();
         final Level firstLevel;
         if (hierarchyAccess == null) {
@@ -129,14 +129,14 @@ public class RolapSchemaReader
      * http://en.wikipedia.org/wiki/Double-checked_locking
      */
     @Override
-	public MemberReader getMemberReader(Hierarchy hierarchy) {
+	public MemberReader getMemberReader(Hierarchy hierarchy, boolean caseSensitive) {
         MemberReader memberReader = hierarchyReaders.get(hierarchy);
         if (memberReader == null) {
             synchronized (this) {
                 memberReader = hierarchyReaders.get(hierarchy);
                 if (memberReader == null) {
                     memberReader =
-                        ((RolapHierarchy) hierarchy).createMemberReader(role);
+                        ((RolapHierarchy) hierarchy).createMemberReader(role, getContext().getConfig().caseSensitive());
                     hierarchyReaders.put(hierarchy, memberReader);
                 }
             }
@@ -147,39 +147,44 @@ public class RolapSchemaReader
 
     @Override
 	public Member substitute(Member member) {
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
         final MemberReader memberReader =
-            getMemberReader(member.getHierarchy(getContext().getConfig().caseSensitive()));
-        return memberReader.substitute((RolapMember) member);
+            getMemberReader(member.getHierarchy(caseSensitive), caseSensitive);
+        return memberReader.substitute((RolapMember) member, caseSensitive);
     }
 
     @Override
 	public void getMemberRange(
         Level level, Member startMember, Member endMember, List<Member> list)
     {
-        getMemberReader(level.getHierarchy(getContext().getConfig().caseSensitive())).getMemberRange(
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        getMemberReader(level.getHierarchy(caseSensitive), caseSensitive).getMemberRange(
             (RolapLevel) level, (RolapMember) startMember,
-            (RolapMember) endMember, Util.<RolapMember>cast(list));
+            (RolapMember) endMember, Util.<RolapMember>cast(list), getContext().getConfig().caseSensitive());
     }
 
     @Override
 	public int compareMembersHierarchically(Member m1, Member m2) {
         RolapMember member1 = (RolapMember) m1;
         RolapMember member2 = (RolapMember) m2;
-        final RolapHierarchy hierarchy = member1.getHierarchy();
+        final RolapHierarchy hierarchy = member1.getHierarchy(getContext().getConfig().caseSensitive());
         Util.assertPrecondition(hierarchy == m2.getHierarchy(getContext().getConfig().caseSensitive()));
-        return getMemberReader(hierarchy).compare(member1, member2, true);
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        return getMemberReader(hierarchy, caseSensitive).compare(member1, member2, true, getContext().getConfig().caseSensitive());
     }
 
     @Override
 	public Member getMemberParent(Member member) {
-        return getMemberReader(member.getHierarchy(getContext().getConfig().caseSensitive())).getMemberParent(
-            (RolapMember) member);
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        return getMemberReader(member.getHierarchy(caseSensitive), caseSensitive).getMemberParent(
+            (RolapMember) member, getContext().getConfig().caseSensitive());
     }
 
     @Override
 	public int getMemberDepth(Member member) {
+        boolean caseSensitive = context.getConfig().caseSensitive();
         final HierarchyAccess hierarchyAccess =
-            role.getAccessDetails(member.getHierarchy(getContext().getConfig().caseSensitive()));
+            role.getAccessDetails(member.getHierarchy(caseSensitive), caseSensitive);
         if (hierarchyAccess != null) {
             final int memberDepth = member.getLevel().getDepth();
             final int topLevelDepth = hierarchyAccess.getTopLevelDepth();
@@ -209,7 +214,7 @@ public class RolapSchemaReader
     @Override
 	public List<Member> getMemberChildren(Member member, Evaluator context) {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(context);
+            sqlConstraintFactory.getMemberChildrenConstraint(context, getContext().getConfig().caseSensitive());
         List<RolapMember> memberList =
             internalGetMemberChildren(member, constraint);
         return Util.cast(memberList);
@@ -227,9 +232,10 @@ public class RolapSchemaReader
     {
         List<RolapMember> children = new ArrayList<>();
         final Hierarchy hierarchy = member.getHierarchy(getContext().getConfig().caseSensitive());
-        final MemberReader memberReader = getMemberReader(hierarchy);
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        final MemberReader memberReader = getMemberReader(hierarchy, caseSensitive);
         memberReader.getMemberChildren(
-            (RolapMember) member, children, constraint);
+            (RolapMember) member, children, constraint, getContext().getConfig().caseSensitive());
         return children;
     }
 
@@ -242,13 +248,14 @@ public class RolapSchemaReader
         final List<RolapMember> rolapMemberList = Util.cast(list);
         list.add(dataMember);
         ((RolapHierarchy) hierarchy).getMemberReader().getMemberChildren(
-            (RolapMember) dataMember, rolapMemberList);
+            (RolapMember) dataMember, rolapMemberList, getContext().getConfig().caseSensitive());
     }
 
     @Override
 	public int getChildrenCountFromCache(Member member) {
         final Hierarchy hierarchy = member.getHierarchy(getContext().getConfig().caseSensitive());
-        final MemberReader memberReader = getMemberReader(hierarchy);
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        final MemberReader memberReader = getMemberReader(hierarchy, caseSensitive);
         if (memberReader instanceof
             RolapCubeHierarchy.RolapCubeHierarchyMemberReader)
         {
@@ -292,7 +299,8 @@ public class RolapSchemaReader
      */
     private int getLevelCardinalityFromCache(Level level) {
         final Hierarchy hierarchy = level.getHierarchy(getContext().getConfig().caseSensitive());
-        final MemberReader memberReader = getMemberReader(hierarchy);
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        final MemberReader memberReader = getMemberReader(hierarchy, caseSensitive);
         if (memberReader instanceof
             RolapCubeHierarchy.RolapCubeHierarchyMemberReader)
         {
@@ -343,7 +351,7 @@ public class RolapSchemaReader
         boolean approximate,
         boolean materialize)
     {
-        if (!this.role.canAccess(level)) {
+        if (!this.role.canAccess(level, context.getConfig().caseSensitive())) {
             return 1;
         }
 
@@ -362,8 +370,9 @@ public class RolapSchemaReader
             if (materialize) {
                 // Either the approximate row count hasn't been set,
                 // or they want the precise row count.
+                boolean caseSensitive = getContext().getConfig().caseSensitive();
                 final MemberReader memberReader =
-                    getMemberReader(level.getHierarchy(getContext().getConfig().caseSensitive()));
+                    getMemberReader(level.getHierarchy(caseSensitive), caseSensitive);
                 rowCount =
                     memberReader.getLevelMemberCount((RolapLevel) level);
                 // Cache it for future.
@@ -387,15 +396,16 @@ public class RolapSchemaReader
             return Collections.emptyList();
         } else {
             MemberChildrenConstraint constraint =
-                sqlConstraintFactory.getMemberChildrenConstraint(context);
-            final Hierarchy hierarchy = members.get(0).getHierarchy(getContext().getConfig().caseSensitive());
-            final MemberReader memberReader = getMemberReader(hierarchy);
+                sqlConstraintFactory.getMemberChildrenConstraint(context, getContext().getConfig().caseSensitive());
+            boolean caseSensitive = getContext().getConfig().caseSensitive();
+            final Hierarchy hierarchy = members.get(0).getHierarchy(caseSensitive);
+            final MemberReader memberReader = getMemberReader(hierarchy, caseSensitive);
             final List<RolapMember> rolapMemberList = Util.cast(members);
             final List<RolapMember> children = new ArrayList<>();
             memberReader.getMemberChildren(
                 rolapMemberList,
                 children,
-                constraint);
+                constraint, getContext().getConfig().caseSensitive());
             return Util.cast(children);
         }
     }
@@ -540,7 +550,7 @@ public class RolapSchemaReader
 
     @Override
 	public Member lookupMemberChildByName(
-            Member parent, Segment childName, MatchType matchType)
+            Member parent, Segment childName, MatchType matchType, boolean caseSensitive)
     {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(
@@ -553,10 +563,10 @@ public class RolapSchemaReader
                 && matchType.isExact())
             {
                 constraint = sqlConstraintFactory.getChildByNameConstraint(
-                    (RolapMember) parent, (NameSegment) childName);
+                    (RolapMember) parent, (NameSegment) childName, caseSensitive);
             } else {
                 constraint =
-                    sqlConstraintFactory.getMemberChildrenConstraint(null);
+                    sqlConstraintFactory.getMemberChildrenConstraint(null, getContext().getConfig().caseSensitive());
             }
             List<RolapMember> children =
                 internalGetMemberChildren(parent, constraint);
@@ -567,7 +577,7 @@ public class RolapSchemaReader
                         (RolapMember) parent,
                         children.get(0).getLevel(),
                         childName,
-                        matchType);
+                        matchType, context.getConfig().caseSensitive());
             }
         } catch (NumberFormatException e) {
             // this was thrown in SqlQuery#quote(boolean numeric, Object
@@ -588,11 +598,11 @@ public class RolapSchemaReader
 
     @Override
 	public List<Member> lookupMemberChildrenByNames(
-        Member parent, List<NameSegment> childNames, MatchType matchType)
+        Member parent, List<NameSegment> childNames, MatchType matchType, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint = sqlConstraintFactory
             .getChildrenByNamesConstraint(
-                (RolapMember) parent, childNames);
+                (RolapMember) parent, childNames, caseSensitive);
         List<RolapMember> children =
             internalGetMemberChildren(parent, constraint);
         List<Member> childMembers = new ArrayList<>();
@@ -620,9 +630,10 @@ public class RolapSchemaReader
 
     @Override
 	public Member getLeadMember(Member member, int n) {
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
         final MemberReader memberReader =
-            getMemberReader(member.getHierarchy(getContext().getConfig().caseSensitive()));
-        return memberReader.getLeadMember((RolapMember) member, n);
+            getMemberReader(member.getHierarchy(caseSensitive), caseSensitive);
+        return memberReader.getLeadMember((RolapMember) member, n, getContext().getConfig().caseSensitive());
     }
 
     @Override
@@ -643,15 +654,16 @@ public class RolapSchemaReader
 
     @Override
 	public List<Member> getLevelMembers(Level level, Evaluator context) {
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
         TupleConstraint constraint =
             sqlConstraintFactory.getLevelMembersConstraint(
                 context,
-                new Level[] {level});
+                new Level[] {level}, caseSensitive);
         final MemberReader memberReader =
-            getMemberReader(level.getHierarchy(getContext().getConfig().caseSensitive()));
+            getMemberReader(level.getHierarchy(caseSensitive), caseSensitive);
         List<RolapMember> membersInLevel =
             memberReader.getMembersInLevel(
-                (RolapLevel) level, constraint);
+                (RolapLevel) level, constraint, getContext().getConfig().caseSensitive());
         return Util.cast(membersInLevel);
     }
 
@@ -676,7 +688,7 @@ public class RolapSchemaReader
         assert dimension != null;
         final List<Hierarchy> hierarchies = new ArrayList<>();
         for (Hierarchy hierarchy : dimension.getHierarchies()) {
-            switch (role.getAccess(hierarchy)) {
+            switch (role.getAccess(hierarchy, context.getConfig().caseSensitive())) {
             case NONE:
                 continue;
             default:
@@ -691,7 +703,7 @@ public class RolapSchemaReader
 	public List<Level> getHierarchyLevels(Hierarchy hierarchy) {
         assert hierarchy != null;
         final HierarchyAccess hierarchyAccess =
-            role.getAccessDetails(hierarchy);
+            role.getAccessDetails(hierarchy, context.getConfig().caseSensitive());
         final Level[] levels = hierarchy.getLevels();
         if (hierarchyAccess == null) {
             return Arrays.asList(levels);
@@ -710,10 +722,11 @@ public class RolapSchemaReader
         assert hierarchy != null;
         // If the whole hierarchy is inaccessible, return the intrinsic default
         // member. This is important to construct a evaluator.
-        if (role.getAccess(hierarchy) == Access.NONE) {
-            return hierarchy.getDefaultMember();
+        if (role.getAccess(hierarchy, context.getConfig().caseSensitive()) == Access.NONE) {
+            return hierarchy.getDefaultMember(getContext().getConfig().caseSensitive());
         }
-        return getMemberReader(hierarchy).getDefaultMember();
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
+        return getMemberReader(hierarchy, caseSensitive).getDefaultMember(getContext().getConfig().caseSensitive());
     }
 
     @Override
@@ -730,13 +743,13 @@ public class RolapSchemaReader
             // level.
             final Level childLevel = level.getChildLevel();
             return (childLevel != null)
-                && (role.getAccess(childLevel) != Access.NONE);
+                && (role.getAccess(childLevel, context.getConfig().caseSensitive()) != Access.NONE);
         }
     }
 
     @Override
 	public boolean isVisible(Member member) {
-        return !member.isHidden(getContext().getConfig().caseSensitive()) && role.canAccess(member);
+        return !member.isHidden(getContext().getConfig().caseSensitive()) && role.canAccess(member, context.getConfig().caseSensitive());
     }
 
     @Override
@@ -745,7 +758,7 @@ public class RolapSchemaReader
         List<Cube> visibleCubes = new ArrayList<>(cubes.size());
 
         for (Cube cube : cubes) {
-            if (role.canAccess(cube)) {
+            if (role.canAccess(cube, context.getConfig().caseSensitive())) {
                 visibleCubes.add(cube);
             }
         }
@@ -824,17 +837,18 @@ ElevatorSimplifyer.simplifyEvaluator(calc, evaluator);
         Member member,
         Evaluator evaluator)
     {
+        boolean caseSensitive = getContext().getConfig().caseSensitive();
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(evaluator);
-        final Hierarchy hierarchy = member.getHierarchy(getContext().getConfig().caseSensitive());
-        final MemberReader memberReader = getMemberReader(hierarchy);
+            sqlConstraintFactory.getMemberChildrenConstraint(evaluator, caseSensitive);
+        final Hierarchy hierarchy = member.getHierarchy(caseSensitive);
+        final MemberReader memberReader = getMemberReader(hierarchy, caseSensitive);
         final ArrayList<RolapMember> memberChildren =
             new ArrayList<>();
 
         return memberReader.getMemberChildren(
             (RolapMember) member,
             memberChildren,
-            constraint);
+            constraint, getContext().getConfig().caseSensitive());
     }
 
     /**

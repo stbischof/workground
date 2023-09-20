@@ -123,7 +123,7 @@ public class RolapMemberBase
         String name,
         MemberType memberType, boolean caseSensitive)
     {
-        super(parentMember, level, memberType);
+        super(parentMember, level, memberType, caseSensitive);
         assert key != null;
         assert !(parentMember instanceof RolapCubeMember)
             || this instanceof RolapCalculatedMember
@@ -170,8 +170,8 @@ public class RolapMemberBase
     }
 
     @Override
-	public RolapHierarchy getHierarchy() {
-        return (RolapHierarchy) level.getHierarchy();
+	public RolapHierarchy getHierarchy(boolean caseSensitive) {
+        return (RolapHierarchy) level.getHierarchy(caseSensitive);
     }
 
     @Override
@@ -273,13 +273,13 @@ public class RolapMemberBase
                     || this instanceof VisualTotalsFunDef.VisualTotalMember
                     || getDataMember() != null)))
         {
-            final RolapHierarchy hierarchy = getHierarchy();
-            final Dimension dimension = hierarchy.getDimension();
+            final RolapHierarchy hierarchy = getHierarchy(caseSensitive);
+            final Dimension dimension = hierarchy.getDimension(caseSensitive);
             final RolapLevel level = getLevel();
             if (dimension.getDimensionType() != null
                 && (dimension.getDimensionType().equals(
                     DimensionType.MEASURES_DIMENSION)
-                && hierarchy.getName().equals(dimension.getName(caseSensitive))))
+                && hierarchy.getName(caseSensitive).equals(dimension.getName(caseSensitive))))
             {
                 // Kludge to ensure that calc members are called
                 // [Measures].[Foo] not [Measures].[Measures].[Foo]. We can
@@ -287,12 +287,12 @@ public class RolapMemberBase
                 // member unique names.
                 this.uniqueName = Util.makeFqName(dimension, name);
             } else {
-                if (name.equals(level.getName())) {
+                if (name.equals(level.getName(caseSensitive))) {
                     this.uniqueName =
                         Util.makeFqName(
                             Util.makeFqName(
                                 hierarchy.getUniqueName(),
-                                level.getName()),
+                                level.getName(caseSensitive)),
                             name);
                 } else {
                     this.uniqueName = Util.makeFqName(hierarchy, name);
@@ -383,7 +383,7 @@ public class RolapMemberBase
 
             case Property.CONTRIBUTING_CHILDREN_ORDINAL:
                 list = new ArrayList<>();
-                getHierarchy().getMemberReader().getMemberChildren(this, list);
+                getHierarchy(caseSensitive).getMemberReader().getMemberChildren(this, list, caseSensitive);
                 return list;
 
             case Property.CATALOG_NAME_ORDINAL:
@@ -392,7 +392,7 @@ public class RolapMemberBase
                 break;
 
             case Property.SCHEMA_NAME_ORDINAL:
-                schema = getHierarchy().getDimension().getSchema();
+                schema = getHierarchy(caseSensitive).getDimension(caseSensitive).getSchema();
                 return schema.getName();
 
             case Property.CUBE_NAME_ORDINAL:
@@ -400,10 +400,10 @@ public class RolapMemberBase
                 break;
 
             case Property.DIMENSION_UNIQUE_NAME_ORDINAL:
-                return getHierarchy().getDimension().getUniqueName();
+                return getHierarchy(caseSensitive).getDimension(caseSensitive).getUniqueName();
 
             case Property.HIERARCHY_UNIQUE_NAME_ORDINAL:
-                return getHierarchy().getUniqueName();
+                return getHierarchy(caseSensitive).getUniqueName();
 
             case Property.LEVEL_UNIQUE_NAME_ORDINAL:
                 return getLevel().getUniqueName();
@@ -443,9 +443,9 @@ public class RolapMemberBase
                             } else {
                                 ArrayList<RolapMember> list =
                                     new ArrayList<>();
-                                getHierarchy().getMemberReader()
+                                getHierarchy(caseSensitive).getMemberReader()
                                     .getMemberChildren(
-                                        RolapMemberBase.this, list);
+                                        RolapMemberBase.this, list, caseSensitive);
                                 return list.size();
                             }
                         }
@@ -481,7 +481,7 @@ public class RolapMemberBase
 
             case Property.MEMBER_KEY_ORDINAL:
             case Property.KEY_ORDINAL:
-                return this == this.getHierarchy().getAllMember()
+                return this == this.getHierarchy(caseSensitive).getAllMember()
                     ? 0
                     : getKey();
 
@@ -532,7 +532,7 @@ public class RolapMemberBase
     @Deprecated
 	@Override
 	public boolean isAllMember() {
-        return getLevel().getHierarchy().hasAll()
+        return getLevel().getHierarchy(caseSensitive).hasAll()
                 && getLevel().getDepth() == 0;
     }
 
@@ -1138,19 +1138,19 @@ public class RolapMemberBase
     }
 
     @Override
-	public int getHierarchyOrdinal() {
-        return getHierarchy().getOrdinalInCube();
+	public int getHierarchyOrdinal(boolean caseSensitive) {
+        return getHierarchy(caseSensitive).getOrdinalInCube();
     }
 
     @Override
-	public void setContextIn(RolapEvaluator evaluator) {
+	public void setContextIn(RolapEvaluator evaluator, boolean caseSensitive) {
         final RolapMember defaultMember =
-            evaluator.root.defaultMembers[getHierarchyOrdinal()];
+            evaluator.root.defaultMembers[getHierarchyOrdinal(caseSensitive)];
 
         // This method does not need to call RolapEvaluator.removeCalcMember.
         // That happens implicitly in setContext.
         evaluator.setContext(defaultMember);
-        evaluator.setExpanding(this);
+        evaluator.setExpanding(this, caseSensitive);
     }
 
 }

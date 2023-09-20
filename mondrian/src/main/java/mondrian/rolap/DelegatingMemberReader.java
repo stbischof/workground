@@ -37,8 +37,8 @@ class DelegatingMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember substitute(RolapMember member) {
-        return memberReader.substitute(member);
+	public RolapMember substitute(RolapMember member, boolean caseSensitive) {
+        return memberReader.substitute(member, caseSensitive);
     }
 
     @Override
@@ -54,15 +54,15 @@ class DelegatingMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
-        return memberReader.getLeadMember(member, n);
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
+        return memberReader.getLeadMember(member, n, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
-        return memberReader.getMembersInLevel(level);
+        return memberReader.getMembersInLevel(level, caseSensitive);
     }
 
     @Override
@@ -70,18 +70,18 @@ class DelegatingMemberReader implements MemberReader {
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> list)
+        List<RolapMember> list, boolean caseSensitive )
     {
-        memberReader.getMemberRange(level, startMember, endMember, list);
+        memberReader.getMemberRange(level, startMember, endMember, list, caseSensitive);
     }
 
     @Override
 	public int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual)
+        boolean siblingsAreEqual, boolean caseSensitive)
     {
-        return memberReader.compare(m1, m2, siblingsAreEqual);
+        return memberReader.compare(m1, m2, siblingsAreEqual, caseSensitive);
     }
 
     @Override
@@ -95,50 +95,51 @@ class DelegatingMemberReader implements MemberReader {
     }
 
     @Override
-	public List<RolapMember> getMembers() {
-        return memberReader.getMembers();
+	public List<RolapMember> getMembers(boolean caseSensitive) {
+        return memberReader.getMembers(caseSensitive);
     }
 
     @Override
-	public List<RolapMember> getRootMembers() {
-        return memberReader.getRootMembers();
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
+        return memberReader.getRootMembers(caseSensitive);
     }
 
     @Override
 	public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
-        getMemberChildren(parentMember, children, null);
+        getMemberChildren(parentMember, children, null, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember parentMember,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         return memberReader.getMemberChildren(
-            parentMember, children, constraint);
+            parentMember, children, constraint, caseSensitive);
     }
 
     @Override
 	public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         memberReader.getMemberChildren(
-            parentMembers, children);
+            parentMembers, children, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint,
+        boolean caseSensitive)
     {
         return memberReader.getMemberChildren(
-            parentMembers, children, constraint);
+            parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
@@ -149,17 +150,17 @@ class DelegatingMemberReader implements MemberReader {
     @Override
 	public RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
-        return memberReader.lookupMember(uniqueNameParts, failIfNotFound);
+        return memberReader.lookupMember(uniqueNameParts, failIfNotFound, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level, TupleConstraint constraint)
+        RolapLevel level, TupleConstraint constraint, boolean caseSensitive)
     {
         return memberReader.getMembersInLevel(
-            level, constraint);
+            level, constraint, caseSensitive);
     }
 
     @Override
@@ -173,12 +174,12 @@ class DelegatingMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember getDefaultMember() {
-        return memberReader.getDefaultMember();
+	public RolapMember getDefaultMember(boolean caseSensitive) {
+        return memberReader.getDefaultMember(caseSensitive);
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
-        return memberReader.getMemberParent(member);
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
+        return memberReader.getMemberParent(member, caseSensitive);
     }
 }

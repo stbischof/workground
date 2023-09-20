@@ -158,7 +158,7 @@ public class HierarchyUsage {
             // Shared Hierarchy attributes
             // source
             // level
-            this.hierarchyName = deriveHierarchyName(hierarchy);
+            this.hierarchyName = deriveHierarchyName(hierarchy, cube.getContext().getConfig().caseSensitive());
             int index = this.hierarchyName == null ? -1 : this.hierarchyName.indexOf('.');
             if (this.hierarchyName == null || index == -1) {
                 this.fullName = this.name;
@@ -193,7 +193,7 @@ public class HierarchyUsage {
             // caption
             PrivateDimension d = privateDimension;
 
-            this.hierarchyName = deriveHierarchyName(hierarchy);
+            this.hierarchyName = deriveHierarchyName(hierarchy, cube.getContext().getConfig().caseSensitive());
             this.fullName = this.name;
 
             this.source = null;
@@ -238,12 +238,12 @@ public class HierarchyUsage {
         }
     }
 
-    private String deriveHierarchyName(RolapHierarchy hierarchy) {
-        final String nameInner = hierarchy.getName();
+    private String deriveHierarchyName(RolapHierarchy hierarchy, boolean caseSensitive) {
+        final String nameInner = hierarchy.getName(caseSensitive);
         if (!MondrianProperties.instance().SsasCompatibleNaming.get()) {
             return nameInner;
         } else {
-            final String dimensionName = hierarchy.getDimension().getName();
+            final String dimensionName = hierarchy.getDimension(caseSensitive).getName(caseSensitive);
             if (nameInner == null
                 || nameInner.equals("")
                 || nameInner.equals(dimensionName))
@@ -358,12 +358,12 @@ public class HierarchyUsage {
         if (cubeDim != null && cubeDim.level() != null) {
             // 1. Specify an explicit 'level' attribute in a <DimensionUsage>.
             RolapLevel joinLevel = (RolapLevel)
-                    Util.lookupHierarchyLevel(hierarchy, cubeDim.level());
+                    Util.lookupHierarchyLevel(hierarchy, cubeDim.level(), cube.getContext().getConfig().caseSensitive());
             if (joinLevel == null) {
                 throw MondrianResource.instance()
                     .DimensionUsageHasUnknownLevel.ex(
                         hierarchy.getUniqueName(),
-                        cube.getName(),
+                        cube.getName(cube.getContext().getConfig().caseSensitive()),
                         cubeDim.level());
             }
             this.joinTable =
@@ -403,13 +403,13 @@ public class HierarchyUsage {
                 throw MondrianResource.instance()
                     .MustSpecifyPrimaryKeyForHierarchy.ex(
                         hierarchy.getUniqueName(),
-                        cube.getName());
+                        cube.getName(cube.getContext().getConfig().caseSensitive()));
             }
             if (foreignKey == null) {
                 throw MondrianResource.instance()
                     .MustSpecifyForeignKeyForHierarchy.ex(
                         hierarchy.getUniqueName(),
-                        cube.getName());
+                        cube.getName(cube.getContext().getConfig().caseSensitive()));
             }
         }
     }

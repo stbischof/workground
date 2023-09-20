@@ -752,13 +752,13 @@ public class BasicQueryTest {
         hierarchyMap.put( hierarchy.getUniqueName(), hierarchy );
       }
     }
-    assertEquals( "[Measures].[Unit Sales]", cell.getContextMember( hierarchyMap.get( "[Measures]" ) )
+    assertEquals( "[Measures].[Unit Sales]", cell.getContextMember( hierarchyMap.get( "[Measures]" ), true )
         .getUniqueName() );
-    assertEquals( "[Time].[1997]", cell.getContextMember( hierarchyMap.get( "[Time]" ) ).getUniqueName() );
-    assertEquals( "[Time].[Weekly].[1997].[6].[1]", cell.getContextMember( hierarchyMap.get( "[Time].[Weekly]" ) )
+    assertEquals( "[Time].[1997]", cell.getContextMember( hierarchyMap.get( "[Time]" ), true ).getUniqueName() );
+    assertEquals( "[Time].[Weekly].[1997].[6].[1]", cell.getContextMember( hierarchyMap.get( "[Time].[Weekly]" ), true )
         .getUniqueName() );
-    assertEquals( "[Gender].[All Gender]", cell.getContextMember( hierarchyMap.get( "[Gender]" ) ).getUniqueName() );
-    assertEquals( "[Marital Status].[S]", cell.getContextMember( hierarchyMap.get( "[Marital Status]" ) )
+    assertEquals( "[Gender].[All Gender]", cell.getContextMember( hierarchyMap.get( "[Gender]" ), true ).getUniqueName() );
+    assertEquals( "[Marital Status].[S]", cell.getContextMember( hierarchyMap.get( "[Marital Status]" ) , true)
         .getUniqueName() );
   }
 
@@ -2387,7 +2387,7 @@ public class BasicQueryTest {
             + "       Parameter(\"LowerLimit\", NUMERIC, 150, \"Untere Grenze\"),\n"
             + "     \"|#.00%|arrow='down'\",\n" + "     \"|#.00%|arrow='right'\"))\n"
             + "select {[Measures].members} on columns\n" + "from Sales" );
-    final String s = Util.unparse( query );
+    final String s = Util.unparse( query, connection.getContext().getConfig().caseSensitive() );
     // Parentheses are added to reflect operator precedence, but that's ok.
     // Note that the doubled parentheses in line #2 of the query have been
     // reduced to a single level.
@@ -3841,15 +3841,15 @@ public class BasicQueryTest {
     withSchema(context, schema);
     SchemaReader scr = context.createConnection().getSchema().lookupCube( cubeName, true ).getSchemaReader( null );
     Member member = scr.getMemberByUniqueName( Segment.toList( "Measures", "Unit Sales" ), true );
-    Object visible = member.getPropertyValue( Property.VISIBLE.name );
+    Object visible = member.getPropertyValue( Property.VISIBLE.name, context.getContext().getConfig().caseSensitive() );
     assertEquals( Boolean.FALSE, visible );
 
     member = scr.getMemberByUniqueName( Segment.toList( "Measures", "Store Cost" ), true );
-    visible = member.getPropertyValue( Property.VISIBLE.name );
+    visible = member.getPropertyValue( Property.VISIBLE.name, context.getContext().getConfig().caseSensitive() );
     assertEquals( Boolean.TRUE, visible );
 
     member = scr.getMemberByUniqueName( Segment.toList( "Measures", "Profit" ), true );
-    visible = member.getPropertyValue( Property.VISIBLE.name );
+    visible = member.getPropertyValue( Property.VISIBLE.name, context.getContext().getConfig().caseSensitive() );
     assertEquals( Boolean.FALSE, visible );
   }
 
@@ -3868,7 +3868,7 @@ public class BasicQueryTest {
     Axis axis0 = result.getAxes()[0];
     Position pos0 = axis0.getPositions().get( 0 );
     Member allGender = pos0.get( 0 );
-    String caption = allGender.getCaption();
+    String caption = allGender.getCaption(context.getContext().getConfig().caseSensitive());
     assertEquals( caption, "Frauen und Maenner" );
   }
 
@@ -3886,7 +3886,7 @@ public class BasicQueryTest {
     Axis axis0 = result.getAxes()[0];
     Position pos0 = axis0.getPositions().get( 0 );
     Member allGender = pos0.get( 0 );
-    String caption = allGender.getLevel().getName();
+    String caption = allGender.getLevel().getName(context.getContext().getConfig().caseSensitive());
     assertEquals( caption, "GenderLevel" );
   }
 

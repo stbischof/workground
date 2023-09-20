@@ -70,7 +70,7 @@ public abstract class LevelBase
 
     // from Element
     @Override
-	public String getQualifiedName() {
+	public String getQualifiedName(boolean caseSensitive) {
         return MondrianResource.instance().MdxLevelName.str(getUniqueName());
     }
 
@@ -85,23 +85,23 @@ public abstract class LevelBase
     }
 
     @Override
-	public String getName() {
+	public String getName(boolean caseSensitive) {
         return name;
     }
 
     @Override
-	public String getDescription() {
+	public String getDescription(boolean caseSensitive) {
         return description;
     }
 
     @Override
-	public Hierarchy getHierarchy() {
+	public Hierarchy getHierarchy(boolean caseSensitive) {
         return hierarchy;
     }
 
     @Override
-	public Dimension getDimension() {
-        return hierarchy.getDimension();
+	public Dimension getDimension(boolean caseSensitive) {
+        return hierarchy.getDimension(caseSensitive);
     }
 
     @Override
@@ -130,8 +130,8 @@ public abstract class LevelBase
     @Override
 	public abstract boolean isAll();
 
-    public boolean isMeasure() {
-        return hierarchy.getName().equals("Measures");
+    public boolean isMeasure(boolean caseSensitive) {
+        return hierarchy.getName(caseSensitive).equals("Measures");
     }
 
     @Override

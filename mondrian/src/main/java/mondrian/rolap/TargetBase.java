@@ -91,17 +91,17 @@ public abstract class TargetBase {
      * @return Ordinal of next unconsumed column
      * @throws SQLException On error
      */
-    public final int addRow(SqlStatement stmt, int column) throws SQLException {
+    public final int addRow(SqlStatement stmt, int column, boolean caseSensitive) throws SQLException {
         synchronized (cacheLock) {
-            return internalAddRow(stmt, column);
+            return internalAddRow(stmt, column, caseSensitive);
         }
     }
 
-    public abstract void open();
+    public abstract void open(boolean caseSensitive);
 
     public abstract List<Member> close();
 
-    abstract int internalAddRow(SqlStatement stmt, int column)
+    abstract int internalAddRow(SqlStatement stmt, int column, boolean caseSensitive)
         throws SQLException;
 
     public void add(final RolapMember member) {

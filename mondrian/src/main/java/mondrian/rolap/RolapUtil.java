@@ -259,11 +259,11 @@ public class RolapUtil {
     static RolapMember lookupMember(
         MemberReader reader,
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
         RolapMember member =
             lookupMemberInternal(
-                uniqueNameParts, null, reader, failIfNotFound);
+                uniqueNameParts, null, reader, failIfNotFound, caseSensitive);
         if (member != null) {
             return member;
         }
@@ -271,13 +271,13 @@ public class RolapUtil {
         // If this hierarchy has an 'all' member, we can omit it.
         // For example, '[Gender].[(All Gender)].[F]' can be abbreviated
         // '[Gender].[F]'.
-        final List<RolapMember> rootMembers = reader.getRootMembers();
+        final List<RolapMember> rootMembers = reader.getRootMembers(caseSensitive);
         if (rootMembers.size() == 1) {
             final RolapMember rootMember = rootMembers.get(0);
             if (rootMember.isAll()) {
                 member =
                     lookupMemberInternal(
-                        uniqueNameParts, rootMember, reader, failIfNotFound);
+                        uniqueNameParts, rootMember, reader, failIfNotFound, caseSensitive);
             }
         }
         return member;
@@ -287,7 +287,7 @@ public class RolapUtil {
         List<Segment> segments,
         RolapMember member,
         MemberReader reader,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
         for (Segment segment : segments) {
             if (!(segment instanceof NameSegment nameSegment)) {
@@ -295,14 +295,14 @@ public class RolapUtil {
             }
             List<RolapMember> children;
             if (member == null) {
-                children = reader.getRootMembers();
+                children = reader.getRootMembers(caseSensitive);
             } else {
                 children = new ArrayList<>();
-                reader.getMemberChildren(member, children);
+                reader.getMemberChildren(member, children, caseSensitive);
                 member = null;
             }
             for (RolapMember child : children) {
-                if (child.getName().equals(nameSegment.getName())) {
+                if (child.getName(caseSensitive).equals(nameSegment.getName())) {
                     member = child;
                     break;
                 }
@@ -483,7 +483,7 @@ public class RolapUtil {
         RolapMember parent,
         RolapLevel level,
         Segment searchName,
-        MatchType matchType)
+        MatchType matchType, boolean caseSensitive)
     {
         if (!(searchName instanceof NameSegment nameSegment)) {
             return null;
@@ -500,8 +500,8 @@ public class RolapUtil {
         // to locate so we can use it to hierarchically compare against
         // the members array
         Member searchMember =
-            level.getHierarchy().createMember(
-                parent, level, nameSegment.getName(), null);
+            level.getHierarchy(caseSensitive).createMember(
+                parent, level, nameSegment.getName(), null, caseSensitive);
         Member bestMatch = null;
         for (Member member : members) {
             int rc;
@@ -513,7 +513,7 @@ public class RolapUtil {
                 return member;
             }
             if (matchType.isExact()) {
-                rc = Util.compareName(member.getName(), nameSegment.getName());
+                rc = Util.compareName(member.getName(caseSensitive), nameSegment.getName());
             } else {
                 rc =
                     FunUtil.compareSiblingMembers(
@@ -705,7 +705,7 @@ public class RolapUtil {
                     // in infinite loop.
                     evaluator.setNonEmpty(false);
                     List<Member> lowestMembers =
-                        ((RolapHierarchy)curMember.getHierarchy())
+                        ((RolapHierarchy)curMember.getHierarchy(cube.getContext().getConfig().caseSensitive()))
                             .getLowestMembersForAccess(
                                 evaluator,
                                 limitedRollupMember
@@ -798,7 +798,7 @@ public class RolapUtil {
     public static boolean isGroupByNeeded(
             RolapHierarchy hierarchy,
             RolapLevel[] levels,
-            int levelDepth ) {
+            int levelDepth,  boolean caseSensitive) {
         // Figure out if we need to generate GROUP BY at all.  It may only be
         // eliminated if we are at a depth that includes the unique key level,
         // and all properties of included levels depend on the level value.
@@ -814,7 +814,7 @@ public class RolapUtil {
                 // can ignore the "all" level
                 if ( !( lvl.isAll() ) ) {
                     if ( hierarchy.getUniqueKeyLevelName().equals(
-                            lvl.getName() ) ) {
+                            lvl.getName(caseSensitive) ) ) {
                         foundUniqueKeyLevelName = true;
                     }
                     for ( RolapProperty p : lvl.getProperties() ) {

@@ -37,6 +37,6 @@ public interface Result {
      * with 4 columns and 6 rows, the top-left cell has coordinates [0, 0],
      * and the bottom-right cell has coordinates [3, 5]. */
     Cell getCell(int[] pos);
-    void print(PrintWriter pw);
+    void print(PrintWriter pw, boolean caseSensitive);
     void close();
 }

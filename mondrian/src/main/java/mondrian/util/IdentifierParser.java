@@ -66,7 +66,7 @@ public class IdentifierParser extends org.olap4j.impl.IdentifierParser {
                     : props.IgnoreInvalidMembersDuringQuery.get());
         }
 
-        protected Member resolveMember(Hierarchy expectedHierarchy) {
+        protected Member resolveMember(Hierarchy expectedHierarchy, boolean caseSensitive) {
             final List<Segment> mondrianSegmentList =
                 Util.convert(this.segmentList);
             Member member =
@@ -76,7 +76,8 @@ public class IdentifierParser extends org.olap4j.impl.IdentifierParser {
             if (member == null) {
                 assert ignoreInvalid;
                 if (expectedHierarchy != null) {
-                    return expectedHierarchy.getNullMember();
+                    return expectedHierarchy.getNullMember(true);
+                    //TODO UTILS
                 } else {
                     // Guess the intended hierarchy from the largest valid
                     // prefix.
@@ -87,16 +88,17 @@ public class IdentifierParser extends org.olap4j.impl.IdentifierParser {
                             schemaReader.lookupCompound(
                                 cube, partialName, false, Category.UNKNOWN);
                         if (olapElement != null) {
-                            return olapElement.getHierarchy().getNullMember();
+                            return olapElement.getHierarchy(caseSensitive).getNullMember(true);
+                            //TODO UTILS
                         }
                     }
                     throw MondrianResource.instance().MdxChildObjectNotFound.ex(
                         Util.implode(mondrianSegmentList),
-                        cube.getQualifiedName());
+                        cube.getQualifiedName(caseSensitive));
                 }
             }
             if (expectedHierarchy != null
-                && member.getHierarchy() != expectedHierarchy)
+                && member.getHierarchy(caseSensitive) != expectedHierarchy)
             {
                 // TODO: better error
                 throw Util.newInternal("member is of wrong hierarchy");
@@ -126,7 +128,8 @@ public class IdentifierParser extends org.olap4j.impl.IdentifierParser {
                 throw Util.newInternal("expected ')");
             }
             final Hierarchy hierarchy = hierarchyList.get(memberList.size());
-            final Member member = resolveMember(hierarchy);
+            final Member member = resolveMember(hierarchy, true);
+            //TODO UTILS
             memberList.add(member);
             segmentList.clear();
         }
@@ -176,7 +179,8 @@ public class IdentifierParser extends org.olap4j.impl.IdentifierParser {
 
         @Override
 		public void memberComplete() {
-            final Member member = resolveMember(hierarchyList.get(0));
+            final Member member = resolveMember(hierarchyList.get(0), true);
+            //TODO UTILS
             if (!member.isNull()) {
                 memberList.add(member);
             }

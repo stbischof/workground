@@ -91,7 +91,7 @@ abstract class ValidatorImpl implements Validator {
                 // To prevent recursion, put in a placeholder while we're
                 // resolving.
                 resolvedNodes.put((QueryPart) exp, placeHolder);
-                resolved = exp.accept(this);
+                resolved = exp.accept(this, caseSensitive);
                 Util.assertTrue(resolved != null);
                 resolvedNodes.put((QueryPart) exp, (QueryPart) resolved);
             } finally {
@@ -114,7 +114,7 @@ abstract class ValidatorImpl implements Validator {
     }
 
     @Override
-	public void validate(ParameterExpressionImpl parameterExpr) {
+	public void validate(ParameterExpressionImpl parameterExpr, boolean caseSensitive) {
         ParameterExpression resolved =
             (ParameterExpression) resolvedNodes.get(parameterExpr);
         if (resolved != null) {
@@ -123,7 +123,7 @@ abstract class ValidatorImpl implements Validator {
         try {
             stack.push(parameterExpr);
             resolvedNodes.put(parameterExpr, placeHolder);
-            resolved = (ParameterExpression) parameterExpr.accept(this);
+            resolved = (ParameterExpression) parameterExpr.accept(this, caseSensitive);
             assert resolved != null;
             resolvedNodes.put(parameterExpr, resolved);
         } finally {

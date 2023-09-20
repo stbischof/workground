@@ -145,7 +145,7 @@ public class ExplicitRules {
                 }
             } else {
                 String msg = mres.CubeRelationNotTable.str(
-                    cube.getName(),
+                    cube.getName(cube.getContext().getConfig().caseSensitive()),
                     relation.getClass().getName());
                 LOGGER.warn(msg);
             }
@@ -185,7 +185,7 @@ public class ExplicitRules {
          * Get the name of this Group (its the name of its RolapCube).
          */
         public String getName() {
-            return getCube().getName();
+            return getCube().getName(cube.getContext().getConfig().caseSensitive());
         }
 
         /**
@@ -989,14 +989,14 @@ public class ExplicitRules {
                         rolapMeasure =
                             names.get(1) instanceof NameSegment nameSegment
                                 ? star.getFactTable().lookupMeasureByName(
-                                    cube.getName(), nameSegment.getName())
+                                    cube.getName(cube.getContext().getConfig().caseSensitive()), nameSegment.getName())
                                 : null;
                         if (rolapMeasure == null) {
                             msgRecorder.reportError(
                                 mres.BadMeasureName.str(
                                     msgRecorder.getContext(),
                                     names.get(1).toString(),
-                                    cube.getName()));
+                                    cube.getName(cube.getContext().getConfig().caseSensitive())));
                         }
                         symbolicName = names.get(1).toString();
                     }

@@ -157,8 +157,8 @@ public class SqlTupleReader implements TupleReader {
     }
 
     @Override
-	public void open() {
-      levels = (RolapLevel[]) level.getHierarchy().getLevels();
+	public void open(boolean caseSensitive) {
+      levels = (RolapLevel[]) level.getHierarchy(caseSensitive).getLevels();
       setList( new ArrayList<>() );
       levelDepth = level.getDepth();
       parentChild = level.isParentChild();
@@ -174,7 +174,7 @@ public class SqlTupleReader implements TupleReader {
     }
 
     @Override
-	int internalAddRow( SqlStatement stmt, int column )
+	int internalAddRow( SqlStatement stmt, int column, boolean caseSensitive )
       throws SQLException {
       RolapMember member = null;
       if ( getCurrMember() != null ) {
@@ -184,7 +184,7 @@ public class SqlTupleReader implements TupleReader {
         for ( int i = 0; i <= levelDepth; i++ ) {
           RolapLevel childLevel = levels[ i ];
           if ( childLevel.isAll() ) {
-            member = memberBuilder.allMember();
+            member = memberBuilder.allMember(caseSensitive);
             continue;
           }
           RolapMember parentMember = member;
@@ -248,7 +248,7 @@ public class SqlTupleReader implements TupleReader {
             if ( member == null ) {
               member = memberBuilder.makeMember(
                 parentMember, childLevel, value, captionValue,
-                parentChild, stmt, key, column );
+                parentChild, stmt, key, column, caseSensitive );
             }
           }
 
@@ -292,7 +292,7 @@ public class SqlTupleReader implements TupleReader {
             // we keep a reference to cachedChildren so they don't
             // get garbage-collected
             List<RolapMember> cachedChildren =
-              cache.getChildrenFromCache( member, mcc );
+              cache.getChildrenFromCache( member, mcc, caseSensitive );
             if ( i < levelDepth && cachedChildren == null ) {
               siblings.set( i + 1, new ArrayList<>() );
             } else {
@@ -388,7 +388,7 @@ public void addLevelMembers(
   }
 
   @Override
-public Object getCacheKey() {
+public Object getCacheKey(boolean caseSensitive) {
     List<Object> key = new ArrayList<>();
     key.add( constraint.getCacheKey() );
     key.add( SqlTupleReader.class );
@@ -400,7 +400,7 @@ public Object getCacheKey() {
       }
     }
     if ( constraint.getEvaluator() != null ) {
-      addTargetGroupsToKey( key );
+      addTargetGroupsToKey( key, caseSensitive );
     }
     return key;
   }
@@ -408,10 +408,10 @@ public Object getCacheKey() {
   /**
    * adds target group info to cacheKey if split target groups are needed for this query.
    */
-  private void addTargetGroupsToKey( List<Object> cacheKey ) {
+  private void addTargetGroupsToKey( List<Object> cacheKey, boolean caseSensitive ) {
     List<List<TargetBase>> targetGroups = groupTargets(
       targets,
-      constraint.getEvaluator().getQuery() );
+      constraint.getEvaluator().getQuery(), caseSensitive );
     if ( targetGroups.size() > 1 ) {
       cacheKey.add( targetsToLevels( targetGroups ) );
     }
@@ -480,8 +480,9 @@ public Object getCacheKey() {
         resultSet = null;
       }
 
+      boolean caseSensitive = context.getConfig().caseSensitive();
       for ( TargetBase target : targetGroup ) {
-        target.open();
+        target.open(caseSensitive);
       }
 
       int limit = MondrianProperties.instance().ResultLimit.get();
@@ -521,7 +522,7 @@ public Object getCacheKey() {
           int column = 0;
           for ( TargetBase target : targetGroup ) {
             target.setCurrMember( null );
-            column = target.addRow( stmt, column );
+            column = target.addRow( stmt, column, caseSensitive );
           }
         } else {
           // find the first enum target, then call addTargets()
@@ -546,7 +547,7 @@ public Object getCacheKey() {
           resetCurrMembers( partialRow );
           addTargets(
             0, firstEnumTarget, enumTargetCount, srcMemberIdxes,
-            stmt, message );
+            stmt, message, caseSensitive );
           if ( newPartialResult != null ) {
             savePartialResult( newPartialResult, context.getConfig().caseSensitive() );
           }
@@ -651,7 +652,7 @@ public TupleList readTuples(
     // targetGroup.
     List<List<TargetBase>> targetGroups = groupTargets(
       targets,
-      constraint.getEvaluator().getQuery() );
+      constraint.getEvaluator().getQuery(), context.getConfig().caseSensitive() );
     List<TupleList> tupleLists = new ArrayList<>();
 
     for ( List<TargetBase> targetGroup : targetGroups ) {
@@ -689,7 +690,7 @@ public TupleList readTuples(
 
     TupleList tupleList = CrossJoinFunDef.mutableCrossJoin( tupleLists );
     if ( !tupleList.isEmpty() && targetGroups.size() > 1 ) {
-      tupleList = projectTupleList( tupleList );
+      tupleList = projectTupleList( tupleList, context.getConfig().caseSensitive() );
     }
 
     // need to hierarchize the columns from the enumerated targets
@@ -706,8 +707,8 @@ public TupleList readTuples(
    * Projects the attributes using the original ordering in targets, then copies to a ArrayTupleList (the .project
    * method returns a basic TupleList without support for methods like .remove, which may be needed downstream).
    */
-  private TupleList projectTupleList( TupleList tupleList ) {
-    tupleList = tupleList.project( getLevelIndices( tupleList, targets ) );
+  private TupleList projectTupleList( TupleList tupleList, boolean caseSensitive ) {
+    tupleList = tupleList.project( getLevelIndices( tupleList, targets, caseSensitive ) );
     TupleList arrayTupleList = new ArrayTupleList(
       tupleList.getArity(),
       tupleList.size() );
@@ -719,7 +720,7 @@ public TupleList readTuples(
    * Gets an array of the indexes of tuple attributes as they appear in the target ordering.
    */
   private int[] getLevelIndices(
-    TupleList tupleList, List<TargetBase> targets ) {
+    TupleList tupleList, List<TargetBase> targets, boolean caseSensitive ) {
     assert !tupleList.isEmpty();
     assert targets.size() == tupleList.get( 0 ).size();
 
@@ -727,7 +728,7 @@ public TupleList readTuples(
     List<Member> tuple = tupleList.get( 0 );
     int i = 0;
     for ( TargetBase target : targets ) {
-      indices[ i++ ] = getIndexOfLevel( target.getLevel(), tuple );
+      indices[ i++ ] = getIndexOfLevel( target.getLevel(), tuple, caseSensitive );
     }
     return indices;
   }
@@ -735,14 +736,14 @@ public TupleList readTuples(
   /**
    * Find the index of level in the tuple, throwing if not found.
    */
-  private int getIndexOfLevel( RolapLevel level, List<Member> tuple ) {
+  private int getIndexOfLevel( RolapLevel level, List<Member> tuple, boolean caseSensitive ) {
     for ( int i = 0; i < tuple.size(); i++ ) {
       if ( tuple.get( i ).getLevel().equals( level ) ) {
         return i;
       }
     }
     throw MondrianResource.instance().Internal.ex(
-      new StringBuilder("Couldn't find level ").append(level.getName()).append(" in tuple.").toString() );
+      new StringBuilder("Couldn't find level ").append(level.getName(caseSensitive)).append(" in tuple.").toString() );
   }
 
 
@@ -755,14 +756,14 @@ public TupleList readTuples(
    * include those fact tables which are applicable to the levels in a crossjoin
    */
   private List<List<TargetBase>> groupTargets(
-    List<TargetBase> targets, Query query ) {
+    List<TargetBase> targets, Query query, boolean caseSensitive ) {
     List<List<TargetBase>> targetGroupList = new ArrayList<>();
 
     if ( !( (RolapCube) query.getCube() ).isVirtual() ) {
       targetGroupList.add( targets );
       return targetGroupList;
     }
-    if ( inapplicableTargetsPresent( getBaseCubeCollection( query ), targets ) ) {
+    if ( inapplicableTargetsPresent( getBaseCubeCollection( query ), targets, caseSensitive ) ) {
       return Collections.emptyList();
     }
 
@@ -883,7 +884,7 @@ public TupleList readTuples(
     int nEnumTargets,
     int[] srcMemberIdxes,
     SqlStatement stmt,
-    String message ) {
+    String message, boolean caseSensitive ) {
     // loop through the list of members for the current enum target
     TargetBase currTarget = targets.get( currTargetIdx );
     for ( int i = 0; i < currTarget.srcMembers.size(); i++ ) {
@@ -899,7 +900,7 @@ public TupleList readTuples(
         }
         addTargets(
           currEnumTargetIdx + 1, nextTargetIdx, nEnumTargets,
-          srcMemberIdxes, stmt, message );
+          srcMemberIdxes, stmt, message, caseSensitive );
       } else {
         // form a cross product using the columns from the current
         // result set row and the current members that recursion
@@ -909,7 +910,7 @@ public TupleList readTuples(
         for ( TargetBase target : targets ) {
           if ( target.srcMembers == null ) {
             try {
-              column = target.addRow( stmt, column );
+              column = target.addRow( stmt, column, caseSensitive );
             } catch ( Exception e ) {
               throw Util.newError( e, message );
             }
@@ -1007,7 +1008,7 @@ public TupleList readTuples(
             // the fact table.
             if ( LOGGER.isDebugEnabled() ) {
               LOGGER.debug(
-                "No non-calculated member found in cube {}", baseCube.getName() );
+                "No non-calculated member found in cube {}", baseCube.getName(context.getConfig().caseSensitive()) );
             }
             measureInCurrentbaseCube =
               baseCube.getMeasures().get( 0 );
@@ -1097,10 +1098,10 @@ public TupleList readTuples(
    * ValidMeasure then we the presence of the target won't necessarily result in an empty tuple.)
    */
   private boolean inapplicableTargetsPresent(
-    Collection<RolapCube> baseCubes, List<TargetBase> targetGroup ) {
+    Collection<RolapCube> baseCubes, List<TargetBase> targetGroup, boolean caseSensitive ) {
     List<TargetBase> targetListCopy = new ArrayList<>(targetGroup);
     for ( TargetBase target : targetGroup ) {
-      if ( targetHasShiftedContext( target ) ) {
+      if ( targetHasShiftedContext( target, caseSensitive ) ) {
         targetListCopy.remove( target );
       }
     }
@@ -1126,7 +1127,7 @@ public TupleList readTuples(
     return fullyJoiningCubes;
   }
 
-  private boolean targetHasShiftedContext( TargetBase target ) {
+  private boolean targetHasShiftedContext( TargetBase target, boolean caseSensitive ) {
     Set<Member> measures = new HashSet<>(constraint.getEvaluator().getQuery().getMeasuresMembers());
     for ( Member measure : measures ) {
       if ( measure.isCalculated()
@@ -1136,9 +1137,9 @@ public TupleList readTuples(
       }
     }
     Set<Member> membersInMeasures =
-      SqlConstraintUtils.getMembersNestedInMeasures( measures );
+      SqlConstraintUtils.getMembersNestedInMeasures( measures, caseSensitive );
     return membersInMeasures.contains(
-      target.getLevel().getHierarchy().getAllMember() );
+      target.getLevel().getHierarchy(caseSensitive).getAllMember() );
   }
 
   /**
@@ -1215,7 +1216,7 @@ public TupleList readTuples(
       }
     }
 
-    constraint.addConstraint( sqlQuery, baseCube, aggStar );
+    constraint.addConstraint( sqlQuery, baseCube, aggStar, context.getConfig().caseSensitive() );
 
     return sqlQuery.toSqlAndTypes();
   }
@@ -1224,7 +1225,7 @@ public TupleList readTuples(
     return target.getLevel().isAll()
       || baseCube == null
       || baseCube.findBaseCubeHierarchy(
-      target.getLevel().getHierarchy() ) != null;
+      target.getLevel().getHierarchy(baseCube.getContext().getConfig().caseSensitive()) ) != null;
   }
 
   /**
@@ -1255,7 +1256,7 @@ public TupleList readTuples(
     RolapCube baseCube,
     WhichSelect whichSelect,
     AggStar aggStar ) {
-    RolapHierarchy hierarchy = level.getHierarchy();
+    RolapHierarchy hierarchy = level.getHierarchy(baseCube.getContext().getConfig().caseSensitive());
 
     // lookup RolapHierarchy of base cube that matches this hierarchy
 
@@ -1271,7 +1272,7 @@ public TupleList readTuples(
     int levelDepth = level.getDepth();
 
     boolean needsGroupBy =
-      RolapUtil.isGroupByNeeded( hierarchy, levels, levelDepth );
+      RolapUtil.isGroupByNeeded( hierarchy, levels, levelDepth,  baseCube.getContext().getConfig().caseSensitive());
 
     for ( int i = 0; i <= levelDepth; i++ ) {
       RolapLevel currLevel = levels[ i ];
@@ -1609,7 +1610,7 @@ public TupleList readTuples(
       SqlConstraintUtils.expandSupportedCalculatedMembers(
         Arrays.asList(
           evaluator.getNonAllMembers() ),
-        evaluator )
+        evaluator, baseCube.getContext().getConfig().caseSensitive() )
         .getMembersArray();
 
     // if measure is calculated, we can't continue

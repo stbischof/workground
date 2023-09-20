@@ -72,7 +72,7 @@ public interface TupleReader {
             boolean parentChild,
             SqlStatement stmt,
             Object key,
-            int column)
+            int column, boolean caseSensitive)
             throws SQLException;
 
         /**
@@ -80,7 +80,7 @@ public interface TupleReader {
          *
          * @return The 'all' member
          */
-        RolapMember allMember();
+        RolapMember allMember( boolean caseSensitive);
     }
 
     /**
@@ -133,7 +133,7 @@ public interface TupleReader {
      *
      * @return Cache key
      */
-    Object getCacheKey();
+    Object getCacheKey(boolean caseSensitive);
 
     /**
      * Indicates that there was an empty argument somewhere in the tuple.

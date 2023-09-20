@@ -747,7 +747,7 @@ public class Util extends XOMUtil {
                         quoteMdxIdentifier(names));
                 } else {
                     throw MondrianResource.instance().MdxChildObjectNotFound
-                        .ex(name.toString(), parent.getQualifiedName());
+                        .ex(name.toString(), parent.getQualifiedName(schemaReader.getContext().getConfig().caseSensitive()));
                 }
             }
             parent = child;
@@ -931,21 +931,21 @@ public class Util extends XOMUtil {
                     nameLen--;
                 }
                 if (olapElement != null) {
-                    olapElement = olapElement.getHierarchy(schemaReader.getContext().getConfig().caseSensitive()).getNullMember();
+                    olapElement = olapElement.getHierarchy(schemaReader.getContext().getConfig().caseSensitive()).getNullMember(schemaReader.getContext().getConfig().caseSensitive());
                 } else {
                     throw MondrianResource.instance().MdxChildObjectNotFound.ex(
-                            fullName, cube.getQualifiedName());
+                            fullName, cube.getQualifiedName(schemaReader.getContext().getConfig().caseSensitive()));
                 }
             } else {
                 throw MondrianResource.instance().MdxChildObjectNotFound.ex(
-                        fullName, cube.getQualifiedName());
+                        fullName, cube.getQualifiedName(schemaReader.getContext().getConfig().caseSensitive()));
             }
         }
 
         Role role = schemaReader.getRole();
-        if (!role.canAccess(olapElement)) {
+        if (!role.canAccess(olapElement, schemaReader.getContext().getConfig().caseSensitive())) {
             throw MondrianResource.instance().MdxChildObjectNotFound.ex(
-                    fullName, cube.getQualifiedName());
+                    fullName, cube.getQualifiedName(schemaReader.getContext().getConfig().caseSensitive()));
         }
         if (olapElement instanceof Member member) {
             olapElement =
@@ -972,7 +972,7 @@ public class Util extends XOMUtil {
         boolean fail)
     {
         for (Cube cube : schemaReader.getCubes()) {
-            if (Util.compareName(cube.getName(), cubeName) == 0) {
+            if (Util.compareName(cube.getName(schemaReader.getContext().getConfig().caseSensitive()), cubeName) == 0) {
                 return cube;
             }
         }
@@ -1042,7 +1042,7 @@ public class Util extends XOMUtil {
                     null,
                     rootMembers.get(0).getLevel(),
                     memberName.getName(),
-                    null);
+                    null, reader.getContext().getConfig().caseSensitive());
         }
 
         int bestMatch = -1;
@@ -1097,7 +1097,7 @@ public class Util extends XOMUtil {
             ? reader.lookupMemberChildByName(
                 rootMembers.get(0),
                 memberName,
-                matchType)
+                matchType, reader.getContext().getConfig().caseSensitive())
             : null;
     }
 
@@ -1262,7 +1262,7 @@ public class Util extends XOMUtil {
         List<Member> members)
     {
         List<Member> calcMembers =
-            reader.getCalculatedMembers(level.getHierarchy());
+            reader.getCalculatedMembers(level.getHierarchy(reader.getContext().getConfig().caseSensitive()));
         List<Member> calcMembersInThisLevel = new ArrayList<>();
         for (Member calcMember : calcMembers) {
             if (calcMember.getLevel().equals(level)) {
@@ -2966,7 +2966,7 @@ public class Util extends XOMUtil {
             }
 
             @Override
-			public void validate(ParameterExpressionImpl parameterExpr) {
+			public void validate(ParameterExpressionImpl parameterExpr, boolean caseSensitive) {
                 //empty
             }
 
@@ -2976,7 +2976,7 @@ public class Util extends XOMUtil {
             }
 
             @Override
-			public void validate(QueryAxis axis) {
+			public void validate(QueryAxis axis, boolean caseSensitive) {
                 //empty
             }
 

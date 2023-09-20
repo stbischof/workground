@@ -74,11 +74,11 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
     static class NonEmptyCrossJoinConstraint extends SetConstraint {
         NonEmptyCrossJoinConstraint(
             CrossJoinArg[] args,
-            RolapEvaluator evaluator)
+            RolapEvaluator evaluator, boolean caseSensitive)
         {
             // Cross join ignores calculated members, including the ones from
             // the slicer.
-            super(args, evaluator, false);
+            super(args, evaluator, false, caseSensitive);
         }
 
         public RolapMember findMember(Object key) {
@@ -106,7 +106,7 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
 	NativeEvaluator createEvaluator(
         RolapEvaluator evaluator,
         FunctionDefinition fun,
-        Exp[] args)
+        Exp[] args, boolean caseSensitive)
     {
         if (!isEnabled()) {
             // native crossjoins were explicitly disabled, so no need
@@ -117,7 +117,7 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
 
         List<CrossJoinArg[]> allArgs =
             crossJoinArgFactory()
-                .checkCrossJoin(evaluator, fun, args, false);
+                .checkCrossJoin(evaluator, fun, args, false, caseSensitive);
 
         // checkCrossJoinArg returns a list of CrossJoinArg arrays.  The first
         // array is the CrossJoin dimensions.  The second array, if any,
@@ -184,7 +184,7 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
         }
 
         if (SqlConstraintUtils.measuresConflictWithMembers(
-                evaluator.getQuery().getMeasuresMembers(), cjArgs))
+                evaluator.getQuery().getMeasuresMembers(), cjArgs, caseSensitive))
         {
             alertCrossJoinNonNative(
                 evaluator,
@@ -234,7 +234,7 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
         final int savepoint = evaluator.savepoint();
 
         try {
-            overrideContext(evaluator, cjArgs, null);
+            overrideContext(evaluator, cjArgs, null, caseSensitive);
 
             // Use the combined CrossJoinArg for the tuple constraint,
             // which will be translated to the SQL WHERE clause.
@@ -244,7 +244,7 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
             // dimensions and the additional filter on them. It will make a
             // copy of the evaluator.
             TupleConstraint constraint =
-                buildConstraint(evaluator, fun, cargs);
+                buildConstraint(evaluator, fun, cargs, caseSensitive);
             // Use the just the CJ CrossJoiArg for the evaluator context,
             // which will be translated to select list in sql.
             final SchemaReader schemaReader = evaluator.getSchemaReader();
@@ -282,22 +282,23 @@ public class RolapNativeCrossJoin extends RolapNativeSet {
     private TupleConstraint buildConstraint(
         final RolapEvaluator evaluator,
         final FunctionDefinition fun,
-        final CrossJoinArg[] cargs)
+        final CrossJoinArg[] cargs,
+        boolean caseSensitive)
     {
         CrossJoinArg[] myArgs;
         if (safeToConstrainByOtherAxes(fun)) {
-            myArgs = buildArgs(evaluator, cargs);
+            myArgs = buildArgs(evaluator, cargs, caseSensitive);
         } else {
             myArgs = cargs;
         }
-        return new NonEmptyCrossJoinConstraint(myArgs, evaluator);
+        return new NonEmptyCrossJoinConstraint(myArgs, evaluator, caseSensitive);
     }
 
     private CrossJoinArg[] buildArgs(
-        final RolapEvaluator evaluator, final CrossJoinArg[] cargs)
+        final RolapEvaluator evaluator, final CrossJoinArg[] cargs, boolean caseSensitive)
     {
         Set<CrossJoinArg> joinArgs =
-            crossJoinArgFactory().buildConstraintFromAllAxes(evaluator);
+            crossJoinArgFactory().buildConstraintFromAllAxes(evaluator, caseSensitive);
         joinArgs.addAll(Arrays.asList(cargs));
         return joinArgs.toArray(new CrossJoinArg[joinArgs.size()]);
     }

@@ -58,11 +58,11 @@ public class RolapCubeDimension extends RolapDimension {
             name,
             cubeDim.caption() != null
                 ? cubeDim.caption()
-                : rolapDim.getCaption(),
+                : rolapDim.getCaption(cube.getContext().getConfig().caseSensitive()),
             cubeDim.visible(),
             cubeDim.description() != null
                 ? cubeDim.description()
-                : rolapDim.getDescription(),
+                : rolapDim.getDescription(cube.getContext().getConfig().caseSensitive()),
             null,
             highCardinality,
             (cubeDim.annotations() != null && !cubeDim.annotations().isEmpty())
@@ -140,13 +140,13 @@ public class RolapCubeDimension extends RolapDimension {
 
     @Override
 	RolapCubeHierarchy newHierarchy(
-        String subName, boolean hasAll, RolapHierarchy closureFor)
+        String subName, boolean hasAll, RolapHierarchy closureFor, boolean caseSensitive)
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-	public String getCaption() {
+	public String getCaption(boolean caseSensitive) {
         if (caption != null) {
             return caption;
         }

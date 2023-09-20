@@ -117,7 +117,7 @@ class SqlMemberSource
     }
 
     @Override
-	public RolapMember substitute(RolapMember member) {
+	public RolapMember substitute(RolapMember member, boolean caseSensitive) {
         return member;
     }
 
@@ -150,7 +150,7 @@ class SqlMemberSource
                 new MemberKeyConstraint(
                     columnList,
                     datatypeList,
-                    keyValues));
+                    keyValues), context.getConfig().caseSensitive());
         switch (list.size()) {
         case 0:
             return null;
@@ -166,7 +166,7 @@ class SqlMemberSource
     @Override
 	public RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
         throw new UnsupportedOperationException();
     }
@@ -347,7 +347,7 @@ class SqlMemberSource
 
 
     @Override
-	public List<RolapMember> getMembers() {
+	public List<RolapMember> getMembers(boolean caseSensitive) {
         return getMembers(context);
     }
 
@@ -406,7 +406,7 @@ class SqlMemberSource
                     member = map.get(key);
                     if (member == null) {
                         RolapMemberBase memberBase =
-                            new RolapMemberBase(parent, level, value);
+                            new RolapMemberBase(parent, level, value, context.getConfig().caseSensitive());
                         memberBase.setOrdinal(lastOrdinal++);
                         member = memberBase;
 /*
@@ -448,7 +448,7 @@ RME is this right
                         // as a result of makeMember().
                         member.setProperty(
                             property.getName(),
-                            accessors.get(column).get());
+                            accessors.get(column).get(), context.getConfig().caseSensitive());
                         column++;
                     }
                 }
@@ -551,22 +551,22 @@ RME is this right
     // implement MemberReader
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
         TupleConstraint constraint =
-            sqlConstraintFactory.getLevelMembersConstraint(null);
-        return getMembersInLevel(level, constraint);
+            sqlConstraintFactory.getLevelMembersConstraint(null, caseSensitive);
+        return getMembersInLevel(level, constraint, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
         RolapLevel level,
-        TupleConstraint constraint)
+        TupleConstraint constraint, boolean caseSensitive)
     {
         if (level.isAll()) {
             return Collections.singletonList(hierarchy.getAllMember());
         }
-        Dimension dimension = level.getDimension();
+        Dimension dimension = level.getDimension(caseSensitive);
         boolean isHighCardinality = dimension.isHighCardinality();
         final TupleReader tupleReader = isHighCardinality
                 ? new HighCardSqlTupleReader(constraint)
@@ -598,8 +598,8 @@ RME is this right
 
     // implement MemberSource
     @Override
-	public List<RolapMember> getRootMembers() {
-        return getMembersInLevel((RolapLevel) hierarchy.getLevels()[0]);
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
+        return getMembersInLevel((RolapLevel) hierarchy.getLevels()[0], caseSensitive);
     }
 
     /**
@@ -644,7 +644,7 @@ RME is this right
         int levelDepth = level.getDepth();
 
         boolean needsGroupBy =
-                RolapUtil.isGroupByNeeded( hierarchy, levels, levelDepth );
+                RolapUtil.isGroupByNeeded( hierarchy, levels, levelDepth, context.getConfig().caseSensitive() );
 
         boolean levelCollapsed =
             (aggStar != null)
@@ -783,7 +783,7 @@ RME is this right
             SqlConstraintUtils.expandSupportedCalculatedMembers(
                 Arrays.asList(
                     evaluator.getNonAllMembers()),
-                    evaluator)
+                    evaluator, cube.getContext().getConfig().caseSensitive())
                     .getMembersArray();
 
         // if measure is calculated, we can't continue
@@ -895,18 +895,18 @@ RME is this right
     @Override
 	public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMembers, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint mcc)
+        MemberChildrenConstraint mcc, boolean caseSensitive)
     {
         // try to fetch all children at once
         RolapLevel childLevel =
@@ -916,14 +916,14 @@ RME is this right
                 sqlConstraintFactory.getDescendantsConstraint(
                     parentMembers, mcc);
             List<RolapMember> list =
-                getMembersInLevel(childLevel, lmc);
+                getMembersInLevel(childLevel, lmc, caseSensitive);
             children.addAll(list);
             return Util.toNullValuesMap(children);
         }
 
         // fetch them one by one
         for (RolapMember parentMember : parentMembers) {
-            getMemberChildren(parentMember, children, mcc);
+            getMemberChildren(parentMember, children, mcc, context.getConfig().caseSensitive());
         }
         return Util.toNullValuesMap(children);
     }
@@ -931,18 +931,18 @@ RME is this right
     @Override
 	public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMember, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMember, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember parentMember,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         // allow parent child calculated members through
         // this fixes the non closure parent child hierarchy bug
@@ -1079,7 +1079,7 @@ RME is this right
                     member =
                         makeMember(
                             parentMember2, childLevel, value, captionValue,
-                            parentChild, stmt, key, columnOffset);
+                            parentChild, stmt, key, columnOffset, context.getConfig().caseSensitive());
                 }
                 if (value == RolapUtil.sqlNullValue) {
                     children.toArray(); // not remove call consolidate in ConcatenableList
@@ -1116,7 +1116,7 @@ RME is this right
         boolean parentChild,
         SqlStatement stmt,
         Object key,
-        int columnOffset)
+        int columnOffset, boolean caseSensitive)
         throws SQLException
     {
         final RolapLevel rolapChildLevel;
@@ -1126,7 +1126,7 @@ RME is this right
             rolapChildLevel = childLevel;
         }
         RolapMemberBase member =
-            new RolapMemberBase(parentMember, rolapChildLevel, value);
+            new RolapMemberBase(parentMember, rolapChildLevel, value, context.getConfig().caseSensitive());
         if (!childLevel.getOrdinalExp().equals(childLevel.getKeyExp())) {
             member.setOrdinal(lastOrdinal++);
         }
@@ -1144,9 +1144,9 @@ RME is this right
             member =
                 childLevel.hasClosedPeer()
                 ? new RolapParentChildMember(
-                    parentMember, rolapChildLevel, value, member)
+                    parentMember, rolapChildLevel, value, member, context.getConfig().caseSensitive())
                 : new RolapParentChildMemberNoClosure(
-                    parentMember, rolapChildLevel, value, member);
+                    parentMember, rolapChildLevel, value, member, context.getConfig().caseSensitive());
         }
         Property[] properties = childLevel.getProperties();
         final List<SqlStatement.Accessor> accessors = stmt.getAccessors();
@@ -1166,14 +1166,14 @@ RME is this right
             Property property = properties[j];
             member.setProperty(
                 property.getName(),
-                getPooledValue(accessors.get(columnOffset + j).get()));
+                getPooledValue(accessors.get(columnOffset + j).get()), context.getConfig().caseSensitive());
         }
         cache.putMember(key, member);
         return member;
     }
 
     @Override
-	public RolapMember allMember() {
+	public RolapMember allMember(boolean caseSensitive) {
         final RolapHierarchy rolapHierarchy =
             hierarchy instanceof RolapCubeHierarchy rolapCubeHierarchy
                 ? rolapCubeHierarchy.getRolapHierarchy()
@@ -1397,7 +1397,7 @@ RME is this right
 
     // implement MemberReader
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 
@@ -1406,7 +1406,7 @@ RME is this right
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> memberList)
+        List<RolapMember> memberList, boolean caseSensitive)
     {
         throw new UnsupportedOperationException();
     }
@@ -1415,7 +1415,7 @@ RME is this right
 	public int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual)
+        boolean siblingsAreEqual, boolean caseSensitive)
     {
         throw new UnsupportedOperationException();
     }
@@ -1427,13 +1427,13 @@ RME is this right
     }
 
     @Override
-	public RolapMember getDefaultMember() {
+	public RolapMember getDefaultMember(boolean caseSensitive) {
         // we expected the CacheMemberReader to implement this
         throw new UnsupportedOperationException();
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
         throw new UnsupportedOperationException();
     }
 
@@ -1454,9 +1454,9 @@ RME is this right
             RolapMember parentMember,
             RolapLevel childLevel,
             Object value,
-            RolapMember dataMember)
+            RolapMember dataMember, boolean caseSensitive)
         {
-            super(parentMember, childLevel, value);
+            super(parentMember, childLevel, value, caseSensitive);
             this.dataMember = dataMember;
             this.depth = (parentMember != null)
                 ? parentMember.getDepth() + 1
@@ -1498,9 +1498,9 @@ RME is this right
 
         public RolapParentChildMemberNoClosure(
             RolapMember parentMember,
-            RolapLevel childLevel, Object value, RolapMember dataMember)
+            RolapLevel childLevel, Object value, RolapMember dataMember, boolean caseSensitive)
         {
-            super(parentMember, childLevel, value, dataMember);
+            super(parentMember, childLevel, value, dataMember, caseSensitive);
         }
 
         @Override
@@ -1510,7 +1510,7 @@ RME is this right
 
         @Override
 		public Exp getExpression() {
-            return super.getHierarchy().getAggregateChildrenExpression();
+            return super.getHierarchy(caseSensitive).getAggregateChildrenExpression(caseSensitive);
         }
 
         @Override

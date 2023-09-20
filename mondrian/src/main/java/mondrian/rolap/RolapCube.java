@@ -282,7 +282,7 @@ public class RolapCube extends CubeBase {
         this.dimensions[0] = measuresDimension;
 
         this.measuresHierarchy =
-            measuresDimension.newHierarchy(null, false, null);
+            measuresDimension.newHierarchy(null, false, null, context.getConfig().caseSensitive());
         hierarchyList.add(measuresHierarchy);
 
         if (!Util.isEmpty(xmlSchema.measuresCaption())) {
@@ -304,7 +304,7 @@ public class RolapCube extends CubeBase {
                 getOrCreateDimension(
                     xmlCubeDimension, schema, xmlSchema, i + 1, hierarchyList);
             if (getLogger().isDebugEnabled()) {
-                String msg = new StringBuilder("RolapCube<init>: dimension=").append(dimension.getName()).toString();
+                String msg = new StringBuilder("RolapCube<init>: dimension=").append(dimension.getName(context.getConfig().caseSensitive())).toString();
                 getLogger().debug(msg);
             }
             this.dimensions[i + 1] = dimension;
@@ -366,7 +366,7 @@ public class RolapCube extends CubeBase {
         // since Measure and VirtualCubeMeasure
         // can not be treated as the same, measure creation can not be
         // done in a common constructor.
-        RolapLevel measuresLevel = this.measuresHierarchy.newMeasuresLevel();
+        RolapLevel measuresLevel = this.measuresHierarchy.newMeasuresLevel(context.getConfig().caseSensitive());
 
         List<RolapMember> measureList =
             new ArrayList<>(xmlCube.measures().size());
@@ -388,7 +388,7 @@ public class RolapCube extends CubeBase {
 
         boolean writebackEnabled = false;
         for (RolapHierarchy hierarchy : hierarchyList) {
-            if (ScenarioImpl.isScenario(hierarchy)) {
+            if (ScenarioImpl.isScenario(hierarchy, context.getConfig().caseSensitive())) {
                 writebackEnabled = true;
             }
         }
@@ -414,7 +414,7 @@ public class RolapCube extends CubeBase {
 
         setMeasuresHierarchyMemberReader(
             new CacheMemberReader(
-                new MeasureMemberSource(this.measuresHierarchy, measureList)));
+                new MeasureMemberSource(this.measuresHierarchy, measureList), context.getConfig().caseSensitive()));
 
         this.measuresHierarchy.setDefaultMember(defaultMeasure);
         init(xmlCube.dimensionUsageOrDimensions());
@@ -422,7 +422,7 @@ public class RolapCube extends CubeBase {
 
         setMeasuresHierarchyMemberReader(
             new CacheMemberReader(
-                new MeasureMemberSource(this.measuresHierarchy, measureList)));
+                new MeasureMemberSource(this.measuresHierarchy, measureList), context.getConfig().caseSensitive()));
 
         checkOrdinals(xmlCube.name(), measureList);
         loadAggGroup(xmlCube);
@@ -717,7 +717,7 @@ public class RolapCube extends CubeBase {
         // Since Measure and VirtualCubeMeasure cannot
         // be treated as the same, measure creation cannot be done in a common
         // constructor.
-        RolapLevel measuresLevel = this.measuresHierarchy.newMeasuresLevel();
+        RolapLevel measuresLevel = this.measuresHierarchy.newMeasuresLevel(context.getConfig().caseSensitive());
 
         // Recreate CalculatedMembers, as the original members point to
         // incorrect dimensional ordinals for the virtual cube.
@@ -870,7 +870,7 @@ public class RolapCube extends CubeBase {
             new CacheMemberReader(
                 new MeasureMemberSource(
                     this.measuresHierarchy,
-                    Util.<RolapMember>cast(modifiedMeasureList))));
+                    Util.<RolapMember>cast(modifiedMeasureList)), context.getConfig().caseSensitive()));
 
         createCalcMembersAndNamedSets(
             xmlCalculatedMemberList,
@@ -912,7 +912,7 @@ public class RolapCube extends CubeBase {
             new CacheMemberReader(
                 new MeasureMemberSource(
                     this.measuresHierarchy,
-                    Util.<RolapMember>cast(origMeasureList))));
+                    Util.<RolapMember>cast(origMeasureList)), context.getConfig().caseSensitive()));
 
         this.measuresHierarchy.setDefaultMember(defaultMeasure);
 
@@ -983,7 +983,7 @@ public class RolapCube extends CubeBase {
             new CacheMemberReader(
                 new MeasureMemberSource(
                     this.measuresHierarchy,
-                    Util.<RolapMember>cast(finalMeasureMembers))));
+                    Util.<RolapMember>cast(finalMeasureMembers)), context.getConfig().caseSensitive()));
         // Note: virtual cubes do not get aggregate
     }
 
@@ -1080,7 +1080,7 @@ public class RolapCube extends CubeBase {
                 schema.getSharedHierarchy(usage.source());
             if (sharedHierarchy != null) {
                 dimension =
-                    (RolapDimension) sharedHierarchy.getDimension();
+                    (RolapDimension) sharedHierarchy.getDimension(context.getConfig().caseSensitive());
             }
         }
 
@@ -1648,7 +1648,7 @@ public class RolapCube extends CubeBase {
     private void init(List<? extends CubeDimension> xmlDimensions) {
         for (Dimension dimension1 : dimensions) {
             final RolapDimension dimension = (RolapDimension) dimension1;
-            dimension.init(lookup(xmlDimensions, dimension.getName(getContext().getConfig().caseSensitive())));
+            dimension.init(lookup(xmlDimensions, dimension.getName(getContext().getConfig().caseSensitive())), context.getConfig().caseSensitive());
         }
         register();
     }
@@ -1670,7 +1670,7 @@ public class RolapCube extends CubeBase {
 
         // create measures (and stars for them, if necessary)
         for (RolapBaseCubeMeasure storedMeasure : storedMeasures) {
-            table.makeMeasure(storedMeasure);
+            table.makeMeasure(storedMeasure, context.getConfig().caseSensitive());
         }
     }
 
@@ -1796,7 +1796,7 @@ public class RolapCube extends CubeBase {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(
                 "RolapCube.createUsage: cube={}, hierarchy={}, usage={}",
-                getName(getContext().getConfig().caseSensitive()), hierarchy.getName(), usage);
+                getName(getContext().getConfig().caseSensitive()), hierarchy.getName(context.getConfig().caseSensitive()), usage);
         }
         for (HierarchyUsage hierUsage : hierarchyUsages) {
             if (hierUsage.equals(usage)) {
@@ -1983,7 +1983,7 @@ public class RolapCube extends CubeBase {
                     buf.append("hierarchyUsages == null for cube=\"");
                     buf.append(this.name);
                     buf.append("\", hierarchy=\"");
-                    buf.append(hierarchy.getName());
+                    buf.append(hierarchy.getName(context.getConfig().caseSensitive()));
                     buf.append("\"");
                     getLogger().debug(buf.toString());
                 }
@@ -2038,7 +2038,7 @@ public class RolapCube extends CubeBase {
 
                     // Make sure the level exists
                     RolapLevel level =
-                        RolapLevel.lookupLevel(levels, levelName);
+                        RolapLevel.lookupLevel(levels, levelName, context.getConfig().caseSensitive());
                     if (level == null) {
                         StringBuilder buf = new StringBuilder(64);
                         buf.append("For cube \"");
@@ -2086,7 +2086,7 @@ public class RolapCube extends CubeBase {
                     if (hierarchyUsage.getForeignKey() == null) {
                         throw MondrianResource.instance()
                             .HierarchyMustHaveForeignKey.ex(
-                                hierarchy.getName(), getName(getContext().getConfig().caseSensitive()));
+                                hierarchy.getName(context.getConfig().caseSensitive()), getName(getContext().getConfig().caseSensitive()));
                     }
                     // jhyde: check is disabled until we handle <View> correctly
                     if (false
@@ -2096,7 +2096,7 @@ public class RolapCube extends CubeBase {
                         throw MondrianResource.instance()
                             .HierarchyInvalidForeignKey.ex(
                                 hierarchyUsage.getForeignKey(),
-                                hierarchy.getName(),
+                                hierarchy.getName(context.getConfig().caseSensitive()),
                                 getName(getContext().getConfig().caseSensitive()));
                     }
                     // parameters:
@@ -2154,7 +2154,7 @@ public class RolapCube extends CubeBase {
                             parentColumn = makeColumns(
                                 table, level, parentColumn, usagePrefix);
                         }
-                        if (levelName.equals(level.getName())) {
+                        if (levelName.equals(level.getName(context.getConfig().caseSensitive()))) {
                             break;
                         }
                     }
@@ -2211,7 +2211,7 @@ public class RolapCube extends CubeBase {
                     String msg = new StringBuilder("RolapCube.makeColumns: for cube \"")
                         .append(getName(getContext().getConfig().caseSensitive()))
                         .append("\" the Level \"")
-                        .append(level.getName())
+                        .append(level.getName(context.getConfig().caseSensitive()))
                         .append("\" has a table name attribute \"")
                         .append(tableName)
                         .append("\" but the associated RolapStar does not")
@@ -2692,7 +2692,7 @@ public class RolapCube extends CubeBase {
      */
     public RolapHierarchy getTimeHierarchy(String funName) {
         for (RolapHierarchy hierarchy : hierarchyList) {
-            if (hierarchy.getDimension().getDimensionType()
+            if (hierarchy.getDimension(context.getConfig().caseSensitive()).getDimensionType()
                 == DimensionType.TIME_DIMENSION)
             {
                 return hierarchy;
@@ -2804,11 +2804,11 @@ public class RolapCube extends CubeBase {
         for (int i = 0; i < getDimensions().length; i++) {
             Dimension dimension = getDimensions()[i];
             if (dimension.getName(getContext().getConfig().caseSensitive()).equals(
-                    hierarchy.getDimension().getName(getContext().getConfig().caseSensitive())))
+                    hierarchy.getDimension(context.getConfig().caseSensitive()).getName(getContext().getConfig().caseSensitive())))
             {
                 for (int j = 0; j <  dimension.getHierarchies().length; j++) {
                     Hierarchy hier = dimension.getHierarchies()[j];
-                    if (hier.getName(getContext().getConfig().caseSensitive()).equals(hierarchy.getName())) {
+                    if (hier.getName(getContext().getConfig().caseSensitive()).equals(hierarchy.getName(context.getConfig().caseSensitive()))) {
                         return (RolapHierarchy)hier;
                     }
                 }
@@ -2831,8 +2831,8 @@ public class RolapCube extends CubeBase {
         if (virtualToBaseMap.containsKey(level)) {
             return virtualToBaseMap.get(level);
         }
-        String levelDimName = level.getDimension().getName(getContext().getConfig().caseSensitive());
-        String levelHierName = level.getHierarchy().getName();
+        String levelDimName = level.getDimension(context.getConfig().caseSensitive()).getName(getContext().getConfig().caseSensitive());
+        String levelHierName = level.getHierarchy(context.getConfig().caseSensitive()).getName(context.getConfig().caseSensitive());
 
         // Closures are not in the dimension list so we need special logic for
         // locating the level.
@@ -2871,7 +2871,7 @@ public class RolapCube extends CubeBase {
                             return baseLevel;
                         }
                         for (Level lvl : hier.getLevels()) {
-                            if (lvl.getName(getContext().getConfig().caseSensitive()).equals(level.getName())) {
+                            if (lvl.getName(getContext().getConfig().caseSensitive()).equals(level.getName(context.getConfig().caseSensitive()))) {
                                 final RolapCubeLevel baseLevel =
                                     (RolapCubeLevel) lvl;
                                 virtualToBaseMap.put(level, baseLevel);
@@ -2899,7 +2899,7 @@ public class RolapCube extends CubeBase {
         }
         registerDimension(dimension);
 
-        dimension.init(xmlCubeDimension);
+        dimension.init(xmlCubeDimension, context.getConfig().caseSensitive());
 
         // add to dimensions array
         this.dimensions = Util.append(dimensions, dimension);
@@ -3003,7 +3003,7 @@ public class RolapCube extends CubeBase {
     }
 
     public List<RolapMember> getMeasuresMembers() {
-        return measuresHierarchy.getMemberReader().getMembers();
+        return measuresHierarchy.getMemberReader().getMembers(context.getConfig().caseSensitive());
     }
 
     public Formula createNamedSet(String xml) {
@@ -3218,7 +3218,7 @@ public class RolapCube extends CubeBase {
                 final String formulaUniqueName =
                     formula.getMdxMember().getUniqueName();
                 if (formulaUniqueName.equals(uniqueName)
-                    && getRole().canAccess(formula.getMdxMember()))
+                    && getRole().canAccess(formula.getMdxMember(), context.getConfig().caseSensitive()))
                 {
                     return formula.getMdxMember();
                 }
@@ -3243,7 +3243,7 @@ public class RolapCube extends CubeBase {
 		public List<Member> getCalculatedMembers(Hierarchy hierarchy) {
             ArrayList<Member> list = new ArrayList<>();
 
-            if (getRole().getAccess(hierarchy) == Access.NONE) {
+            if (getRole().getAccess(hierarchy, context.getConfig().caseSensitive()) == Access.NONE) {
                 return list;
             }
 
@@ -3259,7 +3259,7 @@ public class RolapCube extends CubeBase {
 		public List<Member> getCalculatedMembers(Level level) {
             List<Member> list = new ArrayList<>();
 
-            if (getRole().getAccess(level) == Access.NONE) {
+            if (getRole().getAccess(level, context.getConfig().caseSensitive()) == Access.NONE) {
                 return list;
             }
 
@@ -3296,7 +3296,7 @@ public class RolapCube extends CubeBase {
 
             for (Formula formula : calculatedMemberList) {
                 Member member = formula.getMdxMember();
-                if (getRole().canAccess(member)) {
+                if (getRole().canAccess(member, context.getConfig().caseSensitive())) {
                     list.add(member);
                 }
             }
@@ -3327,7 +3327,7 @@ public class RolapCube extends CubeBase {
                 assert !failIfNotFound;
                 return null;
             }
-            if (getRole().canAccess(member)) {
+            if (getRole().canAccess(member, context.getConfig().caseSensitive())) {
                 return member;
             } else {
                 if (failIfNotFound) {
@@ -3465,7 +3465,7 @@ public class RolapCube extends CubeBase {
                     new CacheMemberReader(
                         new MeasureMemberSource(
                             virtualCube.measuresHierarchy,
-                            Util.<RolapMember>cast(measuresFound))));
+                            Util.<RolapMember>cast(measuresFound)), context.getConfig().caseSensitive()));
 
                 org.eclipse.daanse.olap.rolap.dbmapper.model.api.CalculatedMember xmlCalcMember =
                     schema.lookupXmlCalculatedMember(

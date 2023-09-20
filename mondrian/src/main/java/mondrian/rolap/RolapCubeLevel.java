@@ -56,10 +56,10 @@ public class RolapCubeLevel extends RolapLevel {
     public RolapCubeLevel(RolapLevel level, RolapCubeHierarchy cubeHierarchy) {
         super(
             cubeHierarchy,
-            level.getName(),
-            level.getCaption(),
+            level.getName(cubeHierarchy.getCube().getContext().getConfig().caseSensitive()),
+            level.getCaption(cubeHierarchy.getCube().getContext().getConfig().caseSensitive()),
             level.isVisible(),
-            level.getDescription(),
+            level.getDescription(cubeHierarchy.getCube().getContext().getConfig().caseSensitive()),
             level.getDepth(),
             level.getKeyExp(),
             level.getNameExp(),
@@ -75,11 +75,11 @@ public class RolapCubeLevel extends RolapLevel {
             level.getHideMemberCondition(),
             level.getLevelType(),
             "" + level.getApproxRowCount(),
-            level.getMetadata());
+            level.getMetadata(), cubeHierarchy.getCube().getContext().getConfig().caseSensitive());
 
         this.rolapLevel = level;
         this.cubeHierarchy = cubeHierarchy;
-        this.cubeDimension = (RolapCubeDimension) cubeHierarchy.getDimension();
+        this.cubeDimension = (RolapCubeDimension) cubeHierarchy.getDimension(cubeHierarchy.getCube().getContext().getConfig().caseSensitive());
         cube = cubeDimension.getCube();
         parentCubeLevel = (RolapCubeLevel) super.getParentLevel();
         if (parentCubeLevel != null) {
@@ -103,15 +103,16 @@ public class RolapCubeLevel extends RolapLevel {
         } else if (rolapLevel.xmlClosure != null) {
             RolapDimension dimension =
                 (RolapDimension)
-                    rolapLevel.getClosedPeer().getHierarchy().getDimension();
+                    rolapLevel.getClosedPeer().getHierarchy(cubeHierarchy.getCube().getContext().getConfig().caseSensitive()).getDimension(cubeHierarchy.getCube().getContext().getConfig().caseSensitive());
 
             RolapCubeDimension cubeDimensionInner =
                 new RolapCubeDimension(
                     getCube(), dimension, xmlDimension,
-                    new StringBuilder(getDimension().getName()).append("$Closure").toString(),
+                    new StringBuilder(getDimension(cubeHierarchy.getCube().getContext().getConfig().caseSensitive())
+                        .getName(cubeHierarchy.getCube().getContext().getConfig().caseSensitive())).append("$Closure").toString(),
                     -1,
                     getCube().hierarchyList,
-                    getDimension().isHighCardinality());
+                    getDimension(cubeHierarchy.getCube().getContext().getConfig().caseSensitive()).isHighCardinality());
 
             // RME HACK
             //  WG: Note that the reason for registering this usage is so that
@@ -123,7 +124,7 @@ public class RolapCubeLevel extends RolapLevel {
                     (RolapCubeHierarchy) cubeDimensionInner.getHierarchies()[0],
                     xmlDimension);
             }
-            cubeDimensionInner.init(xmlDimension);
+            cubeDimensionInner.init(xmlDimension, cubeHierarchy.getCube().getContext().getConfig().caseSensitive());
             getCube().registerDimension(cubeDimensionInner);
             closedPeerCubeLevel = (RolapCubeLevel)
                 cubeDimensionInner.getHierarchies()[0].getLevels()[1];
@@ -176,7 +177,7 @@ public class RolapCubeLevel extends RolapLevel {
         Expression exp,
         RelationOrJoin rel)
     {
-        if (getHierarchy().isUsingCubeFact()) {
+        if (getHierarchy(cube.getContext().getConfig().caseSensitive()).isUsingCubeFact()) {
             // no conversion necessary
             return exp;
         } else if (exp == null || rel == null) {
@@ -192,7 +193,7 @@ public class RolapCubeLevel extends RolapLevel {
                 // need to determine correct name of alias for this level.
                 // this may be defined in level
                 // col.table
-                String alias = getHierarchy().lookupAlias(ExpressionUtil.getTableAlias(col));
+                String alias = getHierarchy(cube.getContext().getConfig().caseSensitive()).lookupAlias(ExpressionUtil.getTableAlias(col));
                 return new ColumnR(alias, col.name());
             }
         } else if (exp instanceof ExpressionView) {
@@ -255,13 +256,13 @@ public class RolapCubeLevel extends RolapLevel {
 
     // override with stricter return type
     @Override
-	public final RolapCubeDimension getDimension() {
+	public final RolapCubeDimension getDimension(boolean caseSensitive) {
         return cubeDimension;
     }
 
     // override with stricter return type
     @Override
-	public final RolapCubeHierarchy getHierarchy() {
+	public final RolapCubeHierarchy getHierarchy(boolean caseSensitive) {
         return cubeHierarchy;
     }
 
@@ -278,8 +279,8 @@ public class RolapCubeLevel extends RolapLevel {
     }
 
     @Override
-	public String getCaption() {
-        return rolapLevel.getCaption();
+	public String getCaption(boolean caseSensitive) {
+        return rolapLevel.getCaption(caseSensitive);
     }
 
     @Override
@@ -391,7 +392,7 @@ public class RolapCubeLevel extends RolapLevel {
             }
             Object memberKey = member.member.getKey();
             if (memberKey == null) {
-                if (member == member.getHierarchy().getNullMember()) {
+                if (member == member.getHierarchy(baseCube.getContext().getConfig().caseSensitive()).getNullMember(baseCube.getContext().getConfig().caseSensitive())) {
                     // cannot form a request if one of the members is null
                     return true;
                 } else {
@@ -406,14 +407,14 @@ public class RolapCubeLevel extends RolapLevel {
                 // (this happens in virtual cubes). The starMeasure only has
                 // a value for the 'all' member of the hierarchy (or for the
                 // default member if the hierarchy has no 'all' member)
-                return member != cubeLevel.hierarchy.getDefaultMember()
+                return member != cubeLevel.hierarchy.getDefaultMember(baseCube.getContext().getConfig().caseSensitive())
                     || cubeLevel.hierarchy.hasAll();
             }
 
             boolean isMemberCalculated = member.member.isCalculated();
 
             final StarColumnPredicate predicate;
-            if (isMemberCalculated && !member.isParentChildLeaf()) {
+            if (isMemberCalculated && !member.isParentChildLeaf(baseCube.getContext().getConfig().caseSensitive())) {
                 predicate = null;
             } else {
                 predicate = new ValueColumnPredicate(column, memberKey);
@@ -550,9 +551,9 @@ public class RolapCubeLevel extends RolapLevel {
             this.closedPeerCubeLevel = cubeLevel.closedPeerCubeLevel;
             this.closedPeerLevel = cubeLevel.rolapLevel.getClosedPeer();
             this.wrappedAllMember = (RolapMember)
-                closedPeerLevel.getHierarchy().getDefaultMember();
+                closedPeerLevel.getHierarchy(cubeLevel.cube.getContext().getConfig().caseSensitive()).getDefaultMember(cubeLevel.cube.getContext().getConfig().caseSensitive());
             this.allMember =
-                closedPeerCubeLevel.getHierarchy().getDefaultMember();
+                closedPeerCubeLevel.getHierarchy(cubeLevel.cube.getContext().getConfig().caseSensitive()).getDefaultMember(cubeLevel.cube.getContext().getConfig().caseSensitive());
             assert allMember.isAll();
         }
 
@@ -578,7 +579,7 @@ public class RolapCubeLevel extends RolapLevel {
                 // isn't creating a member on the fly a bad idea?
                 RolapMember wrappedMember =
                     new RolapMemberBase(
-                        wrappedAllMember, closedPeerLevel, member.getKey());
+                        wrappedAllMember, closedPeerLevel, member.getKey(), baseCube.getContext().getConfig().caseSensitive());
                 member =
                     new RolapCubeMember(
                         allMember,

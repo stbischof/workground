@@ -128,7 +128,7 @@ public abstract class RolapAggregationManager {
             getMeasureUniqueNameMap(drillthroughCube);
 
         for (OlapElement olapElement : returnClauseMembers) {
-            if (isClosureFor(olapElement)) {
+            if (isClosureFor(olapElement, cube.getContext().getConfig().caseSensitive())) {
                 continue;
             }
             if (hierarchyPresentOnCube(drillthroughCube, olapElement)) {
@@ -160,7 +160,7 @@ public abstract class RolapAggregationManager {
     private static boolean hierarchyPresentOnCube(
         RolapCube cube, OlapElement olapElement)
     {
-        return cube.getHierarchies().contains(olapElement.getHierarchy());
+        return cube.getHierarchies().contains(olapElement.getHierarchy(cube.getContext().getConfig().caseSensitive()));
     }
 
     private static RolapCube getDrillthroughCube(
@@ -174,9 +174,9 @@ public abstract class RolapAggregationManager {
         return drillthroughCube;
     }
 
-    private static boolean isClosureFor(OlapElement olapElement) {
-        return olapElement.getHierarchy() instanceof RolapCubeHierarchy
-            && ((RolapCubeHierarchy)olapElement.getHierarchy())
+    private static boolean isClosureFor(OlapElement olapElement, boolean caseSensitive) {
+        return olapElement.getHierarchy(caseSensitive) instanceof RolapCubeHierarchy
+            && ((RolapCubeHierarchy)olapElement.getHierarchy(caseSensitive))
             .getRolapHierarchy().closureFor != null;
     }
 
@@ -342,7 +342,7 @@ public abstract class RolapAggregationManager {
             }
             for (int i = 1; i < members.length; i++) {
                 final RolapCubeMember member = (RolapCubeMember) members[i];
-                if (member.getHierarchy().getRolapHierarchy().closureFor
+                if (member.getHierarchy(cube.getContext().getConfig().caseSensitive()).getRolapHierarchy().closureFor
                     != null)
                 {
                     continue;
@@ -418,7 +418,7 @@ public abstract class RolapAggregationManager {
         final RolapCube baseCube,
         final CellRequest request)
     {
-        final RolapCubeHierarchy hierarchy = member.getHierarchy();
+        final RolapCubeHierarchy hierarchy = member.getHierarchy(baseCube.getContext().getConfig().caseSensitive());
         final RolapCubeLevel[] levels = hierarchy.getLevels();
         for (int j = levels.length - 1, depth = member.getLevel().getDepth();
              j > depth; j--)
@@ -449,7 +449,7 @@ public abstract class RolapAggregationManager {
         } else if (member instanceof RolapCubeHierarchy
             || member instanceof RolapCubeDimension)
         {
-            level = (RolapCubeLevel) member.getHierarchy().getLevels()[0];
+            level = (RolapCubeLevel) member.getHierarchy(baseCube.getContext().getConfig().caseSensitive()).getLevels()[0];
             if (level.isAll()) {
                 level = level.getChildLevel();
             }
@@ -802,9 +802,9 @@ public abstract class RolapAggregationManager {
 
     public static RolapCacheRegion makeCacheRegion(
         final RolapStar star,
-        final CacheControl.CellRegion region)
+        final CacheControl.CellRegion region, boolean caseSensitive)
     {
-        final List<Member> measureList = CacheControlImpl.findMeasures(region);
+        final List<Member> measureList = CacheControlImpl.findMeasures(region, caseSensitive);
         final List<RolapStar.Measure> starMeasureList =
             new ArrayList<>();
         RolapCube baseCube = null;

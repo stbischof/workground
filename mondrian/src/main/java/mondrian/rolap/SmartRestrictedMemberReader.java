@@ -41,11 +41,11 @@ class SmartRestrictedMemberReader extends RestrictedMemberReader {
 
     SmartRestrictedMemberReader(
         final MemberReader memberReader,
-        final Role role)
+        final Role role, boolean caseSensitive)
     {
         // We want to extend a RestrictedMemberReader with access details
         // that we cache.
-        super(memberReader, role);
+        super(memberReader, role, caseSensitive);
     }
 
     // Our little ad-hoc cache.
@@ -60,7 +60,7 @@ class SmartRestrictedMemberReader extends RestrictedMemberReader {
     public Map<? extends Member, Access> getMemberChildren(
         RolapMember member,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         // Strip off the rollup wrapper.
         if (member instanceof LimitedRollupMember) {
@@ -94,7 +94,7 @@ class SmartRestrictedMemberReader extends RestrictedMemberReader {
                 super.getMemberChildren(
                     member,
                     children,
-                    constraint);
+                    constraint, caseSensitive);
 
             memberToChildren.put(
                 member,

@@ -467,7 +467,7 @@ public class SegmentLoader {
 	public void accept( final Statement stmt ) {
         cacheMgr.execute( new SegmentCacheManager.Command<Void>() {
           @Override
-		public Void call() throws Exception {
+		public Void call(boolean caseSensitive) throws Exception {
             boolean atLeastOneActive = false;
             for ( Segment seg : groupingSetsList.getDefaultSegments() ) {
               final SegmentCacheIndex index = cacheMgr.getIndexRegistry().getIndex( seg.star );

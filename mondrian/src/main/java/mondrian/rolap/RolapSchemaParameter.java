@@ -123,30 +123,30 @@ public class RolapSchemaParameter implements Parameter, ParameterCompilable {
     }
 
     @Override
-	public Calc compile(ExpCompiler compiler) {
+	public Calc compile(ExpCompiler compiler, boolean caseSensitive) {
         // Parse and compile the expression for the default value.
         Exp defaultExp = compiler.getValidator()
             .getQuery()
             .getConnection()
             .parseExpression(defaultExpString);
-        defaultExp = compiler.getValidator().validate(defaultExp, true);
-        final Calc defaultCalc = defaultExp.accept(compiler);
+        defaultExp = compiler.getValidator().validate(defaultExp, true, caseSensitive);
+        final Calc defaultCalc = defaultExp.accept(compiler, caseSensitive);
 
         // Generate a program which looks at the assigned value first,
         // and if it is not set, returns the default expression.
-        return new GenericCalc(defaultExp.getType()) {
+        return new GenericCalc(defaultExp.getType(caseSensitive)) {
             @Override
 			public Calc[] getChildCalcs() {
                 return new Calc[] {defaultCalc};
             }
 
             @Override
-			public Object evaluate(Evaluator evaluator) {
+			public Object evaluate(Evaluator evaluator, boolean caseSensitive) {
                 if (value != null) {
                     return value;
                 }
                 if (cachedDefaultValue == null) {
-                    cachedDefaultValue = defaultCalc.evaluate(evaluator);
+                    cachedDefaultValue = defaultCalc.evaluate(evaluator, caseSensitive);
                 }
                 return cachedDefaultValue;
             }

@@ -95,7 +95,7 @@ public class SmartMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember substitute(RolapMember member) {
+	public RolapMember substitute(RolapMember member, boolean caseSensitive) {
         return member;
     }
 
@@ -114,32 +114,32 @@ public class SmartMemberReader implements MemberReader {
 
     // implement MemberReader
     @Override
-	public List<RolapMember> getMembers() {
+	public List<RolapMember> getMembers(boolean caseSensitive) {
         List<RolapMember> v = new ConcatenableList<>();
         RolapLevel[] levels = (RolapLevel[]) getHierarchy().getLevels();
         // todo: optimize by walking to children for members we know about
         for (RolapLevel level : levels) {
-            List<RolapMember> membersInLevel = getMembersInLevel(level);
+            List<RolapMember> membersInLevel = getMembersInLevel(level, caseSensitive);
             v.addAll(membersInLevel);
         }
         return v;
     }
 
     @Override
-	public List<RolapMember> getRootMembers() {
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
         if (rootMembers == null) {
-            rootMembers = source.getRootMembers();
+            rootMembers = source.getRootMembers(caseSensitive);
         }
         return rootMembers;
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
         TupleConstraint constraint =
-            sqlConstraintFactory.getLevelMembersConstraint(null);
-        return getMembersInLevel(level, constraint);
+            sqlConstraintFactory.getLevelMembersConstraint(null, caseSensitive);
+        return getMembersInLevel(level, constraint, caseSensitive);
     }
 
     protected void checkCacheStatus() {
@@ -148,20 +148,20 @@ public class SmartMemberReader implements MemberReader {
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level, TupleConstraint constraint)
+        RolapLevel level, TupleConstraint constraint, boolean caseSensitive)
     {
         synchronized (cacheHelper) {
             checkCacheStatus();
 
             List<RolapMember> members =
-                cacheHelper.getLevelMembersFromCache(level, constraint);
+                cacheHelper.getLevelMembersFromCache(level, constraint, caseSensitive);
             if (members != null) {
                 return members;
             }
 
             members =
                 source.getMembersInLevel(
-                    level, constraint);
+                    level, constraint, caseSensitive);
             cacheHelper.putLevelMembersInCache(level, constraint, members);
             return members;
         }
@@ -177,39 +177,39 @@ public class SmartMemberReader implements MemberReader {
     @Override
 	public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMember, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMember, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember parentMember,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         List<RolapMember> parentMembers =
             Collections.singletonList(parentMember);
-        return getMemberChildren(parentMembers, children, constraint);
+        return getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMembers, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         synchronized (cacheHelper) {
             checkCacheStatus();
@@ -217,7 +217,7 @@ public class SmartMemberReader implements MemberReader {
             List<RolapMember> missed = new ArrayList<>();
             for (RolapMember parentMember : parentMembers) {
                 List<RolapMember> list =
-                    cacheHelper.getChildrenFromCache(parentMember, constraint);
+                    cacheHelper.getChildrenFromCache(parentMember, constraint, caseSensitive);
                 if (list == null) {
                     // the null member has no children
                     if (!parentMember.isNull()) {
@@ -228,7 +228,7 @@ public class SmartMemberReader implements MemberReader {
                 }
             }
             if (missed.size() > 0) {
-                readMemberChildren(missed, children, constraint);
+                readMemberChildren(missed, children, constraint, caseSensitive);
             }
         }
         return Util.toNullValuesMap(children);
@@ -237,9 +237,9 @@ public class SmartMemberReader implements MemberReader {
     @Override
 	public RolapMember lookupMember(
         List<Segment> uniqueNameParts,
-        boolean failIfNotFound)
+        boolean failIfNotFound, boolean caseSensitive)
     {
-        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound);
+        return RolapUtil.lookupMember(this, uniqueNameParts, failIfNotFound, caseSensitive);
     }
 
     /**
@@ -254,7 +254,7 @@ public class SmartMemberReader implements MemberReader {
     protected void readMemberChildren(
         List<RolapMember> members,
         List<RolapMember> result,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         if (false) {
             // Pre-condition disabled. It makes sense to have the pre-
@@ -264,10 +264,10 @@ public class SmartMemberReader implements MemberReader {
             // But currently BasicQueryTest.testBasketAnalysis() fails this
             // assert, and I haven't had time to figure out why.
             //   -- jhyde, 2004/6/10.
-            Util.assertPrecondition(isSorted(members), "isSorted(members)");
+            Util.assertPrecondition(isSorted(members, caseSensitive), "isSorted(members)");
         }
         List<RolapMember> children = new ConcatenableList<>();
-        source.getMemberChildren(members, children, constraint);
+        source.getMemberChildren(members, children, constraint, caseSensitive);
         // Put them in a temporary hash table first. Register them later, when
         // we know their size (hence their 'cost' to the cache pool).
         Map<RolapMember, List<RolapMember>> tempMap =
@@ -304,7 +304,7 @@ public class SmartMemberReader implements MemberReader {
                 : tempMap.entrySet())
             {
                 final RolapMember member = entry.getKey();
-                if (cacheHelper.getChildrenFromCache(member, constraint)
+                if (cacheHelper.getChildrenFromCache(member, constraint, caseSensitive)
                     == null)
                 {
                     final List<RolapMember> list = entry.getValue();
@@ -318,7 +318,7 @@ public class SmartMemberReader implements MemberReader {
      * Returns true if every element of <code>members</code> is not null and is
      * strictly less than the following element; false otherwise.
      */
-    public boolean isSorted(List<RolapMember> members) {
+    public boolean isSorted(List<RolapMember> members, boolean caseSensitive) {
         final int count = members.size();
         if (count == 0) {
             return true;
@@ -331,7 +331,7 @@ public class SmartMemberReader implements MemberReader {
         for (int i = 1; i < count; i++) {
             RolapMember m0 = m1;
             m1 = members.get(i);
-            if (m1 == null || compare(m0, m1, false) >= 0) {
+            if (m1 == null || compare(m0, m1, false, caseSensitive) >= 0) {
                 return false;
             }
         }
@@ -339,21 +339,21 @@ public class SmartMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         // uncertain if this method needs to be synchronized
         synchronized (cacheHelper) {
             if (n == 0 || member.isNull()) {
                 return member;
             } else {
-                SiblingIterator iter = new SiblingIterator(this, member);
+                SiblingIterator iter = new SiblingIterator(this, member, caseSensitive);
                 if (n > 0) {
                     RolapMember sibling = null;
                     while (n-- > 0) {
                         if (!iter.hasNext()) {
                             return (RolapMember)
-                                member.getHierarchy().getNullMember();
+                                member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
                         }
-                        sibling = iter.nextMember();
+                        sibling = iter.nextMember(caseSensitive);
                     }
                     return sibling;
                 } else {
@@ -362,9 +362,9 @@ public class SmartMemberReader implements MemberReader {
                     while (n-- > 0) {
                         if (!iter.hasPrevious()) {
                             return (RolapMember)
-                                member.getHierarchy().getNullMember();
+                                member.getHierarchy(caseSensitive).getNullMember(caseSensitive);
                         }
-                        sibling = iter.previousMember();
+                        sibling = iter.previousMember(caseSensitive);
                     }
                     return sibling;
                 }
@@ -377,22 +377,23 @@ public class SmartMemberReader implements MemberReader {
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> list)
+        List<RolapMember> list,
+        boolean caseSensitive)
     {
         assert startMember != null;
         assert endMember != null;
         assert startMember.getLevel() == endMember.getLevel();
 
-        if (compare(startMember, endMember, false) > 0) {
+        if (compare(startMember, endMember, false, caseSensitive) > 0) {
             return;
         }
         list.add(startMember);
         if (startMember.equals(endMember)) {
             return;
         }
-        SiblingIterator siblings = new SiblingIterator(this, startMember);
+        SiblingIterator siblings = new SiblingIterator(this, startMember, caseSensitive);
         while (siblings.hasNext()) {
-            final RolapMember member = siblings.nextMember();
+            final RolapMember member = siblings.nextMember(caseSensitive);
             list.add(member);
             if (member.equals(endMember)) {
                 return;
@@ -412,7 +413,8 @@ public class SmartMemberReader implements MemberReader {
 	public int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual)
+        boolean siblingsAreEqual,
+        boolean caseSensitive)
     {
         if (m1.equals(m2)) {
             return 0;
@@ -424,7 +426,7 @@ public class SmartMemberReader implements MemberReader {
             } else if (m1.getParentMember() == null) {
                 // at this point we know that both parent members are null.
                 int pos1 = -1, pos2 = -1;
-                List<RolapMember> siblingList = getRootMembers();
+                List<RolapMember> siblingList = getRootMembers(caseSensitive);
                 for (int i = 0, n = siblingList.size(); i < n; i++) {
                     RolapMember child = siblingList.get(i);
                     if (child.equals(m1)) {
@@ -446,7 +448,7 @@ public class SmartMemberReader implements MemberReader {
                 return pos1 < pos2 ? -1 : 1;
             } else {
                 List<RolapMember> children = new ArrayList<>();
-                getMemberChildren(m1.getParentMember(), children);
+                getMemberChildren(m1.getParentMember(), children, caseSensitive);
                 int pos1 = -1, pos2 = -1;
                 for (int i = 0, n = children.size(); i < n; i++) {
                     RolapMember child = children.get(i);
@@ -472,15 +474,15 @@ public class SmartMemberReader implements MemberReader {
         int levelDepth1 = m1.getLevel().getDepth();
         int levelDepth2 = m2.getLevel().getDepth();
         if (levelDepth1 < levelDepth2) {
-            final int c = compare(m1, m2.getParentMember(), false);
+            final int c = compare(m1, m2.getParentMember(), false, caseSensitive);
             return (c == 0) ? -1 : c;
 
         } else if (levelDepth1 > levelDepth2) {
-            final int c = compare(m1.getParentMember(), m2, false);
+            final int c = compare(m1.getParentMember(), m2, false, caseSensitive);
             return (c == 0) ? 1 : c;
 
         } else {
-            return compare(m1.getParentMember(), m2.getParentMember(), false);
+            return compare(m1.getParentMember(), m2.getParentMember(), false, caseSensitive);
         }
     }
 
@@ -496,17 +498,17 @@ public class SmartMemberReader implements MemberReader {
         private List<RolapMember> siblings;
         private int position;
 
-        SiblingIterator(MemberReader reader, RolapMember member) {
+        SiblingIterator(MemberReader reader, RolapMember member, boolean caseSensitive) {
             this.reader = reader;
             RolapMember parent = member.getParentMember();
             List<RolapMember> siblingList;
             if (parent == null) {
-                siblingList = reader.getRootMembers();
+                siblingList = reader.getRootMembers(caseSensitive);
                 this.parentIterator = null;
             } else {
                 siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
-                this.parentIterator = new SiblingIterator(reader, parent);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
+                this.parentIterator = new SiblingIterator(reader, parent, caseSensitive);
             }
             this.siblings = siblingList;
             this.position = -1;
@@ -529,18 +531,18 @@ public class SmartMemberReader implements MemberReader {
                 && parentIterator.hasNext();
         }
 
-        Object next() {
-            return nextMember();
+        Object next(boolean caseSensitive) {
+            return nextMember(caseSensitive);
         }
 
-        RolapMember nextMember() {
+        RolapMember nextMember(boolean caseSensitive) {
             if (++this.position >= this.siblings.size()) {
                 if (parentIterator == null) {
                     throw Util.newInternal("there is no next member");
                 }
-                RolapMember parent = parentIterator.nextMember();
+                RolapMember parent = parentIterator.nextMember(caseSensitive);
                 List<RolapMember> siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
                 this.siblings = siblingList;
                 this.position = 0;
             }
@@ -553,18 +555,18 @@ public class SmartMemberReader implements MemberReader {
                 && parentIterator.hasPrevious();
         }
 
-        Object previous() {
-            return previousMember();
+        Object previous(boolean caseSensitive) {
+            return previousMember(caseSensitive);
         }
 
-        RolapMember previousMember() {
+        RolapMember previousMember(boolean caseSensitive) {
             if (--this.position < 0) {
                 if (parentIterator == null) {
                     throw Util.newInternal("there is no next member");
                 }
-                RolapMember parent = parentIterator.previousMember();
+                RolapMember parent = parentIterator.previousMember(caseSensitive);
                 List<RolapMember> siblingList = new ArrayList<>();
-                reader.getMemberChildren(parent, siblingList);
+                reader.getMemberChildren(parent, siblingList, caseSensitive);
                 this.siblings = siblingList;
                 this.position = this.siblings.size() - 1;
             }
@@ -578,23 +580,23 @@ public class SmartMemberReader implements MemberReader {
     }
 
     @Override
-	public RolapMember getDefaultMember() {
+	public RolapMember getDefaultMember(boolean caseSensitive) {
         RolapMember defaultMember =
-            (RolapMember) getHierarchy().getDefaultMember();
+            (RolapMember) getHierarchy().getDefaultMember(caseSensitive);
         if (defaultMember != null) {
             return defaultMember;
         }
-        return getRootMembers().get(0);
+        return getRootMembers(caseSensitive).get(0);
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
         // This method deals with ragged hierarchies but not access-controlled
         // hierarchies - assume these have RestrictedMemberReader possibly
         // wrapped in a SubstitutingMemberReader.
         RolapMember parentMember = member.getParentMember();
         // Skip over hidden parents.
-        while (parentMember != null && parentMember.isHidden()) {
+        while (parentMember != null && parentMember.isHidden(caseSensitive)) {
             parentMember = parentMember.getParentMember();
         }
         return parentMember;

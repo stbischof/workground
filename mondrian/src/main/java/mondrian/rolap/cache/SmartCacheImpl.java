@@ -87,10 +87,10 @@ public abstract class SmartCacheImpl<K, V>
     }
 
     @Override
-	public void execute(SmartCache.SmartCacheTask<K, V> task) {
+	public void execute(SmartCache.SmartCacheTask<K, V> task, boolean caseSensitive) {
         lock.writeLock().lock();
         try {
-            task.execute(iteratorImpl());
+            task.execute(iteratorImpl(), caseSensitive);
         } finally {
             lock.writeLock().unlock();
         }

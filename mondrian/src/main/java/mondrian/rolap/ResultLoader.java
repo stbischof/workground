@@ -62,7 +62,7 @@ public class ResultLoader {
     }
 
 
-    public boolean loadResult() throws SQLException {
+    public boolean loadResult( boolean caseSensitive) throws SQLException {
 /*
         if (limit > 0 && limit < ++fetchCount) {
             throw MondrianResource.instance().MemberFetchLimitExceeded
@@ -73,7 +73,7 @@ public class ResultLoader {
             int column = 0;
             for (TargetBase target : targets) {
                 target.removeCurrMember();
-                column = target.addRow(stmt, column);
+                column = target.addRow(stmt, column, caseSensitive);
             }
         } else {
             int firstEnumTarget = 0;
@@ -90,7 +90,7 @@ public class ResultLoader {
             }
             resetCurrMembers(partialRow);
             addTargets(
-                0, firstEnumTarget, enumTargetCount, srcMemberIdxes, message);
+                0, firstEnumTarget, enumTargetCount, srcMemberIdxes, message, caseSensitive);
             if (newPartialResult != null) {
                 savePartialResult(newPartialResult);
             }
@@ -176,7 +176,7 @@ public class ResultLoader {
         int currTargetIdx,
         int nEnumTargets,
         int[] srcMemberIdxes,
-        String message)
+        String message, boolean caseSensitive)
     {
         TargetBase currTarget = targets.get(currTargetIdx);
         for (int i = 0; i < currTarget.getSrcMembers().size(); i++) {
@@ -190,14 +190,14 @@ public class ResultLoader {
                 }
                 addTargets(
                     currEnumTargetIdx + 1, nextTargetIdx, nEnumTargets,
-                    srcMemberIdxes, message);
+                    srcMemberIdxes, message, caseSensitive);
             } else {
                 int column = 0;
                 int enumTargetIdx = 0;
                 for (TargetBase target : targets) {
                     if (target.getSrcMembers() == null) {
                         try {
-                            column = target.addRow(stmt, column);
+                            column = target.addRow(stmt, column, caseSensitive);
                         } catch (Throwable e) {
                             throw Util.newError(e, message);
                         }

@@ -43,7 +43,7 @@ public interface MemberReader extends MemberSource {
      * Returns {@link Hierarchy#getNullMember} if we run off the beginning or
      * end of the level.
      */
-    RolapMember getLeadMember(RolapMember member, int n);
+    RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive);
 
     /**
      * Returns all of the members in <code>level</code> whose ordinal lies
@@ -56,7 +56,7 @@ public interface MemberReader extends MemberSource {
      * @return {@link List} of {@link RolapMember}
      */
     List<RolapMember> getMembersInLevel(
-        RolapLevel level);
+        RolapLevel level, boolean caseSensitive);
 
     /**
      * Writes all members between <code>startMember</code> and
@@ -66,7 +66,8 @@ public interface MemberReader extends MemberSource {
         RolapLevel level,
         RolapMember startMember,
         RolapMember endMember,
-        List<RolapMember> list);
+        List<RolapMember> list,
+        boolean caseSensitive);
 
     /**
      * Compares two members according to their order in a prefix ordered
@@ -81,7 +82,8 @@ public interface MemberReader extends MemberSource {
     int compare(
         RolapMember m1,
         RolapMember m2,
-        boolean siblingsAreEqual);
+        boolean siblingsAreEqual,
+        boolean caseSensitive);
 
     /**
      * Populates a list of the children of a Member, optionally applying a
@@ -99,7 +101,7 @@ public interface MemberReader extends MemberSource {
     Map<? extends Member, Access> getMemberChildren(
         RolapMember member,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint);
+        MemberChildrenConstraint constraint, boolean caseSensitive);
 
     /**
      * Populates a list of the children of a given set of Members, optionally
@@ -117,7 +119,8 @@ public interface MemberReader extends MemberSource {
     Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint);
+        MemberChildrenConstraint constraint,
+        boolean caseSensitive);
 
     /**
      * Returns the members in the given Level, optionally applying a constraint.
@@ -128,7 +131,7 @@ public interface MemberReader extends MemberSource {
      */
     List<RolapMember> getMembersInLevel(
         RolapLevel level,
-        TupleConstraint constraint);
+        TupleConstraint constraint, boolean caseSensitive);
 
     /**
      * Returns the number of members in this level.
@@ -140,9 +143,9 @@ public interface MemberReader extends MemberSource {
 
     MemberBuilder getMemberBuilder();
 
-    RolapMember getDefaultMember();
+    RolapMember getDefaultMember(boolean caseSensitive);
 
-    RolapMember getMemberParent(RolapMember member);
+    RolapMember getMemberParent(RolapMember member, boolean caseSensitive);
 
     /**
      * Substitutes a given member.
@@ -155,7 +158,7 @@ public interface MemberReader extends MemberSource {
      * @param member Member
      * @return Substitute member
      */
-    RolapMember substitute(RolapMember member);
+    RolapMember substitute(RolapMember member, boolean caseSensitive);
 
     /**
      * Returns the member which was substituted.

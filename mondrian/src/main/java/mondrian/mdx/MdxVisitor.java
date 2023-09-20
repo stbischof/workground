@@ -97,7 +97,7 @@ public interface MdxVisitor {
      *
      * @see HierarchyExpressionImpl#accept(MdxVisitor)
      */
-    Object visit(HierarchyExpressionImpl hierarchyExpr);
+    Object visit(HierarchyExpressionImpl hierarchyExpr, boolean caseSensitive);
 
     /**
      * Visits a LevelExpr.

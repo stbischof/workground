@@ -170,9 +170,10 @@ public class RolapHierarchy extends HierarchyBase {
         String displayFolder,
         boolean hasAll,
         RolapHierarchy closureFor,
-        Map<String, Object> metadata)
+        Map<String, Object> metadata, boolean caseSensitive)
     {
-        super(dimension, subName, caption, visible, description, hasAll);
+        super(dimension, subName, caption, visible, description, hasAll, true);
+        //TODO UTILS
         this.displayFolder = displayFolder;
         this.metadata = metadata;
         this.allLevelName = "(All)";
@@ -207,7 +208,7 @@ public class RolapHierarchy extends HierarchyBase {
                     RolapLevel.HideMemberCondition.Never,
                     LevelType.REGULAR,
                     "",
-                    Map.of());
+                    Map.of(), caseSensitive);
         } else {
             this.levels = new RolapLevel[0];
         }
@@ -236,7 +237,7 @@ public class RolapHierarchy extends HierarchyBase {
                 RolapLevel.HideMemberCondition.Never,
                 LevelType.NULL,
                 "",
-                Map.of());
+                Map.of(), caseSensitive);
     }
 
     /**
@@ -251,7 +252,8 @@ public class RolapHierarchy extends HierarchyBase {
         RolapCube cube,
         RolapDimension dimension,
         org.eclipse.daanse.olap.rolap.dbmapper.model.api.Hierarchy xmlHierarchy,
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.CubeDimension xmlCubeDimension)
+        org.eclipse.daanse.olap.rolap.dbmapper.model.api.CubeDimension xmlCubeDimension,
+        boolean caseSensitive)
     {
         this(
             dimension,
@@ -262,7 +264,7 @@ public class RolapHierarchy extends HierarchyBase {
             xmlHierarchy.displayFolder(),
             xmlHierarchy.hasAll(),
             null,
-            createMetadataMap(xmlHierarchy.annotations()));
+            createMetadataMap(xmlHierarchy.annotations()), caseSensitive);
 
         assert !(this instanceof RolapCubeHierarchy);
 
@@ -325,11 +327,11 @@ public class RolapHierarchy extends HierarchyBase {
                 null,
                 RolapLevel.HideMemberCondition.Never,
                 LevelType.REGULAR, ALL_LEVEL_CARDINALITY,
-                Map.of());
+                Map.of(), caseSensitive);
         allLevel.init(xmlCubeDimension);
         this.allMember = new RolapMemberBase(
             null, allLevel, RolapUtil.sqlNullValue,
-            allMemberName, Member.MemberType.ALL);
+            allMemberName, Member.MemberType.ALL, caseSensitive);
         // assign "all member" caption
         if (xmlHierarchy.allMemberCaption() != null
             && xmlHierarchy.allMemberCaption().length() > 0)
@@ -364,12 +366,12 @@ public class RolapHierarchy extends HierarchyBase {
                     throw MondrianResource.instance()
                         .LevelMustHaveNameExpression.ex(xmlLevel.name());
                 }
-                levels[i + 1] = new RolapLevel(this, i + 1, xmlLevel);
+                levels[i + 1] = new RolapLevel(this, i + 1, xmlLevel, caseSensitive);
             }
         } else {
             this.levels = new RolapLevel[xmlHierarchy.levels().size()];
             for (int i = 0; i < xmlHierarchy.levels().size(); i++) {
-                levels[i] = new RolapLevel(this, i, xmlHierarchy.levels().get(i));
+                levels[i] = new RolapLevel(this, i, xmlHierarchy.levels().get(i), caseSensitive);
             }
         }
 
@@ -457,7 +459,7 @@ public class RolapHierarchy extends HierarchyBase {
     /**
      * Initializes a hierarchy within the context of a cube.
      */
-    void init(CubeDimension xmlDimension) {
+    void init(CubeDimension xmlDimension, boolean caseSensitive) {
         // first create memberReader
         if (this.memberReader == null) {
             this.memberReader = getRolapSchema().createMemberReader(
@@ -503,7 +505,7 @@ public class RolapHierarchy extends HierarchyBase {
                 throw Util.newInternal(
                     new StringBuilder("Can not find Default Member with name \"")
                         .append(defaultMemberName).append("\" in Hierarchy \"")
-                        .append(getName()).append("\"").toString());
+                        .append(getName(caseSensitive)).append("\"").toString());
             }
         }
     }
@@ -521,7 +523,7 @@ public class RolapHierarchy extends HierarchyBase {
         return metadata;
     }
 
-    RolapLevel newMeasuresLevel() {
+    RolapLevel newMeasuresLevel(boolean caseSensitive) {
         RolapLevel level =
             new RolapLevel(
                 this,
@@ -544,7 +546,7 @@ public class RolapHierarchy extends HierarchyBase {
                 RolapLevel.HideMemberCondition.Never,
                 LevelType.REGULAR,
                 "",
-                Map.of());
+                Map.of(), caseSensitive);
         this.levels = Util.append(this.levels, level);
         return level;
     }
@@ -606,10 +608,10 @@ public class RolapHierarchy extends HierarchyBase {
     }
 
     @Override
-	public Member getDefaultMember() {
+	public Member getDefaultMember(boolean caseSensitive) {
         // use lazy initialization to get around bootstrap issues
         if (defaultMember == null) {
-            List<RolapMember> rootMembers = memberReader.getRootMembers();
+            List<RolapMember> rootMembers = memberReader.getRootMembers(caseSensitive);
             final SchemaReader schemaReader =
                 getRolapSchema().getSchemaReader();
             List<RolapMember> calcMemberList =
@@ -617,7 +619,7 @@ public class RolapHierarchy extends HierarchyBase {
             for (RolapMember rootMember
                 : UnionIterator.over(rootMembers, calcMemberList))
             {
-                if (rootMember.isHidden()) {
+                if (rootMember.isHidden(caseSensitive)) {
                     continue;
                 }
                 // Note: We require that the root member is not a hidden member
@@ -637,10 +639,10 @@ public class RolapHierarchy extends HierarchyBase {
     }
 
     @Override
-	public Member getNullMember() {
+	public Member getNullMember(boolean caseSensitive) {
         // use lazy initialization to get around bootstrap issues
         if (nullMember == null) {
-            nullMember = new RolapNullMember(nullLevel);
+            nullMember = new RolapNullMember(nullLevel, caseSensitive);
         }
         return nullMember;
     }
@@ -658,22 +660,22 @@ public class RolapHierarchy extends HierarchyBase {
         Member parent,
         Level level,
         String name,
-        Formula formula)
+        Formula formula, boolean caseSensitive)
     {
         if (formula == null) {
             return new RolapMemberBase(
-                (RolapMember) parent, (RolapLevel) level, name);
-        } else if (level.getDimension().isMeasures()) {
+                (RolapMember) parent, (RolapLevel) level, name, caseSensitive);
+        } else if (level.getDimension(caseSensitive).isMeasures()) {
             return new RolapCalculatedMeasure(
-                (RolapMember) parent, (RolapLevel) level, name, formula);
+                (RolapMember) parent, (RolapLevel) level, name, formula, caseSensitive);
         } else {
             return new RolapCalculatedMember(
-                (RolapMember) parent, (RolapLevel) level, name, formula);
+                (RolapMember) parent, (RolapLevel) level, name, formula, caseSensitive);
         }
     }
 
-    String getAlias() {
-        return getName();
+    String getAlias(boolean caseSensitive) {
+        return getName(caseSensitive);
     }
 
     /**
@@ -933,35 +935,35 @@ public class RolapHierarchy extends HierarchyBase {
      * @pre role != null
      * @post return != null
      */
-    MemberReader createMemberReader(Role role) {
-        final Access access = role.getAccess(this);
+    MemberReader createMemberReader(Role role, boolean caseSensitive) {
+        final Access access = role.getAccess(this, caseSensitive);
         switch (access) {
         case NONE:
-            role.getAccess(this); // todo: remove
+            role.getAccess(this, caseSensitive); // todo: remove
             throw Util.newInternal(
                 "Illegal access to members of hierarchy " + this);
         case ALL:
             return (isRagged())
-                ? new SmartRestrictedMemberReader(getMemberReader(), role)
+                ? new SmartRestrictedMemberReader(getMemberReader(), role, caseSensitive)
                 : getMemberReader();
 
         case CUSTOM:
             final HierarchyAccess hierarchyAccess =
-                role.getAccessDetails(this);
+                role.getAccessDetails(this, caseSensitive);
             final RollupPolicy rollupPolicy =
                 hierarchyAccess.getRollupPolicy();
             final NumericType returnType = new NumericType();
             switch (rollupPolicy) {
             case FULL:
                 return new SmartRestrictedMemberReader(
-                    getMemberReader(), role);
+                    getMemberReader(), role, caseSensitive);
             case PARTIAL:
                 Type memberType1 =
                     new mondrian.olap.type.MemberType(
-                        getDimension(),
+                        getDimension(caseSensitive),
                         this,
                         null,
-                        null);
+                        null, caseSensitive);
                 SetType setType = new SetType(memberType1);
                 TupleListCalc tupleListCalc =
                     new AbstractListCalc(
@@ -969,16 +971,16 @@ public class RolapHierarchy extends HierarchyBase {
                     {
                         @Override
 						public TupleList evaluateList(
-                            Evaluator evaluator)
+                            Evaluator evaluator, boolean caseSensitive)
                         {
                             return
                                 new UnaryTupleList(
                                     getLowestMembersForAccess(
-                                        evaluator, hierarchyAccess, null));
+                                        evaluator, hierarchyAccess, null, caseSensitive));
                         }
 
                         @Override
-						public boolean dependsOn(Hierarchy hierarchy) {
+						public boolean dependsOn(Hierarchy hierarchy, boolean caseSensitive) {
                             return true;
                         }
                     };
@@ -991,20 +993,21 @@ public class RolapHierarchy extends HierarchyBase {
                             @Override
 							public Calc compileCall(
 								ResolvedFunCall call,
-                                ExpCompiler compiler)
+                                ExpCompiler compiler,
+                                boolean caseSensitive)
                             {
                                 return partialCalc;
                             }
 
                             @Override
-							public void unparse(Exp[] args, PrintWriter pw) {
+							public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
                                 pw.print("$RollupAccessibleChildren()");
                             }
                         },
                         new Exp[0],
                         returnType);
                 return new LimitedRollupSubstitutingMemberReader(
-                    getMemberReader(), role, hierarchyAccess, partialExp);
+                    getMemberReader(), role, hierarchyAccess, partialExp, caseSensitive);
 
             case HIDDEN:
                 Exp hiddenExp =
@@ -1012,20 +1015,20 @@ public class RolapHierarchy extends HierarchyBase {
                         new FunDefBase("$x", "x", "In") {
                             @Override
 							public Calc compileCall(
-									ResolvedFunCall call, ExpCompiler compiler)
+									ResolvedFunCall call, ExpCompiler compiler, boolean caseSensitive)
                             {
                                 return ConstantCalcs.nullCalcOf(returnType);
                             }
 
                             @Override
-							public void unparse(Exp[] args, PrintWriter pw) {
+							public void unparse(Exp[] args, PrintWriter pw, boolean caseSensitive) {
                                 pw.print("$RollupAccessibleChildren()");
                             }
                         },
                         new Exp[0],
                         returnType);
                 return new LimitedRollupSubstitutingMemberReader(
-                    getMemberReader(), role, hierarchyAccess, hiddenExp);
+                    getMemberReader(), role, hierarchyAccess, hiddenExp, caseSensitive);
             default:
                 throw Util.unexpected(rollupPolicy);
             }
@@ -1046,7 +1049,7 @@ public class RolapHierarchy extends HierarchyBase {
     List<Member> getLowestMembersForAccess(
         Evaluator evaluator,
         HierarchyAccess hAccess,
-        Map<Member, Access> membersWithAccess)
+        Map<Member, Access> membersWithAccess, boolean caseSensitive)
     {
         if (membersWithAccess == null) {
             membersWithAccess =
@@ -1060,7 +1063,7 @@ public class RolapHierarchy extends HierarchyBase {
             Member member = entry.getKey();
             Access access = membersWithAccess.get(member);
             if (access == null) {
-                access = hAccess.getAccess(member);
+                access = hAccess.getAccess(member, caseSensitive);
             }
             if (access != Access.ALL) {
                 goesLower = true;
@@ -1085,7 +1088,7 @@ public class RolapHierarchy extends HierarchyBase {
             }
             // Now pass it recursively to this method.
             return getLowestMembersForAccess(
-                evaluator, hAccess, newMap);
+                evaluator, hAccess, newMap, caseSensitive);
         }
         return new ArrayList<>(membersWithAccess.keySet());
     }
@@ -1114,7 +1117,7 @@ public class RolapHierarchy extends HierarchyBase {
      * in a parent-child hierarchy, so we only need need to validate the
      * expression once.
      */
-    synchronized Exp getAggregateChildrenExpression() {
+    synchronized Exp getAggregateChildrenExpression(boolean caseSensitive) {
         if (aggregateChildrenExpression == null) {
             UnresolvedFunCallImpl fc = new UnresolvedFunCallImpl(
                 "$AggregateChildren",
@@ -1122,7 +1125,7 @@ public class RolapHierarchy extends HierarchyBase {
                 new Exp[] {new HierarchyExpressionImpl(this)});
             Validator validator =
                     Util.createSimpleValidator(BuiltinFunTable.instance());
-            aggregateChildrenExpression = fc.accept(validator);
+            aggregateChildrenExpression = fc.accept(validator, caseSensitive);
         }
         return aggregateChildrenExpression;
     }
@@ -1192,23 +1195,23 @@ public class RolapHierarchy extends HierarchyBase {
      */
     RolapDimension createClosedPeerDimension(
         RolapLevel src,
-        Closure clos)
+        Closure clos, boolean caseSensitive)
     {
         // REVIEW (mb): What about attribute primaryKeyTable?
 
         // Create a peer dimension.
         RolapDimension peerDimension = new RolapDimension(
             dimension.getSchema(),
-            new StringBuilder(dimension.getName()).append("$Closure").toString(),
+            new StringBuilder(dimension.getName(caseSensitive)).append("$Closure").toString(),
             null,
             true,
-            "Closure dimension for parent-child hierarchy " + getName(),
+            "Closure dimension for parent-child hierarchy " + getName(caseSensitive),
             DimensionType.STANDARD_DIMENSION,
             dimension.isHighCardinality(),
             Map.of());
 
         // Create a peer hierarchy.
-        RolapHierarchy peerHier = peerDimension.newHierarchy(null, true, this);
+        RolapHierarchy peerHier = peerDimension.newHierarchy(null, true, this, caseSensitive);
         peerHier.allMemberName = getAllMemberName();
         peerHier.allMember = (RolapMemberBase) getAllMember();
         peerHier.allLevelName = getAllLevelName();
@@ -1240,7 +1243,7 @@ public class RolapHierarchy extends HierarchyBase {
                 src.getHideMemberCondition(),
                 src.getLevelType(),
                 "",
-                Map.of());
+                Map.of(), caseSensitive);
         peerHier.levels = Util.append(peerHier.levels, level);
 
         // Create lower level.
@@ -1271,7 +1274,7 @@ public class RolapHierarchy extends HierarchyBase {
             src.getHideMemberCondition(),
             src.getLevelType(),
             "",
-            Map.of());
+            Map.of(), caseSensitive);
         peerHier.levels = Util.append(peerHier.levels, sublevel);
 
         return peerDimension;
@@ -1334,13 +1337,13 @@ public class RolapHierarchy extends HierarchyBase {
      * }".
      */
     static class RolapNullMember extends RolapMemberBase {
-        RolapNullMember(final RolapLevel level) {
+        RolapNullMember(final RolapLevel level, boolean caseSensitive) {
             super(
                 null,
                 level,
                 RolapUtil.sqlNullValue,
                 RolapUtil.mdxNullLiteral(),
-                MemberType.NULL);
+                MemberType.NULL, caseSensitive);
             assert level != null;
         }
     }
@@ -1356,13 +1359,13 @@ public class RolapHierarchy extends HierarchyBase {
         private RolapResult.ValueFormatter cellFormatter;
 
         public RolapCalculatedMeasure(
-            RolapMember parent, RolapLevel level, String name, Formula formula)
+            RolapMember parent, RolapLevel level, String name, Formula formula, boolean caseSensitive)
         {
-            super(parent, level, name, formula);
+            super(parent, level, name, formula, caseSensitive);
         }
 
         @Override
-		public synchronized void setProperty(String name, Object value) {
+		public synchronized void setProperty(String name, Object value, boolean caseSensitive) {
             if (name.equals(Property.CELL_FORMATTER.getName())) {
                 String cellFormatterClass = (String) value;
                 FormatterCreateContext formatterContext =
@@ -1375,7 +1378,7 @@ public class RolapHierarchy extends HierarchyBase {
             }
             if (name.equals(Property.CELL_FORMATTER_SCRIPT.name)) {
                 String language = (String) getPropertyValue(
-                    Property.CELL_FORMATTER_SCRIPT_LANGUAGE.name);
+                    Property.CELL_FORMATTER_SCRIPT_LANGUAGE.name, caseSensitive);
                 String scriptText = (String) value;
                 FormatterCreateContext formatterContext =
                     new FormatterCreateContext.Builder(getUniqueName())
@@ -1385,7 +1388,7 @@ public class RolapHierarchy extends HierarchyBase {
                     FormatterFactory.instance()
                         .createCellFormatter(formatterContext));
             }
-            super.setProperty(name, value);
+            super.setProperty(name, value, caseSensitive);
         }
 
         @Override
@@ -1490,11 +1493,11 @@ public class RolapHierarchy extends HierarchyBase {
             MemberReader memberReader,
             Role role,
             HierarchyAccess hierarchyAccess,
-            Exp exp)
+            Exp exp, boolean caseSensitive)
         {
             super(
                 new SmartRestrictedMemberReader(
-                    memberReader, role));
+                    memberReader, role, caseSensitive));
             this.hierarchyAccess = hierarchyAccess;
             this.exp = exp;
         }
@@ -1503,24 +1506,24 @@ public class RolapHierarchy extends HierarchyBase {
 		public Map<? extends Member, Access> getMemberChildren(
             RolapMember member,
             List<RolapMember> memberChildren,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             return memberReader.getMemberChildren(
                 member,
                 new SubstitutingMemberList(memberChildren),
-                constraint);
+                constraint, caseSensitive);
         }
 
         @Override
 		public Map<? extends Member, Access> getMemberChildren(
             List<RolapMember> parentMembers,
             List<RolapMember> children,
-            MemberChildrenConstraint constraint)
+            MemberChildrenConstraint constraint, boolean caseSensitive)
         {
             return memberReader.getMemberChildren(
                 parentMembers,
                 new SubstitutingMemberList(children),
-                constraint);
+                constraint, caseSensitive);
         }
 
         public RolapMember substitute(RolapMember member, Access access) {
@@ -1555,11 +1558,11 @@ public class RolapHierarchy extends HierarchyBase {
         }
 
         @Override
-		public RolapMember substitute(final RolapMember member) {
+		public RolapMember substitute(final RolapMember member, boolean caseSensitive) {
             if (member == null) {
                 return null;
             }
-            return substitute(member, hierarchyAccess.getAccess(member));
+            return substitute(member, hierarchyAccess.getAccess(member, caseSensitive));
         }
 
         @Override
@@ -1602,12 +1605,12 @@ public class RolapHierarchy extends HierarchyBase {
         }
 
         @Override
-		public String getName() {
+		public String getName(boolean caseSensitive) {
             return "$";
         }
 
         @Override
-		public String getDescription() {
+		public String getDescription(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -1620,14 +1623,14 @@ public class RolapHierarchy extends HierarchyBase {
             if (!(s instanceof NameSegment nameSegment)) {
                 return null;
             }
-            if (Util.equalName(nameSegment.getName(), dimension.getName(), schemaReader.getContext().getConfig().caseSensitive())) {
+            if (Util.equalName(nameSegment.getName(), dimension.getName(schemaReader.getContext().getConfig().caseSensitive()), schemaReader.getContext().getConfig().caseSensitive())) {
                 return dimension;
             }
             // Archaic form <dimension>.<hierarchy>, e.g. [Time.Weekly].[1997]
             if (!MondrianProperties.instance().SsasCompatibleNaming.get()
                 && Util.equalName(
                     nameSegment.getName(),
-                new StringBuilder(dimension.getName()).append(".").append(subName).toString(),
+                new StringBuilder(dimension.getName(schemaReader.getContext().getConfig().caseSensitive())).append(".").append(subName).toString(),
                 schemaReader.getContext().getConfig().caseSensitive()))
             {
                 return RolapHierarchy.this;
@@ -1636,22 +1639,22 @@ public class RolapHierarchy extends HierarchyBase {
         }
 
         @Override
-		public String getQualifiedName() {
+		public String getQualifiedName(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-		public String getCaption() {
+		public String getCaption(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-		public Hierarchy getHierarchy() {
+		public Hierarchy getHierarchy(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-		public Dimension getDimension() {
+		public Dimension getDimension(boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
 
@@ -1661,7 +1664,7 @@ public class RolapHierarchy extends HierarchyBase {
         }
 
         @Override
-		public String getLocalized(LocalizedProperty prop, Locale locale) {
+		public String getLocalized(LocalizedProperty prop, Locale locale, boolean caseSensitive) {
             throw new UnsupportedOperationException();
         }
     }

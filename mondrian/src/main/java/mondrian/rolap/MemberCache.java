@@ -84,7 +84,7 @@ interface MemberCache {
      * @param key cache key, created by {@link #makeKey}
      * @return previous member with that key, or null
      */
-    RolapMember removeMember(Object key);
+    RolapMember removeMember(Object key, boolean caseSensitive);
 
     /**
      * Removes the designated {@link RolapMember} and all its descendants.
@@ -110,7 +110,7 @@ interface MemberCache {
      */
     List<RolapMember> getChildrenFromCache(
         RolapMember parent,
-        MemberChildrenConstraint constraint);
+        MemberChildrenConstraint constraint, boolean caseSensitive);
 
     /**
      * Returns the members of <code>level</code> if they are currently in the
@@ -126,7 +126,7 @@ interface MemberCache {
      */
     List<RolapMember> getLevelMembersFromCache(
         RolapLevel level,
-        TupleConstraint constraint);
+        TupleConstraint constraint, boolean caseSensitive);
 
     /**
      * Registers that the children of <code>member</code> are

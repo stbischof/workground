@@ -207,7 +207,7 @@ public class RolapEvaluator implements Evaluator {
       aggregationListsInner.add( aggregationList );
       List<Member> tuple = aggregationList.get( 0 );
       for ( Member member : tuple ) {
-        setContext( member.getHierarchy().getAllMember() );
+        setContext( member.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getAllMember() );
       }
     }
     this.aggregationLists =
@@ -286,7 +286,7 @@ public boolean needToReturnNullForUnrelatedDimension( Member[] members ) {
       return false;
     }
     RolapCube virtualCube = getCube();
-    if ( virtualCube.shouldIgnoreUnrelatedDimensions( baseCube.getName() ) ) {
+    if ( virtualCube.shouldIgnoreUnrelatedDimensions( baseCube.getName(getCube().getContext().getConfig().caseSensitive()) ) ) {
       return false;
     }
     Set<Dimension> nonJoiningDimensions = baseCube.nonJoiningDimensions( members );
@@ -525,11 +525,11 @@ public final int hashCode() {
    * @param tuples
    *          slicer
    */
-  public final void setSlicerTuples( TupleList tuples ) {
+  public final void setSlicerTuples( TupleList tuples, boolean caseSensitive ) {
     slicerTuples = tuples;
     if ( tuples != null ) {
       disjointSlicerTuple = SqlConstraintUtils.isDisjointTuple( tuples );
-      multiLevelSlicerTuple = SqlConstraintUtils.hasMultipleLevelSlicer( this );
+      multiLevelSlicerTuple = SqlConstraintUtils.hasMultipleLevelSlicer( this, caseSensitive );
       slicerPredicateInfo = new CompoundPredicateInfo( tuples, (RolapMeasure) currentMembers[0], this );
     } else {
       disjointSlicerTuple = false;
@@ -574,11 +574,11 @@ public final int hashCode() {
     int toRemove = 0;
     boolean[] removeMember = new boolean[slicerTuples.getArity()];
     for ( int i = 0; i < slicerTuples.get( 0 ).size(); i++ ) {
-      Hierarchy h = slicerTuples.get( 0 ).get( i ).getHierarchy();
+      Hierarchy h = slicerTuples.get( 0 ).get( i ).getHierarchy(getCube().getContext().getConfig().caseSensitive());
       // check to see if the current member is overridden
       // and not expanding.
       if ( !( getContext( h ) instanceof RolapResult.CompoundSlicerRolapMember ) && ( getExpanding() != null
-          && ( !getExpanding().getHierarchy().equals( h )
+          && ( !getExpanding().getHierarchy(getCube().getContext().getConfig().caseSensitive()).equals( h )
               || !( getExpanding() instanceof RolapResult.CompoundSlicerRolapMember ) ) ) ) {
         toRemove++;
         removeMember[i] = true;
@@ -621,7 +621,7 @@ public final Member setContext( Member member ) {
     // 'setContext(member, true)'. We inline the logic for performance.
 
     final RolapMemberBase m = (RolapMemberBase) member;
-    final int ordinal = m.getHierarchy().getOrdinalInCube();
+    final int ordinal = m.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getOrdinalInCube();
     final RolapMember previous = currentMembers[ordinal];
 
     // If the context is unchanged, save ourselves some effort. It would be
@@ -658,7 +658,7 @@ public final Member setContext( Member member ) {
   @Override
 public final void setContext( Member member, boolean safe ) {
     final RolapMemberBase m = (RolapMemberBase) member;
-    final int ordinal = m.getHierarchy().getOrdinalInCube();
+    final int ordinal = m.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getOrdinalInCube();
     final RolapMember previous = currentMembers[ordinal];
 
     // If the context is unchanged, save ourselves some effort. It would be
@@ -819,7 +819,7 @@ public final Object evaluateCurrent() {
         }
     }
     final int savepoint = savepoint();
-    maxSolveMember.setContextIn( this );
+    maxSolveMember.setContextIn( this, getCube().getContext().getConfig().caseSensitive() );
     final Calc calc = maxSolveMember.getCompiledExpression( root );
     final Object o;
     try {
@@ -833,7 +833,7 @@ public final Object evaluateCurrent() {
     return o;
   }
 
-  void setExpanding( Member member ) {
+  void setExpanding( Member member, boolean caseSensitive ) {
     assert member != null;
     ensureCommandCapacity( commandCount + 3 );
     commands[commandCount++] = this.expandingMember;
@@ -844,7 +844,7 @@ public final Object evaluateCurrent() {
 
     final int totalCommandCount = commandCount + ancestorCommandCount;
     if ( totalCommandCount > root.recursionCheckCommandCount ) {
-      checkRecursion( this, commandCount - 4 );
+      checkRecursion( this, commandCount - 4, caseSensitive );
 
       // Set the threshold where we will next check for infinite
       // recursion.
@@ -874,7 +874,7 @@ public final Object evaluateCurrent() {
    * @throws mondrian.olap.fun.MondrianEvaluationException
    *           if there is a loop
    */
-  private static void checkRecursion( RolapEvaluator eval, int c ) {
+  private static void checkRecursion( RolapEvaluator eval, int c, boolean caseSensitive ) {
     RolapMember[] members = eval.currentMembers.clone();
 
     // Find an ancestor evaluator that has identical context to this one:
@@ -900,7 +900,7 @@ public final Object evaluateCurrent() {
               throw FunUtil.newEvalException( null,
                   new StringBuilder("Infinite loop while evaluating calculated member '")
                       .append(eval.expandingMember).append("'; context stack is ")
-                      .append(eval.getContextString()).toString() );
+                      .append(eval.getContextString(caseSensitive)).toString() );
             }
             break;
           default:
@@ -911,7 +911,7 @@ public final Object evaluateCurrent() {
     }
   }
 
-  private String getContextString() {
+  private String getContextString(boolean caseSensitive) {
     RolapMember[] members = currentMembers.clone();
     final boolean skipDefaultMembers = true;
     final StringBuilder buf = new StringBuilder( "{" );
@@ -932,7 +932,7 @@ public final Object evaluateCurrent() {
               buf.append( "(" );
               int memberCount = 0;
               for ( Member m : members ) {
-                if ( skipDefaultMembers && m == m.getHierarchy().getDefaultMember() ) {
+                if ( skipDefaultMembers && m == m.getHierarchy(getCube().getContext().getConfig().caseSensitive()).getDefaultMember(caseSensitive) ) {
                   continue;
                 }
                 if ( memberCount++ > 0 ) {
@@ -984,7 +984,7 @@ public final Object getProperty( String name, Object defaultValue ) {
       // difference.
       final int solve = member.getSolveOrder();
       if ( solve > maxSolve ) {
-        final Object p = member.getPropertyValue( name );
+        final Object p = member.getPropertyValue( name, getCube().getContext().getConfig().caseSensitive() );
         if ( p != null ) {
           o = p;
           maxSolve = solve;
@@ -1196,7 +1196,7 @@ public final Object getParameterValue( ParameterSlot slot ) {
     RolapCalculation maxSolveMember = calculations[0];
     for ( int i = 1; i < calculationCount; i++ ) {
       RolapCalculation member = calculations[i];
-      if ( expandsBefore( member, maxSolveMember ) ) {
+      if ( expandsBefore( member, maxSolveMember, getCube().getContext().getConfig().caseSensitive() ) ) {
         maxSolveMember = member;
       }
     }
@@ -1236,7 +1236,7 @@ public final Object getParameterValue( ParameterSlot slot ) {
 
         case AGG_SCOPE:
           if ( calculation.containsAggregateFunction() ) {
-            if (maxSolveMember != null && expandsBefore( calculation, maxSolveMember ) ) {
+            if (maxSolveMember != null && expandsBefore( calculation, maxSolveMember, getCube().getContext().getConfig().caseSensitive() ) ) {
               maxSolveMember = calculation;
             }
           } else if ( calculation.isCalculatedInQuery() ) {
@@ -1256,7 +1256,7 @@ public final Object getParameterValue( ParameterSlot slot ) {
           if ( calculation.isCalculatedInQuery() ) {
             maxSolveMember = calculation;
             state = ScopedMaxSolveOrderFinderState.QUERY_SCOPE;
-          } else if (maxSolveMember != null &&  expandsBefore( calculation, maxSolveMember ) ) {
+          } else if (maxSolveMember != null &&  expandsBefore( calculation, maxSolveMember, getCube().getContext().getConfig().caseSensitive() ) ) {
             maxSolveMember = calculation;
           }
           break;
@@ -1266,7 +1266,7 @@ public final Object getParameterValue( ParameterSlot slot ) {
             continue;
           }
 
-          if ( calculation.isCalculatedInQuery() && maxSolveMember != null && expandsBefore( calculation, maxSolveMember )) {
+          if ( calculation.isCalculatedInQuery() && maxSolveMember != null && expandsBefore( calculation, maxSolveMember, getCube().getContext().getConfig().caseSensitive() )) {
               maxSolveMember = calculation;
           }
           break;
@@ -1286,13 +1286,13 @@ public final Object getParameterValue( ParameterSlot slot ) {
    *          Second calculated member or tuple
    * @return Whether calc1 expands before calc2
    */
-  private boolean expandsBefore( RolapCalculation calc1, RolapCalculation calc2 ) {
+  private boolean expandsBefore( RolapCalculation calc1, RolapCalculation calc2 , boolean caseSensitive) {
     final int solveOrder1 = calc1.getSolveOrder();
     final int solveOrder2 = calc2.getSolveOrder();
     if ( solveOrder1 > solveOrder2 ) {
       return true;
     } else {
-      return solveOrder1 == solveOrder2 && calc1.getHierarchyOrdinal() < calc2.getHierarchyOrdinal();
+      return solveOrder1 == solveOrder2 && calc1.getHierarchyOrdinal(caseSensitive) < calc2.getHierarchyOrdinal(caseSensitive);
     }
   }
 
@@ -1375,7 +1375,7 @@ public final void setEvalAxes( boolean evalAxes ) {
    */
   @Override
 public boolean shouldIgnoreUnrelatedDimensions() {
-    return getCube().shouldIgnoreUnrelatedDimensions( getMeasureCube().getName() );
+    return getCube().shouldIgnoreUnrelatedDimensions( getMeasureCube().getName(getCube().getContext().getConfig().caseSensitive()) );
   }
 
   private enum Command {

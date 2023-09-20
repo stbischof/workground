@@ -55,16 +55,16 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
      * @pre role.getAccessDetails(memberReader.getHierarchy()) != null ||
      *   memberReader.getHierarchy().isRagged()
      */
-    public RestrictedMemberReader(MemberReader memberReader, Role role) {
+    public RestrictedMemberReader(MemberReader memberReader, Role role, boolean caseSensitive) {
         super(memberReader);
         this.role = role;
         RolapHierarchy hierarchy = memberReader.getHierarchy();
         ragged = hierarchy.isRagged();
-        if (role.getAccessDetails(hierarchy) == null) {
+        if (role.getAccessDetails(hierarchy, caseSensitive) == null) {
             assert ragged;
-            hierarchyAccess = RoleImpl.createAllAccess(hierarchy);
+            hierarchyAccess = RoleImpl.createAllAccess(hierarchy, caseSensitive);
         } else {
-            hierarchyAccess = role.getAccessDetails(hierarchy);
+            hierarchyAccess = role.getAccessDetails(hierarchy, caseSensitive);
         }
     }
 
@@ -75,7 +75,7 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
     }
 
     @Override
-	public RolapMember getLeadMember(RolapMember member, int n) {
+	public RolapMember getLeadMember(RolapMember member, int n, boolean caseSensitive) {
         int i = 0;
         int increment = 1;
         if (n < 0) {
@@ -83,11 +83,11 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
             n = -n;
         }
         while (i < n) {
-            member = memberReader.getLeadMember(member, increment);
+            member = memberReader.getLeadMember(member, increment, caseSensitive);
             if (member.isNull()) {
                 return member;
             }
-            if (canSee(member)) {
+            if (canSee(member, caseSensitive)) {
                 ++i;
             }
         }
@@ -97,50 +97,51 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
     @Override
 	public void getMemberChildren(
         RolapMember parentMember,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMember, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMember, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         RolapMember parentMember,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         List<RolapMember> fullChildren = new ArrayList<>();
         memberReader.getMemberChildren
-          (parentMember, fullChildren, constraint);
-        return processMemberChildren(fullChildren, children, constraint);
+          (parentMember, fullChildren, constraint, caseSensitive);
+        return processMemberChildren(fullChildren, children, constraint, caseSensitive);
     }
 
     @Override
 	public void getMemberChildren(
         List<RolapMember> parentMembers,
-        List<RolapMember> children)
+        List<RolapMember> children, boolean caseSensitive)
     {
         MemberChildrenConstraint constraint =
-            sqlConstraintFactory.getMemberChildrenConstraint(null);
-        getMemberChildren(parentMembers, children, constraint);
+            sqlConstraintFactory.getMemberChildrenConstraint(null, caseSensitive);
+        getMemberChildren(parentMembers, children, constraint, caseSensitive);
     }
 
     @Override
 	public Map<? extends Member, Access> getMemberChildren(
         List<RolapMember> parentMembers,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint, boolean caseSensitive)
     {
         List<RolapMember> fullChildren = new ArrayList<>();
-        memberReader.getMemberChildren(parentMembers, fullChildren, constraint);
-        return processMemberChildren(fullChildren, children, constraint);
+        memberReader.getMemberChildren(parentMembers, fullChildren, constraint, caseSensitive);
+        return processMemberChildren(fullChildren, children, constraint, caseSensitive);
     }
 
     Map<RolapMember, Access> processMemberChildren(
         List<RolapMember> fullChildren,
         List<RolapMember> children,
-        MemberChildrenConstraint constraint)
+        MemberChildrenConstraint constraint,
+        boolean caseSensitive)
     {
         // todo: optimize if parentMember is beyond last level
         List<RolapMember> grandChildren = null;
@@ -151,7 +152,7 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
 
             // If a child is hidden (due to raggedness)
             // This must be done before applying access-control.
-            if ((ragged && member.isHidden())) {
+            if ((ragged && member.isHidden(caseSensitive))) {
                 // Replace this member with all of its children.
                 // They might be hidden too, but we'll get to them in due
                 // course. They also might be access-controlled; that's why
@@ -163,7 +164,7 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
                     grandChildren.clear();
                 }
                 memberReader.getMemberChildren
-                  (member, grandChildren, constraint);
+                  (member, grandChildren, constraint, caseSensitive);
                 fullChildren.addAll(i, grandChildren);
                 // Step back to before the first child we just inserted,
                 // and go through the loop again.
@@ -175,7 +176,7 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
             // access-control.
             final Access access;
             if (hierarchyAccess != null) {
-                access = hierarchyAccess.getAccess(member);
+                access = hierarchyAccess.getAccess(member, caseSensitive);
             } else {
                 access = Access.ALL;
             }
@@ -198,34 +199,34 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
      */
     private void filterMembers(
         List<RolapMember> members,
-        List<RolapMember> filteredMembers)
+        List<RolapMember> filteredMembers, boolean caseSensitive)
     {
         for (RolapMember member : members) {
-            if (canSee(member)) {
+            if (canSee(member, caseSensitive)) {
                 filteredMembers.add(member);
             }
         }
     }
 
-    private boolean canSee(final RolapMember member) {
-        if (ragged && member.isHidden()) {
+    private boolean canSee(final RolapMember member, boolean caseSensitive) {
+        if (ragged && member.isHidden(caseSensitive)) {
             return false;
         }
         if (hierarchyAccess != null) {
-            final Access access = hierarchyAccess.getAccess(member);
+            final Access access = hierarchyAccess.getAccess(member, caseSensitive);
             return access != Access.NONE;
         }
         return true;
     }
 
     @Override
-	public List<RolapMember> getRootMembers() {
+	public List<RolapMember> getRootMembers(boolean caseSensitive) {
         int topLevelDepth = hierarchyAccess.getTopLevelDepth();
         if (topLevelDepth > 0) {
             RolapLevel topLevel =
                 (RolapLevel) getHierarchy().getLevels()[topLevelDepth];
             final List<RolapMember> memberList =
-                getMembersInLevel(topLevel);
+                getMembersInLevel(topLevel, caseSensitive);
             if (memberList.isEmpty()) {
                 throw MondrianResource.instance()
                     .HierarchyHasNoAccessibleMembers.ex(
@@ -233,21 +234,21 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
             }
             return memberList;
         }
-        return super.getRootMembers();
+        return super.getRootMembers(caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level)
+        RolapLevel level, boolean caseSensitive)
     {
         TupleConstraint constraint =
-            sqlConstraintFactory.getLevelMembersConstraint(null);
-        return getMembersInLevel(level, constraint);
+            sqlConstraintFactory.getLevelMembersConstraint(null, caseSensitive);
+        return getMembersInLevel(level, constraint, caseSensitive);
     }
 
     @Override
 	public List<RolapMember> getMembersInLevel(
-        RolapLevel level, TupleConstraint constraint)
+        RolapLevel level, TupleConstraint constraint, boolean caseSensitive)
     {
         if (hierarchyAccess != null) {
             final int depth = level.getDepth();
@@ -260,28 +261,28 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
         }
         final List<RolapMember> membersInLevel =
             memberReader.getMembersInLevel(
-                level, constraint);
+                level, constraint, caseSensitive);
         List<RolapMember> filteredMembers = new ArrayList<>();
-        filterMembers(membersInLevel, filteredMembers);
+        filterMembers(membersInLevel, filteredMembers, caseSensitive);
         return filteredMembers;
     }
 
     @Override
-	public RolapMember getDefaultMember() {
+	public RolapMember getDefaultMember(boolean caseSensitive) {
         RolapMember defaultMember =
-            (RolapMember) getHierarchy().getDefaultMember();
+            (RolapMember) getHierarchy().getDefaultMember(caseSensitive);
         if (defaultMember != null) {
-            Access i = hierarchyAccess.getAccess(defaultMember);
+            Access i = hierarchyAccess.getAccess(defaultMember, caseSensitive);
             if (i != Access.NONE) {
                 return defaultMember;
             }
         }
-        final List<RolapMember> rootMembers = getRootMembers();
+        final List<RolapMember> rootMembers = getRootMembers(caseSensitive);
 
         RolapMember firstAvailableRootMember = null;
         boolean singleAvailableRootMember = false;
         for (RolapMember rootMember : rootMembers) {
-            Access i = hierarchyAccess.getAccess(rootMember);
+            Access i = hierarchyAccess.getAccess(rootMember, caseSensitive);
             if (i != Access.NONE) {
                 if (firstAvailableRootMember == null) {
                     firstAvailableRootMember = rootMember;
@@ -319,15 +320,15 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
     }
 
     @Override
-	public RolapMember getMemberParent(RolapMember member) {
+	public RolapMember getMemberParent(RolapMember member, boolean caseSensitive) {
         RolapMember parentMember = member.getParentMember();
         // Skip over hidden parents.
-        while (parentMember != null && parentMember.isHidden()) {
+        while (parentMember != null && parentMember.isHidden(caseSensitive)) {
             parentMember = parentMember.getParentMember();
         }
         // Skip over non-accessible parents.
         if (parentMember != null) {
-            if (hierarchyAccess.getAccess(parentMember) == Access.NONE) {
+            if (hierarchyAccess.getAccess(parentMember, caseSensitive) == Access.NONE) {
                 return null;
             }
         }
