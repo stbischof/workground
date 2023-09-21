@@ -14,8 +14,11 @@
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
+import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.discover.mdschema.actions.MdSchemaActionsRequest;
 import org.eclipse.daanse.xmla.api.discover.mdschema.actions.MdSchemaActionsResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.cubes.MdSchemaCubesRequest;
@@ -43,6 +46,8 @@ import org.eclipse.daanse.xmla.api.discover.mdschema.properties.MdSchemaProperti
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsRequest;
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsResponseRow;
 
+import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaCubesResponseRow;
+
 public class MDSchemaDiscoverService {
 	private ContextListSupplyer contextsListSupplyer;
 
@@ -56,11 +61,21 @@ public class MDSchemaDiscoverService {
 	}
 
 	public List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+        String catalogName = request.restrictions().catalogName();
+        Optional<String> cubeName = request.restrictions().cubeName();
+        Optional<String> schemaName = request.restrictions().schemaName();
+        Optional<String> baseCubeName = request.restrictions().baseCubeName();
+        Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
+
+        Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(catalogName);
+        if (oContext.isPresent()) {
+            Context context = oContext.get();
+            return getMdSchemaCubesResponseRow(context, schemaName, cubeName, baseCubeName, cubeSource);
+        }
+		return List.of();
 	}
 
-	public List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest request) {
+    public List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest request) {
 		// TODO Auto-generated method stub
 		return null;
 	}
