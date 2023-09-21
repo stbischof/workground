@@ -7,13 +7,13 @@
  * Copyright (C) 2000-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * For more information please visit the Project: Hitachi Vantara - Mondrian
- * 
+ *
  * ---- All changes after Fork in 2023 ------------------------
- * 
+ *
  * Project: Eclipse daanse
- * 
+ *
  * Copyright (c) 2023 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -30,6 +30,7 @@
 package org.eclipse.daanse.olap.api;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
@@ -73,6 +74,13 @@ public interface Connection {
      * @return the Schema (never null).
      */
     Schema getSchema();
+
+    /**
+     * Get the Schema associated with this Connection.
+     *
+     * @return the Schema (never null).
+     */
+    List<Schema> getSchemas();
 
     /**
      * Closes this <code>Connection</code>. You may not use this

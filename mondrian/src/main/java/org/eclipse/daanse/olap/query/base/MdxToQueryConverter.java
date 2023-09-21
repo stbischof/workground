@@ -79,7 +79,7 @@ public class MdxToQueryConverter {
 				if (oi instanceof KeyObjectIdentifier keyObjectIdentifier) {
 					List<? extends NameObjectIdentifier> l = keyObjectIdentifier.nameObjectIdentifiers();
 					if (l != null) {
-						l.forEach(MdxToQueryConverter::convertName);
+                        columns.addAll(l.stream().map(MdxToQueryConverter::convertName).toList());
 					}
 				}
 				if (oi instanceof NameObjectIdentifier nameObjectIdentifier) {

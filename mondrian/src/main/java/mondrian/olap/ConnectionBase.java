@@ -12,6 +12,7 @@
 package mondrian.olap;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.function.FunctionTable;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import mondrian.parser.JavaccParserValidatorImpl;
 import mondrian.parser.MdxParserValidator;
 import mondrian.resource.MondrianResource;
 import mondrian.server.Statement;
+
+import java.util.List;
 
 /**
  * <code>ConnectionBase</code> implements some of the methods in
@@ -107,5 +110,10 @@ public abstract class ConnectionBase implements Connection {
 
     protected MdxParserValidator createParser() {
         return new JavaccParserValidatorImpl();
+    }
+
+    @Override
+    public List<Schema> getSchemas() {
+        return List.of();
     }
 }
