@@ -19,7 +19,10 @@ import mondrian.rolap.RolapSchema;
 import mondrian.rolap.aggmatcher.AggTableManager;
 import mondrian.spi.PropertyFormatter;
 import mondrian.util.Bug;
+import org.eclipse.daanse.db.dialect.api.Dialect;
+import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Cube;
@@ -32,6 +35,7 @@ import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
+import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
@@ -73,6 +77,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuil
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RowRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,6 +96,7 @@ import org.opencube.junit5.propupdator.SchemaUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -99,6 +105,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static mondrian.enums.DatabaseProduct.MYSQL;
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
@@ -207,72 +214,100 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
+            	List<MappingCalculatedMember> cm = new ArrayList();
+            	cm.addAll(super.cubeCalculatedMembers(cube));
+            	if ("Sales".equals(cube.name())) {
                     MappingFormula formula1 =
-                        FormulaRBuilder.builder()
-                            .cdata("[Measures].[Store Sales] / [Measures].[Store Cost]")
-                            .build();
-                    MappingCalculatedMemberProperty cmProperty1 =
-                        CalculatedMemberPropertyRBuilder.builder()
-                        .name("FORMAT_STRING")
-                        .value("$#,##0.00")
-                        .build();
-                    MappingCalculatedMember calculatedMember1 =
-                        CalculatedMemberRBuilder.builder()
-                            .name("QuantumProfit")
-                            .dimension("Measures")
-                            .formulaElement(formula1)
-                            .calculatedMemberProperties(List.of(
-                                cmProperty1
-                            ))
-                            .build();
-                    MappingFormula formula2 =
-                        FormulaRBuilder.builder()
-                            .cdata("Sum(Gender.Members)")
-                            .build();
-                    MappingCalculatedMemberProperty cmProperty21 =
-                        CalculatedMemberPropertyRBuilder.builder()
+                            FormulaRBuilder.builder()
+                                .cdata("[Measures].[Store Sales] / [Measures].[Store Cost]")
+                                .build();
+                        MappingCalculatedMemberProperty cmProperty1 =
+                            CalculatedMemberPropertyRBuilder.builder()
                             .name("FORMAT_STRING")
                             .value("$#,##0.00")
                             .build();
-                    MappingCalculatedMemberProperty cmProperty22 =
-                        CalculatedMemberPropertyRBuilder.builder()
-                            .name("SOLVE_ORDER")
-                            .value("2000")
-                            .build();
-                    MappingCalculatedMember calculatedMember2 =
-                        CalculatedMemberRBuilder.builder()
-                            .name("foo")
-                            .dimension("Gender")
-                            .formulaElement(formula2)
-                            .calculatedMemberProperties(List.of(
-                                cmProperty21, cmProperty22
-                            ))
-                            .build();
-                    c.calculatedMembers().add(calculatedMember1);
-                    c.calculatedMembers().add(calculatedMember2);
-                }
-                return c;
+                        MappingCalculatedMember calculatedMember1 =
+                            CalculatedMemberRBuilder.builder()
+                                .name("QuantumProfit")
+                                .dimension("Measures")
+                                .formulaElement(formula1)
+                                .calculatedMemberProperties(List.of(
+                                    cmProperty1
+                                ))
+                                .build();
+                        MappingFormula formula2 =
+                            FormulaRBuilder.builder()
+                                .cdata("Sum(Gender.Members)")
+                                .build();
+                        MappingCalculatedMemberProperty cmProperty21 =
+                            CalculatedMemberPropertyRBuilder.builder()
+                                .name("FORMAT_STRING")
+                                .value("$#,##0.00")
+                                .build();
+                        MappingCalculatedMemberProperty cmProperty22 =
+                            CalculatedMemberPropertyRBuilder.builder()
+                                .name("SOLVE_ORDER")
+                                .value("2000")
+                                .build();
+                        MappingCalculatedMember calculatedMember2 =
+                            CalculatedMemberRBuilder.builder()
+                                .name("foo")
+                                .dimension("Gender")
+                                .formulaElement(formula2)
+                                .calculatedMemberProperties(List.of(
+                                    cmProperty21, cmProperty22
+                                ))
+                                .build();
+                        cm.add(calculatedMember1);
+                        cm.add(calculatedMember2);
+            	}
+            	return cm;            	
             }
         }
+        Context c = context.getContext();
+        Context con = new Context() {
+            @Override
+            public DataSource getDataSource() {
+                return c.getDataSource();
+            }
 
-        ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
-            "Sales",
-            null,
-            "<CalculatedMember\n"
-            + "      name=\"QuantumProfit\"\n"
-            + "      dimension=\"Measures\">\n"
-            + "    <Formula>[Measures].[Store Sales] / [Measures].[Store Cost]</Formula>\n"
-            + "    <CalculatedMemberProperty name=\"FORMAT_STRING\" value=\"$#,##0.00\"/>\n"
-            + "  </CalculatedMember>, <CalculatedMember\n"
-            + "      name=\"foo\"\n"
-            + "      dimension=\"Gender\">\n"
-            + "    <Formula>Sum(Gender.Members)</Formula>\n"
-            + "    <CalculatedMemberProperty name=\"FORMAT_STRING\" value=\"$#,##0.00\"/>\n"
-            + "    <CalculatedMemberProperty name=\"SOLVE_ORDER\" value=\'2000\'/>\n"
-            + "  </CalculatedMember>"));
+            @Override
+            public Dialect getDialect() {
+                return c.getDialect();
+            }
+
+            @Override
+            public StatisticsProvider getStatisticsProvider() {
+                return c.getStatisticsProvider();
+            }
+
+            @Override
+            public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
+                return List.of(new TestSolveOrderInCalculatedMemberModifier(c.getDatabaseMappingSchemaProviders().get(0).get()));
+            }
+
+            @Override
+            public String getName() {
+                return c.getName();
+            }
+
+            @Override
+            public Optional<String> getDescription() {
+                return c.getDescription();
+            }
+
+            @Override
+            public ExpressionCompilerFactory getExpressionCompilerFactory() {
+                return c.getExpressionCompilerFactory();
+            }
+
+            @Override
+            public Connection getConnection() {
+                return c.getConnection();
+            }
+        };
+        context.init(con);
 
         assertQueryReturns(context.createConnection(),
             "select {[Measures].[QuantumProfit]} on 0, {(Gender.foo)} on 1 from sales",

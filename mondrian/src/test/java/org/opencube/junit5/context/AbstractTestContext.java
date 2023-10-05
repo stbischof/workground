@@ -88,25 +88,6 @@ public abstract class AbstractTestContext implements Context {
 	@Override
 	public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
 		DatabaseMappingSchemaProvider dbp = new FoodMartRecordDbMappingSchemaProvider();
-		try {
-			SchemaImpl	 s=read(Files.newInputStream( Path.of( Constants.DEMO_DIR+"FoodMart.xml")));
-			 dbp= new DatabaseMappingSchemaProvider() {
-				 
-				 @Override
-				 public MappingSchema get() {
-					 return s;
-				 }
-			 }; 
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return List.of(dbp);
 	}
     public SchemaImpl read(InputStream inputStream) throws JAXBException {
@@ -122,7 +103,7 @@ public abstract class AbstractTestContext implements Context {
 	}
 
 	abstract Dialect createDialect(Connection connection);
-	
+
 	@Override
 	public org.eclipse.daanse.olap.api.Connection getConnection() {
 		return null;
