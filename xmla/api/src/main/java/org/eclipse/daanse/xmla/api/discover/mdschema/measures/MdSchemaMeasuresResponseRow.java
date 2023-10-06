@@ -188,7 +188,13 @@ public interface MdSchemaMeasuresResponseRow {
     Optional<String> measureGroupName();
 
     /**
+     * @return The display folder of the measure.
+     */
+    Optional<String> measureDisplayFolder();
+
+    /**
      * @return The default format string for the measure.
      */
     Optional<String> defaultFormatString();
+
 }

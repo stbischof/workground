@@ -13,11 +13,6 @@
 */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
@@ -49,10 +44,16 @@ import org.eclipse.daanse.xmla.api.discover.mdschema.properties.MdSchemaProperti
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsRequest;
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsResponseRow;
 
-import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getDbSchemaColumnsResponseRow;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaCubesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaHierarchiesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaLevelsResponseRow;
+import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaMeasureGroupsResponseRow;
+import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaMeasuresResponseRow;
 
 public class MDSchemaDiscoverService {
 	private ContextListSupplyer contextsListSupplyer;
@@ -156,16 +157,54 @@ public class MDSchemaDiscoverService {
 	}
 
 	public List<MdSchemaMeasureGroupsResponseRow> mdSchemaMeasureGroups(MdSchemaMeasureGroupsRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	    List<MdSchemaMeasureGroupsResponseRow> result = new ArrayList<>();
+        Optional<String> oCatalogName = request.restrictions().catalogName();
+        Optional<String> oSchemaName = request.restrictions().schemaName();
+        Optional<String> oCubeName = request.restrictions().cubeName();
+        Optional<String> oMeasureGroupName = request.restrictions().measureGroupName();
+        if (oCatalogName.isPresent()) {
+            Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
+            if (oContext.isPresent()) {
+                Context context = oContext.get();
+                result.addAll(getMdSchemaMeasureGroupsResponseRow(context, oSchemaName, oCubeName, oMeasureGroupName));
+            }
+        } else {
+            result.addAll(contextsListSupplyer.get().stream()
+                .map(c -> getMdSchemaMeasureGroupsResponseRow(c, oSchemaName, oCubeName, oMeasureGroupName))
+                .flatMap(Collection::stream).toList());
+        }
+
+        return result;
 	}
 
-	public List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+    public List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest request) {
+        List<MdSchemaMeasuresResponseRow> result = new ArrayList<>();
+        Optional<String> oCatalogName = request.restrictions().catalogName();
+        Optional<String> oSchemaName = request.restrictions().schemaName();
+        Optional<String> oCubeName = request.restrictions().cubeName();
+        Optional<String> oMeasureName = request.restrictions().measureName();
+        Optional<String> oMeasureUniqueName = request.restrictions().measureUniqueName();
+        Optional<String> oMeasureGroupName = request.restrictions().measureGroupName();
+        Optional<VisibilityEnum> oMeasureVisibility = request.restrictions().measureVisibility();
+        boolean shouldEmitInvisibleMembers = oMeasureVisibility.isPresent() && VisibilityEnum.NOT_VISIBLE.equals(oMeasureVisibility.get());
+        if (oCatalogName.isPresent()) {
+            Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
+            if (oContext.isPresent()) {
+                Context context = oContext.get();
+                result.addAll(getMdSchemaMeasuresResponseRow(context, oSchemaName, oCubeName, oMeasureName, oMeasureUniqueName, oMeasureGroupName, shouldEmitInvisibleMembers));
+            }
+        } else {
+            result.addAll(contextsListSupplyer.get().stream()
+                .map(c -> getMdSchemaMeasuresResponseRow(c, oSchemaName, oCubeName, oMeasureName, oMeasureUniqueName, oMeasureGroupName, shouldEmitInvisibleMembers))
+                .flatMap(Collection::stream).toList());
+        }
+
+        return result;
+
+
 	}
 
-	public List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest request) {
+    public List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest request) {
 		// TODO Auto-generated method stub
 		return null;
 	}

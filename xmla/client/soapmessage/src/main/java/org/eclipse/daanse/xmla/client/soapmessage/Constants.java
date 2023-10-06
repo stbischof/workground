@@ -333,6 +333,7 @@ public class Constants {
     public static final String TABLE_VERSION = "TABLE_VERSION";
     public static final String CARDINALITY = "CARDINALITY";
     public static final String MEASUREGROUP_NAME = "MEASUREGROUP_NAME";
+    public static final String MEASURE_DISPLAY_FOLDER = "MEASURE_DISPLAY_FOLDER";
     public static final String KPI_NAME = "KPI_NAME";
     public static final String KPI_CAPTION = "KPI_CAPTION";
     public static final String KPI_DESCRIPTION = "KPI_DESCRIPTION";

@@ -65,6 +65,7 @@ import org.eclipse.daanse.xmla.api.common.enums.StructureEnum;
 import org.eclipse.daanse.xmla.api.common.enums.StructureTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.TableTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.TypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
 import org.eclipse.daanse.xmla.api.discover.DiscoverService;
 import org.eclipse.daanse.xmla.api.discover.mdschema.functions.ParameterInfo;
 import org.eclipse.daanse.xmla.api.discover.mdschema.measuregroupdimensions.MeasureGroupDimension;
@@ -1331,6 +1332,7 @@ class DiscoverResponseTest {
             Optional.of("measureNameSqlColumnName"),
             Optional.of("measureUnqualifiedCaption"),
             Optional.of(MEASURE_GROUP_NAME),
+            Optional.of("measureDisplayFolder"),
             Optional.of("defaultFormatString")
         );
 
@@ -1368,7 +1370,8 @@ class DiscoverResponseTest {
             Map.entry("MEASURE_NAME_SQL_COLUMN_NAME", "measureNameSqlColumnName"),
             Map.entry("MEASURE_UNQUALIFIED_CAPTION", "measureUnqualifiedCaption"),
             Map.entry(MEASUREGROUP_NAME, MEASURE_GROUP_NAME),
-            Map.entry("DEFAULT_FORMAT_STRING", "defaultFormatString")
+            Map.entry("DEFAULT_FORMAT_STRING", "defaultFormatString"),
+            Map.entry("MEASURE_DISPLAY_FOLDER", "measureDisplayFolder")
         ));
     }
 

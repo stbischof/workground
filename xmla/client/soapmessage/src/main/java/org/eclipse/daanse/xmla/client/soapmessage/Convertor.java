@@ -341,6 +341,7 @@ import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASUREGROUP_
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASUREGROUP_NAME;
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_AGGREGATOR;
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_CAPTION;
+import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_DISPLAY_FOLDER;
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_GROUP_DIMENSION;
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_GUID;
 import static org.eclipse.daanse.xmla.client.soapmessage.Constants.MEASURE_IS_VISIBLE;
@@ -606,6 +607,7 @@ class Convertor {
                 Optional.ofNullable(m.get(MEASURE_NAME_SQL_COLUMN_NAME)),
                 Optional.ofNullable(m.get(MEASURE_UNQUALIFIED_CAPTION)),
                 Optional.ofNullable(m.get(MEASUREGROUP_NAME)),
+                Optional.ofNullable(m.get(MEASURE_DISPLAY_FOLDER)),
                 Optional.ofNullable(m.get(DEFAULT_FORMAT_STRING))
             )
         ).toList();

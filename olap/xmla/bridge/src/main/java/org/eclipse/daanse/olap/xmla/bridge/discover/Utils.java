@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
+import mondrian.olap.DimensionType;
 import mondrian.olap.MondrianProperties;
 import mondrian.olap.Util;
 import mondrian.rolap.RolapLevel;
@@ -21,6 +22,7 @@ import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
+import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
@@ -38,6 +40,7 @@ import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelUniqueSettingsEnum;
+import org.eclipse.daanse.xmla.api.common.enums.MeasureAggregatorEnum;
 import org.eclipse.daanse.xmla.api.common.enums.TableTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
 import org.eclipse.daanse.xmla.api.discover.dbschema.columns.DbSchemaColumnsResponseRow;
@@ -48,6 +51,8 @@ import org.eclipse.daanse.xmla.api.discover.dbschema.tablesinfo.DbSchemaTablesIn
 import org.eclipse.daanse.xmla.api.discover.mdschema.cubes.MdSchemaCubesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.hierarchies.MdSchemaHierarchiesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.levels.MdSchemaLevelsResponseRow;
+import org.eclipse.daanse.xmla.api.discover.mdschema.measuregroups.MdSchemaMeasureGroupsResponseRow;
+import org.eclipse.daanse.xmla.api.discover.mdschema.measures.MdSchemaMeasuresResponseRow;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.columns.DbSchemaColumnsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.schemata.DbSchemaSchemataResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.sourcetables.DbSchemaSourceTablesResponseRowR;
@@ -55,6 +60,9 @@ import org.eclipse.daanse.xmla.model.record.discover.dbschema.tables.DbSchemaTab
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.tablesinfo.DbSchemaTablesInfoResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.cubes.MdSchemaCubesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.levels.MdSchemaLevelsResponseRowR;
+import org.eclipse.daanse.xmla.model.record.discover.mdschema.measuregroups.MdSchemaMeasureGroupsResponseRowR;
+import org.eclipse.daanse.xmla.model.record.discover.mdschema.measures.MdSchemaMeasuresResponseRowR;
+import org.olap4j.metadata.Property;
 import org.olap4j.metadata.XmlaConstants;
 
 import java.sql.SQLException;
@@ -297,10 +305,10 @@ public class Utils {
 
     static List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviderWithFilter(
         List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders,
-        Optional<String> oTableSchema
+        Optional<String> oSchemaName
     ) {
-        if (oTableSchema.isPresent()) {
-            return databaseMappingSchemaProviders.stream().filter(dmsp -> dmsp.get().name().equals(oTableSchema.get())).toList();
+        if (oSchemaName.isPresent()) {
+            return databaseMappingSchemaProviders.stream().filter(dmsp -> dmsp.get().name().equals(oSchemaName.get())).toList();
         }
         return databaseMappingSchemaProviders;
     }
@@ -1041,7 +1049,7 @@ public class Utils {
         List<Dimension> dimensions = c.getDimensions() == null ? List.of() : Arrays.asList(c.getDimensions());
         return getDimensionsWithFilter(dimensions, oDimensionUniqueName)
             .stream()
-            .map(d -> getMdSchemaHierarchiesResponseRow1(
+            .map(d -> getMdSchemaHierarchiesResponseRow(
                 catalogName,
                 schemaName,
                 c.getName(),
@@ -1053,7 +1061,7 @@ public class Utils {
             )).flatMap(Collection::stream).toList();
     }
 
-    private static List<MdSchemaHierarchiesResponseRow> getMdSchemaHierarchiesResponseRow1(
+    private static List<MdSchemaHierarchiesResponseRow> getMdSchemaHierarchiesResponseRow(
         String catalogName,
         String schemaName,
         String name,
@@ -1066,5 +1074,144 @@ public class Utils {
         return List.of(); //TODO
     }
 
+    static List<MdSchemaMeasureGroupsResponseRow> getMdSchemaMeasureGroupsResponseRow(Context context, Optional<String> oSchemaName, Optional<String> oCubeName, Optional<String> oMeasureGroupName) {
+        return getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(),oSchemaName)
+            .stream().filter(dmsp -> (dmsp != null && dmsp.get() != null))
+            .map(dmsp -> getMdSchemaMeasureGroupsResponseRow(context.getName(), dmsp.get(), oCubeName, oMeasureGroupName))
+            .flatMap(Collection::stream).toList();
+
+    }
+
+    private static List<MdSchemaMeasureGroupsResponseRow> getMdSchemaMeasureGroupsResponseRow(String catalogName, MappingSchema schema, Optional<String> oCubeName, Optional<String> oMeasureGroupName) {
+        return getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
+            .map(c -> getMdSchemaMeasureGroupsResponseRow(catalogName, schema.name(), c, oMeasureGroupName))
+            .toList();
+    }
+
+    private static MdSchemaMeasureGroupsResponseRow getMdSchemaMeasureGroupsResponseRow(String catalogName, String schemaName, MappingCube c, Optional<String> oMeasureGroupName) {
+        return new MdSchemaMeasureGroupsResponseRowR(
+            Optional.ofNullable(catalogName),
+            Optional.ofNullable(schemaName),
+            Optional.of(c.name()),
+            Optional.of(c.name()),
+            Optional.of(""),
+            Optional.of(false),
+            Optional.of(c.name())
+        );
+    }
+
+    static List<MdSchemaMeasuresResponseRow> getMdSchemaMeasuresResponseRow(Context context, Optional<String> oSchemaName, Optional<String> oCubeName, Optional<String> oMeasureName, Optional<String> oMeasureUniqueName, Optional<String> oMeasureGroupName, boolean shouldEmitInvisibleMembers) {
+        return getSchemasWithFilter(context.getConnection().getSchemas(), oSchemaName)
+            .stream().filter(s -> s != null)
+            .map(s -> getMdSchemaMeasuresResponseRow(context.getName(), s, oCubeName, oMeasureName, oMeasureUniqueName, oMeasureGroupName, shouldEmitInvisibleMembers))
+            .flatMap(Collection::stream).toList();
+
+    }
+
+    private static List<MdSchemaMeasuresResponseRow> getMdSchemaMeasuresResponseRow(String catalogName, Schema schema, Optional<String> oCubeName, Optional<String> oMeasureName, Optional<String> oMeasureUniqueName, Optional<String> oMeasureGroupName, boolean shouldEmitInvisibleMembers) {
+        List<Cube> cubes = schema.getCubes() == null ? List.of() :  Arrays.asList(schema.getCubes());
+        return getCubesWithFilter(cubes, oCubeName).stream()
+            .map(c -> getMdSchemaMeasuresResponseRow(catalogName, schema.getName(), c, oMeasureName, oMeasureUniqueName, oMeasureGroupName, shouldEmitInvisibleMembers))
+            .flatMap(Collection::stream).toList();
+    }
+
+    private static List<MdSchemaMeasuresResponseRow> getMdSchemaMeasuresResponseRow(String catalogName, String schemaName, Cube cube, Optional<String> oMeasureName, Optional<String> oMeasureUniqueName, Optional<String> oMeasureGroupName, boolean shouldEmitInvisibleMembers) {
+        List<MdSchemaMeasuresResponseRow> result = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        int j = 0;
+        for (Dimension dimension : cube.getDimensions()) {
+            if (!dimension.getDimensionType().equals(DimensionType.MEASURES_DIMENSION)) {
+                for (Hierarchy hierarchy : dimension.getHierarchies()) {
+                    Level[] levels = hierarchy.getLevels();
+                    if (levels.length > 0) {
+                        Level lastLevel = levels[levels.length - 1];
+                        if (j++ > 0) {
+                            builder.append(',');
+                        }
+                        builder.append(lastLevel.getUniqueName());
+                    }
+                }
+            }
+        }
+        String levelListStr = builder.toString();
+        List<org.eclipse.daanse.olap.api.element.Member> measures =
+            getMeasureWithFilterByUniqueName(getMeasureWithFilterByName(cube.getMeasures(), oMeasureName), oMeasureUniqueName);
+        measures.stream().filter(m -> !m.isCalculated()).forEach(m -> populateMeasures(catalogName, schemaName, cube.getName(), levelListStr, shouldEmitInvisibleMembers, m,result ));
+        measures.stream().filter(m -> m.isCalculated()).forEach(m -> populateMeasures(catalogName, schemaName, cube.getName(), null, shouldEmitInvisibleMembers, m,result ));
+        return result;
+    }
+
+    private static void populateMeasures(String catalogName, String schemaName, String cubeName, String levelListStr, boolean shouldEmitInvisibleMembers, Member m, List<MdSchemaMeasuresResponseRow> result) {
+        Boolean visible =
+            (Boolean) m.getPropertyValue(Property.StandardMemberProperty.$visible.getName());
+        if (visible == null) {
+            visible = true;
+        }
+        if (visible || shouldEmitInvisibleMembers) {
+            //TODO: currently this is always null
+            String desc = m.getDescription();
+            if (desc == null) {
+                desc =
+                    cubeName + " Cube - "
+                        + m.getName() + " Member";
+            }
+            final String formatString =
+                (String) m.getPropertyValue(Property.StandardCellProperty.FORMAT_STRING.getName());
+            final MeasureAggregatorEnum measureAggregator = MeasureAggregatorEnum.MDMEASURE_AGGR_UNKNOWN;
+
+            // DATA_TYPE DBType best guess is string
+            XmlaConstants.DBType dbType = XmlaConstants.DBType.WSTR;
+            String datatype = (String)
+                m.getPropertyValue(Property.StandardCellProperty.DATATYPE.getName());
+            if (datatype != null) {
+                if (datatype.equals("Integer")) {
+                    dbType = XmlaConstants.DBType.I4;
+                } else if (datatype.equals("Numeric")) {
+                    dbType = XmlaConstants.DBType.R8;
+                } else {
+                    dbType = XmlaConstants.DBType.WSTR;
+                }
+            }
+
+            String displayFolder = "";
+            result.add(new MdSchemaMeasuresResponseRowR(
+                Optional.ofNullable(catalogName),
+                Optional.ofNullable(schemaName),
+                Optional.ofNullable(cubeName),
+                Optional.ofNullable(m.getName()),
+                Optional.ofNullable(m.getUniqueName()),
+                Optional.ofNullable(m.getCaption()),
+                Optional.empty(),
+                Optional.ofNullable(measureAggregator),
+                Optional.ofNullable(LevelDbTypeEnum.fromValue(String.valueOf(dbType.xmlaOrdinal()))),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.ofNullable(desc),
+                Optional.empty(),
+                Optional.ofNullable(visible),
+                Optional.ofNullable(levelListStr),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.ofNullable(cubeName),
+                Optional.ofNullable(displayFolder),
+                Optional.ofNullable(formatString))
+            );
+        }
+    };
+
+private static List<org.eclipse.daanse.olap.api.element.Member> getMeasureWithFilterByName(List<org.eclipse.daanse.olap.api.element.Member> measures, Optional<String> oMeasureName) {
+        if (oMeasureName.isPresent()) {
+            return measures.stream().filter(m -> oMeasureName.get().equals(m.getName())).toList();
+        }
+        return measures;
+    }
+
+    private static List<org.eclipse.daanse.olap.api.element.Member> getMeasureWithFilterByUniqueName(List<org.eclipse.daanse.olap.api.element.Member> measures, Optional<String> oMeasureUniqueName) {
+        if (oMeasureUniqueName.isPresent()) {
+            return measures.stream().filter(m -> oMeasureUniqueName.get().equals(m.getUniqueName())).toList();
+        }
+        return measures;
+    }
 
 }
