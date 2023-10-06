@@ -291,9 +291,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Gender")
@@ -314,9 +315,9 @@ class SchemaTest {
                         .foreignKey("customer_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
                 }
-                return c;
+                return result;
             }
         }
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -331,6 +332,8 @@ class SchemaTest {
             + "      <Level name=\"Gender\" column=\"gender\" uniqueMembers=\"true\" />\n"
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestHierarchyDefaultMemberModifier(schema)));
         assertQueryReturns(context.createConnection(),
             "select {[Gender with default]} on columns from [Sales]",
             "Axis #0:\n"
@@ -353,9 +356,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingJoin join = new JoinR(
                         List.of(
                             new TableR("product"),
@@ -403,9 +407,9 @@ class SchemaTest {
                         .foreignKey("product_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
                 }
-                return c;
+                return result;
             }
         };
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -424,6 +428,8 @@ class SchemaTest {
             + "    </Hierarchy>\n"
             + "  </Dimension>\n"));
         // note that default member name has no 'all' and has a name not an id
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestDefaultMemberNameModifier(schema)));
         assertQueryReturns(context.createConnection(),
             "select {[Product with no all]} on columns from [Sales]",
             "Axis #0:\n"
@@ -441,9 +447,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Gender")
@@ -464,10 +471,10 @@ class SchemaTest {
                         .foreignKey("customer_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
 
                 }
-                return c;
+                return result;
             }
         };
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -481,6 +488,8 @@ class SchemaTest {
             + "      <Level name=\"Gender\" column=\"gender\" uniqueMembers=\"true\" />\n"
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestHierarchyAbbreviatedDefaultMemberModifier(schema)));
         assertQueryReturns(context.createConnection(),
             "select {[Gender with default]} on columns from [Sales]",
             "Axis #0:\n"
@@ -500,9 +509,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingHierarchy hierarchy = HierarchyRBuilder
                         .builder()
                         .hasAll(true)
@@ -515,10 +525,10 @@ class SchemaTest {
                         .foreignKey("customer_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
 
                 }
-                return c;
+                return result;
             }
         };
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -528,6 +538,8 @@ class SchemaTest {
             + "      <Table name='customer'/>\n"
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestHierarchyNoLevelsFailsModifier(schema)));
         assertQueryThrows(context,
             "select {[Gender no levels]} on columns from [Sales]",
             "Hierarchy '[Gender no levels]' must have at least one level.");
@@ -541,9 +553,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingLevel level1 = LevelRBuilder
                         .builder()
                         .name("Gender")
@@ -570,9 +583,9 @@ class SchemaTest {
                         .foreignKey("customer_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
                 }
-                return c;
+                return result;
             }
         };
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -584,6 +597,8 @@ class SchemaTest {
             + "      <Level name='Gender' column='gender' uniqueMembers='true' />\n"
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestHierarchyNonUniqueLevelsFailsModifier(schema)));
         assertQueryThrows(context,
             "select {[Gender dup levels]} on columns from [Sales]",
             "Level names within hierarchy '[Gender dup levels]' are not unique; there is more than one level with name 'Gender'.");
@@ -600,10 +615,11 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
-                    c.measures().add(
+            protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
+                List<MappingMeasure> result = new ArrayList<>();
+                result.addAll(super.cubeMeasures(cube));
+                if ("Sales".equals(cube.name())) {
+                    result.add(
                         MeasureRBuilder
                             .builder()
                             .name("Fact Count")
@@ -611,13 +627,15 @@ class SchemaTest {
                             .build()
                     );
                 }
-                return c;
+                return result;
             }
         }
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
             "Sales",
             null,
             "<Measure name=\"Fact Count\" aggregator=\"count\"/>\n"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestCountMeasureModifier(schema)));
         assertQueryReturns(context.createConnection(),
             "select {[Measures].[Fact Count], [Measures].[Unit Sales]} on 0,\n"
             + "[Gender].members on 1\n"
@@ -651,9 +669,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Yearly Income")
@@ -673,9 +692,9 @@ class SchemaTest {
                         .foreignKey("product_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
                 }
-                return c;
+                return result;
             }
         }
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -687,6 +706,8 @@ class SchemaTest {
             + "  </Hierarchy>\n"
             + "</Dimension>"));
         // FIXME: This should validate the schema, and fail.
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestHierarchyTableNotFoundModifier(schema)));
         assertSimpleQuery(context.createConnection());
         // FIXME: Should give better error.
         assertQueryThrows(context,
@@ -702,9 +723,10 @@ class SchemaTest {
                 super(mappingSchema);
             }
             @Override
-            protected MappingCube cube(MappingCube cube) {
-                MappingCube c = super.cube(cube);
-                if ("Sales".equals(c.name())) {
+            protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
+                List<MappingCubeDimension> result = new ArrayList<>();
+                result.addAll(super.cubeDimensionUsageOrDimensions(cube));
+                if ("Sales".equals(cube.name())) {
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Yearly Income")
@@ -725,9 +747,9 @@ class SchemaTest {
                         .foreignKey("product_id")
                         .hierarchies(List.of(hierarchy))
                         .build();
-                    c.dimensionUsageOrDimensions().add(dimension);
+                    result.add(dimension);
                 }
-                return c;
+                return result;
             }
         }
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -738,6 +760,8 @@ class SchemaTest {
             + "    <Level name=\"Yearly Income\" column=\"yearly_income\" uniqueMembers=\"true\"/>\n"
             + "  </Hierarchy>\n"
             + "</Dimension>"));
+        MappingSchema schema = context.getContext().getDatabaseMappingSchemaProviders().get(0).get();
+        context.getContext().setDatabaseMappingSchemaProviders(List.of(new TestPrimaryKeyTableNotFoundModifier(schema)));
         assertQueryThrows(context,
             "select from [Sales]",
             "no table 'customer_not_found' found in hierarchy [Yearly Income4]");
