@@ -13,8 +13,10 @@
  */
 package org.eclipse.daanse.xmla.model.record.mddataset;
 
+import org.eclipse.daanse.xmla.api.mddataset.TupleType;
+
 import java.util.List;
 
-public record TupleTypeR(List<MemberTypeR> member) {
+public record TupleTypeR(List<MemberTypeR> member) implements TupleType {
 
 }

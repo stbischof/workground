@@ -7,7 +7,7 @@
  * Copyright (C) 2001-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
 */
@@ -26,4 +26,6 @@ import org.eclipse.daanse.olap.api.element.Member;
  * @since 6 August, 2001
  */
 public interface Position extends List<Member> {
+
+    List<Member> getMembers();
 }
