@@ -238,6 +238,7 @@ public class OlapExecuteService implements ExecuteService {
     public StatementResponse statement(StatementRequest statementRequest) {
         List<Context> contexts = contextsListSupplyer.get();
         String statement = statementRequest.command().statement();
+        if (statement != null && statement.length() > 0) {
         for (Context context : contexts) {
             QueryImpl query = context.getConnection().parseQuery(statement);
             if (query instanceof DrillThrough) {
@@ -255,6 +256,7 @@ public class OlapExecuteService implements ExecuteService {
             } else {
                 return executeQuery(context, statementRequest);
             }
+        }
         }
         return new StatementResponseR(null, null);
     }

@@ -16,6 +16,7 @@ package org.eclipse.daanse.olap.xmla.bridge.discover;
 import mondrian.olap.MondrianServer;
 import mondrian.xmla.PropertyDefinition;
 import mondrian.xmla.XmlaConstants;
+import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
@@ -223,8 +224,15 @@ public class OtherDiscoverService {
             }
             String propertyValue = "";
             if (propertyDefinition.name().equals(PropertyDefinition.Catalog.name())) {
-                List<String> catalogs = contextsListSupplyer.get().stream()
-                    .map(c -> c.getConnection().getCatalogName()).toList();
+                List<String> catalogs = new ArrayList<>();
+                for (Context context : contextsListSupplyer.get()) {
+                    Connection connection = context.getConnection();
+                    if (connection != null && connection.getCatalogName() != null) {
+                        catalogs.add(connection.getCatalogName());
+                    }
+                }
+                //List<String> catalogs = contextsListSupplyer.get().stream()
+                //    .map(c -> c.getConnection().getCatalogName()).toList();
                 if (properetyCatalog.isPresent()) {
                     for (String catalog : catalogs) {
                         if (catalog.equals(properetyCatalog.get())) {
@@ -237,6 +245,10 @@ public class OtherDiscoverService {
                 }
             } else {
                 propertyValue = propertyDefinition.getValue();
+            }
+            //TODO remove this code when connection.getCatalogName() will work as expected
+            if (propertyValue == null || propertyValue.length() == 0) {
+                propertyValue = "SteelWheels";
             }
             result.add(new DiscoverPropertiesResponseRowR(
                 propertyDefinition.name(),

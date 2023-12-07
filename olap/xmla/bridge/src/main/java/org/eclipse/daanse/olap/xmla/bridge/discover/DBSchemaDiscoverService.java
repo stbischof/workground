@@ -62,11 +62,33 @@ public class DBSchemaDiscoverService {
     public List<DbSchemaCatalogsResponseRow> dbSchemaCatalogs(DbSchemaCatalogsRequest request) {
 
         Optional<String> oName = request.restrictions().catalogName();
-        Optional<Context> oContext = oName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
-        if (oContext.isPresent()) {
-            Context context = oContext.get();
-            return context.getDatabaseMappingSchemaProviders().stream().map(p -> {
-                MappingSchema s = p.get();
+        if (oName.isPresent()) {
+            Optional<Context> oContext = oName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
+            if (oContext.isPresent()) {
+                Context context = oContext.get();
+                return context.getDatabaseMappingSchemaProviders().stream().map(p -> {
+                        MappingSchema s = p.get();
+                        return (DbSchemaCatalogsResponseRow) new DbSchemaCatalogsResponseRowR(
+                            Optional.ofNullable(s.name()),
+                            Optional.ofNullable(s.description()),
+                            getRoles(s.roles()),
+                            Optional.of(LocalDateTime.now()),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty());
+                    }
+                ).toList();
+            }
+        }
+        else {
+            return contextsListSupplyer.get().stream().map(c -> c.getDatabaseMappingSchemaProviders().stream().map(p -> {
+                    MappingSchema s = p.get();
                     return (DbSchemaCatalogsResponseRow) new DbSchemaCatalogsResponseRowR(
                         Optional.ofNullable(s.name()),
                         Optional.ofNullable(s.description()),
@@ -82,7 +104,7 @@ public class DBSchemaDiscoverService {
                         Optional.empty(),
                         Optional.empty());
                 }
-            ).toList();
+            ).toList()).flatMap(Collection::stream).toList();
         }
         return List.of();
     }
