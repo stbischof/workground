@@ -32,7 +32,7 @@ public interface Statement  {
      * @return {@link Result}
      *
      */
-    Result executeSelct(String mdx) throws Exception;
+    Result executeSelect(String mdx) throws Exception;
 
     CellSet executeQuery(String statement);
 

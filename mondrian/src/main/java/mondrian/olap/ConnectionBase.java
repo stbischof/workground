@@ -15,6 +15,7 @@ import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.function.FunctionTable;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
+import org.eclipse.daanse.olap.impl.StatementImpl;
 import org.slf4j.Logger;
 
 import mondrian.parser.JavaccParserValidatorImpl;
@@ -99,5 +100,32 @@ public abstract class ConnectionBase implements Connection {
     @Override
     public List<Schema> getSchemas() {
         return List.of(getSchema());
+    }
+
+    public  QueryComponent parseStatementN(StatementImpl statement, String query,
+                                           FunctionTable funTable,
+                                           boolean strictValidation) {
+        MdxParserValidator parser = createParser();
+        boolean debug = false;
+
+        if (funTable == null) {
+            funTable = getSchema().getFunTable();
+        }
+
+        if (getLogger().isDebugEnabled()) {
+            String s = new StringBuilder().append(Util.NL).append(query.replaceAll("[\n\r]", "_")).toString();
+            getLogger().debug(s);
+        }
+
+        try {
+            //TODO
+            //return
+            //    parser.parseInternal(
+            //        statement, query, debug, funTable, strictValidation);
+        } catch (Exception e) {
+            throw MondrianResource.instance().FailedToParseQuery.ex(query, e);
+        }
+
+        return null;
     }
 }

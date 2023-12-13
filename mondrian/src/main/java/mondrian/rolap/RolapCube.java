@@ -3596,6 +3596,7 @@ public class RolapCube extends CubeBase {
         }
     }
 
+    @Override
     public RolapDrillThroughAction getDefaultDrillThroughAction() {
         for(RolapAction action: this.actionList) {
             if(action instanceof RolapDrillThroughAction rolapDrillThroughAction
