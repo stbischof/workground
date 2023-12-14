@@ -5,7 +5,7 @@ import org.eclipse.daanse.olap.api.element.Hierarchy;
 import java.util.List;
 
 public interface CellSetAxisMetaData {
-    Axis getAxisOrdinal();
+    IAxis getAxisOrdinal();
 
     List<Hierarchy> getHierarchies();
 

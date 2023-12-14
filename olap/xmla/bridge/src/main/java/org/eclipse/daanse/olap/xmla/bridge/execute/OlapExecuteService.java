@@ -32,8 +32,10 @@ import org.eclipse.daanse.olap.api.query.component.Refresh;
 import org.eclipse.daanse.olap.api.query.component.TransactionCommand;
 import org.eclipse.daanse.olap.api.query.component.Update;
 import org.eclipse.daanse.olap.api.query.component.UpdateClause;
+import org.eclipse.daanse.olap.api.result.AllocationPolicy;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
+import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
@@ -140,8 +142,6 @@ import org.eclipse.daanse.xmla.model.record.execute.clearcache.ClearCacheRespons
 import org.eclipse.daanse.xmla.model.record.execute.statement.StatementResponseR;
 import org.eclipse.daanse.xmla.model.record.mddataset.RowSetR;
 import org.eclipse.daanse.xmla.model.record.xmla_empty.EmptyresultR;
-import org.olap4j.AllocationPolicy;
-import org.olap4j.Scenario;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -211,12 +211,6 @@ public class OlapExecuteService implements ExecuteService {
                 }
             }
             */
-            } catch (org.olap4j.OlapException oe) {
-                throw new XmlaException(
-                    CLIENT_FAULT_FC,
-                    CODE3238658121,
-                    USM_DOM_PARSE_FAULT_FS,
-                    oe);
             } catch (java.sql.SQLException oe) {
                 throw new XmlaException(
                     CLIENT_FAULT_FC,

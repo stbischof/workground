@@ -1295,7 +1295,7 @@ public Cell getCell( int[] pos ) {
             revaluator.restore( savepoint );
           }
           tupleIndex++;
-        
+
       }
     }
   }
@@ -1409,7 +1409,7 @@ public Cell getCell( int[] pos ) {
    * This method can be expensive, because the ordinal is computed from the length of the axes, and therefore the axes
    * need to be instantiated.
    */
-  int getCellOrdinal( int[] pos ) {
+  public int getCellOrdinal( int[] pos ) {
     if ( modulos == null ) {
       makeModulos();
     }
@@ -1434,7 +1434,7 @@ public Cell getCell( int[] pos ) {
    *          Coordinates of cell
    * @return Members which form the context of the given cell
    */
-  RolapMember[] getCellMembers( int[] pos ) {
+  public RolapMember[] getCellMembers( int[] pos ) {
     RolapMember[] members = (RolapMember[]) evaluator.getMembers().clone();
     for ( int i = 0; i < pos.length; i++ ) {
       Position position = axes[i].getPositions().get( pos[i] );
@@ -1447,7 +1447,7 @@ public Cell getCell( int[] pos ) {
     return members;
   }
 
-  Evaluator getRootEvaluator() {
+  public Evaluator getRootEvaluator() {
     return evaluator;
   }
 
@@ -1459,7 +1459,7 @@ public Cell getCell( int[] pos ) {
     return cellEvaluator;
   }
 
-  void populateEvaluator( Evaluator evaluator, int[] pos ) {
+  public void populateEvaluator( Evaluator evaluator, int[] pos ) {
     for ( int i = -1; i < axes.length; i++ ) {
       Axis axis;
       int index;
@@ -1858,11 +1858,11 @@ public Cell getCell( int[] pos ) {
    * <p>
    * During the evaluation stage they are mutable but after evaluation has finished they are not changed.
    */
-  static class CellInfo {
-    Object value;
-    String formatString;
-    ValueFormatter valueFormatter;
-    long key;
+  static public class CellInfo {
+    public Object value;
+    public String formatString;
+    public ValueFormatter valueFormatter;
+    public long key;
 
     /**
      * Creates a CellInfo representing the position of a cell.
@@ -1918,7 +1918,7 @@ public Cell getCell( int[] pos ) {
      *
      * @return formatted value of the Cell
      */
-    String getFormatValue() {
+    public String getFormatValue() {
       return valueFormatter.format( value, formatString );
     }
   }

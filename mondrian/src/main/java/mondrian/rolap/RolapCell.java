@@ -674,7 +674,7 @@ public class RolapCell implements Cell {
         return result.getMember(pos, hierarchy);
     }
 
-    @Override
+    @Deprecated
 	public void setValue(
         Scenario scenario,
         Object newValue,
@@ -720,6 +720,61 @@ public class RolapCell implements Cell {
         }
         double doubleNewValue = ((Number) newValue).doubleValue();
         ((ScenarioImpl) scenario).setCellValue(
+            result.getExecution().getMondrianStatement()
+                .getMondrianConnection(),
+            Arrays.asList(members),
+            doubleNewValue,
+            doubleCurrentValue,
+            allocationPolicy,
+            allocationArgs);
+    }
+
+    @Override
+    public void setValue(
+        org.eclipse.daanse.olap.api.result.Scenario scenario,
+        Object newValue,
+        org.eclipse.daanse.olap.api.result.AllocationPolicy allocationPolicy,
+        Object... allocationArgs)
+    {
+        if (allocationPolicy == null) {
+            // user error
+            throw Util.newError(
+                "Allocation policy must not be null");
+        }
+        final RolapMember[] members = result.getCellMembers(pos);
+        for (int i = 0; i < members.length; i++) {
+            Member member = members[i];
+            if (ScenarioImpl.isScenario(member.getHierarchy())) {
+                scenario =
+                    (org.eclipse.daanse.olap.api.result.Scenario) member.getPropertyValue(Property.SCENARIO.name);
+                members[i] = (RolapMember) member.getHierarchy().getAllMember();
+            } else if (member.isCalculated()) {
+                throw Util.newError(
+                    new StringBuilder("Cannot write to cell: one of the coordinates (")
+                        .append(member.getUniqueName())
+                        .append(") is a calculated member").toString());
+            }
+        }
+        if (scenario == null) {
+            throw Util.newError("No active scenario");
+        }
+        if (allocationArgs == null) {
+            allocationArgs = new Object[0];
+        }
+        final Object currentValue = getValue();
+        double doubleCurrentValue;
+        if (currentValue == null) {
+            doubleCurrentValue = 0d;
+        } else if (currentValue instanceof Number) {
+            doubleCurrentValue = ((Number) currentValue).doubleValue();
+        } else {
+            // Cell is not a number. Likely it is a string or a
+            // MondrianEvaluationException. Do not attempt to change the value
+            // in this case. (REVIEW: Is this the correct behavior?)
+            return;
+        }
+        double doubleNewValue = ((Number) newValue).doubleValue();
+        ((org.eclipse.daanse.olap.impl.ScenarioImpl) scenario).setCellValue(
             result.getExecution().getMondrianStatement()
                 .getMondrianConnection(),
             Arrays.asList(members),

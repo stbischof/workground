@@ -1,6 +1,6 @@
 package org.eclipse.daanse.olap.api.result;
 
-import mondrian.server.Statement;
+import org.eclipse.daanse.olap.api.Statement;
 
 import java.util.List;
 

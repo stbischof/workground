@@ -1350,7 +1350,7 @@ public class RolapHierarchy extends HierarchyBase {
      * Calculated member which is also a measure (that is, a member of the
      * [Measures] dimension).
      */
-    protected class RolapCalculatedMeasure
+    public class RolapCalculatedMeasure
         extends RolapCalculatedMember
         implements RolapMeasure
     {

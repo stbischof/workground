@@ -7,12 +7,14 @@
  * Copyright (C) 2001-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
 */
 
 package org.eclipse.daanse.olap.api.result;
+
+import org.eclipse.daanse.olap.calc.api.todo.TupleList;
 
 import java.util.List;
 
@@ -25,4 +27,6 @@ import java.util.List;
  */
 public interface Axis {
     List<Position> getPositions();
+
+    TupleList getTupleList();
 }

@@ -1,10 +1,92 @@
 package org.eclipse.daanse.olap.api.result;
 
+import java.util.Collections;
+import java.util.Set;
+
 public interface Property {
 
     String getName();
 
     Datatype getDatatype();
+
+    Set<Property.TypeFlag> getType();
+
+    String getCaption();
+
+
+
+    /**
+     * Enumeration of aspects of the type of a Property. In particular, whether
+     * it belongs to a member or a cell.
+     *
+     * <p>The values are as specified by XMLA for the PROPERTY_TYPE attribute
+     * of the MDSCHEMA_PROPERTIES data set.
+     * For example, XMLA specifies that the value 9 (0x1 | 0x8) means that a
+     * property belongs to a member and is a binary large object (BLOB).
+     * In this case, {@link Property#getType} will return the {@link Set}
+     * {{@link #MEMBER}, {@link #BLOB}}.
+     */
+    enum TypeFlag implements XmlaConstant {
+        /**
+         * Identifies a property of a member. This property can be used in the
+         * DIMENSION PROPERTIES clause of the SELECT statement.
+         */
+        MEMBER(1),
+
+        /**
+         * Identifies a property of a cell. This property can be used in the
+         * CELL PROPERTIES clause that occurs at the end of the SELECT
+         * statement.
+         */
+        CELL(2),
+
+        /**
+         * Identifies an internal property.
+         */
+        SYSTEM(4),
+
+        /**
+         * Identifies a property which contains a binary large object (blob).
+         */
+        BLOB(8);
+
+        private final int xmlaOrdinal;
+
+        public static final Set<Property.TypeFlag> CELL_TYPE_FLAG =
+            Collections.unmodifiableSet(
+                Olap4jUtil.enumSetOf(Property.TypeFlag.CELL));
+        public static final Set<Property.TypeFlag> MEMBER_TYPE_FLAG =
+            Collections.unmodifiableSet(
+                Olap4jUtil.enumSetOf(Property.TypeFlag.MEMBER));
+        private static final DictionaryImpl<Property.TypeFlag> DICTIONARY =
+            DictionaryImpl.forClass(Property.TypeFlag.class);
+
+        private TypeFlag(int xmlaOrdinal) {
+            this.xmlaOrdinal = xmlaOrdinal;
+        }
+
+        public String xmlaName() {
+            return "MDPROP_" + name();
+        }
+
+        public String getDescription() {
+            return null;
+        }
+
+        public int xmlaOrdinal() {
+            return xmlaOrdinal;
+        }
+
+        /**
+         * Per {@link org.olap4j.metadata.XmlaConstant}, returns a dictionary
+         * of all values of this enumeration.
+         *
+         * @return Dictionary of all values
+         */
+        public static Dictionary<Property.TypeFlag> getDictionary() {
+            return DICTIONARY;
+        }
+    }
 
     enum StandardMemberProperty implements Property {
 
@@ -182,6 +264,16 @@ public interface Property {
         public Datatype getDatatype() {
             return null;
         }
+
+        @Override
+        public Set<TypeFlag> getType() {
+            return Property.TypeFlag.MEMBER_TYPE_FLAG;
+        }
+
+        @Override
+        public String getCaption() {
+            return name();
+        }
     }
 
     enum StandardCellProperty implements Property {
@@ -254,6 +346,23 @@ public interface Property {
             return null;
             //TODO
         }
+
+        @Override
+        public Set<TypeFlag> getType() {
+            return Property.TypeFlag.CELL_TYPE_FLAG;
+        }
+
+        @Override
+        public String getCaption() {
+            // NOTE: This caption will be the same in all locales, since
+            // StandardCellProperty has no way of deducing the current
+            // connection. Providers that wish to localize the caption of
+            // built-in properties should create a wrapper around
+            // StandardCellProperty that is aware of the current connection or
+            // locale.
+            return name();
+        }
+
     }
 
 }

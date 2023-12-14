@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 public interface CellSetAxis {
-    Axis getAxisOrdinal();
+    IAxis getAxisOrdinal();
 
     CellSet getCellSet();
 

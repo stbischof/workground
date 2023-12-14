@@ -17,12 +17,12 @@ import mondrian.olap.MondrianProperties;
 import mondrian.olap.Util;
 import mondrian.olap4j.MondrianOlap4jCell;
 import mondrian.olap4j.MondrianOlap4jMember;
-import mondrian.server.Statement;
 import mondrian.util.CompositeList;
 import mondrian.xmla.RowsetDefinition;
 import mondrian.xmla.XmlaException;
 import mondrian.xmla.XmlaUtil;
 import org.eclipse.daanse.olap.api.NameSegment;
+import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -92,6 +92,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static mondrian.xmla.XmlaConstants.HSB_BAD_PROPERTIES_LIST_CODE;
 import static mondrian.xmla.XmlaConstants.HSB_BAD_PROPERTIES_LIST_FAULT_FS;
@@ -1167,6 +1168,16 @@ public class Convertor {
             @Override
             public Datatype getDatatype() {
                 return property.getDatatype();
+            }
+
+            @Override
+            public Set<TypeFlag> getType() {
+                return property.getType();
+            }
+
+            @Override
+            public String getCaption() {
+                return property.getCaption();
             }
 
             @Override

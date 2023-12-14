@@ -187,7 +187,7 @@ public class RolapCube extends CubeBase {
      */
     private RolapCubeUsages cubeUsages;
 
-    RolapBaseCubeMeasure factCountMeasure;
+    public RolapBaseCubeMeasure factCountMeasure;
 
     final List<RolapHierarchy> hierarchyList =
         new ArrayList<>();
@@ -2786,7 +2786,7 @@ public class RolapCube extends CubeBase {
      * If the fact table has a primary key, this measure is equivalent to the
      * {@link #getFactCountMeasure() fact count measure}.
      */
-    RolapMeasure getAtomicCellCountMeasure() {
+    public RolapMeasure getAtomicCellCountMeasure() {
         // TODO: separate measure
         return factCountMeasure;
     }
@@ -3096,10 +3096,11 @@ public class RolapCube extends CubeBase {
      * @param name Name of member
      * @param calc Compiled expression
      */
-    RolapMember createCalculatedMember(
+    public RolapMember createCalculatedMember(
         RolapHierarchy hierarchy,
         String name,
-        Calc calc)
+        Calc calc
+    )
     {
         final List<Segment> segmentList = new ArrayList<>(Util.parseIdentifier(hierarchy.getUniqueName()));
         segmentList.add(new IdImpl.NameSegmentImpl(name));

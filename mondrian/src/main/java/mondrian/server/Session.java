@@ -157,8 +157,13 @@ public class Session
     }
 
     private Scenario scenario = null;
+    private org.eclipse.daanse.olap.api.result.Scenario scenarioNew = null;
 
-    public void setScenario(Scenario scenario) {
+    public void setScenario(org.eclipse.daanse.olap.api.result.Scenario scenario) {
+        this.scenarioNew = scenario;
+    }
+
+    public void setScenarioNew(Scenario scenario) {
         this.scenario = scenario;
     }
 

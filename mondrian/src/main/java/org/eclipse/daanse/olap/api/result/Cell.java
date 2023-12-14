@@ -7,7 +7,7 @@
  * Copyright (C) 2001-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * Contributors:
  *  SmartCity Jena - refactor, clean API
 */
@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
-import org.olap4j.AllocationPolicy;
-import org.olap4j.Scenario;
 
 import mondrian.olap.Util;
 

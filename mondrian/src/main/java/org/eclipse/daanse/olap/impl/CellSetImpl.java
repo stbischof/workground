@@ -1,8 +1,16 @@
 package org.eclipse.daanse.olap.impl;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.QueryAxisImpl;
 import mondrian.rolap.RolapCell;
-import mondrian.server.Statement;
+import mondrian.rolap.RolapConnection;
+import mondrian.server.Execution;
+import org.eclipse.daanse.olap.api.Statement;
+import org.eclipse.daanse.olap.api.SubtotalVisibility;
+import org.eclipse.daanse.olap.api.query.component.AxisOrdinal;
+import org.eclipse.daanse.olap.api.query.component.Query;
+import org.eclipse.daanse.olap.api.query.component.QueryAxis;
+import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
@@ -12,14 +20,29 @@ import org.eclipse.daanse.olap.api.result.Result;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CellSetImpl implements CellSet {
+public class CellSetImpl extends Execution implements CellSet {
 
+    private StatementImpl statement;
     private CellSetMetaData metaData;
     private List<CellSetAxis> axisList = new ArrayList<>();
     private CellSetAxis filterAxis;
     private Result result;
+    protected boolean closed;
+    private final Query query;
 
     public CellSetImpl(StatementImpl statement) {
+        super(statement, 10);
+        this.statement = statement;
+        query = statement.query;
+        this.closed = false;
+        if (statement instanceof PreparedStatement ps) {
+            this.metaData = ps.getCellSetMetaData();
+        } else {
+            this.metaData =
+                new CellSetMetaDataImpl(
+                    statement, query);
+        }
+
     }
 
     @Override
@@ -48,7 +71,7 @@ public class CellSetImpl implements CellSet {
 
     @Override
     public Statement getStatement() {
-        return null;
+        return statement;
     }
 
     private Cell getCellInternal(int[] pos) {
@@ -91,8 +114,44 @@ public class CellSetImpl implements CellSet {
     }
 
     public void close() {
+        if (closed) {
+            return;
+        }
+        this.closed = true;
+        if (this.result != null) {
+            this.result.close();
+        }
+        statement.onResultSetClose(this);
     }
 
     public void execute() {
+        result =
+            ((RolapConnection) statement.getConnection()).execute(
+                this);
+
+        // initialize axes
+        org.eclipse.daanse.olap.api.result.Axis[] axes = result.getAxes();
+        QueryAxis[] queryAxes = result.getQuery().getAxes();
+        assert axes.length == queryAxes.length;
+        for (int i = 0; i < axes.length; i++) {
+            Axis axis = axes[i];
+            QueryAxis queryAxis = queryAxes[i];
+            axisList.add(
+                new CellSetAxisImpl(
+                    this, queryAxis, axis));
+        }
+
+        // initialize filter axis
+        QueryAxis queryAxis = result.getQuery().getSlicerAxis();
+        final Axis axis = result.getSlicerAxis();
+        if (queryAxis == null) {
+            // Dummy slicer axis.
+            queryAxis =
+                new QueryAxisImpl(
+                    false, null, AxisOrdinal.StandardAxisOrdinal.SLICER,
+                    SubtotalVisibility.Undefined);
+        }
+        filterAxis =
+            new CellSetAxisImpl(this, queryAxis, axis);
     }
 }

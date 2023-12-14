@@ -1072,7 +1072,7 @@ public class XmlaHandler {
                     Session session = Session.get(sessionId);
                     if(transactionCommand.getCommand() == Command.BEGIN) {
                         Scenario scenario = connection.createScenario();
-                        session.setScenario(scenario);
+                        session.setScenarioNew(scenario);
                     }
                     else if(transactionCommand.getCommand() == Command.ROLLBACK) {
                         session.setScenario(null);
