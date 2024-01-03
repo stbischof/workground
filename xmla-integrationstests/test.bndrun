@@ -1,0 +1,98 @@
+-runstartlevel: \
+    order=sortbynameversion,\
+    begin=-1
+
+-runtrace: true
+
+-tester: biz.aQute.tester.junit-platform
+
+# JaCoCo calculates test coverage
+-runpath.jacoco:\
+	org.jacoco.agent,\
+	org.jacoco.agent.rt
+
+-runvm.coverage: -javaagent:${repo;org.jacoco.agent.rt}=destfile=${target-dir}/jacoco.exec
+
+
+-runsystemcapabilities: ${native_capability}
+
+-runproperties: \
+    org.slf4j.simpleLogger.defaultLogLevel=debug
+
+-runfw: org.apache.felix.framework
+
+-runee: JavaSE-17
+
+-runrequires: \
+	bnd.identity;id='${project.artifactId}-tests',\
+	bnd.identity;id=junit-jupiter-engine,\
+	bnd.identity;id=junit-platform-launcher,\
+	bnd.identity;id='org.apache.aries.spifly.dynamic.bundle',\
+	bnd.identity;id='org.glassfish.hk2.osgi-resource-locator',\
+	bnd.identity;id='com.sun.xml.bind.jaxb-impl',\
+	bnd.identity;id='org.eclipse.daanse.repackage.rhino.engine',\
+	bnd.identity;id='org.eclipse.daanse.db.dialect.db.mysql',\
+	bnd.identity;id='org.eclipse.daanse.emondrian'
+
+# -runbundles is calculated by the bnd-resolver-maven-plugin
+
+-runbundles: \
+	com.github.ben-manes.caffeine;version='[3.1.2,3.1.3)',\
+	com.sun.xml.bind.jaxb-core;version='[3.0.2,3.0.3)',\
+	com.sun.xml.bind.jaxb-impl;version='[3.0.2,3.0.3)',\
+	jakarta.activation-api;version='[2.1.0,2.1.1)',\
+	jakarta.xml.bind-api;version='[3.0.1,3.0.2)',\
+	junit-jupiter-api;version='[5.9.2,5.9.3)',\
+	junit-jupiter-engine;version='[5.9.2,5.9.3)',\
+	junit-platform-commons;version='[1.9.2,1.9.3)',\
+	junit-platform-engine;version='[1.9.2,1.9.3)',\
+	junit-platform-launcher;version='[1.9.2,1.9.3)',\
+	net.hydromatic.eigenbase-properties;version='[1.1.6,1.1.7)',\
+	net.hydromatic.eigenbase-resgen;version='[1.3.7,1.3.8)',\
+	net.hydromatic.eigenbase-xom;version='[1.3.7,1.3.8)',\
+	org.apache.aries.spifly.dynamic.bundle;version='[1.3.6,1.3.7)',\
+	org.apache.commons.collections;version='[3.2.2,3.2.3)',\
+	org.apache.commons.lang3;version='[3.12.0,3.12.1)',\
+	org.apache.commons.logging;version='[1.2.0,1.2.1)',\
+	org.apache.commons.math3;version='[3.6.1,3.6.2)',\
+	org.apache.commons.vfs2;version='[2.9.0,2.9.1)',\
+	org.apache.felix.http.servlet-api;version='[2.1.0,2.1.1)',\
+	org.apache.felix.scr;version='[2.2.4,2.2.5)',\
+	org.apache.geronimo.specs.geronimo-stax-api_1.2_spec;version='[1.2.0,1.2.1)',\
+	org.apache.logging.log4j.api;version='[2.17.2,2.17.3)',\
+	org.apache.servicemix.bundles.dom4j;version='[2.1.3,2.1.4)',\
+	org.apache.servicemix.bundles.xerces;version='[2.12.2,2.12.3)',\
+	org.apache.servicemix.bundles.xmlresolver;version='[1.2.0,1.2.1)',\
+	org.eclipse.daanse.db.dialect.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.db.dialect.db.common;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.db.dialect.db.mysql;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.db.statistics.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.emondrian;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.xmla-integrationstests-tests;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.mdx.model.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.model.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.model.record;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.provider.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.repackage.olap4j;version='[1.2.0,1.2.1)',\
+	org.eclipse.daanse.repackage.olap4j.xmla;version='[1.2.0,1.2.1)',\
+	org.eclipse.daanse.repackage.rhino.engine;version='[0.0.1,0.0.2)',\
+	org.glassfish.hk2.osgi-resource-locator;version='[2.4.0,2.4.1)',\
+	org.objectweb.asm;version='[9.4.0,9.4.1)',\
+	org.objectweb.asm.commons;version='[9.4.0,9.4.1)',\
+	org.objectweb.asm.tree;version='[9.4.0,9.4.1)',\
+	org.objectweb.asm.tree.analysis;version='[9.4.0,9.4.1)',\
+	org.objectweb.asm.util;version='[9.4.0,9.4.1)',\
+	org.opentest4j;version='[1.2.0,1.2.1)',\
+	org.osgi.service.component;version='[1.5.1,1.5.2)',\
+	org.osgi.util.converter;version='[1.0.9,1.0.10)',\
+	org.osgi.util.function;version='[1.2.0,1.2.1)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
+	slf4j.api;version='[2.0.9,2.0.10)',\
+	slf4j.simple;version='[2.0.9,2.0.10)'
+
+-systemproperties.tester:\
+    tempIgnoreStrageTests=true#,\
+
+-runproperties.tester: \
+    tester.names='mondrian.xmla.XmlaExcel2000Test'

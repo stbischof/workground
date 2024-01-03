@@ -14,11 +14,14 @@
 package mondrian.xmla;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestContextWrapper;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalogAsFile;
+import org.osgi.test.junit5.context.BundleContextExtension;
+import org.osgi.test.junit5.service.ServiceExtension;
 
 import mondrian.test.DiffRepository;
 
@@ -30,6 +33,8 @@ import mondrian.test.DiffRepository;
  *
  * @author Richard M. Emberson
  */
+@ExtendWith(BundleContextExtension.class)
+@ExtendWith(ServiceExtension.class)
 class XmlaExcel2000Test extends XmlaBaseTestCase {
 
     @Override

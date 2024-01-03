@@ -44,4 +44,5 @@ org.eclipse.daanse.olap.core,\
 org.eclipse.daanse.olap.function,\
 org.eclipse.daanse.olap.function.resolver,\
 org.eclipse.daanse.olap.query.base,\
-org.eclipse.daanse.olap.udf.impl
+org.eclipse.daanse.olap.udf.impl,\
+org.opencube.junit5.*

@@ -32,9 +32,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.access.Role;
+import org.eclipse.daanse.xmla.api.XmlaService;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.olap4j.metadata.XmlaConstants;
 import org.opencube.junit5.context.TestContextWrapper;
 import org.opentest4j.AssertionFailedError;
+import org.osgi.test.common.annotation.InjectService;
+import org.osgi.test.junit5.context.BundleContextExtension;
+import org.osgi.test.junit5.service.ServiceExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,6 +68,8 @@ import mondrian.xmla.test.XmlaTestContext;
  *
  * @author mkambol
  */
+@ExtendWith(BundleContextExtension.class)
+@ExtendWith(ServiceExtension.class)
 public abstract class XmlaBaseTestCase {
     protected static final String SCHEMA_TEST_DATE =
         "xxxx-xx-xxTxx:xx:xx";
@@ -116,6 +123,10 @@ public abstract class XmlaBaseTestCase {
      */
     private final HashMap<List<String>, MondrianServer>
         SERVER_CACHE = new HashMap<>();
+    static final String PID_XMLA_SERVICE = "org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaService";
+
+    @InjectService(timeout = 5000, filter = "(component.name=" + PID_XMLA_SERVICE + ")")
+    XmlaService xmlaService;
 
     protected void tearDown() {
         for (MondrianServer server : SERVER_CACHE.values()) {
@@ -218,7 +229,8 @@ System.out.println("requestText=" + requestText);
         String requestText = generateRequestString(props);
         Document reqDoc = XmlUtil.parseString(requestText);
 
-        Servlet servlet = getServlet(connection);
+        //Servlet servlet = getServlet(connection);
+        TestServlet servlet = new TestServlet(xmlaService);
         byte[] bytes = XmlaSupport.processSoapXmla(reqDoc, servlet);
 
         String expectedStr = generateExpectedString(props);
@@ -235,7 +247,9 @@ System.out.println("requestText=" + requestText);
         MockHttpServletResponse res = new MockHttpServletResponse();
         res.setCharacterEncoding("UTF-8");
 
-        Servlet servlet = getServlet(connection);
+        //Servlet servlet = getServlet(connection);
+
+        Servlet servlet = new TestServlet(xmlaService);
         servlet.service(req, res);
 
         int statusCode = res.getStatusCode();
@@ -272,6 +286,32 @@ System.out.println("Got CONTINUE");
         }
     }
 
+    /*
+    private XmlaService getXmlaService(Context context) {
+        ContextGroup contextGroup = new ContextGroup() {
+            @Override
+            public List<Context> getValidContexts() {
+                return List.of(context);
+            }
+        };
+        ContextListSupplyer contextsListSupplyer = new ContextsSupplyerImpl(contextGroup);
+        ContextGroupXmlaServiceConfig config = mock(ContextGroupXmlaServiceConfig.class);
+        DiscoverService discoverService = new DelegatingDiscoverService(contextsListSupplyer, config);
+        ExecuteService executeService = new OlapExecuteService(contextsListSupplyer, config);
+      return new XmlaService() {
+          @Override
+          public DiscoverService discover() {
+              return discoverService;
+          }
+
+          @Override
+          public ExecuteService execute() {
+              return executeService;
+          }
+      };
+    }
+     */
+
     protected void helperTestExpect(TestContextWrapper context, boolean doSessionId)
     {
         try {
@@ -303,7 +343,7 @@ System.out.println("Got CONTINUE");
         Properties props = new Properties();
         addDatasourceInfoResponseKey(context, props);
         try {
-            doTest(context.createConnection(), req, props);
+            doTest(context.getContext().getConnection(), req, props);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -332,7 +372,7 @@ System.out.println("Got CONTINUE");
         Properties props = new Properties();
         addDatasourceInfoResponseKey(context, props);
         try {
-            doTest(context.createConnection(), props);
+            doTest(context.getContext().getConnection(), props);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
