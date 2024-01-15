@@ -13,14 +13,11 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
+import java.util.List;
 
-public interface MappingColumnDef {
+public non-sealed interface MappingKey extends MappingTableElement {
 
-    MappingTimeDomain timeDomain();
+    List<MappingColumn> columns();
 
     String name();
-
-    TypeEnum type();
-
 }
