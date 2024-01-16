@@ -70,6 +70,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTimeDomain;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -1891,14 +1892,45 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     private MappingColumnDef columnDef(MappingColumnDef columnDef) {
         if (columnDef != null) {
+            MappingTimeDomain timeDomain = columnDefTimeDomain(columnDef);
             String name = columnDefName(columnDef);
             TypeEnum type = columnDefType(columnDef);
-            return new_ColumnDef(name, type);
+            return new_ColumnDef(timeDomain, name, type);
         }
         return null;
     }
 
-    protected abstract MappingColumnDef new_ColumnDef(String name, TypeEnum type);
+    protected MappingTimeDomain columnDefTimeDomain(MappingColumnDef columnDef) {
+        return timeDomain(columnDef.timeDomain());
+    }
+
+    protected MappingTimeDomain timeDomain(MappingTimeDomain timeDomain) {
+        if (timeDomain != null) {
+            String role = timeDomainRole(timeDomain);
+            String epoch = timeDomainEpoch(timeDomain);
+
+            return new_TimeDomain(role, epoch);
+        }
+        return null;
+    }
+
+    protected String timeDomainRole(MappingTimeDomain timeDomain){
+        if (timeDomain != null) {
+            return timeDomain.role();
+        }
+        return null;
+    }
+
+    protected String timeDomainEpoch(MappingTimeDomain timeDomain){
+        if (timeDomain != null) {
+            return timeDomain.epoch();
+        }
+        return null;
+    }
+
+    protected abstract MappingTimeDomain new_TimeDomain(String role, String epoch);
+
+    protected abstract MappingColumnDef new_ColumnDef(MappingTimeDomain timeDomain, String name, TypeEnum type);
 
     protected TypeEnum columnDefType(MappingColumnDef columnDef) {
         return columnDef.type();
@@ -1935,7 +1967,6 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             String schema = writebackTableSchema(writebackTable);
             String name = writebackTableName(writebackTable);
             List<MappingWritebackColumn> columns = writebackTableColumns(writebackTable);
-            ;
 
             return new_WritebackTable(schema, name, columns);
         }
@@ -2305,7 +2336,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
                     source,
                     level,
                     usagePrefix,
-                    foreignKey                    
+                    foreignKey
                 );
             }
             if (cubeDimension instanceof MappingPrivateDimension privateDimension) {

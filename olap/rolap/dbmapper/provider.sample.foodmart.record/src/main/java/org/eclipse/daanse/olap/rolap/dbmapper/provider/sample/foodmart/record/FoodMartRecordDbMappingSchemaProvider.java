@@ -353,7 +353,7 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
                 .content(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
                 .build(),
             SQLRBuilder.builder().dialect(GENERIC)
-                .content("&quot;warehouse_sales&quot; - &quot;inventory_fact_1997&quot;.&quot;warehouse_cost&quot;")
+                .content("\"warehouse_sales\" - \"inventory_fact_1997\".\"warehouse_cost\"")
                 .build()
         ))
         .build();

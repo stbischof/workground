@@ -49,6 +49,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTimeDomain;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -115,6 +116,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ScriptImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TimeDomainImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.UnionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.UserDefinedFunctionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ValueImpl;
@@ -652,8 +654,17 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingColumnDef new_ColumnDef(String name, TypeEnum type) {
+    protected MappingTimeDomain new_TimeDomain(String role, String epoch) {
+        TimeDomainImpl timeDomain = new TimeDomainImpl();
+        timeDomain.setRole(role);
+        timeDomain.setEpoch(epoch);
+        return timeDomain;
+    }
+
+    @Override
+    protected MappingColumnDef new_ColumnDef(MappingTimeDomain timeDomain, String name, TypeEnum type) {
         ColumnDefImpl columnDef = new ColumnDefImpl();
+        columnDef.setTimeDomain(timeDomain);
         columnDef.setName(name);
         columnDef.setType(type);
         return columnDef;

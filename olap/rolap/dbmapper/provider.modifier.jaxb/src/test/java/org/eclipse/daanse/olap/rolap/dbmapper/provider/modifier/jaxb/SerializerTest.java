@@ -431,7 +431,7 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
 `warehouse_sales` - `inventory_fact_1997`.`warehouse_cost`
       </SQL>
       <SQL dialect="generic">
-&quot;warehouse_sales&quot; - &quot;inventory_fact_1997&quot;.&quot;warehouse_cost&quot;
+"warehouse_sales" - "inventory_fact_1997"."warehouse_cost"
       </SQL>
     </MeasureExpression>
   </Measure>

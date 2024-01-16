@@ -14,13 +14,16 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTimeDomain;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 
-public record ColumnDefR(String name,
+public record ColumnDefR(MappingTimeDomain timeDomain,
+                         String name,
                          TypeEnum type)
         implements MappingColumnDef {
 
-    public ColumnDefR(String name, TypeEnum type) {
+    public ColumnDefR(MappingTimeDomain timeDomain, String name, TypeEnum type) {
+        this.timeDomain = timeDomain;
         this.name = name;
         this.type = type;// == null ? TypeEnum.STRING : type;
     }

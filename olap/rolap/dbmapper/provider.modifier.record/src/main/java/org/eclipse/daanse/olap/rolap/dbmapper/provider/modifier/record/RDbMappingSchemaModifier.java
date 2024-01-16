@@ -62,6 +62,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTimeDomain;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -128,6 +129,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ScriptR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TimeDomainR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.UnionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.UserDefinedFunctionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
@@ -172,7 +174,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
 	protected PrivateDimensionR new_PrivateDimension(String name, DimensionTypeEnum type, String caption,
                                                      String description, String foreignKey, List<MappingAnnotation> annotations,
                                                      List<MappingHierarchy> hierarchies, boolean visible, String usagePrefix) {
-		return new PrivateDimensionR(name,description,annotations,caption,visible, type,   foreignKey, 
+		return new PrivateDimensionR(name,description,annotations,caption,visible, type,   foreignKey,
 				hierarchies,  usagePrefix);
 	}
 
@@ -478,9 +480,11 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingColumnDef new_ColumnDef(String name,
-                                             TypeEnum type) {
-        return new ColumnDefR(name, type);
+    protected MappingColumnDef new_ColumnDef(
+        MappingTimeDomain timeDomain,
+        String name,
+        TypeEnum type) {
+        return new ColumnDefR(timeDomain, name, type);
     }
 
     @Override
@@ -586,6 +590,11 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
                                      List<MappingHint> hints, MappingSQL sql,
                                      List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables) {
         return new TableR(schema, name, alias, hints, sql, aggExcludes, aggTables);
+    }
+
+    @Override
+    protected MappingTimeDomain new_TimeDomain(String role, String epoch) {
+        return new TimeDomainR(role, epoch);
     }
 
     @Override
