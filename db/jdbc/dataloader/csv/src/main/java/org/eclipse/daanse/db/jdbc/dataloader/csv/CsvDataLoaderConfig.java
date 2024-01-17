@@ -10,34 +10,22 @@ import org.osgi.service.metatype.annotations.Option;
 public @interface CsvDataLoaderConfig {
 
 	/**
-	 * @return Line Separator Detection Enabled
-	 */
-	@AttributeDefinition(description = "lineSeparatorDetectionEnabled")
-	boolean lineSeparatorDetectionEnabled() default true;
-
-	/**
 	 * @return Null Value
 	 */
 	@AttributeDefinition(description = "nullValue")
 	String nullValue() default "NULL";
 
 	/**
-	 * @return Quote Escape
-	 */
-	@AttributeDefinition(description = "quoteEscape")
-	char quoteEscape() default '\\';
-
-	/**
 	 * @return Quote
 	 */
-	@AttributeDefinition(description = "quote")
-	char quote() default '"';
+	@AttributeDefinition(description = "quoteCharacter")
+	char quoteCharacter() default '"';
 
 	/**
 	 * @return Delimiter
 	 */
-	@AttributeDefinition(description = "delimiter")
-	String delimiter() default ",";
+	@AttributeDefinition(description = "fieldSeparator")
+    char fieldSeparator() default ',';
 
 	/**
 	 * @return Encoding default UTF-8
@@ -46,12 +34,6 @@ public @interface CsvDataLoaderConfig {
 			@Option(value = "ISO_8859_1"), @Option(value = "UTF_16BE"), @Option(value = "UTF_16LE"),
 			@Option(value = "UTF_16") })
 	String encoding() default "UTF-8";
-
-	/**
-	 * @return Quote Detection Enabled
-	 */
-	@AttributeDefinition(description = "quoteDetectionEnabled")
-	boolean quoteDetectionEnabled() default true;
 
 	/**
 	 * @return Clear Table Before Load Data
@@ -65,4 +47,21 @@ public @interface CsvDataLoaderConfig {
 	@AttributeDefinition(description = "batchSize", defaultValue = "1000")
 	int batchSize() default 1000;
 
+    /**
+     * @return Skip Empty Lines
+     */
+    @AttributeDefinition(description = "skipEmptyLines", defaultValue = "true")
+    boolean skipEmptyLines() default true;
+
+    /**
+     * @return Comment Character
+     */
+    @AttributeDefinition(description = "commentCharacter", defaultValue = "#")
+    char commentCharacter() default '#';
+
+    /**
+     * @return Ignore Different Field Count
+     */
+    @AttributeDefinition(description = "commentCharacter", defaultValue = "true")
+    boolean ignoreDifferentFieldCount() default true;
 }
