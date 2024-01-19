@@ -62,7 +62,7 @@ import mondrian.rolap.util.DimensionTypeUtil;
  * @author jhyde
  * @since 10 August, 2001
  */
-class RolapDimension extends DimensionBase {
+public class RolapDimension extends DimensionBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RolapDimension.class);
 

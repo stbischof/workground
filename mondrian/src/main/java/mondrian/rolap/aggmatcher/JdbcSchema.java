@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
+import mondrian.olap.Util;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.result.Olap4jUtil;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
@@ -76,6 +78,19 @@ public class JdbcSchema {
      */
     public Logger getLogger() {
         return LOGGER;
+    }
+
+    /**
+     * Re-loads a table. Even if all tables have already been loaded.
+     *
+     * @param tableName Table name
+     * @throws SQLException on error
+     */
+    public Table reloadTable(String tableName)
+        throws SQLException
+    {
+        loadTables(tableName);
+        return tables.get(tableName);
     }
 
     public interface Factory {
@@ -1270,6 +1285,45 @@ public class JdbcSchema {
     }
 
     /**
+     * Gets all of the tables (and views) in the database that match a given
+     * table name.
+     *
+     * @param tableName Table name
+     * @throws SQLException on error
+     */
+    private void loadTables(String tableName) {
+        Connection conn = null;
+        try {
+            conn = getDataSource().getConnection();
+            final DatabaseMetaData databaseMetaData = conn.getMetaData();
+            List<String> tableTypes = Arrays.asList("TABLE", "VIEW");
+            if (databaseMetaData.getDatabaseProductName().toUpperCase().indexOf(
+                "VERTICA") >= 0)
+            {
+                for (String tableType : tableTypes) {
+                    loadTablesOfType(
+                        databaseMetaData,
+                        Collections.singletonList(tableType),
+                        tableName);
+                }
+            } else {
+                loadTablesOfType(databaseMetaData, tableTypes, tableName);
+            }
+        } catch (SQLException e) {
+            throw Util.newError(
+                e, "Error while loading JDBC schema");
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // no op.
+                }
+            }
+        }
+    }
+
+    /**
      * Gets all of the tables (and views) in the database.
      * If called a second time, this method is a no-op.
      * @param connectInfo The Mondrian connection properties
@@ -1315,6 +1369,38 @@ public class JdbcSchema {
         }
     }
 
+    /**
+     * Loads definition of tables of a given set of table types ("TABLE", "VIEW"
+     * etc.)
+     */
+    private void loadTablesOfType(
+        DatabaseMetaData databaseMetaData,
+        List<String> tableTypes,
+        String tableName)
+        throws SQLException
+    {
+        final String schema = getSchemaName();
+        final String catalog = getCatalogName();
+        ResultSet rs = null;
+        try {
+            rs = databaseMetaData.getTables(
+                catalog,
+                schema,
+                tableName,
+                tableTypes.toArray(new String[tableTypes.size()]));
+            if (rs == null) {
+                getLogger().debug("ERROR: rs == null");
+                return;
+            }
+            while (rs.next()) {
+                addTable(rs);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+    }
     /**
      * Loads definition of tables of a given set of table types ("TABLE", "VIEW"
      * etc.)

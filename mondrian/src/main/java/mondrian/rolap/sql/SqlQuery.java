@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mondrian.rolap.physicalschema.PhysInlineTable;
+import mondrian.rolap.physicalschema.PhysRelation;
+import mondrian.rolap.physicalschema.PhysTable;
+import mondrian.rolap.physicalschema.PhysView;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
@@ -106,7 +110,7 @@ public class SqlQuery {
     private final List<ClauseList> groupingSets;
     private final ClauseList groupingFunctions;
     private final ClauseList rowLimit;
-
+    private int joinCount;
     private final List<BestFitColumnType> types =
         new ArrayList<>();
 
@@ -272,6 +276,81 @@ public class SqlQuery {
      * @param alias table alias, may not be null
      *              (if not null, must not be zero length).
      * @param filter Extra filter condition, or null
+     * @param hintMap table optimization hints, if any
+     * @param failIfExists Whether to throw a RuntimeException if from clause
+     *   already contains this alias
+     *
+     * @pre alias != null
+     * @return true if table was added
+     */
+    boolean addFromTable(
+        final String schema,
+        final String name,
+        final String alias,
+        final String filter,
+        final Map<String, String> hintMap,
+        final String parentAlias,
+        final String joinCondition,
+        final boolean failIfExists)
+    {
+        if (fromAliases.contains(alias)) {
+            if (failIfExists) {
+                throw Util.newInternal(
+                    "query already contains alias '" + alias + "'");
+            } else {
+                return false;
+            }
+        }
+
+        buf.setLength(0);
+        dialect.quoteIdentifier(buf, schema, name);
+        if (alias != null) {
+            Util.assertTrue(alias.length() > 0);
+
+            if (dialect.allowsAs()) {
+                buf.append(" as ");
+            } else {
+                buf.append(' ');
+            }
+            dialect.quoteIdentifier(alias, buf);
+        }
+
+        if (this.allowHints) {
+            dialect.appendHintsAfterFromClause(buf, hintMap);
+        }
+
+        if (parentAlias != null) {
+            assert fromAliases.contains(parentAlias);
+            assert joinCondition != null;
+            if (dialect.allowsJoinOn()) {
+                buf.append(" on ").append(joinCondition);
+                ++joinCount;
+            } else {
+                where.add(joinCondition);
+            }
+        } else {
+            assert joinCondition == null;
+            assert from.isEmpty() || !dialect.allowsJoinOn();
+        }
+
+        fromAliases.add(alias);
+        from.add(buf.toString());
+
+        if (filter != null) {
+            // append filter condition to where clause
+            addWhere("(" + filter + ")");
+        }
+        return true;
+    }
+
+    /**
+     * Adds <code>[schema.]table AS alias</code> to the FROM clause.
+     *
+     * @param schema schema name; may be null
+     * @param name table name
+     * @param alias table alias, may not be null
+     *              (if not null, must not be zero length).
+     * @param filter Extra filter condition, or null
      * @param hints table optimization hints, if any
      * @param failIfExists Whether to throw a RuntimeException if from clause
      *   already contains this alias
@@ -329,6 +408,154 @@ public class SqlQuery {
         final boolean failIfExists)
     {
         addFromQuery(sqlQuery.toString(), alias, failIfExists);
+    }
+
+    /**
+     * Adds a subquery to the FROM clause of this Query with a given alias.
+     * If the query already exists it either, depending on
+     * <code>failIfExists</code>, throws an exception or does not add the query
+     * and returns false.
+     *
+     * @param query Subquery
+     * @param alias (if not null, must not be zero length).
+     * @param failIfExists if true, throws exception if alias already exists
+     * @return true if query *was* added
+     *
+     * @pre alias != null
+     */
+    private boolean addFromQuery(
+        final String query,
+        final String alias,
+        String parentAlias,
+        String joinCondition,
+        final boolean failIfExists)
+    {
+        assert alias != null;
+        assert alias.length() > 0;
+
+        if (fromAliases.contains(alias)) {
+            if (failIfExists) {
+                throw Util.newInternal(
+                    "query already contains alias '" + alias + "'");
+            } else {
+                return false;
+            }
+        }
+
+        buf.setLength(0);
+
+        buf.append('(');
+        buf.append(query);
+        buf.append(')');
+        if (dialect.allowsAs()) {
+            buf.append(" as ");
+        } else {
+            buf.append(' ');
+        }
+        dialect.quoteIdentifier(alias, buf);
+
+        if (parentAlias != null) {
+            assert fromAliases.contains(parentAlias);
+            assert joinCondition != null;
+            if (dialect.allowsJoinOn()) {
+                buf.append(" on ").append(joinCondition);
+                ++joinCount;
+            } else {
+                where.add(joinCondition);
+            }
+        } else {
+            assert joinCondition == null;
+            assert from.isEmpty() || !dialect.allowsJoinOn();
+        }
+
+        fromAliases.add(alias);
+        from.add(buf.toString());
+        return true;
+    }
+
+
+    /**
+     * Adds a relation to a query, adding appropriate join conditions, unless
+     * it is already present.
+     *
+     * <p>Returns whether the relation was added to the query.
+     *
+     * @param relation Relation to add
+     * @param alias Alias of relation. If null, uses relation's alias.
+     * @param failIfExists Whether to fail if relation is already present
+     * @return Whether relation was added to query
+     */
+    public boolean addFrom(
+        final PhysRelation relation,
+        final String alias,
+        final boolean failIfExists)
+    {
+        return addFrom_(relation, alias, null, null, failIfExists);
+    }
+
+    private boolean addFrom_(
+        PhysRelation relation,
+        String alias,
+        String parentAlias,
+        String joinCondition,
+        final boolean failIfExists)
+    {
+        //"alias param probably not necessary"
+        //"adopt visitor pattern and replace 'instanceof' below"
+        if (relation instanceof PhysView) {
+            final PhysView view = (PhysView) relation;
+            final String viewAlias =
+                (alias == null)
+                    ? view.getAlias()
+                    : alias;
+            final String sqlString = view.getSqlString();
+            return addFromQuery(
+                sqlString, viewAlias, parentAlias, joinCondition, false);
+
+        } else if (relation instanceof PhysTable) {
+            final PhysTable table =
+                (PhysTable) relation;
+            final String tableAlias =
+                (alias == null)
+                    ? table.getAlias()
+                    : alias;
+            return addFromTable(
+                table.getSchemaName(),
+                table.getName(),
+                tableAlias,
+                /*table.getFilter()*/null,
+                table.getHintMap(),
+                parentAlias,
+                joinCondition,
+                failIfExists);
+
+        } else if (relation instanceof PhysInlineTable) {
+            final PhysInlineTable table =
+                (PhysInlineTable) relation;
+            PhysView physView =
+                RolapUtil.convertInlineTableToRelation(table, dialect);
+            return addFromQuery(
+                physView.getSqlString(),
+                table.getAlias(),
+                parentAlias,
+                joinCondition,
+                failIfExists);
+/*
+        } else if (relation instanceof MondrianDef.Join) {
+            final MondrianDef.Join join = (MondrianDef.Join) relation;
+            return addJoin(
+                join.left,
+                join.getLeftAlias(),
+                join.leftKey,
+                join.right,
+                join.getRightAlias(),
+                join.rightKey,
+                failIfExists);
+*/
+        } else {
+            //"remove above commented section"
+            throw Util.newInternal("bad relation type " + relation);
+        }
     }
 
     /**
@@ -809,6 +1036,10 @@ public class SqlQuery {
 
     public void setSupported(boolean supported) {
         isSupported = supported;
+    }
+
+    public String toSql() {
+        return toString();
     }
 
     private static class JoinOnClause {

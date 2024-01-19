@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import mondrian.rolap.physicalschema.PhysSchema;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
@@ -144,6 +145,8 @@ public class RolapSchema implements Schema {
         Olap4jUtil.enumSetOf(Access.NONE, Access.ALL);
     public static final String WHILE_PARSING_CATALOG = "while parsing catalog ";
 
+    private PhysSchema physicalSchema;
+
     private String name;
 
     /**
@@ -193,7 +196,7 @@ public class RolapSchema implements Schema {
     /**
      * Maps {@link String names of roles} to {@link Role roles with those names}.
      */
-    private final Map<String, Role> mapNameToRole = new HashMap<>();
+    public final Map<String, Role> mapNameToRole = new HashMap<>();
 
     /**
      * Maps {@link String names of sets} to {@link NamedSet named sets}.
@@ -220,7 +223,7 @@ public class RolapSchema implements Schema {
      * that has
      * {@link mondrian.rolap.RolapConnectionProperties#Ignore Ignore}=true.
      */
-    private final List<Exception> warningList = new ArrayList<>();
+    public final List<Exception> warningList = new ArrayList<>();
     private Map<String, Object> metadata;
 
     /**
@@ -369,7 +372,7 @@ public class RolapSchema implements Schema {
 		setSchemaLoadDate();
 	}
 
-    private void setSchemaLoadDate() {
+    public void setSchemaLoadDate() {
         schemaLoadDate = new Date();
     }
 
@@ -535,7 +538,7 @@ public class RolapSchema implements Schema {
         }
     }
 
-    static Scripts.ScriptDefinition toScriptDef(MappingScript script) {
+    static public Scripts.ScriptDefinition toScriptDef(MappingScript script) {
         if (script == null) {
             return null;
         }
@@ -774,7 +777,7 @@ public class RolapSchema implements Schema {
      * Finds a cube called 'cube' in the current catalog, or return null if no
      * cube exists.
      */
-    protected RolapCube lookupCube(final String cubeName) {
+    public RolapCube lookupCube(final String cubeName) {
         return mapNameToCube.get(Util.normalizeName(cubeName));
     }
 
@@ -909,11 +912,12 @@ public class RolapSchema implements Schema {
      *   The class must implement {@link mondrian.spi.UserDefinedFunction}
      *   (otherwise it is a user-error).
      */
-    private void defineFunction(
+    public void defineFunction(
         Map<String, UdfResolver.UdfFactory> mapNameToUdf,
         final String name,
         String className,
-        final Scripts.ScriptDefinition script)
+        final Scripts.ScriptDefinition script
+    )
     {
         if (className == null && script == null) {
             throw Util.newError(
@@ -1140,6 +1144,14 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
         return new RolapStar(this, context, fact);
     }
 
+    public void initFunctionTable(
+        Collection<UdfResolver.UdfFactory> userDefinedFunctions)
+    {
+        funTable = new RolapSchemaFunctionTable(userDefinedFunctions);
+        ((RolapSchemaFunctionTable) funTable).init();
+    }
+
+
     /**
      * <code>RolapStarRegistry</code> is a registry for {@link RolapStar}s.
      */
@@ -1230,5 +1242,15 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
         return nativeRegistry;
     }
 
+    public PhysSchema getPhysicalSchema() {
+        return physicalSchema;
+    }
 
+    public void setPhysicalSchema(PhysSchema physicalSchema) {
+        this.physicalSchema = physicalSchema;
+    }
+
+    public AggTableManager getAggTableManager() {
+        return aggTableManager;
+    }
 }

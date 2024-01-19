@@ -51,5 +51,5 @@ public interface MappingSchema {
 
     String defaultRole();
 
-
+    MappingPhysicalSchema physicalSchema();
 }

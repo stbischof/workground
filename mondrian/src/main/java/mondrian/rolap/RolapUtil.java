@@ -31,6 +31,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 
+import mondrian.rolap.physicalschema.PhysColumn;
+import mondrian.rolap.physicalschema.PhysInlineTable;
+import mondrian.rolap.physicalschema.PhysView;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
@@ -537,6 +540,27 @@ public class RolapUtil {
             return null;
         }
         return bestMatch;
+    }
+
+    public static PhysView convertInlineTableToRelation(
+        PhysInlineTable inlineTable,
+        final Dialect dialect)
+    {
+        List<String> columnNames = new ArrayList<String>();
+        List<String> columnTypes = new ArrayList<String>();
+        for (PhysColumn col : inlineTable.getColumnsByName().values()) {
+            columnNames.add(col.name);
+            columnTypes.add(col.getDatatype().name());
+        }
+        final String sql =
+            dialect.generateInline(
+                columnNames,
+                columnTypes,
+                inlineTable.getRowList()).toString();
+        return new PhysView(
+            inlineTable.getSchema(),
+            inlineTable.getAlias(),
+            sql);
     }
 
     public static MappingRelation convertInlineTableToRelation(

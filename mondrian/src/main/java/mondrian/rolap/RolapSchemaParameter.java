@@ -37,13 +37,14 @@ public class RolapSchemaParameter implements Parameter, CompilableParameter {
     private boolean assigned;
     private Object cachedDefaultValue;
 
-    RolapSchemaParameter(
+    public RolapSchemaParameter(
         RolapSchema schema,
         String name,
         String defaultExpString,
         String description,
         Type type,
-        boolean modifiable)
+        boolean modifiable
+    )
     {
         assert defaultExpString != null;
         assert name != null;
