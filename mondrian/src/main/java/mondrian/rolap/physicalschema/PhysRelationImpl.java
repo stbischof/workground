@@ -140,12 +140,11 @@ abstract class PhysRelationImpl implements PhysRelation {
      * @return whether was populated successfully this call or previously
      */
     public boolean ensurePopulated(
-        RolapSchemaLoader loader,
-        NodeDef xmlNode)
+        RolapSchemaLoader loader)
     {
         if (!populated) {
             final int[] rowCountAndSize = new int[2];
-            populated = populateColumns(loader, xmlNode, rowCountAndSize);
+            populated = populateColumns(loader, rowCountAndSize);
             rowCount = rowCountAndSize[0];
             totalColumnByteCount = rowCountAndSize[1];
         }
@@ -166,7 +165,6 @@ abstract class PhysRelationImpl implements PhysRelation {
      */
     protected abstract boolean populateColumns(
         RolapSchemaLoader loader,
-        NodeDef xmlNode,
         int[] rowCountAndSize);
 
     public void addColumn(PhysColumn column) {

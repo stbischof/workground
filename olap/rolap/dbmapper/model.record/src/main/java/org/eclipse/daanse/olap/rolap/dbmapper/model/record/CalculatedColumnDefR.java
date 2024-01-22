@@ -14,13 +14,14 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 
 public record CalculatedColumnDefR(
-    String table,
     String name,
     TypeEnum type,
-    String internalType
+    String internalType,
+    MappingExpression expression
 ) implements MappingCalculatedColumnDef {
 
 }

@@ -15,7 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 
-public interface MappingColumnDef {
+public interface MappingColumnDef extends RealOrCalcColumnDef{
 
     MappingTimeDomain timeDomain();
 
@@ -23,4 +23,7 @@ public interface MappingColumnDef {
 
     TypeEnum type();
 
+    String internalType();
+
+    void setType(TypeEnum type);
 }

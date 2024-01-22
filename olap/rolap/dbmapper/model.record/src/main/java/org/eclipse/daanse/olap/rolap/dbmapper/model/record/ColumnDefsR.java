@@ -13,15 +13,13 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedColumnDef;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDefs;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.RealOrCalcColumnDef;
 
 import java.util.List;
 
 public record ColumnDefsR(
-    List<MappingColumnDef> columnDefs,
-    List<MappingCalculatedColumnDef> calculatedColumnDef
+    List<RealOrCalcColumnDef> columns
 ) implements MappingColumnDefs {
 
 }

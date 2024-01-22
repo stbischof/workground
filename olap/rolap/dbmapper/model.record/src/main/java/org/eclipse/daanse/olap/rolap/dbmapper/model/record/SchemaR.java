@@ -19,6 +19,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPhysicalSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -36,9 +37,10 @@ public record SchemaR(String name,
                       List<MappingVirtualCube> virtualCubes,
                       List<MappingNamedSet> namedSets,
                       List<MappingRole> roles,
-                      List<MappingUserDefinedFunction> userDefinedFunctions)
+                      List<MappingUserDefinedFunction> userDefinedFunctions,
+                      MappingPhysicalSchema physicalSchema)
         implements MappingSchema {
-	
+
 
 
 	public  SchemaR(String name,
@@ -52,7 +54,8 @@ public record SchemaR(String name,
             List<MappingVirtualCube> virtualCubes,
             List<MappingNamedSet> namedSets,
             List<MappingRole> roles,
-            List<MappingUserDefinedFunction> userDefinedFunctions)
+            List<MappingUserDefinedFunction> userDefinedFunctions,
+            MappingPhysicalSchema physicalSchema)
 {
 	this.name = name;
 	this.description = description;
@@ -66,7 +69,7 @@ public record SchemaR(String name,
 	this.namedSets = namedSets == null ? List.of() : namedSets;
 	this.roles = roles == null ? List.of() : roles;
 	this.userDefinedFunctions = userDefinedFunctions == null ? List.of() : userDefinedFunctions;
-		
+    this.physicalSchema = physicalSchema;
 	}
 
 

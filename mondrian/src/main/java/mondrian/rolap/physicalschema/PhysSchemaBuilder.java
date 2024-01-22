@@ -95,34 +95,7 @@ class PhysSchemaBuilder {
         return physRelation.getColumn(column, true);
     }
 
-    /**
-     * Creates a dummy column expression. Generally this is used in the
-     * event of an error, to continue the validation process.
-     *
-     * @param relation Relation, may be null
-     * @return dummy column
-     */
-    public PhysColumn dummyColumn(
-        PhysRelation relation
-    ) {
-        if (relation == null) {
-            final String tableName = "dummyTable$" + (nextId++);
-            relation =
-                new PhysTable(
-                    physSchema, null, tableName, tableName,
-                    Collections.<String, String>emptyMap());
-        }
-        return
-            new PhysCalcColumn(
-                loader,
-                null,
-                relation,
-                "dummy$" + (nextId++),
-                null,
-                null,
-                Collections.<PhysExpr>singletonList(
-                    new PhysTextExpr("0")));
-    }
+
 
     /**
      * Collects the relationships used in an aggregate expression.

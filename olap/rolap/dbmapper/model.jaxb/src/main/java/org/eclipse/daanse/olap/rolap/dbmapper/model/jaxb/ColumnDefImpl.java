@@ -35,6 +35,8 @@ public class ColumnDefImpl implements MappingColumnDef {
     protected TypeEnum type;
     @XmlElement(name = "timeDomain", type = TimeDomainImpl.class)
     private MappingTimeDomain timeDomain;
+    @XmlAttribute(name = "internalType")
+    protected String internalType;
 
     @Override
     public MappingTimeDomain timeDomain() {
@@ -59,8 +61,13 @@ public class ColumnDefImpl implements MappingColumnDef {
         return type;
     }
 
-    public void setType(TypeEnum value) {
-        this.type = value;
+    @Override
+    public String internalType() {
+        return internalType;
     }
 
+    @Override
+    public void setType(TypeEnum type) {
+        this.type = type;
+    }
 }

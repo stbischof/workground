@@ -66,7 +66,7 @@ public class PhysInlineTable
     }
 
     protected boolean populateColumns(
-        RolapSchemaLoader loader, NodeDef xmlNode, int[] rowCountAndSize)
+        RolapSchemaLoader loader, int[] rowCountAndSize)
     {
         // not much to do; was populated on creation
         rowCountAndSize[0] = rowList.size();

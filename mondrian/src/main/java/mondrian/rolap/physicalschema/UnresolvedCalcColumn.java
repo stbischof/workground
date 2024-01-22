@@ -25,12 +25,11 @@ class UnresolvedCalcColumn extends UnresolvedColumn {
         PhysTable physTable,
         String tableName,
         MappingColumn columnRef,
-        MappingSQL sql,
         PhysCalcColumn physCalcColumn,
         List<PhysExpr> list,
         int index
     ) {
-        super(physTable, tableName, columnRef.name(), sql);
+        super(physTable, tableName, columnRef.name(), columnRef);
         this.physCalcColumn = physCalcColumn;
         this.list = list;
         this.index = index;

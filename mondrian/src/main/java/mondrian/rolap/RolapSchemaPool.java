@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import mondrian.rolap.physicalschema.RolapSchemaLoader;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.slf4j.Logger;
@@ -177,7 +178,7 @@ public class RolapSchemaPool {
         RolapConnectionProps connectionProps,
         SchemaKey key)
     {
-        return new RolapSchema(
+        return RolapSchemaLoader.createSchema(
             key,
             connectionProps,
             context);

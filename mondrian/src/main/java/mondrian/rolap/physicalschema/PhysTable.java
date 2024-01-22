@@ -107,7 +107,7 @@ public class PhysTable extends PhysRelationImpl {
     }
 
     protected boolean populateColumns(
-        RolapSchemaLoader loader, NodeDef xmlNode, int[] rowCountAndSize
+        RolapSchemaLoader loader, int[] rowCountAndSize
     ) {
         JdbcSchema.Table jdbcTable =
             physSchema.jdbcSchema.getTable(name);

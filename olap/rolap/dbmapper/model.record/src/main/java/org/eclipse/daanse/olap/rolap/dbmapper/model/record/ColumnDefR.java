@@ -19,12 +19,18 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 
 public record ColumnDefR(MappingTimeDomain timeDomain,
                          String name,
-                         TypeEnum type)
+                         TypeEnum type, String internalType)
         implements MappingColumnDef {
 
-    public ColumnDefR(MappingTimeDomain timeDomain, String name, TypeEnum type) {
+    public ColumnDefR(MappingTimeDomain timeDomain, String name, TypeEnum type, String internalType) {
         this.timeDomain = timeDomain;
         this.name = name;
         this.type = type;// == null ? TypeEnum.STRING : type;
+        this.internalType = internalType;
+    }
+
+    @Override
+    public void setType(TypeEnum name) {
+
     }
 }

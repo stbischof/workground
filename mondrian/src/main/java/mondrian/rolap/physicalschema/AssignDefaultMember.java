@@ -6,8 +6,6 @@ import mondrian.rolap.RolapHierarchy;
 import mondrian.rolap.RolapMember;
 import org.eigenbase.xom.ElementDef;
 
-import java.util.Collections;
-import java.util.List;
 
 /** Action to assign a default member of a hierarchy. As objects, such
  * actions can be stored in a list and deferred until the cube is
@@ -41,10 +39,4 @@ public abstract class AssignDefaultMember {
         hierarchy.setDefaultMember(member);
     }
 
-    protected List<RolapCubeHierarchy> cubeHierarchies() {
-        final List<RolapCubeHierarchy> list = cubeHierMap.get(hierarchy);
-        return list != null
-            ? list
-            : Collections.<RolapCubeHierarchy>emptyList();
-    }
 }

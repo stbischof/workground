@@ -74,11 +74,10 @@ public class PhysView
 
     protected boolean populateColumns(
         RolapSchemaLoader loader,
-        NodeDef xmlNode,
         int[] rowCountAndSize)
     {
         final List<ColumnInfo> columnInfoList =
-            physSchema.describe(loader, xmlNode, sqlString);
+            physSchema.describe(loader, sqlString);
         if (columnInfoList == null) {
             return false;
         }

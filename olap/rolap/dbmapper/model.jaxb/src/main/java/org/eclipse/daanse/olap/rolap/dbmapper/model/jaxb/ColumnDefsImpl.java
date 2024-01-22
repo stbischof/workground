@@ -16,38 +16,29 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
 import jakarta.xml.bind.annotation.XmlType;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedColumnDef;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDefs;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.RealOrCalcColumnDef;
 
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ColumnDefs", propOrder = { "columnDefs", "calculatedColumnDef" })
+@XmlType(name = "ColumnDefs", propOrder = { "columns" })
 public class ColumnDefsImpl implements MappingColumnDefs {
 
-    @XmlElement(name = "ColumnDef", type = ColumnDefImpl.class)
-    private List<MappingColumnDef> columnDefs;
-
-    @XmlElement(name = "CalculatedColumnDef", type = CalculatedColumnDefImpl.class)
-    private List<MappingCalculatedColumnDef> calculatedColumnDef;
+    @XmlElements({ @XmlElement(name = "ColumnDef", type = ColumnDefImpl.class),
+        @XmlElement(name = "CalculatedColumnDef", type = CalculatedColumnDefImpl.class) })
+    private List<RealOrCalcColumnDef> columns;
 
     @Override
-    public List<MappingColumnDef> columnDefs() {
-        return columnDefs;
+    public List<RealOrCalcColumnDef> columns() {
+        return columns;
     }
 
-    @Override
-    public List<MappingCalculatedColumnDef> calculatedColumnDef() {
-        return calculatedColumnDef;
-    }
-
-    public void setColumnDefs(List<MappingColumnDef> columnDefs) {
-        this.columnDefs = columnDefs;
-    }
-
-    public void setCalculatedColumnDef(List<MappingCalculatedColumnDef> calculatedColumnDef) {
-        this.calculatedColumnDef = calculatedColumnDef;
+    public void setColumns(List<RealOrCalcColumnDef> columns) {
+        this.columns = columns;
     }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPhysicalSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -40,11 +41,11 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "parameters", "dimensions", "cubes", "virtualCubes", "namedSets", "roles",
-    "userDefinedFunctions"})
+    "userDefinedFunctions", "physicalSchema"})
 @XmlRootElement(name = "Schema")
 public class SchemaImpl extends AbstractMainElement implements MappingSchema {
 
-	
+
     @XmlElement(name = "Parameter", type = ParameterImpl.class)
     protected List<MappingParameter> parameters;
     @XmlElement(name = "Dimension", type = PrivateDimensionImpl.class)
@@ -67,6 +68,8 @@ public class SchemaImpl extends AbstractMainElement implements MappingSchema {
     protected String measuresCaption;
     @XmlAttribute(name = "defaultRole")
     protected String defaultRole;
+    @XmlElement(name = "PhysicalSchema", type = PhysicalSchemaImpl.class)
+    MappingPhysicalSchema physicalSchema;
 
     @Override
     public List<MappingParameter> parameters() {
@@ -142,6 +145,10 @@ public class SchemaImpl extends AbstractMainElement implements MappingSchema {
         return defaultRole;
     }
 
+    @Override
+    public MappingPhysicalSchema physicalSchema() {
+        return this.physicalSchema;
+    }
 
     public void setNamedSets(List<MappingNamedSet> namedSets) {
         this.namedSets = namedSets;

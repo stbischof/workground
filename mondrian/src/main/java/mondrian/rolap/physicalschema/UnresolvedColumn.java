@@ -1,6 +1,7 @@
 package mondrian.rolap.physicalschema;
 
 import org.eclipse.daanse.db.dialect.api.Datatype;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 
 public abstract class UnresolvedColumn extends PhysColumn {
@@ -8,13 +9,13 @@ public abstract class UnresolvedColumn extends PhysColumn {
     private final String tableName;
     private final String name;
 
-    private final MappingSQL xml;
+    private final MappingColumn xml;
 
     public UnresolvedColumn(
         PhysRelation relation,
         String tableName,
         String name,
-        MappingSQL xml)
+        MappingColumn xml)
     {
         // Boolean datatype is a dummy value, to keep an assert happy.
         super(relation, name, 0, Datatype.BOOLEAN, null);
@@ -45,7 +46,7 @@ public abstract class UnresolvedColumn extends PhysColumn {
         ERROR
     }
 
-    public MappingSQL getXml() {
+    public MappingColumn getXml() {
         return xml;
     }
 

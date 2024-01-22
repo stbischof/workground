@@ -34,7 +34,7 @@ public class PhysSchema {
     // later one will be discarded).
     final LinkedHashMap<String, PhysRelation> tablesByName =
         new LinkedHashMap<String, PhysRelation>();
-    final JdbcSchema jdbcSchema;
+    JdbcSchema jdbcSchema;
 
     final Set<PhysLink> linkSet = new HashSet<PhysLink>();
 
@@ -49,9 +49,9 @@ public class PhysSchema {
 
     private int columnCount;
 
-    public final PhysStatistic statistic;
+    public PhysStatistic statistic;
 
-    private final Dialect dialect;
+    private Dialect dialect;
     /**
      * Creates a physical schema.
      *
@@ -65,13 +65,17 @@ public class PhysSchema {
         Context context,
         Dialect dialect,
         RolapConnectionProps connectionProps,
-        RolapConnection internalConnection) throws SQLException {
-        this.dialect = dialect;
-        this.jdbcSchema =
-            JdbcSchema.makeDB(
-                internalConnection.getDataSource());
-        jdbcSchema.load(connectionProps);
-        statistic = new PhysStatistic(context, dialect, internalConnection);
+        RolapConnection internalConnection) {
+        try {
+            this.dialect = dialect;
+            this.jdbcSchema =
+                JdbcSchema.makeDB(
+                    internalConnection.getDataSource());
+            jdbcSchema.load(connectionProps);
+            statistic = new PhysStatistic(context, dialect, internalConnection);
+        } catch (Exception e) {
+            new RuntimeException( "Create PhysSchema error" , e);
+        }
     }
 
     /**
@@ -196,7 +200,6 @@ public class PhysSchema {
     }
     List<ColumnInfo> describe(
         RolapSchemaLoader loader,
-        NodeDef xmlNode,
         String sql)
     {
         java.sql.Connection connection = null;

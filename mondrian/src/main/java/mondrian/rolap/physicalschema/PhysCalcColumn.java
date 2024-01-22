@@ -3,19 +3,20 @@ package mondrian.rolap.physicalschema;
 import mondrian.rolap.SqlStatement;
 import mondrian.rolap.sql.SqlQuery;
 import org.eclipse.daanse.db.dialect.api.Datatype;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedColumnDef;
 import org.eigenbase.xom.NodeDef;
 
 import java.util.List;
 
 public final class PhysCalcColumn extends PhysColumn {
     private RolapSchemaLoader loader; // cleared once compute succeeds
-    private NodeDef xmlNode; // cleared once compute succeeds
+    private MappingCalculatedColumnDef xmlNode; // cleared once compute succeeds
     final List<PhysExpr> list;
     private String sql;
 
     PhysCalcColumn(
         RolapSchemaLoader loader,
-        NodeDef xmlNode,
+        MappingCalculatedColumnDef xmlNode,
         PhysRelation table,
         String name,
         Datatype datatype,
@@ -41,7 +42,7 @@ public final class PhysCalcColumn extends PhysColumn {
                 query.addSelect(sql, null);
                 query.addFrom(relation, relation.getAlias(), true);
                 final List<ColumnInfo> columnInfoList =
-                    physSchema.describe(loader, xmlNode, query.toSql());
+                    physSchema.describe(loader, query.toSql());
                 if (columnInfoList != null
                     && columnInfoList.size() == 1)
                 {

@@ -23,6 +23,13 @@ public class ColumnR implements MappingColumn {
     private String name;
     private String genericExpression;
 
+    public ColumnR(String table, String name, String genericExpression) {
+        this.table = table;
+        this.name = name;
+        this.genericExpression = genericExpression;
+    }
+
+
     public ColumnR(String table, String name) {
         this.table = table;
         this.name = name;

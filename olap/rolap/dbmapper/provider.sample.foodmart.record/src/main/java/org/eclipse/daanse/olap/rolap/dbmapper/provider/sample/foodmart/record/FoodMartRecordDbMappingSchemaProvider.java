@@ -2215,7 +2215,8 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
         List.of(VIRTUAL_CUBE_1),
         List.of(),
         List.of(ROLE_1, ROLE_2, ROLE_3),
-        List.of()
+        List.of(),
+        null
        );
 
     @Override
