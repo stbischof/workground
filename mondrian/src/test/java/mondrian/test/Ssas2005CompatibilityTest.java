@@ -33,6 +33,7 @@ import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import java.sql.SQLException;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.opencube.junit5.TestUtil.assertAxisReturns;
 import static org.opencube.junit5.TestUtil.assertExprReturns;
@@ -101,7 +102,7 @@ class Ssas2005CompatibilityTest {
         prepareContext(context);
         RolapSchemaPool.instance().clear();
         Result result = TestUtil.executeQuery(context.getConnection(), s);
-        Util.discard(TestUtil.toString(result));
+        discard(TestUtil.toString(result));
     }
 
 

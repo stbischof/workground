@@ -9,6 +9,25 @@
 
 package mondrian.test;
 
+import mondrian.olap.Util;
+import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -20,24 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.eigenbase.xom.XMLOutput;
-import org.junit.jupiter.api.Assertions;
-import org.opentest4j.AssertionFailedError;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-
-import mondrian.olap.Util;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 /**
  * A collection of resources used by tests.
@@ -217,7 +219,7 @@ public class DiffRepository
             throw new IllegalArgumentException("url must not be null");
         }
         this.refFile = refFile;
-        Util.discard(this.refFile);
+        discard(this.refFile);
         this.logFile = logFile;
 
         // Load the document.
@@ -658,78 +660,23 @@ public class DiffRepository
      * <p>FIXME: I'm sure there's a library call to do this, but I'm danged
      * if I can find it. -- jhyde, 2006/2/9.
      */
-    private static void write(Document doc, Writer w)
-    {
-        final XMLOutput out = new XMLOutput(w);
-        out.setIndentString("    ");
-        writeNode(doc, out);
-    }
-
-    private static void writeNode(Node node, XMLOutput out)
-    {
-        final NodeList childNodes;
-        switch (node.getNodeType()) {
-        case Node.DOCUMENT_NODE:
-            out.print("<?xml version=\"1.0\" ?>" + Util.NL);
-            childNodes = node.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node child = childNodes.item(i);
-                writeNode(child, out);
-            }
-//            writeNode(((Document) node).getDocumentElement(), out);
-            break;
-
-        case Node.ELEMENT_NODE:
-            Element element = (Element) node;
-            final String tagName = element.getTagName();
-            out.beginBeginTag(tagName);
-            // Attributes.
-            final NamedNodeMap attributeMap = element.getAttributes();
-            for (int i = 0; i < attributeMap.getLength(); i++) {
-                final Node att = attributeMap.item(i);
-                out.attribute(att.getNodeName(), att.getNodeValue());
-            }
-            out.endBeginTag(tagName);
-            // Write child nodes, ignoring attributes but including text.
-            childNodes = node.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node child = childNodes.item(i);
-                if (child.getNodeType() == Node.ATTRIBUTE_NODE) {
-                    continue;
-                }
-                writeNode(child, out);
-            }
-            out.endTag(tagName);
-            break;
-
-        case Node.ATTRIBUTE_NODE:
-            out.attribute(node.getNodeName(), node.getNodeValue());
-            break;
-
-        case Node.CDATA_SECTION_NODE:
-            CDATASection cdata = (CDATASection) node;
-            out.cdata(cdata.getNodeValue(), true);
-            break;
-
-        case Node.TEXT_NODE:
-            Text text = (Text) node;
-            final String wholeText = text.getNodeValue();
-            if (!isWhitespace(wholeText)) {
-                out.cdata(wholeText, false);
-            }
-            break;
-
-        case Node.COMMENT_NODE:
-            Comment comment = (Comment) node;
-            out.print("<!--" + comment.getNodeValue() + "-->" + Util.NL);
-            break;
-
-        default:
+    private static void write(Document doc, Writer w)  {
+        //final XMLOutput out = new XMLOutput(w);
+        //out.setIndentString("    ");
+        //writeNode(doc, out);
+        try {
+            w.write("    ");
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(new DOMSource(doc), new StreamResult(w));
+        } catch (IOException| TransformerException e) {
+            e.printStackTrace();
             throw new RuntimeException(
-                "unexpected node type: " + node.getNodeType()
-                + " (" + node + ")");
+                "unexpected error: "
+                    + " (" + doc + ")", e);
         }
     }
+
+
 
     /**
      * Returns whether a given piece of text is solely whitespace.

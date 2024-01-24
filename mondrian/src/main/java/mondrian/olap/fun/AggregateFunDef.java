@@ -39,7 +39,7 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleIterator;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
 import org.eclipse.daanse.olap.calc.api.todo.TupleListCalc;
 import org.eclipse.daanse.olap.calc.base.util.HirarchyDependsChecker;
-import org.eigenbase.util.property.IntegerProperty;
+import mondrian.olap.IntegerProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

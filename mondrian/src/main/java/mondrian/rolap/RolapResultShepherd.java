@@ -22,7 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eigenbase.util.property.IntegerProperty;
+import mondrian.olap.IntegerProperty;
 
 import mondrian.olap.MondrianException;
 import mondrian.olap.MondrianProperties;

@@ -1,6 +1,0 @@
--includeresource: \
-	@eigenbase-properties-1.1.6.jar
-	
-Export-Package: \
-	org.eigenbase.util.property
-

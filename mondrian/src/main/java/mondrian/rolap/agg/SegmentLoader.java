@@ -51,6 +51,8 @@ import mondrian.spi.SegmentHeader;
 import mondrian.util.CancellationChecker;
 import mondrian.util.Pair;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
+
 /**
  * <p>
  * The <code>SegmentLoader</code> queries database and loads the data into the given set of segments.
@@ -127,7 +129,7 @@ public class SegmentLoader {
               compoundPredicateList ), true );
           // Make sure that we are registered as a client of
           // the segment by invoking getFuture.
-          Util.discard( index.getFuture( Locus.peek().execution, segment.getHeader() ) );
+          discard( index.getFuture( Locus.peek().execution, segment.getHeader() ) );
         }
       }
     }

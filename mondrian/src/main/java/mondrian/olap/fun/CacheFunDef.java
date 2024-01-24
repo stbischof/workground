@@ -29,7 +29,6 @@ import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.function.FunctionAtomR;
 import org.eclipse.daanse.olap.function.FunctionMetaDataR;
 import org.eclipse.daanse.olap.function.resolver.NoExpressionRequiredFunctionResolver;
-import org.eigenbase.xom.XOMUtil;
 
 import mondrian.calc.impl.GenericCalc;
 import mondrian.calc.impl.GenericIterCalc;
@@ -104,7 +103,7 @@ public class CacheFunDef extends AbstractFunctionDefinition {
     }
 
     public static class CacheFunResolver extends NoExpressionRequiredFunctionResolver {
-  
+
     	static FunctionAtom functionAtom = new FunctionAtomR(NAME, SYNTAX);
 
         @Override
@@ -119,7 +118,7 @@ public class CacheFunDef extends AbstractFunctionDefinition {
             final Expression exp = args[0];
             final DataType category = exp.getCategory();
             final Type type = exp.getType();
-            
+
             FunctionMetaData functionMetaData=   new FunctionMetaDataR(functionAtom,DESCRIPTION, SIGNATURE_VALUE,  category, new DataType[] {category});
             return new CacheFunDef(functionMetaData);
         }

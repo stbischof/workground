@@ -11,7 +11,7 @@
 */
 package mondrian.rolap;
 
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
+import org.eclipse.daanse.olap.api.result.Olap4jUtil;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
@@ -1260,7 +1261,7 @@ public Cell getCell( int[] pos ) {
           LOGGER.warn( MONDRIAN_EXCEPTION_IN_EXECUTE_STRIPE, e );
         } catch ( Exception e ) {
           LOGGER.warn( MONDRIAN_EXCEPTION_IN_EXECUTE_STRIPE, e );
-          discard( e );
+            discard( e );
         }
 
         if (ci != null && o != RolapUtil.valueNotReadyException ) {

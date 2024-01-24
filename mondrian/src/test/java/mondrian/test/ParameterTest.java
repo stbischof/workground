@@ -10,12 +10,11 @@
 */
 package mondrian.test;
 
+import mondrian.olap.AbstractProperty;
 import mondrian.olap.MondrianProperties;
 import mondrian.olap.QueryImpl;
 import mondrian.olap.Util;
-import mondrian.rolap.RolapConnectionProperties;
 import mondrian.rolap.RolapSchemaPool;
-
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Parameter;
 import org.eclipse.daanse.olap.api.SchemaReader;
@@ -27,7 +26,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.ParameterTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ParameterRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
-import org.eigenbase.util.property.Property;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -46,8 +44,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -303,7 +301,7 @@ class ParameterTest {
         Throwable throwable;
         try {
             result = connection.execute(query);
-            Util.discard(result);
+            discard(result);
             throwable = null;
         } catch (Throwable e) {
             throwable = e;
@@ -1202,9 +1200,9 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSystemPropsGet(TestContext context) {
-        final List<Property> propertyList =
+        final List<AbstractProperty> propertyList =
             MondrianProperties.instance().getPropertyList();
-        for (Property property : propertyList) {
+        for (AbstractProperty property : propertyList) {
             assertExprReturns(context.getConnection(),
                 "ParamRef("
                 + Util.singleQuoteString(property.getPath())
@@ -1231,9 +1229,9 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSystemPropsSet(TestContext context) {
-        final List<Property> propertyList =
+        final List<AbstractProperty> propertyList =
             MondrianProperties.instance().getPropertyList();
-        for (Property property : propertyList) {
+        for (AbstractProperty property : propertyList) {
             final String propName = property.getPath();
             assertSetPropertyFails(context.getConnection(), propName, "System");
         }

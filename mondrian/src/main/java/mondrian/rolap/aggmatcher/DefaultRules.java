@@ -14,7 +14,9 @@ package mondrian.rolap.aggmatcher;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import mondrian.olap.AbstractProperty;
 import mondrian.olap.MondrianProperties;
+import mondrian.olap.Trigger;
 import mondrian.recorder.ListRecorder;
 import mondrian.recorder.MessageRecorder;
 import mondrian.recorder.RecorderException;
@@ -26,12 +28,6 @@ import org.eclipse.daanse.olap.rolap.aggmatch.jaxb.FactCountMatch;
 import org.eclipse.daanse.olap.rolap.aggmatch.jaxb.ForeignKeyMatch;
 import org.eclipse.daanse.olap.rolap.aggmatch.jaxb.IgnoreMap;
 import org.eclipse.daanse.olap.rolap.aggmatch.jaxb.TableMatch;
-import org.eigenbase.util.property.Property;
-import org.eigenbase.util.property.Trigger;
-import org.eigenbase.xom.DOMWrapper;
-import org.eigenbase.xom.Parser;
-import org.eigenbase.xom.XOMException;
-import org.eigenbase.xom.XOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +137,7 @@ public class DefaultRules {
                     return Trigger.PRIMARY_PHASE;
                 }
                 @Override
-				public void execute(Property property, String value) {
+				public void execute(AbstractProperty property, String value) {
                     synchronized (DefaultRules.class) {
                         DefaultRules oldInstance = DefaultRules.instance;
                         DefaultRules.instance = null;
@@ -221,45 +217,6 @@ public class DefaultRules {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (AggRules) jaxbUnmarshaller.unmarshal(new StringReader(text));
         } catch (JAXBException e) {
-            throw mres.AggRuleParse.ex(name, e);
-        }
-    }
-
-
-    protected static DOMWrapper makeDOMWrapper(final File file) {
-        try {
-            return makeDOMWrapper(file.toURL());
-        } catch (MalformedURLException e) {
-            throw mres.AggRuleParse.ex(file.getName(), e);
-        }
-    }
-
-    protected static DOMWrapper makeDOMWrapper(final URL url) {
-        try {
-            final Parser xmlParser = XOMUtil.createDefaultParser();
-            return xmlParser.parse(url);
-        } catch (XOMException e) {
-            throw mres.AggRuleParse.ex(url.toString(), e);
-        }
-    }
-
-    protected static DOMWrapper makeDOMWrapper(final InputStream inStream) {
-        try {
-            final Parser xmlParser = XOMUtil.createDefaultParser();
-            return xmlParser.parse(inStream);
-        } catch (XOMException e) {
-            throw mres.AggRuleParse.ex("InputStream", e);
-        }
-    }
-
-    protected static DOMWrapper makeDOMWrapper(
-        final String text,
-        final String name)
-    {
-        try {
-            final Parser xmlParser = XOMUtil.createDefaultParser();
-            return xmlParser.parse(text);
-        } catch (XOMException e) {
             throw mres.AggRuleParse.ex(name, e);
         }
     }

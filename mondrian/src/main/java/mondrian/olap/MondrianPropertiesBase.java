@@ -11,19 +11,23 @@
 
 package mondrian.olap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Enumeration;
-
-import org.eigenbase.util.property.TriggerableProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * <code>MondrianProperties</code> contains the properties which determine the
@@ -56,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author jhyde
  * @since 22 December, 2002
  */
-public abstract class MondrianPropertiesBase extends TriggerableProperties {
+public abstract class MondrianPropertiesBase extends Properties {
 
     private final transient PropertySource propertySource;
     private int populateCount;
@@ -70,9 +74,16 @@ public abstract class MondrianPropertiesBase extends TriggerableProperties {
         this.propertySource = propertySource;
     }
 
-    @Override
-	public boolean triggersAreEnabled() {
-        return ((MondrianProperties) this).EnableTriggers.get();
+    public AbstractProperty getPropertyDefinition(String path)
+    {
+        final List<AbstractProperty> propertyList = getPropertyList();
+        for (int i = 0; i < propertyList.size(); i++) {
+            AbstractProperty property = propertyList.get(i);
+            if (property.getPath().equals(path)) {
+                return property;
+            }
+        }
+        return null;
     }
 
     /**
@@ -249,6 +260,30 @@ public abstract class MondrianPropertiesBase extends TriggerableProperties {
         LOGGER.info(
             "Mondrian: loaded {} system properties", count);
     }
+
+    public List <AbstractProperty> getPropertyList()
+    {
+        Field[] fields = getClass().getFields();
+        List<AbstractProperty> list = new ArrayList<>();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            if (!Modifier.isStatic(field.getModifiers())
+                && AbstractProperty.class.isAssignableFrom(
+                field.getType()))
+            {
+                try {
+                    list.add((AbstractProperty) field.get(this));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(
+                        "Error while accessing property '" + field.getName()
+                            + "'",
+                        e);
+                }
+            }
+        }
+        return list;
+    }
+
 
     /**
      * Reads properties from a source.

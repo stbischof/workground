@@ -13,7 +13,7 @@ package mondrian.olap.fun.sort;
 
 import static mondrian.olap.Util.newInternal;
 import static mondrian.olap.fun.FunUtil.DOUBLE_NULL;
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -242,9 +242,9 @@ public class Sorter {
       }
     }
 
-    
+
 	Comparator<Member> chain = (o1, o2) -> 0;
-	
+
     for ( SortKeySpec key : keySpecList ) {
       boolean brk = key.getDirection().brk;
       MemberComparator comp;
@@ -449,7 +449,7 @@ public class Sorter {
     } else {
     	Comparator<List<Member>>  comp =
         new HierarchicalTupleComparator( evaluator, key.getKey(), arity, direction );
-    	
+
     	return chain.thenComparing(comp); // ordering handled in the comparator.
     }
   }
@@ -947,7 +947,7 @@ public class Sorter {
       this.brk = brk;
     }
     private static List<String> reservedWords=Stream.of(SorterFlag.values()).map(SorterFlag::name).toList();
-    
+
     public static List<String> asReservedWords() {
     	return reservedWords;
     }

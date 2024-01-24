@@ -21,7 +21,7 @@ import org.eclipse.daanse.olap.calc.api.HierarchyCalc;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
-import org.eigenbase.util.property.StringProperty;
+import mondrian.olap.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
       this.hierarchyCalc = hierarchyCalc;
     }
 
- 
+
 
     @Override
 	public Member evaluate( Evaluator evaluator ) {

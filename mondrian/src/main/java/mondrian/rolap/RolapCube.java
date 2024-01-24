@@ -19,8 +19,10 @@ import static mondrian.rolap.util.JoinUtil.getRightAlias;
 import static mondrian.rolap.util.JoinUtil.left;
 import static mondrian.rolap.util.JoinUtil.right;
 import static mondrian.rolap.util.RelationUtil.getAlias;
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,10 +102,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eigenbase.xom.DOMWrapper;
-import org.eigenbase.xom.Parser;
-import org.eigenbase.xom.XOMException;
-import org.eigenbase.xom.XOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +133,13 @@ import mondrian.rolap.util.NamedSetUtil;
 import mondrian.server.Locus;
 import mondrian.server.Statement;
 import mondrian.spi.CellFormatter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * <code>RolapCube</code> implements {@link Cube} for a ROLAP database.
@@ -3010,19 +3015,21 @@ public class RolapCube extends CubeBase {
     public Formula createNamedSet(String xml) {
         MappingNamedSet xmlNamedSet;
         try {
-            final Parser xmlParser = XOMUtil.createDefaultParser();
-            final DOMWrapper def = xmlParser.parse(xml);
-            final String tagName = def.getTagName();
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+            Element root = doc.getDocumentElement();
+            final String tagName = root.getTagName();
             if (tagName.equals("NamedSet")) {
                 JAXBContext jaxbContext = JAXBContext.newInstance(NamedSetImpl.class);
                 Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
                 xmlNamedSet = (MappingNamedSet) jaxbUnmarshaller.unmarshal(new StringReader(xml));
 
             } else {
-                throw new XOMException(
+                throw new MondrianException(
                     new StringBuilder("Got <").append(tagName).append("> when expecting <NamedSet>").toString());
             }
-        } catch (XOMException | JAXBException e) {
+        } catch (JAXBException | ParserConfigurationException | SAXException | IOException e) {
             throw Util.newError(
                 e,
                 new StringBuilder("Error while creating named set from XML [")
@@ -3050,19 +3057,21 @@ public class RolapCube extends CubeBase {
 	public Member createCalculatedMember(String xml) {
         MappingCalculatedMember xmlCalcMember;
         try {
-            final Parser xmlParser = XOMUtil.createDefaultParser();
-            final DOMWrapper def = xmlParser.parse(xml);
-            final String tagName = def.getTagName();
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+            Element root = doc.getDocumentElement();
+            final String tagName = root.getTagName();
             if (tagName.equals("CalculatedMember")) {
                 JAXBContext jaxbContext = JAXBContext.newInstance(CalculatedMemberImpl.class);
                 Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
                 xmlCalcMember =  (CalculatedMemberImpl) jaxbUnmarshaller.unmarshal(new StringReader(xml));
 
             } else {
-                throw new XOMException(
+                throw new MondrianException(
                     new StringBuilder("Got <").append(tagName).append("> when expecting <CalculatedMember>").toString());
             }
-        } catch (XOMException | JAXBException e) {
+        } catch (JAXBException | SAXException | IOException | ParserConfigurationException e) {
             throw Util.newError(
                 e,
                 new StringBuilder("Error while creating calculated member from XML [")

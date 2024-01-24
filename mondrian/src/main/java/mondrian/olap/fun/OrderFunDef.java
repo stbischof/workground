@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
@@ -43,7 +42,6 @@ import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.function.FunctionAtomR;
 import org.eclipse.daanse.olap.function.FunctionMetaDataR;
 import org.eclipse.daanse.olap.function.resolver.NoExpressionRequiredFunctionResolver;
-import org.eigenbase.xom.XOMUtil;
 
 import mondrian.calc.impl.AbstractListCalc;
 import mondrian.calc.impl.GenericIterCalc;
@@ -54,6 +52,8 @@ import mondrian.calc.impl.ValueCalc;
 import mondrian.olap.fun.sort.SortKeySpec;
 import mondrian.olap.fun.sort.Sorter;
 import mondrian.olap.fun.sort.Sorter.SorterFlag;
+
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 /**
  * Definition of the <code>Order</code> MDX function.
@@ -170,7 +170,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
       // but we cannot yet guarantee that it is mutable.
       // final TupleList list = iterable instanceof ArrayTupleList && false ? (TupleList) iterable : null; old code
       final TupleList list = null;
-      XOMUtil.discard( tupleIteratorCalc.getResultStyle() );
+      discard( tupleIteratorCalc.getResultStyle() );
       return handleSortWithOneKeySpec( subEvaluator, iterable, list );
     }
 
@@ -238,7 +238,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
 	@Override
 	protected Map<String, Object> profilingProperties(Map<String, Object> properties) {
 
-		
+
 		StringBuilder result = new StringBuilder();
 		for (SortKeySpec spec : keySpecList) {
 			if (result.length() > 0) {
@@ -328,7 +328,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
         members[i] = memberCalcs[i].evaluate( evaluator );
       }
       Evaluator subEval=evaluator.push();
-      subEval.setContext(members); 
+      subEval.setContext(members);
       // Evaluate the expression in the new context.
       return calc.evaluateDual( evaluator, subEval );
     }
@@ -396,7 +396,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
           }
         }
       }
-      
+
 
 		FunctionMetaData functionMetaData = new FunctionMetaDataR(functionAtom,
 				"Arranges members of a set, optionally preserving or breaking the hierarchy.",

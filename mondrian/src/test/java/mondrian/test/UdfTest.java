@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -70,8 +71,6 @@ import static org.opencube.junit5.TestUtil.executeExprRaw;
 import static org.opencube.junit5.TestUtil.executeOlap4jQuery;
 import static org.opencube.junit5.TestUtil.executeQuery;
 import static org.opencube.junit5.TestUtil.withSchema;
-
-//import org.apache.logging.log4j.ThreadContext;
 
 /**
  * Unit-test for {@link UserDefinedFunction user-defined functions}.
@@ -198,7 +197,7 @@ public class UdfTest {
                 "SELECT { CurrentDateMember([Time].[Time], "
                 + "\"[Ti\\me]\\.[yyyy]\\.[Qq]\\.[m]\", BEFORE)} "
                 + "ON COLUMNS FROM [Sales]");
-            Util.discard(TestUtil.toString(x));
+            discard(TestUtil.toString(x));
         } finally {
             Util.close(x, ((StatementImpl) statement), connection);
         }
@@ -1844,7 +1843,7 @@ public class UdfTest {
 		public Object execute(Evaluator evaluator, Argument[] arguments) {
             // Simply ignore first parameter
             Member member = (Member)arguments[0].evaluate(evaluator);
-            Util.discard(member);
+            discard(member);
             Hierarchy hierarchy = (Hierarchy)arguments[1].evaluate(evaluator);
             return hierarchy.getDefaultMember();
         }

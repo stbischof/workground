@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
+import mondrian.olap.AbstractProperty;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Evaluator;
@@ -43,7 +44,6 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
-import org.eigenbase.util.property.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -790,9 +790,9 @@ ElevatorSimplifyer.simplifyEvaluator(calc, evaluator);
         }
 
         // Scan through mondrian properties.
-        List<Property> propertyList =
+        List<AbstractProperty> propertyList =
             MondrianProperties.instance().getPropertyList();
-        for (Property property : propertyList) {
+        for (AbstractProperty property : propertyList) {
             if (property.getPath().equals(name)) {
                 return new SystemPropertyParameter(name, false);
             }
@@ -854,7 +854,7 @@ ElevatorSimplifyer.simplifyEvaluator(calc, evaluator);
         /**
          * Definition of mondrian property, or null if system property.
          */
-        private final Property propertyDefinition;
+        private final AbstractProperty propertyDefinition;
 
         public SystemPropertyParameter(String name, boolean system) {
             super(

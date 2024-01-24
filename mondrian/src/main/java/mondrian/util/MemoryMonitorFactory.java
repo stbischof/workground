@@ -13,7 +13,7 @@
 
 package mondrian.util;
 
-import org.eigenbase.util.property.StringProperty;
+import mondrian.olap.StringProperty;
 
 import mondrian.olap.MondrianProperties;
 

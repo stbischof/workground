@@ -23,10 +23,11 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import mondrian.olap.Util;
 import mondrian.spi.SegmentBody;
 import mondrian.spi.SegmentCache;
 import mondrian.spi.SegmentHeader;
+
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 /**
  * Mock implementation of {@link SegmentCache} that is used for automated
@@ -75,7 +76,7 @@ public class MockSegmentCache implements SegmentCache {
             InputStream in = new ByteArrayInputStream(pickled);
             ObjectInputStream ois = new ObjectInputStream(in);
             SegmentHeader o = (SegmentHeader) ois.readObject();
-            Util.discard(o);
+            discard(o);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,7 +91,7 @@ public class MockSegmentCache implements SegmentCache {
             InputStream in = new ByteArrayInputStream(pickled);
             ObjectInputStream ois = new ObjectInputStream(in);
             SegmentBody o = (SegmentBody) ois.readObject();
-            Util.discard(o);
+            discard(o);
         } catch (NotSerializableException e) {
             throw new RuntimeException(
                 "while serializing " + body,
@@ -125,7 +126,7 @@ public class MockSegmentCache implements SegmentCache {
             for (Iterator<SegmentHeader> iterator = cache.keySet().iterator();
                  iterator.hasNext();)
             {
-                Util.discard(iterator.next());
+                discard(iterator.next());
                 if (index-- == 0) {
                     iterator.remove();
                     break;

@@ -9,6 +9,7 @@
 package mondrian.test;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -820,13 +821,13 @@ class DialectTest {
           ResultSet resultSet = stmt.executeQuery( sql );
           assertTrue( resultSet.next() );
           Object col1 = resultSet.getObject( 1 );
-          Util.discard( col1 );
+          discard( col1 );
           if ( !b ) {
             // It's a little surprising that the driver said it
             // didn't support this type/concurrency combination,
             // but allowed the statement to be executed anyway.
             // But don't fail.
-            Util.discard(
+            discard(
                     "expected to fail for type=" + type
                             + ", concur=" + concur );
           }
@@ -1098,7 +1099,7 @@ class DialectTest {
       ResultSet resultSet = stmt.executeQuery( sql );
       assertTrue( resultSet.next() );
       Object col1 = resultSet.getObject( 1 );
-      Util.discard( col1 );
+      discard( col1 );
     } catch ( SQLException e ) {
       throw Util.newInternal( e, "query [" + sql + "] failed" );
     } finally {
@@ -1140,7 +1141,7 @@ class DialectTest {
       }
       assertTrue( resultSet.next() );
       Object col1 = resultSet.getObject( 1 );
-      Util.discard( col1 );
+      discard( col1 );
     } catch ( SQLException e ) {
       throw Util.newInternal( e, "failed in wrong place" );
     } finally {

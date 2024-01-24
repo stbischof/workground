@@ -22,10 +22,6 @@ import java.util.List;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
-import org.eigenbase.xom.DOMWrapper;
-import org.eigenbase.xom.Parser;
-import org.eigenbase.xom.XOMException;
-import org.eigenbase.xom.XOMUtil;
 import org.junit.jupiter.api.Test;
 import org.opencube.junit5.SchemaUtil;
 
@@ -134,9 +130,4 @@ class RolapUtilTest {
     return factMock;
   }
 
-  private static DOMWrapper wrapStrSources(String resStr) throws XOMException {
-    final Parser xmlParser = XOMUtil.createDefaultParser();
-    final DOMWrapper def = xmlParser.parse(resStr);
-    return def;
-  }
 }

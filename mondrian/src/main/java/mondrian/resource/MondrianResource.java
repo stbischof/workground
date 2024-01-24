@@ -13,40 +13,19 @@
  */
 package mondrian.resource;
 
-import org.eigenbase.resgen.ResourceDefinition;
-import org.eigenbase.resgen.ShadowResourceBundle;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-/**
- * This class was generated
- * by class org.eigenbase.resgen.ResourceGen
- * from /home/oem/repod/deMondrian/mondrian/src/main/java/mondrian/resource/MondrianResource.xml
- * on Tue Jan 23 11:09:25 MSK 2024.
- * It contains a list of messages, and methods to
- * retrieve and format those messages.
- */
-
-public class MondrianResource extends ShadowResourceBundle {
-    public MondrianResource() throws IOException {
+public class MondrianResource {
+    Object[] emptyObjectArray;
+    private MondrianResource() {
     }
-    private static final String baseName = "mondrian.resource.MondrianResource";
-    /**
-     * Retrieves the singleton instance of {@link MondrianResource}. If
-     * the application has called {@link #setThreadLocale}, returns the
-     * resource for the thread's locale.
-     */
+    private static MondrianResource mondrianResource;
+
     public static synchronized MondrianResource instance() {
-        return (MondrianResource) instance(baseName, getThreadOrDefaultLocale(), ResourceBundle.getBundle(baseName, getThreadOrDefaultLocale()));
+        if (mondrianResource == null) {
+            mondrianResource = new MondrianResource();
+        }
+        return mondrianResource;
     }
-    /**
-     * Retrieves the instance of {@link MondrianResource} for the given locale.
-     */
-    public static synchronized MondrianResource instance(Locale locale) {
-        return (MondrianResource) instance(baseName, locale, ResourceBundle.getBundle(baseName, locale));
-    }
+
 
     /**
      * <code>Internal</code> is '<code>Internal error: {0}</code>'
@@ -1018,6 +997,7 @@ public class MondrianResource extends ShadowResourceBundle {
         public String str(String p0, String p1) {
             return instantiate(MondrianResource.this, new Object[] {p0, p1}).toString();
         }
+
         public mondrian.olap.MondrianException ex(String p0, String p1) {
             return new mondrian.olap.MondrianException(instantiate(MondrianResource.this, new Object[] {p0, p1}).toString());
         }

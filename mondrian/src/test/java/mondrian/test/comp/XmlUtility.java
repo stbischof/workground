@@ -13,17 +13,22 @@ package mondrian.test.comp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.eigenbase.xom.XOMUtil;
-import org.eigenbase.xom.wrappers.W3CDOMWrapper;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -168,8 +173,18 @@ class XmlUtility {
 
     public static String toString(Element xmlRoot) {
         stripWhitespace(xmlRoot);
-        return XOMUtil.wrapperToXml(new W3CDOMWrapper(xmlRoot, null), false);
+        StringWriter sw = new StringWriter();
+        try {
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            t.setOutputProperty(OutputKeys.INDENT, "yes");
+            t.transform(new DOMSource(xmlRoot), new StreamResult(sw));
+        } catch (TransformerException e) {
+            new RuntimeException("nodeToString Transformer Exception",  e);
+        }
+        return sw.toString();
     }
+
 
     public static class UtilityErrorHandler implements ErrorHandler {
         @Override

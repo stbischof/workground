@@ -21,6 +21,7 @@ import mondrian.rolap.SchemaModifiers;
 import mondrian.test.BasicQueryTest;
 import mondrian.test.PropertySaver5;
 import mondrian.util.Bug;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.function.FunctionMetaData;
@@ -45,7 +46,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDi
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
-import org.eigenbase.xom.StringEscaper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -71,6 +71,7 @@ import java.util.concurrent.CancellationException;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static mondrian.olap.Util.assertTrue;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -12670,7 +12671,7 @@ Intel platforms):
 
     // This case demonstrates the relative precedence of 'AS' in 'CAST'
     // and 'AS' for creating inline named sets. See also bug MONDRIAN-648.
-    Util.discard( Bug.BugMondrian648Fixed );
+    discard( Bug.BugMondrian648Fixed );
     assertExprReturns(context.getConnection(),
       "'xxx' || Cast(1 = 1 AND 1 = 2 AS String)",
       "xxxfalse" );
@@ -13318,7 +13319,7 @@ Intel platforms):
   }
 
   private static void printHtml( PrintWriter pw, String s ) {
-    final String escaped = StringEscaper.htmlEscaper.escapeString( s );
+    final String escaped = StringEscapeUtils.escapeHtml4(s);
     pw.print( escaped );
   }
 

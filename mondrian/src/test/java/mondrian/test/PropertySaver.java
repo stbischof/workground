@@ -16,12 +16,12 @@ package mondrian.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import mondrian.olap.AbstractProperty;
+import mondrian.olap.BooleanProperty;
+import mondrian.olap.DoubleProperty;
+import mondrian.olap.IntegerProperty;
+import mondrian.olap.StringProperty;
 import org.apache.logging.log4j.Level;
-import org.eigenbase.util.property.BooleanProperty;
-import org.eigenbase.util.property.DoubleProperty;
-import org.eigenbase.util.property.IntegerProperty;
-import org.eigenbase.util.property.Property;
-import org.eigenbase.util.property.StringProperty;
 import org.slf4j.Logger;
 
 import mondrian.olap.MondrianProperties;
@@ -39,7 +39,7 @@ public class PropertySaver {
     public final MondrianProperties properties =
         MondrianProperties.instance();
 
-    private final Map<Property, String> originalValues =
+    private final Map<AbstractProperty, String> originalValues =
         new HashMap<>();
 
     private final Map<Logger, Level> originalLoggerLevels =
@@ -130,7 +130,7 @@ public class PropertySaver {
      * Sets all properties back to their original values.
      */
     public void reset() {
-        for (Map.Entry<Property, String> entry : originalValues.entrySet()) {
+        for (Map.Entry<AbstractProperty, String> entry : originalValues.entrySet()) {
             final String value = entry.getValue();
             //noinspection StringEquality
             if (value == NOT_SET) {
@@ -150,5 +150,5 @@ public class PropertySaver {
     }
 
 
-   
+
 }

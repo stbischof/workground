@@ -10,6 +10,7 @@
 */
 package mondrian.olap;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -1064,7 +1065,7 @@ import mondrian.util.UnionIterator;
         for (List<String> xx
             : CombiningGenerator.of(Collections.nCopies(20, "x")))
         {
-            Util.discard(xx);
+            discard(xx);
             i++;
         }
         assertEquals(1 << 20, i);

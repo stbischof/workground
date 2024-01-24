@@ -17,7 +17,7 @@ package mondrian.olap;
  * resource classes generated from mondrian.resource.MondrianResource.xml.
  *
  * @author Galt Johnson (gjabx)
- * @see org.eigenbase.xom
+ *
  */
 public class MondrianException extends RuntimeException {
     public MondrianException() {

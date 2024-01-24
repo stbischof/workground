@@ -32,6 +32,7 @@ import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 import org.opentest4j.AssertionFailedError;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -506,7 +507,7 @@ import static org.opencube.junit5.TestUtil.withSchema;
             "with member [Measures].[Foo] as ' ([Measures].[Unit Sales], [Gender].[F]) '"
             + "select {[Measures].[Foo]} on columns from [Sales]";
         final Result result = executeQuery(queryString, context.getConnection());
-        Util.discard(result);
+        discard(result);
 
         // Level cannot be converted.
         assertExprThrows(context,

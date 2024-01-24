@@ -27,7 +27,7 @@ import mondrian.olap.fun.JavaFunDef.Description;
 import mondrian.olap.fun.JavaFunDef.FunctionName;
 import mondrian.olap.fun.JavaFunDef.Signature;
 
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 /**
  * Implementations of functions in the Visual Basic for Applications (VBA)

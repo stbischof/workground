@@ -19,6 +19,7 @@
 package org.opencube.junit5.dataloader;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -318,7 +319,7 @@ public class DataLoaderUtil {
 
 			String line;
 			int lineNumber = 0;
-			Util.discard(lineNumber);
+			discard(lineNumber);
 
 			StringBuilder buf = new StringBuilder();
 

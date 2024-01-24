@@ -49,7 +49,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ViewImpl;
-import org.eigenbase.util.property.StringProperty;
+import mondrian.olap.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -50,7 +50,6 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.calc.api.ResultStyle;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eigenbase.util.property.StringProperty;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -86,6 +85,7 @@ import java.util.regex.Pattern;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static mondrian.olap.Util.assertTrue;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.opencube.junit5.TestUtil.assertAxisReturns;
@@ -1004,7 +1004,7 @@ public class BasicQueryTest {
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
   void testCyclicalCalculatedMembers(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "WITH\n" + "   MEMBER [Product].[X] AS '[Product].[Y]'\n"
+    discard( executeQuery(context.getConnection(), "WITH\n" + "   MEMBER [Product].[X] AS '[Product].[Y]'\n"
         + "   MEMBER [Product].[Y] AS '[Product].[X]'\n" + "SELECT\n" + "   {[Product].[X]} ON COLUMNS,\n"
         + "   {Store.[Store Name].Members} ON ROWS\n" + "FROM Sales" ) );
   }
@@ -1029,7 +1029,7 @@ public class BasicQueryTest {
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
   void testHalfYears(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "WITH MEMBER [Measures].[ProfitPercent] AS\n"
+    discard( executeQuery(context.getConnection(), "WITH MEMBER [Measures].[ProfitPercent] AS\n"
         + "     '([Measures].[Store Sales]-[Measures].[Store Cost])/([Measures].[Store Cost])',\n"
         + " FORMAT_STRING = '#.00%', SOLVE_ORDER = 1\n"
         + " Member [Time].[Time].[1997].[First Half] AS  '[Time].[1997].[Q1] + [Time].[1997].[Q2]'\n"
@@ -1040,7 +1040,7 @@ public class BasicQueryTest {
   }
 
   public void _testHalfYearsTrickyCase(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "WITH MEMBER MEASURES.ProfitPercent AS\n"
+    discard( executeQuery(context.getConnection(), "WITH MEMBER MEASURES.ProfitPercent AS\n"
         + "     '([Measures].[Store Sales]-[Measures].[Store Cost])/([Measures].[Store Cost])',\n"
         + " FORMAT_STRING = '#.00%', SOLVE_ORDER = 1\n"
         + " Member [Time].[Time].[First Half 97] AS  '[Time].[1997].[Q1] + [Time].[1997].[Q2]'\n"
@@ -1053,7 +1053,7 @@ public class BasicQueryTest {
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
   void testAsSample7ButUsingVirtualCube(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "with member [Measures].[Accumulated Sales] as 'Sum(YTD(),[Measures].[Store Sales])'\n"
+    discard( executeQuery(context.getConnection(), "with member [Measures].[Accumulated Sales] as 'Sum(YTD(),[Measures].[Store Sales])'\n"
         + "select\n" + "    {[Measures].[Store Sales],[Measures].[Accumulated Sales]} on columns,\n"
         + "    {Descendants([Time].[1997],[Time].[Month])} on rows\n" + "from [Warehouse and Sales]" ) );
   }
@@ -1093,12 +1093,12 @@ public class BasicQueryTest {
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
   void testUseDimensionAsShorthandForMember(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
+    discard( executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
         + " {[Store], [Store].children} on rows\n" + "from [Sales]" ) );
   }
 
   public void _testMembersFunction(TestContext context) {
-    Util.discard( executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
+    discard( executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
         + " {[Customers].members(0)} on rows\n" + "from [Sales]" ) );
   }
 

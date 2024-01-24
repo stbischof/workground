@@ -16,11 +16,11 @@ package mondrian.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import mondrian.olap.BooleanProperty;
+import mondrian.olap.DoubleProperty;
+import mondrian.olap.IntegerProperty;
+import mondrian.olap.StringProperty;
 import org.apache.logging.log4j.Level;
-import org.eigenbase.util.property.BooleanProperty;
-import org.eigenbase.util.property.DoubleProperty;
-import org.eigenbase.util.property.IntegerProperty;
-import org.eigenbase.util.property.StringProperty;
 import org.slf4j.Logger;
 
 import mondrian.olap.MondrianProperties;
@@ -149,5 +149,5 @@ public class PropertySaver5 {
 
     }
 
-   
+
 }

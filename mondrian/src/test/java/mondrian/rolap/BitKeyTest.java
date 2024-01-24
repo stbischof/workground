@@ -11,6 +11,7 @@
 
 package mondrian.rolap;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -20,8 +21,6 @@ import java.util.BitSet;
 import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
-
-import mondrian.olap.Util;
 
 /**
  * Unit test for {@link BitKey}.
@@ -40,7 +39,7 @@ class BitKeyTest {
         BitKey bitKey = null;
         try {
             bitKey = BitKey.Factory.makeBitKey(size);
-            Util.discard(bitKey);
+            discard(bitKey);
         } catch (IllegalArgumentException e) {
             gotException = true;
         }
@@ -66,7 +65,7 @@ class BitKeyTest {
         BitKey bitKey = null;
         try {
             bitKey = BitKey.Factory.makeBitKey(size);
-            Util.discard(bitKey);
+            discard(bitKey);
         } catch (IllegalArgumentException e) {
             gotException = true;
         }

@@ -9,6 +9,7 @@
 
 package mondrian.test;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 
@@ -53,7 +54,7 @@ class I18nTest {
     void testFormat() {
         // Make sure Util is loaded, so that the LocaleFormatFactory gets
         // registered.
-        Util.discard(Util.NL);
+        discard(Util.NL);
 
         Locale spanish = new Locale("es", "ES");
         Locale german = new Locale("de", "DE");

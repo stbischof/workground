@@ -199,7 +199,7 @@ public class OlapExecuteService implements ExecuteService {
             }
             */
                 ;
-          
+
                 for (mondrian.server.Statement statement : connection.getContext().getStatements(connection)) {
                         statement.cancel();
                 }
@@ -655,7 +655,7 @@ public class OlapExecuteService implements ExecuteService {
     private StatementResponse executeDrillThroughQuery(Context context, StatementRequest statementRequest) {
         Optional<String> tabFields = statementRequest.properties().tableFields();
         Optional<Boolean> advanced = statementRequest.properties().advancedFlag();
-        final boolean enableRowCount = MondrianProperties.instance().EnableTotalCount.booleanValue();
+        final boolean enableRowCount = MondrianProperties.instance().EnableTotalCount.get();
         final int[] rowCountSlot = enableRowCount ? new int[]{0} : null;
         Connection connection = null;
         Statement statement;

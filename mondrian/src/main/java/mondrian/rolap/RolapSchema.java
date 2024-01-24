@@ -30,6 +30,7 @@
 package mondrian.rolap;
 
 import static mondrian.rolap.util.NamedSetUtil.getFormula;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -487,14 +488,14 @@ public class RolapSchema implements Schema {
             RolapSchemaParameter param =
                 new RolapSchemaParameter(
                     this, name, defaultValue, description, type, modifiable);
-            Util.discard(param);
+            discard(param);
         }
 
         // Create cubes.
         for (MappingCube xmlCube : mappingSchema.cubes()) {
             if (xmlCube.enabled()) {
                 RolapCube cube = new RolapCube(this, mappingSchema, xmlCube, context);
-                Util.discard(cube);
+                discard(cube);
             }
         }
 
@@ -503,7 +504,7 @@ public class RolapSchema implements Schema {
             if (xmlVirtualCube.enabled()) {
                 RolapCube cube =
                     new RolapCube(this, mappingSchema, xmlVirtualCube, context);
-                Util.discard(cube);
+                discard(cube);
             }
         }
 
@@ -972,7 +973,7 @@ public class RolapSchema implements Schema {
         }
         // It's OK for the description to be null.
         final String description = udf.getDescription();
-        Util.discard(description);
+        discard(description);
         final Type[] parameterTypes = udf.getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
             Type parameterType = parameterTypes[i];

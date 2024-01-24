@@ -21,7 +21,7 @@ import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_DOUBLE;
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_INTEGER;
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_INTEGER_LONG;
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_STRING;
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

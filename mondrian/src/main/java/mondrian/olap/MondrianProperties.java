@@ -13,11 +13,6 @@
  */
 package mondrian.olap;
 
-import org.eigenbase.util.property.BooleanProperty;
-import org.eigenbase.util.property.DoubleProperty;
-import org.eigenbase.util.property.IntegerProperty;
-import org.eigenbase.util.property.StringProperty;
-
 import java.io.File;
 
 /**

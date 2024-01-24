@@ -12,7 +12,7 @@
 */
 package mondrian.rolap.agg;
 
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -563,7 +563,7 @@ System.out.println(buf.toString());
         implements RolapAggregationManager.PinSet
     {
     }
-    
+
     //TODO: Free SegmentCacheManager if connection closed
 
 	private Map<RolapConnection, SegmentCacheManager> segCachStore = new HashMap<>();

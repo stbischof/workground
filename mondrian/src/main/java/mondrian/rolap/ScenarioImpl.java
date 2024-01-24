@@ -28,6 +28,8 @@ import mondrian.olap.QueryImpl;
 import mondrian.olap.Util;
 import mondrian.olap.type.ScalarType;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
+
 /**
  * Implementation of {@link org.olap4j.Scenario}.
  *
@@ -87,7 +89,7 @@ public final class ScenarioImpl implements Scenario {
         AllocationPolicy allocationPolicy,
         Object[] allocationArgs)
     {
-        Util.discard(connection); // for future use
+        discard(connection); // for future use
         assert allocationPolicy != null;
         assert allocationArgs != null;
         switch (allocationPolicy) {
@@ -361,9 +363,9 @@ public final class ScenarioImpl implements Scenario {
             AllocationPolicy allocationPolicy)
         {
             assert keyValues.length == constrainedColumnsBitKey.cardinality();
-            Util.discard(cube); // not used currently
-            Util.discard(constrainedColumnsBitKey); // not used currently
-            Util.discard(keyValues); // not used currently
+            discard(cube); // not used currently
+            discard(constrainedColumnsBitKey); // not used currently
+            discard(keyValues); // not used currently
             this.newValue = newValue;
             this.currentValue = currentValue;
             this.allocationPolicy = allocationPolicy;

@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1076,7 +1077,7 @@ class AggregationOnDistinctCountMeasuresTest {
         // Mondrian does not use GROUPING SETS for distinct-count measures.
         // So, this test should not use GROUPING SETS, even if they are enabled.
         // See change 12310, bug MONDRIAN-470 (aka SF.net 2207515).
-        Util.discard(props.EnableGroupingSets);
+        discard(props.EnableGroupingSets);
 
         String oraTeraSql =
             "select \"store\".\"store_state\" as \"c0\","

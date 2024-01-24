@@ -31,6 +31,8 @@ import org.eclipse.daanse.olap.calc.api.Calc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
+
 public class ScenarioImpl implements Scenario {
 
     private final int id;
@@ -84,7 +86,7 @@ public class ScenarioImpl implements Scenario {
         AllocationPolicy allocationPolicy,
         Object[] allocationArgs)
     {
-        Util.discard(connection); // for future use
+        discard(connection); // for future use
         assert allocationPolicy != null;
         assert allocationArgs != null;
         switch (allocationPolicy) {
@@ -358,9 +360,9 @@ public class ScenarioImpl implements Scenario {
             AllocationPolicy allocationPolicy)
         {
             assert keyValues.length == constrainedColumnsBitKey.cardinality();
-            Util.discard(cube); // not used currently
-            Util.discard(constrainedColumnsBitKey); // not used currently
-            Util.discard(keyValues); // not used currently
+            discard(cube); // not used currently
+            discard(constrainedColumnsBitKey); // not used currently
+            discard(keyValues); // not used currently
             this.newValue = newValue;
             this.currentValue = currentValue;
             this.allocationPolicy = allocationPolicy;

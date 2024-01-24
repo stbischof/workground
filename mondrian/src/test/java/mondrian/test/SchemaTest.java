@@ -6920,7 +6920,7 @@ class SchemaTest {
 
         // skip this test if using aggregates, the agg tables do not
         // enforce the SQL element in the fact table
-        if (MondrianProperties.instance().UseAggregates.booleanValue()) {
+        if (MondrianProperties.instance().UseAggregates.get()) {
             return;
         }
         class TestBugMondrian482Modifier extends RDbMappingSchemaModifier {

@@ -25,6 +25,8 @@ import mondrian.rolap.TupleReader.MemberBuilder;
 import mondrian.rolap.sql.MemberChildrenConstraint;
 import mondrian.rolap.sql.TupleConstraint;
 
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
+
 /**
  * <code>CacheMemberReader</code> implements {@link MemberReader} by reading
  * from a pre-populated array of {@link org.eclipse.daanse.olap.api.element.Member}s.
@@ -45,7 +47,7 @@ class CacheMemberReader implements MemberReader, MemberCache {
         this.source = source;
         if (false) {
             // we don't want the reader to write back to our cache
-            Util.discard(source.setCache(this));
+            discard(source.setCache(this));
         }
         this.mapKeyToMember = new HashMap<>();
         this.members = source.getMembers();

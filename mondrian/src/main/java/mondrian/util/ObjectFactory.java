@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Properties;
 
-import org.eigenbase.util.property.StringProperty;
+import mondrian.olap.StringProperty;
 
 /**
  * Concrete derived classes of the generic <code>ObjectFactory</code> class

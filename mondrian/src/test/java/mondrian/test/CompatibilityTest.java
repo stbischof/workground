@@ -12,6 +12,7 @@
 package mondrian.test;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -401,7 +402,7 @@ class CompatibilityTest {
         connection = foodMartContext.getConnection();
 
         // This test should work irrespective of the case-sensitivity setting.
-        Util.discard(props.CaseSensitive.get());
+        discard(props.CaseSensitive.get());
 
         TestUtil.assertQueryReturns(
     		connection,

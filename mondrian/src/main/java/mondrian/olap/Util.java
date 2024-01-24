@@ -125,7 +125,6 @@ import org.eclipse.daanse.olap.impl.IdentifierParser;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
 import org.eclipse.daanse.olap.impl.KeySegment;
 import org.eclipse.daanse.olap.impl.NameSegment;
-import org.eigenbase.xom.XOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +156,7 @@ import mondrian.util.UtilCompatibleJdk16;
  * @author jhyde
  * @since 6 August, 2001
  */
-public class Util extends XOMUtil {
+public class Util {
 
     public static final String NL = System.getProperty("line.separator");
 

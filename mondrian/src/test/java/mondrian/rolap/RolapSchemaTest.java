@@ -54,10 +54,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.UnionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MemberGrantR;
-import org.eigenbase.xom.DOMWrapper;
-import org.eigenbase.xom.Parser;
-import org.eigenbase.xom.XOMException;
-import org.eigenbase.xom.XOMUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +66,6 @@ import mondrian.rolap.agg.AggregationManager;
 import mondrian.rolap.agg.SegmentCacheManager;
 import mondrian.rolap.util.RelationUtil;
 import mondrian.test.PropertySaver5;
-import mondrian.util.ByteString;
 
 /**
  * @author Andrey Khayrutdinov
@@ -373,12 +368,6 @@ class RolapSchemaTest {
       return fact;
     }
 
-    private static DOMWrapper wrapStrSources(String resStr)
-        throws XOMException {
-      final Parser xmlParser = XOMUtil.createDefaultParser();
-      final DOMWrapper def = xmlParser.parse(resStr);
-      return def;
-    }
 
     private void doTestHandleHierarchyGrant(
         Access expectedHierarchyAccess,

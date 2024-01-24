@@ -12,7 +12,7 @@
 package mondrian.rolap;
 
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
-import static org.eigenbase.xom.XOMUtil.discard;
+import static org.eclipse.daanse.olap.api.result.Olap4jUtil.discard;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -36,7 +36,7 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eigenbase.util.property.StringProperty;
+import mondrian.olap.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -566,9 +566,9 @@ RME is this right
         if (level.isAll()) {
             return Collections.singletonList(hierarchy.getAllMember());
         }
- 
+
         final TupleReader tupleReader = new SqlTupleReader(constraint);
-    
+
         tupleReader.addLevelMembers(level, this, null);
         final TupleList tupleList =
             tupleReader.readMembers(context, null, null);
