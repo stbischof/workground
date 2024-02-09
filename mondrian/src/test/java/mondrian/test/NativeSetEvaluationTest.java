@@ -788,6 +788,7 @@ protected void assertQuerySql(Connection connection,
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
   void testAggTCTwoArgWithCrossjoinedSet(TestContext context) {
+	RolapSchemaPool.instance().clear();
     if ( !context.getConfig().enableNativeTopCount() ) {
       return;
     }
@@ -809,9 +810,10 @@ protected void assertQuerySql(Connection connection,
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
   void testAggTCTwoArgWithCalcMemPresent(TestContext context) {
+	RolapSchemaPool.instance().clear();
     if ( !context.getConfig().enableNativeTopCount() ) {
       return;
-    }
+    }    
       ((TestConfig)context.getConfig())
           .setAlertNativeEvaluationUnsupported("ERROR");
 

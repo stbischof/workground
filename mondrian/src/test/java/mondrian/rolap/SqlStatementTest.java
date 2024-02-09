@@ -62,7 +62,7 @@ class SqlStatementTest {
 
     execution = new Execution(statMock, 0);
     execution = spy(execution);
-    doThrow(new MondrianException(QueryCanceled))
+    doThrow(new QueryCanceledException(QueryCanceled))
             .when(execution).checkCancelOrTimeout();
 
     locus = new Locus(execution, "component", "message");

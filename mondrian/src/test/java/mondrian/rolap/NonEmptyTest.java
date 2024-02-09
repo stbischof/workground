@@ -5104,7 +5104,6 @@ class NonEmptyTest extends BatchTestCase {
 
     SystemWideProperties.instance().EnableNonEmptyOnAllAxis =
       true;
-    RolapUtil.reloadNullLiteral();
     executeQuery(mdx, context.getConnection());
   }
 

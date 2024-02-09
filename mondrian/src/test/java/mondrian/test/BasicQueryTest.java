@@ -3473,7 +3473,8 @@ public class BasicQueryTest {
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
   public void dont_testParallelFlushCache(TestContext context) {
-      ((TestConfig)context.getConfig()).setMaxEvalDepth(MAX_EVAL_DEPTH_VALUE);
+	RolapSchemaPool.instance().clear();
+    ((TestConfig)context.getConfig()).setMaxEvalDepth(MAX_EVAL_DEPTH_VALUE);
     runParallelQueries(context.getConnection(), 4, 6, true );
   }
 

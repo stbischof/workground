@@ -79,7 +79,7 @@ public class MondrianResource {
 
     public final static String MemberNotInLevelHierarchy = "The member ''{0}'' is not in the same hierarchy as the level ''{1}''.";
 
-    public final static String ToggleDrillStateRecursiveNotSupported = "''RECURSIVE'' is not supported in ToggleDrillState.";
+    public final static String ToggleDrillStateRecursiveNotSupported = "'RECURSIVE' is not supported in ToggleDrillState.";
 
     public final static String FunctionMbrAndLevelHierarchyMismatch = "The <level> and <member> arguments to {0} must be from the same hierarchy. The level was from ''{1}'' but the member was from ''{2}''.";
 

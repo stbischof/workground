@@ -227,17 +227,8 @@ public class RolapUtil {
     public static final String SQL_NULL_LITERAL = "null";
 
     public static String mdxNullLiteral() {
-        if (mdxNullLiteral == null) {
-            reloadNullLiteral();
-        }
-        return mdxNullLiteral;
+        return SystemWideProperties.instance().NullMemberRepresentation;
     }
-
-    public static void reloadNullLiteral() {
-        mdxNullLiteral =
-            SystemWideProperties.instance().NullMemberRepresentation;
-    }
-
     /**
      * Names of classes of drivers we've loaded (or have tried to load).
      *
