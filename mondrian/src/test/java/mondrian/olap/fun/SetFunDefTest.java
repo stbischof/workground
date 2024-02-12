@@ -16,9 +16,9 @@ package mondrian.olap.fun;
 import static org.opencube.junit5.TestUtil.assertQueryThrows;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -33,7 +33,7 @@ class SetFunDefTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSetWithMembersFromDifferentHierarchies(TestContext context) {
+    void testSetWithMembersFromDifferentHierarchies(Context context) {
         assertQueryFailsInSetValidation(context.getConnection(),
             "with member store.x as "
             + "'{[Gender].[M],[Store].[USA].[CA]}' "
@@ -42,7 +42,7 @@ class SetFunDefTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSetWith2TuplesWithDifferentHierarchies(TestContext context) {
+    void testSetWith2TuplesWithDifferentHierarchies(Context context) {
         assertQueryFailsInSetValidation(context.getConnection(),
             "with member store.x as '{([Gender].[M],[Store].[All Stores].[USA].[CA]),"
             + "([Store].[USA].[OR],[Gender].[F])}'\n"

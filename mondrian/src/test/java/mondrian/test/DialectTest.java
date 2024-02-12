@@ -38,13 +38,13 @@ import javax.sql.DataSource;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.db.common.JdbcDialectImpl;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 import org.opentest4j.AssertionFailedError;
@@ -84,7 +84,7 @@ class DialectTest {
           "(?s).* ERROR\\[15001\\] A syntax error occurred at or before: .*";
 
 
-  protected DataSource getDataSource(TestContext context) {
+  protected DataSource getDataSource(Context context) {
     return context.getConnection().getDataSource();
   }
 
@@ -101,14 +101,14 @@ class DialectTest {
     }
   }
 
-  protected Dialect getDialect(TestContext context) {
+  protected Dialect getDialect(Context context) {
     if ( dialect == null ) {
         dialect = context.getDialect();
     }
     return dialect;
   }
 
-  protected Connection getConnection(TestContext context) {
+  protected Connection getConnection(Context context) {
     if ( connection == null ) {
       try {
         connection = getDataSource(context).getConnection();
@@ -201,7 +201,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsCompoundCountDistinct(TestContext context) {
+  void testAllowsCompoundCountDistinct(Context context) {
     String sql =
             dialectize(context,
                     "select count(distinct [customer_id], [product_id])\n"
@@ -251,7 +251,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsCountDistinct(TestContext context) {
+  void testAllowsCountDistinct(Context context) {
     String sql1 =
             dialectize(context,
                     "select count(distinct [customer_id]) from [foodmart.sales_fact_1997]" );
@@ -277,7 +277,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsMultipleCountDistinct(TestContext context) {
+  void testAllowsMultipleCountDistinct(Context context) {
     // multiple distinct-counts
     String sql1 =
             dialectize(context,
@@ -318,7 +318,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsDdl(TestContext context) {
+  void testAllowsDdl(Context context) {
     int phase = 0;
     SQLException e = null;
     Statement stmt = null;
@@ -361,7 +361,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsFromQuery(TestContext context) {
+  void testAllowsFromQuery(Context context) {
     String sql =
             dialectize(context,
                     "select * from (select * from [foodmart.sales_fact_1997]) as [x]" );
@@ -374,7 +374,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRequiresFromQueryAlias(TestContext context) {
+  void testRequiresFromQueryAlias(Context context) {
     if ( getDialect(context).requiresAliasForFromQuery() ) {
       assertTrue( getDialect(context).allowsFromQuery() );
     }
@@ -420,7 +420,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRequiresOrderByAlias(TestContext context) {
+  void testRequiresOrderByAlias(Context context) {
     String sql =
             dialectize(context,
                     "SELECT [unit_sales]\n"
@@ -445,7 +445,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsOrderByAlias(TestContext context) {
+  void testAllowsOrderByAlias(Context context) {
     String sql =
             dialectize(context,
                     "SELECT [unit_sales] as [x],\n"
@@ -469,7 +469,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRequiresUnionOrderByOrdinal(TestContext context) {
+  void testRequiresUnionOrderByOrdinal(Context context) {
     final String sql;
     switch ( getDatabaseProduct(getDialect(context).getDialectName()) ) {
       default:
@@ -508,7 +508,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRequiresUnionOrderByExprToBeInSelectClause(TestContext context) {
+  void testRequiresUnionOrderByExprToBeInSelectClause(Context context) {
     String sql =
             dialectize(context,
                     "SELECT [unit_sales], [store_sales]\n"
@@ -559,7 +559,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testSupportsGroupByExpressions(TestContext context) {
+  void testSupportsGroupByExpressions(Context context) {
     String sql =
             dialectize(context,
                     "SELECT sum([unit_sales] + 3) + 8\n"
@@ -587,7 +587,7 @@ class DialectTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsGroupingSets(TestContext context) {
+  void testAllowsGroupingSets(Context context) {
     String sql =
             dialectize(context,
                     "SELECT [customer_id],\n"
@@ -641,7 +641,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testSupportsMultiValueInExpr(TestContext context) {
+  void testSupportsMultiValueInExpr(Context context) {
     String sql =
             dialectize(context,
                     "SELECT [unit_sales]\n"
@@ -683,7 +683,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testDateLiteralString(TestContext context) {
+  void testDateLiteralString(Context context) {
     // verify correct construction of the date literal string.
     // With Oracle this can get interesting, because depending on the
     // driver version the string may be a DATE or a TIMESTAMP.
@@ -727,7 +727,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testBigInt(TestContext context) {
+  void testBigInt(Context context) {
     if ( getDatabaseProduct(getDialect(context).getDialectName())
             != DatabaseProduct.VERTICA ) {
       // currently only checks VERTICA
@@ -798,7 +798,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testResultSetConcurrency(TestContext context) {
+  void testResultSetConcurrency(Context context) {
     int[] Types = {
             ResultSet.TYPE_FORWARD_ONLY,
             ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -826,7 +826,7 @@ class DialectTest {
             // didn't support this type/concurrency combination,
             // but allowed the statement to be executed anyway.
             // But don't fail.
-        	  
+
 //            discard(
 //                    "expected to fail for type=" + type
 //                            + ", concur=" + concur );
@@ -853,7 +853,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testGenerateInline(TestContext context) throws SQLException {
+  void testGenerateInline(Context context) throws SQLException {
     final List<String> typeList = Arrays.asList( "String", "Numeric" );
     final List<String> nameList = Arrays.asList( "x", "y" );
     assertInline(context,
@@ -891,14 +891,14 @@ class DialectTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testForceNullCollation(TestContext context) throws SQLException {
+  void testForceNullCollation(Context context) throws SQLException {
     checkForceNullCollation(context, true, true );
     checkForceNullCollation(context, false, true );
     checkForceNullCollation(context, true, false );
     checkForceNullCollation(context, false, false );
   }
 
-  private StringBuilder dialectizeTableName(TestContext context,  StringBuilder name ) {
+  private StringBuilder dialectizeTableName(Context context,  StringBuilder name ) {
     // GBQ needs the schema name, not others.
     switch ( getDatabaseProduct(getDialect(context).getDialectName()) ) {
       case GOOGLEBIGQUERY:
@@ -914,7 +914,7 @@ class DialectTest {
    * @param ascending Whether ascending
    * @param nullsLast Force nulls last or not.
    */
-  private void checkForceNullCollation(TestContext context,
+  private void checkForceNullCollation(Context context,
                                        boolean ascending,
                                        boolean nullsLast ) throws SQLException {
     Dialect dialect = getDialect(context);
@@ -955,7 +955,7 @@ class DialectTest {
     }
   }
 
-  private void assertFirstLast(TestContext context,
+  private void assertFirstLast(Context context,
                                String query,
                                String expectedFirst,
                                String expectedLast ) throws SQLException {
@@ -975,7 +975,7 @@ class DialectTest {
     assertEquals(expectedLast, actualLast,  query);
   }
 
-  private void assertInline(TestContext context,
+  private void assertInline(Context context,
                             List<String> nameList,
                             List<String> typeList,
                             String[]... valueList ) throws SQLException {
@@ -1031,7 +1031,7 @@ class DialectTest {
    * @param s SQL query or DDL statement
    * @return Query or DDL statement translated into this dialect
    */
-  private String dialectize(TestContext context, String s ) {
+  private String dialectize(Context context, String s ) {
     if ( dialect == null ) {
       dialect = getDialect(context);
     }
@@ -1092,7 +1092,7 @@ class DialectTest {
    *
    * @param sql SQL query in current dialect
    */
-  protected void assertQuerySucceeds(TestContext context, String sql ) {
+  protected void assertQuerySucceeds(Context context, String sql ) {
     Statement stmt = null;
     try {
       stmt = getConnection(context).createStatement();
@@ -1120,7 +1120,7 @@ class DialectTest {
    * @param patterns Array of expected patterns, generally one for each SQL dialect for which the test is expected to
    *                 fail
    */
-  protected void assertQueryFails(TestContext context, String sql, String[] patterns ) {
+  protected void assertQueryFails(Context context, String sql, String[] patterns ) {
     Statement stmt = null;
     try {
       stmt = getConnection(context).createStatement();
@@ -1160,7 +1160,7 @@ class DialectTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsSelectNotInGroupBy(TestContext context) throws SQLException {
+  void testAllowsSelectNotInGroupBy(Context context) throws SQLException {
     Dialect dialect = getDialect(context);
     String sql =
             "select "
@@ -1234,7 +1234,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testHavingRequiresAlias(TestContext context) throws Exception {
+  void testHavingRequiresAlias(Context context) throws Exception {
     Dialect dialect = getDialect(context);
     StringBuilder sb =
             new StringBuilder(
@@ -1266,7 +1266,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testAllowsRegularExpressionInWhereClause(TestContext context) throws Exception {
+  void testAllowsRegularExpressionInWhereClause(Context context) throws Exception {
     Dialect dialect = getDialect(context);
     if ( dialect.allowsRegularExpressionInWhereClause() ) {
       assertNotNull(
@@ -1305,7 +1305,7 @@ class DialectTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testComplexRegularExpression(TestContext context) throws Exception {
+  void testComplexRegularExpression(Context context) throws Exception {
     final String regexp =
             "(?i).*\\QJeanne\\E.*|.*\\QSheri\\E.*|.*\\QJonathan\\E.*|.*\\QJewel\\E.*";
     Dialect dialect = getDialect(context);
@@ -1344,7 +1344,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRegularExpressionSqlInjection(TestContext context) throws SQLException {
+  void testRegularExpressionSqlInjection(Context context) throws SQLException {
     // bug mondrian-983
     // We know that mysql's dialect can handle this regex
     Throwable throwable = null;
@@ -1389,7 +1389,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testRegularExpressionSqlInjection_Slash(TestContext context) throws SQLException {
+  void testRegularExpressionSqlInjection_Slash(Context context) throws SQLException {
     // On mysql, this gives error:
     //   Got error 'repetition-operator operand invalid' from regexp
     //
@@ -1463,7 +1463,7 @@ class DialectTest {
    * @return Whether dialect could translate regex to SQL.
    * @throws SQLException on error
    */
-  private boolean checkRegex(TestContext context, String regex ) throws SQLException {
+  private boolean checkRegex(Context context, String regex ) throws SQLException {
     Dialect dialect = getDialect(context);
     final StringBuilder sqlRegex =
             dialect.generateRegularExpression(
@@ -1611,7 +1611,7 @@ class DialectTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testQuoteIdentifierForDividedByDot(TestContext context) {
+  void testQuoteIdentifierForDividedByDot(Context context) {
     final String TABLE_NAME = "table.one";
     final String FIELD_NAME = "field.one";
     String q = getDialect(context).getQuoteIdentifierString();

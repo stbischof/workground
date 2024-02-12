@@ -16,6 +16,7 @@ import static org.opencube.junit5.TestUtil.executeQuery;
 
 import java.util.concurrent.Semaphore;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestContext;
@@ -23,21 +24,21 @@ import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 class DeadlockTest {
-	
+
 	public static class QueryLimitFoodMart extends AppandFoodMartCatalog{
-		
+
 		@Override
-		public void updateContext(TestContext context) {
+		public void updateContext(Context context) {
 			super.updateContext(context);
 			Semaphore queryLimimitSemaphore=new Semaphore(20);
-			context.setQueryLimitSemaphore(queryLimimitSemaphore);
+            ((TestContext)context).setQueryLimitSemaphore(queryLimimitSemaphore);
 		}
 	}
 
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = QueryLimitFoodMart.class, dataloader = FastFoodmardDataLoader.class )
-    void testSegmentLoadDeadlock(TestContext context) {
+    void testSegmentLoadDeadlock(Context context) {
         // http://jira.pentaho.com/browse/MONDRIAN-1726
         // Deadlock can occur if a cardinality query is fired after
         // all available database connections have been consumed and active
@@ -45,7 +46,7 @@ class DeadlockTest {
         // The query below can cause this issue. Each aggregate() member
         // results in a separate segment load (which will exceed the available
         // 20), and cardinality is checked as a part of segment loads.
-    	
+
 
         Thread bigQueryThread = new Thread(
             new Runnable() {

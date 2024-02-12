@@ -10,6 +10,7 @@
 package mondrian.rolap;
 
 import mondrian.rolap.aggmatcher.AggTableTestCase;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
@@ -18,7 +19,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -86,7 +86,7 @@ class RolapResultTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testAll(TestContext context) throws Exception {
+    void testAll(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -115,7 +115,7 @@ class RolapResultTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testD1(TestContext context) throws Exception {
+    void testD1(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -150,7 +150,7 @@ Axis #2:
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testD2(TestContext context) throws Exception {
+    void testD2(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -187,7 +187,7 @@ Axis #2:
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    public void _testNullDefaultMeasure(TestContext context) throws Exception {
+    public void _testNullDefaultMeasure(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -220,7 +220,7 @@ Axis #2:
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonAllPromotionMembers(TestContext context) {
+    void testNonAllPromotionMembers(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);

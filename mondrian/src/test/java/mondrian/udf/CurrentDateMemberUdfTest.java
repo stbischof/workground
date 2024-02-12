@@ -10,11 +10,10 @@ package mondrian.udf;
 
 import mondrian.rolap.SchemaModifiers;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.SchemaUtil;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -29,7 +28,7 @@ class CurrentDateMemberUdfTest {
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCurrentDateMemberUdf(TestContext context) {
+    void testCurrentDateMemberUdf(Context context) {
 		//TODO: context redesign
 		//Assertions.fail("Handle comment , Context redesign nedded");
         /*
@@ -66,7 +65,7 @@ class CurrentDateMemberUdfTest {
     */
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testGetReturnType(TestContext context) {
+    void testGetReturnType(Context context) {
 		Connection connection=context.getConnection();
         String query = "WITH MEMBER [Time].[YTD] AS SUM( YTD(CurrentDateMember"
              + "([Time], '[\"Time\"]\\.[yyyy]\\.[Qq].[m]', EXACT)), Measures.[Unit Sales]) SELECT Time.YTD on 0 FROM sales";

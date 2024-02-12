@@ -13,6 +13,7 @@ package mondrian.rolap;
 
 import mondrian.olap.MondrianException;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
@@ -52,14 +53,14 @@ class RolapSchemaReaderTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGetCubesWithNoHrCubes(TestContext context) {
+    void testGetCubesWithNoHrCubes(Context context) {
         String[] expectedCubes = new String[] {
                 "Sales", "Warehouse", "Warehouse and Sales", "Store",
                 "Sales Ragged", "Sales 2"
         };
 
         Connection connection =
-            context.getConnection(List.of("No HR Cube"));
+            ((TestContext)context).getConnection(List.of("No HR Cube"));
         try {
             SchemaReader reader = connection.getSchemaReader().withLocus();
 
@@ -75,7 +76,7 @@ class RolapSchemaReaderTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGetCubesWithNoRole(TestContext context) {
+    void testGetCubesWithNoRole(Context context) {
         String[] expectedCubes = new String[] {
                 "Sales", "Warehouse", "Warehouse and Sales", "Store",
                 "Sales Ragged", "Sales 2", "HR"
@@ -97,12 +98,12 @@ class RolapSchemaReaderTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGetCubesForCaliforniaManager(TestContext context) {
+    void testGetCubesForCaliforniaManager(Context context) {
         String[] expectedCubes = new String[] {
                 "Sales"
         };
 
-        Connection connection = context.getConnection(List.of("California manager"));
+        Connection connection = ((TestContext)context).getConnection(List.of("California manager"));
         try {
             SchemaReader reader = connection.getSchemaReader().withLocus();
 
@@ -118,7 +119,7 @@ class RolapSchemaReaderTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testConnectUseContentChecksum(TestContext context) {
+    void testConnectUseContentChecksum(Context context) {
 //    	context.setProperty(RolapConnectionProperties.UseContentChecksum.name(), "true");
         //Util.PropertyList properties =
         //       TestUtil.getConnectionProperties().clone();
@@ -157,7 +158,7 @@ class RolapSchemaReaderTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGetCubeDimensions(TestContext context) {
+    void testGetCubeDimensions(Context context) {
         final String timeWeekly =
             hierarchyName("Time", "Weekly");
         final String timeTime =
@@ -225,7 +226,7 @@ class RolapSchemaReaderTest {
         withSchema(context, schema);
          */
         withSchema(context, TestGetCubeDimensionsModifier::new);
-        Connection connection = context.getConnection(List.of("REG1"));
+        Connection connection = ((TestContext)context).getConnection(List.of("REG1"));
         try {
             SchemaReader reader = connection.getSchemaReader().withLocus();
             final Map<String, Cube> cubes = new HashMap<>();

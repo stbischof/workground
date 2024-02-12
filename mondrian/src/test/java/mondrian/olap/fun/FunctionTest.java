@@ -2374,7 +2374,7 @@ class FunctionTest {//extends FoodMartTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testDefaultMember(TestContext context) {
+  void testDefaultMember(Context context) {
     // [Time] has no default member and no all, so the default member is
     // the first member of the first level.
     Result result =
@@ -8114,7 +8114,7 @@ mondrian.calc.impl.MemberArrayValueCalc(type=SCALAR, resultStyle=VALUE, callCoun
   @Disabled
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testFilterWillTimeout(TestContext context) {
+  void testFilterWillTimeout(Context context) {
     ((TestConfig)context.getConfig()).setQueryTimeout(3);
     SystemWideProperties.instance().EnableNativeNonEmpty = false;
     try {
@@ -8422,7 +8422,7 @@ mondrian.calc.impl.MemberArrayValueCalc(type=SCALAR, resultStyle=VALUE, callCoun
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testHierarchizeOrdinal(TestContext context) {
+  void testHierarchizeOrdinal(Context context) {
     //TestContext testContext = getTestContext().withCube( "[Sales_Hierarchize]" );
     /*
     connection.getSchema().createCube(
@@ -9572,7 +9572,7 @@ mondrian.olap.fun.OrderFunDef$CurrentMemberCalc(type=SetType<MemberType<hierarch
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testOrderTupleMultiKeyswithVCube(TestContext context) {
+  void testOrderTupleMultiKeyswithVCube(Context context) {
     // WA unit sales is greater than CA unit sales
 
      SystemWideProperties.instance().CompareSiblingsByOrderKey = true;
@@ -10346,7 +10346,7 @@ mondrian.olap.fun.OrderFunDef$CurrentMemberCalc(type=SetType<MemberType<hierarch
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testStrToMemberIgnoreInvalidMembers(TestContext context) {
+  void testStrToMemberIgnoreInvalidMembers(Context context) {
 	RolapSchemaPool.instance().clear();
     ((TestConfig)context.getConfig()).setIgnoreInvalidMembersDuringQuery(true);
 
@@ -14215,7 +14215,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_Calc(TestContext context) {
+  void testComplexSlicer_Calc(Context context) {
       withSchema(context, SchemaModifiers.FunctionTestModifier::new);
       /*
       ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -14255,7 +14255,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_CalcBase(TestContext context) {
+  void testComplexSlicer_CalcBase(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14297,7 +14297,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_BaseCalc(TestContext context) {
+  void testComplexSlicer_BaseCalc(Context context) {
      /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14339,7 +14339,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_Calc_Base(TestContext context) {
+  void testComplexSlicer_Calc_Base(Context context) {
      /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14366,7 +14366,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_Calc_Calc(TestContext context) {
+  void testComplexSlicer_Calc_Calc(Context context) {
       /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14487,7 +14487,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_Base_Base(TestContext context) {
+  void testComplexSlicer_X_Base_Base(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14515,7 +14515,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_Calc_Base(TestContext context) {
+  void testComplexSlicer_X_Calc_Base(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14543,7 +14543,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_Calc_Calc(TestContext context) {
+  void testComplexSlicer_X_Calc_Calc(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14574,7 +14574,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_BaseBase_Base(TestContext context) {
+  void testComplexSlicer_X_BaseBase_Base(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14626,7 +14626,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_CalcBase_Base(TestContext context) {
+  void testComplexSlicer_X_CalcBase_Base(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14655,7 +14655,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_X_CalcBase_BaseBase(TestContext context) {
+  void testComplexSlicer_X_CalcBase_BaseBase(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14686,7 +14686,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_Calc_ComplexAxis(TestContext context) {
+  void testComplexSlicer_Calc_ComplexAxis(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",
@@ -14724,7 +14724,7 @@ Intel platforms):
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testComplexSlicer_Unsupported(TestContext context) {
+  void testComplexSlicer_Unsupported(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
       "Sales",

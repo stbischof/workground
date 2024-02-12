@@ -29,7 +29,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappin
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -318,7 +317,7 @@ class CachedExistsTest{
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class,dataloader = FastFoodmardDataLoader.class )
-    void testMondrian2704(TestContext context) {
+    void testMondrian2704(Context context) {
     String cube=    "<Cube name=\"Alternate Sales\">\n"
             + "  <Table name=\"sales_fact_1997\"/>\n"
             + "<Dimension name=\"Time\" type=\"TimeDimension\" foreignKey=\"time_id\">\n" +

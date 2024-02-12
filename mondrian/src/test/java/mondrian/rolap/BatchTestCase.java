@@ -41,7 +41,6 @@ import org.eclipse.daanse.olap.calc.api.ResultStyle;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.slf4j.LoggerFactory;
 
 import mondrian.enums.DatabaseProduct;
@@ -718,7 +717,7 @@ public class BatchTestCase{
         return request;
     }
 
-    protected void updateSchemaIfNeed(TestContext context, String currentTestCaseName){
+    protected void updateSchemaIfNeed(Context context, String currentTestCaseName){
         Optional<Function<MappingSchema, RDbMappingSchemaModifier>> oModifier = getModifier(currentTestCaseName);
         if (oModifier.isPresent()) {
             withSchema(context, oModifier.get());
@@ -813,7 +812,7 @@ public class BatchTestCase{
      * @param rowCount number of rows returned
      * @param mdx      query
      */
-    protected void checkNotNative(TestContext context, int rowCount, String mdx) {
+    protected void checkNotNative(Context context, int rowCount, String mdx) {
         checkNotNative(context, rowCount, mdx, null);
     }
 
@@ -885,7 +884,7 @@ public class BatchTestCase{
      * @param rowCount    Number of rows returned
      * @param mdx         Query
      */
-    protected void checkNative(TestContext context,
+    protected void checkNative(Context context,
         int resultLimit, int rowCount, String mdx)
     {
         checkNative(context, resultLimit, rowCount, mdx, null, false);
@@ -1023,7 +1022,7 @@ public class BatchTestCase{
     /**
      * Convenience method for debugging; please do not delete.
      */
-    public void assertNotNative(TestContext context, String mdx) {
+    public void assertNotNative(Context context, String mdx) {
         new BatchTestCase().checkNotNative(context, mdx, null);
     }
 
@@ -1047,7 +1046,7 @@ public class BatchTestCase{
     /**
      * Convenience method for debugging; please do not delete.
      */
-    public void assertNative(TestContext context, String mdx) {
+    public void assertNative(Context context, String mdx) {
         new BatchTestCase().checkNative(context,0, 0, mdx, null, true);
     }
 

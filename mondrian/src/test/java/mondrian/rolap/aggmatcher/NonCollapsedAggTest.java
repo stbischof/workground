@@ -9,6 +9,7 @@
 package mondrian.rolap.aggmatcher;
 
 import mondrian.olap.SystemWideProperties;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -28,7 +29,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappin
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -266,7 +266,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
 
     @Override
-	protected void prepareContext(TestContext context) {
+	protected void prepareContext(Context context) {
         try {
             super.prepareContext(context);
         }
@@ -279,7 +279,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testSingleJoin(TestContext context) throws Exception {
+    void testSingleJoin(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
     	super.prepareContext(context);
@@ -308,7 +308,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testComplexJoin(TestContext context) throws Exception {
+    void testComplexJoin(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -352,7 +352,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testComplexJoinDefaultRecognizer(TestContext context) throws Exception {
+    void testComplexJoinDefaultRecognizer(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -393,7 +393,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testSsasCompatNamingInAgg(TestContext context) throws Exception {
+    void testSsasCompatNamingInAgg(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
@@ -644,7 +644,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testMondrian1325(TestContext context) {
+    void testMondrian1325(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);

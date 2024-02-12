@@ -12,6 +12,7 @@ package mondrian.rolap;
 
 import mondrian.olap.SystemWideProperties;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -71,21 +72,21 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testTopCount_ImplicitCountMeasure(TestContext context) throws Exception {
+    void testTopCount_ImplicitCountMeasure(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "Implicit Count Measure", IMPLICIT_COUNT_MEASURE_QUERY);
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testTopCount_SumMeasure(TestContext context) throws Exception {
+    void testTopCount_SumMeasure(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "Sum Measure", SUM_MEASURE_QUERY);
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testTopCount_CountMeasure(TestContext context) throws Exception {
+    void testTopCount_CountMeasure(Context context) throws Exception {
 
        /*
        String baseSchema = TestUtil.getRawSchema(context);
@@ -100,7 +101,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testEmptyCellsAreShown_Countries(TestContext context) throws Exception {
+    void testEmptyCellsAreShown_Countries(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "Empty Cells Are Shown - Countries",
             EMPTY_CELLS_ARE_SHOWN_COUNTRIES_QUERY);
@@ -108,7 +109,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testEmptyCellsAreShown_States(TestContext context) throws Exception {
+    void testEmptyCellsAreShown_States(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "Empty Cells Are Shown - States",
             EMPTY_CELLS_ARE_SHOWN_STATES_QUERY);
@@ -116,7 +117,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testEmptyCellsAreShown_ButNoMoreThanReallyExist(TestContext context) {
+    void testEmptyCellsAreShown_ButNoMoreThanReallyExist(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Empty Cells Are Shown - But no more than really exist",
             EMPTY_CELLS_ARE_SHOWN_NOT_MORE_THAN_EXIST_QUERY);
@@ -124,7 +125,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testEmptyCellsAreHidden_WhenNonEmptyIsDeclaredExplicitly(TestContext context) {
+    void testEmptyCellsAreHidden_WhenNonEmptyIsDeclaredExplicitly(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Empty Cells Are Hidden - When NON EMPTY is declared explicitly",
             EMPTY_CELLS_ARE_HIDDEN_WHEN_NON_EMPTY_QUERY);
@@ -132,7 +133,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testRoleRestrictionWorks_ForRowWithData(TestContext context) {
+    void testRoleRestrictionWorks_ForRowWithData(Context context) {
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -141,14 +142,14 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
         withSchema(context, schema);
          */
         withSchema(context, SchemaModifiers.RoleRestrictionWorksWaRoleDef::new);
-        assertResultsAreEqual(context.getConnection(List.of(ROLE_RESTRICTION_WORKS_WA_ROLE_NAME)),
+        assertResultsAreEqual(((TestContext)context).getConnection(List.of(ROLE_RESTRICTION_WORKS_WA_ROLE_NAME)),
             "Role restriction works - For WA state",
             ROLE_RESTRICTION_WORKS_WA_QUERY);
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testRoleRestrictionWorks_ForRowWithOutData(TestContext context) {
+    void testRoleRestrictionWorks_ForRowWithOutData(Context context) {
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -157,14 +158,14 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
         withSchema(context, schema);
          */
         withSchema(context, SchemaModifiers.RoleRestrictionWorksDfRoleDef::new);
-        assertResultsAreEqual(context.getConnection(List.of(ROLE_RESTRICTION_WORKS_DF_ROLE_NAME)),
+        assertResultsAreEqual(((TestContext)context).getConnection(List.of(ROLE_RESTRICTION_WORKS_DF_ROLE_NAME)),
             "Role restriction works - For DF state",
             ROLE_RESTRICTION_WORKS_DF_QUERY);
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMimicsHeadWhenTwoParams_States(TestContext context) {
+    void testMimicsHeadWhenTwoParams_States(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Two Parameters - States",
             TOPCOUNT_MIMICS_HEAD_WHEN_TWO_PARAMS_STATES_QUERY);
@@ -172,7 +173,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMimicsHeadWhenTwoParams_Cities(TestContext context) {
+    void testMimicsHeadWhenTwoParams_Cities(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Two Parameters - Cities",
             TOPCOUNT_MIMICS_HEAD_WHEN_TWO_PARAMS_CITIES_QUERY);
@@ -180,7 +181,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMimicsHeadWhenTwoParams_ShowsNotMoreThanExist(TestContext context) {
+    void testMimicsHeadWhenTwoParams_ShowsNotMoreThanExist(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Two Parameters - Shows not more than really exist",
             RESULTS_ARE_SHOWN_NOT_MORE_THAN_EXIST_2_PARAMS_QUERY);
@@ -188,7 +189,7 @@ class RolapNativeTopCountVersusNonNativeTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMimicsHeadWhenTwoParams_DoesNotIgnoreNonEmpty(TestContext context) {
+    void testMimicsHeadWhenTwoParams_DoesNotIgnoreNonEmpty(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Two Parameters - Does not ignore NON EMPTY",
             NON_EMPTY_IS_NOT_IGNORED_WHEN_TWO_PARAMS_QUERY);

@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.opencube.junit5.TestUtil.flushSchemaCache;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -68,7 +68,7 @@ class TopCountWithTwoParamsVersusHeadTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_States(TestContext context) throws Exception {
+    void test_States(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "States",
             TOPCOUNT_MIMICS_HEAD_WHEN_TWO_PARAMS_STATES_QUERY);
@@ -76,7 +76,7 @@ class TopCountWithTwoParamsVersusHeadTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_Cities(TestContext context) throws Exception {
+    void test_Cities(Context context) throws Exception {
         assertResultsAreEqual(context.getConnection(),
             "Cities",
             TOPCOUNT_MIMICS_HEAD_WHEN_TWO_PARAMS_CITIES_QUERY);
@@ -84,7 +84,7 @@ class TopCountWithTwoParamsVersusHeadTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_ShowsNotMoreThanExist(TestContext context) {
+    void test_ShowsNotMoreThanExist(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Not more than exists",
             RESULTS_ARE_SHOWN_NOT_MORE_THAN_EXIST_2_PARAMS_QUERY);
@@ -92,7 +92,7 @@ class TopCountWithTwoParamsVersusHeadTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_DoesNotIgnoreNonEmpty(TestContext context) {
+    void test_DoesNotIgnoreNonEmpty(Context context) {
         assertResultsAreEqual(context.getConnection(),
             "Does not ignore NON EMPTY",
             NON_EMPTY_IS_NOT_IGNORED_WHEN_TWO_PARAMS_QUERY);

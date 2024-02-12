@@ -11,6 +11,7 @@
 package mondrian.test;
 
 import mondrian.olap.SystemWideProperties;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
@@ -173,7 +174,7 @@ class SteelWheelsAggregationTest {
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandSteelWheelsCatalog.class, dataloader = SteelWheelsDataLoader.class)
-    void testWithAggregation(TestContext context) throws Exception {
+    void testWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         final MappingSchema schema = getSchemaWith
@@ -216,13 +217,13 @@ class SteelWheelsAggregationTest {
                     ))
                     .build()));
         RolapSchemaPool.instance().clear();
-        context.setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
-        assertQueryReturns(context.getConnection(List.of("Power User")), QUERY, EXPECTED);
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandSteelWheelsCatalog.class, dataloader = SteelWheelsDataLoader.class)
-    void testWithAggregationNoRestrictionsOnTopLevel(TestContext context) throws Exception {
+    void testWithAggregationNoRestrictionsOnTopLevel(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         final MappingSchema schema = getSchemaWith
@@ -261,14 +262,14 @@ class SteelWheelsAggregationTest {
                 ))
                 .build()));
         RolapSchemaPool.instance().clear();
-        context.setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
-        assertQueryReturns(context.getConnection(List.of("Power User")), QUERY, EXPECTED);
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandSteelWheelsCatalog.class, dataloader = SteelWheelsDataLoader.class)
-    void testUnionWithAggregation(TestContext context) throws Exception {
+    void testUnionWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         final MappingSchema schema = getSchemaWith
@@ -329,14 +330,14 @@ class SteelWheelsAggregationTest {
                     .build()
             ));
         RolapSchemaPool.instance().clear();
-        context.setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
-        assertQueryReturns(context.getConnection(List.of("Power User Union")), QUERY, EXPECTED);
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandSteelWheelsCatalog.class, dataloader = SteelWheelsDataLoader.class)
-    void testWithAggregationUnionRolesWithSameGrants(TestContext context) throws Exception {
+    void testWithAggregationUnionRolesWithSameGrants(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         final MappingSchema schema = getSchemaWith
@@ -423,7 +424,7 @@ class SteelWheelsAggregationTest {
                     .build()
             ));
         RolapSchemaPool.instance().clear();
-        context.setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
-        assertQueryReturns(context.getConnection(List.of("Power User Union")), QUERY, EXPECTED);
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 }

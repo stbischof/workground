@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextArgumentsProvider;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -47,7 +47,7 @@ class AggSchemaScanTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAggScanPropertiesEmptySchema(TestContext context) throws Exception {
+  void testAggScanPropertiesEmptySchema(Context context) throws Exception {
     final RolapConnection rolapConn = (RolapConnection) context.getConnection();
     final DataSource dataSource = rolapConn.getDataSource();
     Connection sqlConnection = null;
@@ -76,7 +76,7 @@ class AggSchemaScanTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAggScanPropertiesPopulatedSchema(TestContext context) throws Exception {
+  void testAggScanPropertiesPopulatedSchema(Context context) throws Exception {
     final RolapConnection rolapConn = (RolapConnection) context.getConnection();
     final DataSource dataSource = rolapConn.getDataSource();
     Connection sqlConnection = null;

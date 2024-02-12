@@ -235,10 +235,10 @@ public class TestUtil {
 		checkThrowable(throwable, pattern);
 	}
 
-    public static void assertQueryThrows(TestContext context, List<String> roles, String queryString, String pattern) {
+    public static void assertQueryThrows(Context context, List<String> roles, String queryString, String pattern) {
         Throwable throwable;
         try {
-            Result result = executeQuery(context.getConnection(roles), queryString);
+            Result result = executeQuery(((TestContext)context).getConnection(roles), queryString);
 //            discard(result);
             throwable = null;
         } catch (Throwable e) {
@@ -254,7 +254,7 @@ public class TestUtil {
      * @param queryString Query string
      * @param pattern     Pattern which exception must match
      */
-    public static void assertQueryThrows(TestContext context, RolapConnectionProps props, String queryString, String pattern) {
+    public static void assertQueryThrows(Context context, RolapConnectionProps props, String queryString, String pattern) {
         Throwable throwable;
         try {
             Result result = executeQuery(context.getConnection(props), queryString);
@@ -295,7 +295,7 @@ public class TestUtil {
 	 * particular pattern. The error might occur during parsing, or might be
 	 * contained within the cell value.
 	 */
-	public static void assertExprThrows(TestContext context, String cubeName, String expression, String pattern) {
+	public static void assertExprThrows(Context context, String cubeName, String expression, String pattern) {
 		Throwable throwable = null;
 		try {
 			if (cubeName.indexOf(' ') >= 0) {
@@ -329,7 +329,7 @@ public class TestUtil {
      * particular pattern. The error might occur during parsing, or might be
      * contained within the cell value.
      */
-    public static void assertExprThrows(TestContext context, String expression, String pattern) {
+    public static void assertExprThrows(Context context, String expression, String pattern) {
         String cubeName = getDefaultCubeName();
         assertExprThrows(context, cubeName, expression, pattern);
     }
@@ -586,7 +586,7 @@ public class TestUtil {
 	 *
 	 * @return Warnings encountered while loading schema
 	 */
-	public static List<Exception> getSchemaWarnings(TestContext context) {
+	public static List<Exception> getSchemaWarnings(Context context) {
 		//final Util.PropertyList propertyList =
 		//		getConnectionProperties().clone();
 		//propertyList.put(
@@ -1275,10 +1275,10 @@ public class TestUtil {
 		}
 	}
 
-	public static void withSchema(TestContext context, Function<MappingSchema, RDbMappingSchemaModifier> f) {
+	public static void withSchema(Context context, Function<MappingSchema, RDbMappingSchemaModifier> f) {
           RolapSchemaPool.instance().clear();
           MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-          context.setDatabaseMappingSchemaProviders(List.of(f.apply(schema)));
+          ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(f.apply(schema)));
     }
 
 	public static void assertExprDependsOn(Connection connection, String expr, String hierList ) {
@@ -1787,7 +1787,7 @@ public class TestUtil {
 		return genderDimension.getHierarchy().getAllMember();
 	}
 
-	public static CellSet executeOlap4jXmlaQuery(TestContext context, String queryString )
+	public static CellSet executeOlap4jXmlaQuery(Context context, String queryString )
 			throws SQLException {
 		/*
 		Connection connection = context.getConnection();

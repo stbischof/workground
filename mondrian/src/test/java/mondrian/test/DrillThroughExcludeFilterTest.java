@@ -14,10 +14,10 @@ import static org.opencube.junit5.TestUtil.withSchema;
 
 import mondrian.rolap.SchemaModifiers;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -69,7 +69,7 @@ class DrillThroughExcludeFilterTest {
     // on level not present in report
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testDrillThroughExcludeFilter(TestContext context) throws Exception    {
+    void testDrillThroughExcludeFilter(Context context) throws Exception    {
         int expectedDrillThroughCountForCell0 = 3773;
         int expectedDrillThroughCountForCell1 = 78120;
 

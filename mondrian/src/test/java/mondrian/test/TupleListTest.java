@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -32,7 +33,6 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -59,7 +59,7 @@ class TupleListTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testUnaryTupleList(TestContext context) {
+    void testUnaryTupleList(Context context) {
         // empty list
         final TupleList list0 = new UnaryTupleList();
         assertTrue(list0.isEmpty());
@@ -98,7 +98,7 @@ class TupleListTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testArrayTupleList(TestContext context) {
+    void testArrayTupleList(Context context) {
         Connection connection = context.getConnection();
         final Member genderFMember = xxx(connection, "[Gender].[F]");
         final Member genderMMember = xxx(connection,"[Gender].[M]");
@@ -181,7 +181,7 @@ class TupleListTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testDelegatingTupleList(TestContext context) {
+    void testDelegatingTupleList(Context context) {
         Connection connection = context.getConnection();
         final Member genderFMember = xxx(connection, "[Gender].[F]");
         final Member genderMMember = xxx(connection, "[Gender].[M]");
@@ -208,7 +208,7 @@ class TupleListTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testDelegatingTupleListSlice(TestContext context) {
+    void testDelegatingTupleListSlice(Context context) {
         // Functional test.
         Connection connection = context.getConnection();
         assertQueryReturns(connection,

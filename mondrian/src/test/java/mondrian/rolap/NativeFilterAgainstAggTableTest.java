@@ -13,6 +13,7 @@ import static org.opencube.junit5.TestUtil.getDialect;
 
 import mondrian.olap.SystemWideProperties;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -44,7 +44,7 @@ class NativeFilterAgainstAggTableTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testFilteringOnAggregated_ByCount(TestContext context) {
+    void testFilteringOnAggregated_ByCount(Context context) {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         // http://jira.pentaho.com/browse/MONDRIAN-2155
@@ -99,7 +99,7 @@ class NativeFilterAgainstAggTableTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testFilteringOnAggregated_BySum(TestContext context) {
+    void testFilteringOnAggregated_BySum(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         String query = ""
@@ -146,7 +146,7 @@ class NativeFilterAgainstAggTableTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testAggTableWithNotAllMeasures(TestContext context) {
+    void testAggTableWithNotAllMeasures(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         // http://jira.pentaho.com/browse/MONDRIAN-1703

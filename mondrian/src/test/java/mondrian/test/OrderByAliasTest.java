@@ -13,6 +13,7 @@ import mondrian.olap.SystemWideProperties;
 import mondrian.rolap.BatchTestCase;
 import mondrian.rolap.RolapSchemaPool;
 import mondrian.rolap.SchemaModifiers;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,7 @@ class OrderByAliasTest extends BatchTestCase {
 
   @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInKeyExpression(TestContext context) {
+    void testSqlInKeyExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -82,7 +83,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
       RolapSchemaPool.instance().clear();
       MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-      context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1KE(schema, colName)));
+      ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1KE(schema, colName)));
 
       assertQuerySql(context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -105,7 +106,7 @@ class OrderByAliasTest extends BatchTestCase {
 
      @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInNameExpression(TestContext context) {
+    void testSqlInNameExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -130,7 +131,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          RolapSchemaPool.instance().clear();
          MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1NE(schema, colName)));
+         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1NE(schema, colName)));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -155,7 +156,7 @@ class OrderByAliasTest extends BatchTestCase {
 
      @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInCaptionExpression(TestContext context) {
+    void testSqlInCaptionExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -180,7 +181,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          RolapSchemaPool.instance().clear();
          MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1CE(schema, colName)));
+         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1CE(schema, colName)));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -205,7 +206,7 @@ class OrderByAliasTest extends BatchTestCase {
 
      @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInOrdinalExpression(TestContext context) {
+    void testSqlInOrdinalExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -230,7 +231,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          RolapSchemaPool.instance().clear();
          MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1OE(schema, colName)));
+         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1OE(schema, colName)));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -255,7 +256,7 @@ class OrderByAliasTest extends BatchTestCase {
 
      @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInParentExpression(TestContext context) {
+    void testSqlInParentExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -292,7 +293,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          RolapSchemaPool.instance().clear();
          MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier2(schema, colName)));
+         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier2(schema, colName)));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Employees].[All Employees].Children} ON rows, "
@@ -328,7 +329,7 @@ class OrderByAliasTest extends BatchTestCase {
 
      @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInPropertyExpression(TestContext context) {
+    void testSqlInPropertyExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -353,7 +354,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          RolapSchemaPool.instance().clear();
          MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier3(schema, colName)));
+         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier3(schema, colName)));
 
          assertQuerySql(
         context.getConnection(),
@@ -377,7 +378,7 @@ class OrderByAliasTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSqlInMeasureExpression(TestContext context) {
+    void testSqlInMeasureExpression(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -403,7 +404,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
         RolapSchemaPool.instance().clear();
         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1ME(schema, colName)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1ME(schema, colName)));
 
         assertQuerySql(
         context.getConnection(),
@@ -427,7 +428,7 @@ class OrderByAliasTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonEmptyCrossJoin(TestContext context) {
+    void testNonEmptyCrossJoin(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL
@@ -510,7 +511,7 @@ class OrderByAliasTest extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testVirtualCube(TestContext context) {
+    void testVirtualCube(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
         != DatabaseProduct.MYSQL

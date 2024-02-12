@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -82,7 +82,7 @@ class I18nTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testAutoFrench(TestContext context) {
+    void testAutoFrench(Context context) {
         // Create a connection in French.
         String localeName = "fr_FR";
         String resultString = "12" + Nbsp + "345,67";
@@ -91,19 +91,19 @@ class I18nTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testAutoSpanish(TestContext context) {
+    void testAutoSpanish(Context context) {
         // Format a number in (Peninsular) spanish.
         assertFormatNumber(context, "es", "12.345,67");
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testAutoMexican(TestContext context) {
+    void testAutoMexican(Context context) {
         // Format a number in Mexican spanish.
         assertFormatNumber(context, "es_MX", "12,345.67");
     }
 
-    private void assertFormatNumber(TestContext context, String localeName, String resultString) {
+    private void assertFormatNumber(Context context, String localeName, String resultString) {
         //final Util.PropertyList properties =
         //    TestUtil.getConnectionProperties().clone();
         //properties.put(RolapConnectionProperties.Locale.name(), localeName);

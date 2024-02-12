@@ -18,11 +18,11 @@
  */
 package org.opencube.junit5.propupdator;
 
-import org.opencube.junit5.context.TestContext;
+import org.eclipse.daanse.olap.api.Context;
 
 public interface TestContextUpdater {
 
-	default void updateContext(TestContext context) {
+	default void updateContext(Context context) {
 
 	}
 

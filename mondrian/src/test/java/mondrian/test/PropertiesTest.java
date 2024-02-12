@@ -14,6 +14,7 @@ import mondrian.olap.Property;
 import mondrian.olap.QueryImpl;
 import mondrian.rolap.SchemaModifiers;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.element.Cube;
@@ -25,7 +26,6 @@ import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -51,7 +51,7 @@ class PropertiesTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMandatoryMemberProperties(TestContext context) {
+    void testMandatoryMemberProperties(Context context) {
         Connection connection = context.getConnection();
         Cube salesCube = connection.getSchema().lookupCube("Sales", true);
         SchemaReader scr = salesCube.getSchemaReader(null).withLocus();
@@ -192,7 +192,7 @@ class PropertiesTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGetChildCardinalityPropertyValue(TestContext context) {
+    void testGetChildCardinalityPropertyValue(Context context) {
         Connection connection = context.getConnection();
         Cube salesCube = connection.getSchema().lookupCube("Sales", true);
         SchemaReader scr = salesCube.getSchemaReader(null);
@@ -212,7 +212,7 @@ class PropertiesTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPropertiesMDX(TestContext context) {
+    void testPropertiesMDX(Context context) {
         Result result = executeQuery(context.getConnection(),
             "SELECT {[Customers].[All Customers].[USA].[CA]} DIMENSION PROPERTIES \n"
             + " CATALOG_NAME, SCHEMA_NAME, CUBE_NAME, DIMENSION_UNIQUE_NAME, \n"
@@ -255,7 +255,7 @@ class PropertiesTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberProperties(TestContext context) {
+    void testMemberProperties(Context context) {
         Result result = executeQuery(context.getConnection(),
             "SELECT {[Store].Children} DIMENSION PROPERTIES\n"
             + " CATALOG_NAME, PARENT_UNIQUE_NAME, [Store Type], FORMAT_EXP\n"
@@ -272,7 +272,7 @@ class PropertiesTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberPropertiesBad(TestContext context) {
+    void testMemberPropertiesBad(Context context) {
         Result result = executeQuery(context.getConnection(),
             "SELECT {[Store].Children} DIMENSION PROPERTIES\n"
             + " CATALOG_NAME, PARENT_UNIQUE_NAME, [Store Type], BAD\n"
@@ -286,7 +286,7 @@ class PropertiesTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMandatoryCellProperties(TestContext context) {
+    void testMandatoryCellProperties(Context context) {
         Connection connection = context.getConnection();
         QueryImpl salesCube = connection.parseQuery(
             "select \n"
@@ -341,7 +341,7 @@ class PropertiesTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPropertyDescription(TestContext context) throws Exception {
+    void testPropertyDescription(Context context) throws Exception {
         withSchema(context, SchemaModifiers.PropertiesTestModifier::new);
         Cube[] cubes = context.getConnection().getSchema()
             .getCubes();

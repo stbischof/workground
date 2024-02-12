@@ -19,11 +19,11 @@ import static org.opencube.junit5.TestUtil.getDialect;
 import mondrian.olap.SystemWideProperties;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import mondrian.enums.DatabaseProduct;
 import mondrian.olap.Util;
 import mondrian.rolap.BatchTestCase;
@@ -67,7 +67,7 @@ import mondrian.test.SqlPattern;
 
 
     // implement TestCase
-    protected void runTest(TestContext context) {
+    protected void runTest(Context context) {
             DiffRepository diffRepos = getDiffRepos();
             // add calculated member to a cube if specified in the xml file
             /*

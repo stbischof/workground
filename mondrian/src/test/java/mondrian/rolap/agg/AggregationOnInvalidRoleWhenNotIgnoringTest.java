@@ -11,6 +11,7 @@ package mondrian.rolap.agg;
 import static mondrian.rolap.agg.AggregationOnInvalidRoleTest.executeAnalyzerQuery;
 import static org.junit.jupiter.api.Assertions.fail;
 import mondrian.olap.SystemWideProperties;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
@@ -46,19 +47,19 @@ class AggregationOnInvalidRoleWhenNotIgnoringTest extends CsvDBTestCase {
     }
 
 
-    protected void prepareContext(TestContext context) {
+    protected void prepareContext(Context context) {
         super.prepareContext(context);
         //TestUtil.withRole(context,  "Test");
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_ThrowsException_WhenNonIgnoringInvalidMembers(TestContext context) {
+    void test_ThrowsException_WhenNonIgnoringInvalidMembers(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         prepareContext(context);
         try {
-            executeAnalyzerQuery(context.getConnection(List.of("Test")));
+            executeAnalyzerQuery(((TestContext)context).getConnection(List.of("Test")));
         } catch (Exception e) {
             // that's ok, junit's assertion errors are derived from Error,
             // hence they will not be caught here

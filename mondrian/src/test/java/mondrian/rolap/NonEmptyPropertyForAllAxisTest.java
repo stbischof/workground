@@ -23,11 +23,10 @@ import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.assertQueryReturns;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -46,7 +45,7 @@ class NonEmptyPropertyForAllAxisTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonEmptyForAllAxesWithPropertySet(TestContext context) {
+    void testNonEmptyForAllAxesWithPropertySet(Context context) {
 
         SystemWideProperties.instance().EnableNonEmptyOnAllAxis = true;
         final String MDX_QUERY =
@@ -98,7 +97,7 @@ class NonEmptyPropertyForAllAxisTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonEmptyForAllAxesWithOutPropertySet(TestContext context) {
+    void testNonEmptyForAllAxesWithOutPropertySet(Context context) {
         final String MDX_QUERY =
             "SELECT {customers.USA.CA.[Santa Cruz].[Brian Merlo]} on 0, "
             + "[product].[product category].members on 1 FROM [sales]";
@@ -223,7 +222,7 @@ class NonEmptyPropertyForAllAxisTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSlicerAxisDoesNotGetNonEmptyApplied(TestContext context) {
+    void testSlicerAxisDoesNotGetNonEmptyApplied(Context context) {
 
         SystemWideProperties.instance().EnableNonEmptyOnAllAxis = true;
         String mdxQuery = "select from [Sales]\n"

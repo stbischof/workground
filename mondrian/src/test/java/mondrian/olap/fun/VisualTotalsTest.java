@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -94,7 +94,7 @@ class VisualTotalsTest {
      */
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testDrillthroughVisualTotal(TestContext foodMartContext) throws SQLException {
+    void testDrillthroughVisualTotal(Context foodMartContext) throws SQLException {
         Connection conn = foodMartContext.getConnection();
         CellSet cellSet =
     		TestUtil.executeQueryWithCellSetResult(conn,
@@ -133,7 +133,7 @@ class VisualTotalsTest {
      */
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testVisualTotalCaptionBug(TestContext foodMartContext) throws SQLException {
+    void testVisualTotalCaptionBug(Context foodMartContext) throws SQLException {
         CellSet cellSet =
     		TestUtil.executeQueryWithCellSetResult(foodMartContext.getConnection(),
                 "select {[Measures].[Unit Sales]} on columns, "
@@ -161,7 +161,7 @@ class VisualTotalsTest {
      */
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testVisualTotalsAggregatedMemberBug(TestContext foodMartContext) throws SQLException {
+    void testVisualTotalsAggregatedMemberBug(Context foodMartContext) throws SQLException {
         CellSet cellSet =
     		TestUtil.executeQueryWithCellSetResult(foodMartContext.getConnection(),
                 " with  member [Gender].[YTD] as 'AGGREGATE(YTD(),[Gender].[M])'"

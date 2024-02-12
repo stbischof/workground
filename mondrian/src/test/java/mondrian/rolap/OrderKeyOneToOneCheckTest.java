@@ -10,12 +10,12 @@
 */
 package mondrian.rolap;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -52,7 +52,7 @@ class OrderKeyOneToOneCheckTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void prepareContext(TestContext context) {
+  public void prepareContext(Context context) {
     //TestContext testContext = super.getTestContext()
     //        .withFreshConnection();
     flushSchemaCache(context.getConnection());
@@ -84,7 +84,7 @@ class OrderKeyOneToOneCheckTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testMemberSource(TestContext context) {
+  void testMemberSource(Context context) {
     String mdx =
             "with member [Measures].[Count Month] as 'Count(Descendants(Time.CurrentMember, [Time].[Month]))' \n"
                     + "select [Measures].[Count Month] on 0,\n"
@@ -106,7 +106,7 @@ class OrderKeyOneToOneCheckTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testSqlReader(TestContext context) {
+  void testSqlReader(Context context) {
     String mdx = ""
             + "select [Time].[Quarter].Members on 0"
             + "from [Sales]";

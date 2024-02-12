@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.Syntax;
@@ -89,7 +90,7 @@ public class UdfTest {
 
 
 
-    private void prepareContext(TestContext context) {
+    private void prepareContext(Context context) {
         updateTestContext(context, SchemaModifiers.UdfTestModifier11::new);
     }
 
@@ -101,7 +102,7 @@ public class UdfTest {
      * @return Test context
      */
     /*
-    private void udfTestContext(TestContext context, String xmlUdf) {
+    private void udfTestContext(Context context, String xmlUdf) {
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
             null, null, null, null, xmlUdf, null);
@@ -116,13 +117,13 @@ public class UdfTest {
      * @param xmlMeasure Measure definition
      * @return Test context
      */
-    private void updateTestContext(TestContext context, Function<MappingSchema, RDbMappingSchemaModifier> f) {
+    private void updateTestContext(Context context, Function<MappingSchema, RDbMappingSchemaModifier> f) {
         withSchema(context, f);
     }
 
-    private void updateTestContext(TestContext context, RDbMappingSchemaModifier m) {
+    private void updateTestContext(Context context, RDbMappingSchemaModifier m) {
         RolapSchemaPool.instance().clear();
-        context.setDatabaseMappingSchemaProviders(List.of(m));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(m));
     }
 
 
@@ -130,7 +131,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testSanity(TestContext context) {
+    void testSanity(Context context) {
         // sanity check, make sure the schema is loading correctly
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
@@ -146,7 +147,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testFun(TestContext context) {
+    void testFun(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Sqft Plus One] AS 'PlusOne([Measures].[Store Sqft])'\n"
@@ -185,7 +186,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testFunWithProfiling(TestContext context) throws SQLException {
+    void testFunWithProfiling(Context context) throws SQLException {
         prepareContext(context);
         Connection connection = null;
         Statement statement = null;
@@ -205,7 +206,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testLastNonEmpty(TestContext context) {
+    void testLastNonEmpty(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Last Unit Sales] AS \n"
@@ -283,7 +284,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testLastNonEmptyBig(TestContext context) {
+    void testLastNonEmptyBig(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "with\n"
@@ -305,7 +306,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testBadFun(TestContext context) {
+    void testBadFun(Context context) {
         updateTestContext(context, SchemaModifiers.UdfTestModifier12::new);
         /*
         udfTestContext(context,
@@ -326,7 +327,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGenericFun(TestContext context) {
+    void testGenericFun(Context context) {
         updateTestContext(context, SchemaModifiers.UdfTestModifier14::new);
         /*
         udfTestContext(context,
@@ -343,7 +344,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testComplexFun(TestContext context) {
+    void testComplexFun(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[InverseNormal] AS 'InverseNormal([Measures].[Grocery Sqft] / [Measures].[Store Sqft])', FORMAT_STRING = \"0.000\"\n"
@@ -372,7 +373,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testException(TestContext context) {
+    void testException(Context context) {
         prepareContext(context);
         Result result = executeQuery(context.getConnection(),
             "WITH MEMBER [Measures].[InverseNormal] "
@@ -401,7 +402,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateString(TestContext context)
+    void testCurrentDateString(Context context)
     {
         prepareContext(context);
         String actual = executeExpr(context.getConnection(), "CurrentDateString(\"Ddd mmm dd yyyy\")");
@@ -415,7 +416,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberBefore(TestContext context) {
+    void testCurrentDateMemberBefore(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT { CurrentDateMember([Time].[Time], "
@@ -430,7 +431,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberBeforeUsingQuotes(TestContext context)
+    void testCurrentDateMemberBeforeUsingQuotes(Context context)
     {
         prepareContext(context);
         assertAxisReturns(context.getConnection(),
@@ -444,7 +445,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberAfter(TestContext context)
+    void testCurrentDateMemberAfter(Context context)
     {
         prepareContext(context);
         // CurrentDateMember will return null member since the latest date in
@@ -460,7 +461,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberExact(TestContext context)
+    void testCurrentDateMemberExact(Context context)
     {
         prepareContext(context);
         // CurrentDateMember will return null member since the latest date in
@@ -477,7 +478,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberNoFindArg(TestContext context)
+    void testCurrentDateMemberNoFindArg(Context context)
     {
         prepareContext(context);
         // CurrentDateMember will return null member since the latest date in
@@ -493,7 +494,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberHierarchy(TestContext context) {
+    void testCurrentDateMemberHierarchy(Context context) {
         prepareContext(context);
         final String query =
             SystemWideProperties.instance().SsasCompatibleNaming
@@ -514,7 +515,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberHierarchyNullReturn(TestContext context) {
+    void testCurrentDateMemberHierarchyNullReturn(Context context) {
         prepareContext(context);
         // CurrentDateMember will return null member since the latest date in
         // FoodMart is from '98; note that first arg is a hierarchy rather
@@ -530,7 +531,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberRealAfter(TestContext context) {
+    void testCurrentDateMemberRealAfter(Context context) {
         prepareContext(context);
         // omit formatting characters from the format so the current date
         // is hard-coded to actual value in the database so we can test the
@@ -548,7 +549,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberRealExact1(TestContext context) {
+    void testCurrentDateMemberRealExact1(Context context) {
         prepareContext(context);
         // omit formatting characters from the format so the current date
         // is hard-coded to actual value in the database so we can test the
@@ -566,7 +567,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberRealExact2(TestContext context) {
+    void testCurrentDateMemberRealExact2(Context context) {
         prepareContext(context);
         // omit formatting characters from the format so the current date
         // is hard-coded to actual value in the database so we can test the
@@ -584,7 +585,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateMemberPrev(TestContext context) {
+    void testCurrentDateMemberPrev(Context context) {
         prepareContext(context);
         // apply a function on the result of the UDF
         assertQueryReturns(context.getConnection(),
@@ -600,7 +601,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCurrentDateLag(TestContext context) {
+    void testCurrentDateLag(Context context) {
         prepareContext(context);
         // Also, try a different style of quoting, because single quote followed
         // by double quote (used in other examples) is difficult to read.
@@ -627,7 +628,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMatches(TestContext context) {
+    void testMatches(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Org Salary]} ON COLUMNS, "
@@ -657,7 +658,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNotMatches(TestContext context) {
+    void testNotMatches(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Store Sales]} ON COLUMNS, "
@@ -684,7 +685,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testIn(TestContext context) {
+    void testIn(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Unit Sales]} ON COLUMNS, "
@@ -706,7 +707,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNotIn(TestContext context) {
+    void testNotIn(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Unit Sales]} ON COLUMNS, "
@@ -726,7 +727,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testChildMemberIn(TestContext context) {
+    void testChildMemberIn(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Store Sales]} ON COLUMNS, "
@@ -812,7 +813,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonGuessableReturnType(TestContext context) {
+    void testNonGuessableReturnType(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name=\"StringMult\" className=\""
@@ -833,7 +834,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testUdfToString(TestContext context) {
+    void testUdfToString(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name=\"StringMult\" className=\""
@@ -866,7 +867,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testAnotherMemberFun(TestContext context) {
+    void testAnotherMemberFun(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name=\"PlusOne\" className=\""
@@ -894,7 +895,7 @@ public class UdfTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCachingCurrentDate(TestContext context) {
+    void testCachingCurrentDate(Context context) {
         prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "SELECT {filter([Time].[Month].Members, "
@@ -923,7 +924,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testListUdf(TestContext context) {
+    void testListUdf(Context context) {
         prepareContext(context);
         checkListUdf(context, ReverseFunction.class);
         checkListUdf(context, ReverseIterableFunction.class);
@@ -934,7 +935,7 @@ public class UdfTest {
      *
      * @param functionClass Class that implements the "Reverse" function.
      */
-    private void checkListUdf(TestContext context,
+    private void checkListUdf(Context context,
         final Class<? extends ReverseFunction> functionClass)
     {
         /*
@@ -980,7 +981,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNonStaticUdfFails(TestContext context) {
+    void testNonStaticUdfFails(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name=\"Reverse2\" className=\""
@@ -1003,7 +1004,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberUdfDoesNotEvaluateToScalar(TestContext context) {
+    void testMemberUdfDoesNotEvaluateToScalar(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name=\"MemberName\" className=\""
@@ -1021,7 +1022,7 @@ public class UdfTest {
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testUdfNeitherScriptNorClassname(TestContext context) {
+    void testUdfNeitherScriptNorClassname(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name='StringMult'/>\n");
@@ -1039,7 +1040,7 @@ public class UdfTest {
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testUdfBothScriptAndClassname(TestContext context) {
+    void testUdfBothScriptAndClassname(Context context) {
        /*
        udfTestContext(context,
             "<UserDefinedFunction name='StringMult' className='foo'>\n"
@@ -1058,7 +1059,7 @@ public class UdfTest {
     @Disabled //disabled for CI build
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testUdfScriptBadLanguage(TestContext context) {
+    void testUdfScriptBadLanguage(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name='StringMult'>\n"
@@ -1077,7 +1078,7 @@ public class UdfTest {
     @ParameterizedTest
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testScriptUdf(TestContext context) {
+    void testScriptUdf(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name='StringMult'>\n"
@@ -1125,7 +1126,7 @@ public class UdfTest {
     @ParameterizedTest
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testScriptUdfFactorial(TestContext context) {
+    void testScriptUdfFactorial(Context context) {
     	//prepareContext(context);
         /*
         udfTestContext(context,
@@ -1161,7 +1162,7 @@ public class UdfTest {
     @ParameterizedTest
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testScriptUdfInvalid(TestContext context) {
+    void testScriptUdfInvalid(Context context) {
         /*
         udfTestContext(context,
             "<UserDefinedFunction name='Factorial'>\n"
@@ -1198,7 +1199,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatter(TestContext context) {
+    void testCellFormatter(Context context) {
         prepareContext(context);
         // Note that
         //   formatString="Standard"
@@ -1230,7 +1231,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatterNested(TestContext context) {
+    void testCellFormatterNested(Context context) {
         prepareContext(context);
         // Note that
         //   formatString="Standard"
@@ -1264,7 +1265,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatterScript(TestContext context) {
+    void testCellFormatterScript(Context context) {
         /*
         measureTestContext(context,
             "<Measure name='Unit Sales Foo Bar' column='unit_sales'\n"
@@ -1300,7 +1301,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatterOnCalcMember(TestContext context) {
+    void testCellFormatterOnCalcMember(Context context) {
         /*
         calcMemberTestContext(context,
             "<CalculatedMember\n"
@@ -1333,7 +1334,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatterOnCalcMemberNested(TestContext context) {
+    void testCellFormatterOnCalcMemberNested(Context context) {
         /*
         calcMemberTestContext(context,
             "<CalculatedMember\n"
@@ -1366,7 +1367,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testCellFormatterOnCalcMemberScript(TestContext context) {
+    void testCellFormatterOnCalcMemberScript(Context context) {
         prepareContext(context);
         /*
         calcMemberTestContext(context,
@@ -1402,7 +1403,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberFormatter(TestContext context) {
+    void testMemberFormatter(Context context) {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1429,7 +1430,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberFormatterNested(TestContext context) {
+    void testMemberFormatterNested(Context context) {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1457,7 +1458,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberFormatterScript(TestContext context) {
+    void testMemberFormatterScript(Context context) {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1490,7 +1491,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPropertyFormatter(TestContext context) throws SQLException {
+    void testPropertyFormatter(Context context) throws SQLException {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1528,7 +1529,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPropertyFormatterNested(TestContext context) throws SQLException {
+    void testPropertyFormatterNested(Context context) throws SQLException {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1569,7 +1570,7 @@ public class UdfTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPropertyFormatterScript(TestContext context) throws SQLException {
+    void testPropertyFormatterScript(Context context) throws SQLException {
         prepareContext(context);
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(

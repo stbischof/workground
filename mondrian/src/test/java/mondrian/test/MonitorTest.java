@@ -14,13 +14,13 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.impl.RectangularCellSetFormatter;
 import org.eclipse.daanse.olap.impl.StatementImpl;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -47,7 +47,7 @@ class MonitorTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMe(TestContext context) throws SQLException {
+    void testMe(Context context) throws SQLException {
         String queryString =
             "WITH MEMBER [Measures].[Foo] AS\n"
             + " [Measures].[Unit Sales]"

@@ -36,7 +36,7 @@ class RolapCubeHierarchyTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testMONDRIAN2535(TestContext context) {
+  void testMONDRIAN2535(Context context) {
     assertQueryReturns(context.getConnection(),
         "Select\n"
         + "  [Customers].children on rows,\n"
@@ -76,7 +76,7 @@ class RolapCubeHierarchyTest {
     doReturn(config).when(context).getConfig();
     doReturn(context).when(schemaReader).getContext();
 
-    
+
     MappingCubeDimension cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);
@@ -130,7 +130,7 @@ class RolapCubeHierarchyTest {
     doReturn(config).when(context).getConfig();
     doReturn(context).when(schemaReader).getContext();
 
-    
+
     MappingCubeDimension cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);

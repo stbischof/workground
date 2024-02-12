@@ -17,10 +17,10 @@ import java.io.StringWriter;
 
 import org.eclipse.daanse.olap.api.Connection;
 //import org.apache.logging.log4j.ThreadContext;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ class MdcUtilTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testMdcContext(TestContext context) throws Exception {
+  void testMdcContext(Context context) throws Exception {
 
     Connection connection = context.getConnection();
     flushSchemaCache(connection);

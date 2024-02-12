@@ -14,11 +14,11 @@ import mondrian.enums.DatabaseProduct;
 import mondrian.rolap.BatchTestCase;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.opencube.junit5.Constants;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 
 import java.io.File;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ import static org.opencube.junit5.TestUtil.getDialect;
  */
 public abstract class CsvDBTestCase extends BatchTestCase {
 
-    protected void prepareContext(TestContext context) {
+    protected void prepareContext(Context context) {
         try {
             File inputFile = new File(Constants.TESTFILES_DIR + "/mondrian/rolap/agg/" +  getFileName());
 

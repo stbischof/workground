@@ -10,9 +10,9 @@
 */
 package mondrian.rolap;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -340,7 +340,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testA(TestContext context) {
+    void testA(Context context) {
         // Schema has two cubes sharing a dimension.
         // Query from the first cube.
         getTestContextForSharedDimCubeACubeB(context);
@@ -350,7 +350,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testB(TestContext context) {
+    void testB(Context context) {
         // Schema has two cubes sharing a dimension.
         // Query from the second cube.
         getTestContextForSharedDimCubeACubeB(context);
@@ -360,7 +360,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testVirtualCube(TestContext context) {
+    void testVirtualCube(Context context) {
         // Schema has two cubes sharing a dimension, and a virtual cube built
         // over these two cubes.
         // Query from the virtual cube.
@@ -382,7 +382,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNECJMemberList(TestContext context) {
+    void testNECJMemberList(Context context) {
         // Schema has two cubes sharing a dimension.
         // Query from the second cube.
         getTestContextForSharedDimCubeACubeB(context);
@@ -394,7 +394,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNECJMultiLevelMemberList(TestContext context) {
+    void testNECJMultiLevelMemberList(Context context) {
         // Schema has two cubes sharing a dimension.
         // Query from the first cube.
         // This is a case where not using alias not only affects performance,
@@ -412,7 +412,7 @@ class SharedDimensionTest  {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testBugMondrian286(TestContext context) {
+    void testBugMondrian286(Context context) {
         // Test for sourceforge.net bug 1711865 (MONDRIAN-286).
         // Use the default FoodMart schema
         assertQueryReturns(context.getConnection(), querySF1711865, resultSF1711865);
@@ -420,7 +420,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testStoreCube(TestContext context) {
+    void testStoreCube(Context context) {
         // Use the default FoodMart schema
         assertQueryReturns(context.getConnection(), queryStoreCube, resultStoreCube);
     }
@@ -432,7 +432,7 @@ class SharedDimensionTest  {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testBugMondrian1243WrongAlias(TestContext context) {
+    void testBugMondrian1243WrongAlias(Context context) {
         getTestContextForSharedDimCubeAltSales(context);
         assertQueryReturns(context.getConnection(),
             queryIssue1243,
@@ -441,7 +441,7 @@ class SharedDimensionTest  {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testMemberUniqueNameForSharedWithChangedName(TestContext context) {
+    void testMemberUniqueNameForSharedWithChangedName(Context context) {
         getTestContextForSharedDimCubeAltSales(context);
         assertQueryReturns(context.getConnection(),
             "with "
@@ -454,7 +454,7 @@ class SharedDimensionTest  {
             + "Row #0: 1,389\n");
     }
 
-    private void getTestContextForSharedDimCubeACubeB(TestContext context) {
+    private void getTestContextForSharedDimCubeACubeB(Context context) {
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -468,7 +468,7 @@ class SharedDimensionTest  {
         withSchema(context, SchemaModifiers.SharedDimensionTestModifier::new);
     }
 
-    private void getTestContextForSharedDimCubeAltSales(TestContext context) {
+    private void getTestContextForSharedDimCubeAltSales(Context context) {
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,

@@ -14,11 +14,11 @@ import mondrian.enums.DatabaseProduct;
 import mondrian.olap.SystemWideProperties;
 import mondrian.rolap.SchemaModifiers;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -58,7 +58,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testChildrenOfRoot(TestContext context) {
+    void testChildrenOfRoot(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].children",
             "[Store].[Canada]\n"
@@ -70,7 +70,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testChildrenOfUSA(TestContext context) {
+    void testChildrenOfUSA(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[USA].children",
             "[Store].[USA].[CA]\n"
@@ -83,7 +83,7 @@ class RaggedHierarchyTest {
     // Haifa and Tel Aviv
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testChildrenOfIsrael(TestContext context) {
+    void testChildrenOfIsrael(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[Israel].children",
             "[Store].[Israel].[Israel].[Haifa]\n"
@@ -95,7 +95,7 @@ class RaggedHierarchyTest {
     // Vatican's descendants at the province and city level are hidden
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    public void dont_testChildrenOfVatican(TestContext context) {
+    public void dont_testChildrenOfVatican(Context context) {
 	    SystemWideProperties.instance().NullMemberRepresentation = "null";
         assertRaggedReturns(context.getConnection(),
             "[Store].[Vatican].children",
@@ -104,14 +104,14 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testParentOfHaifa(TestContext context) {
+    void testParentOfHaifa(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[Israel].[Haifa].Parent", "[Store].[Israel]");
     }
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testParentOfVatican(TestContext context) {
+    void testParentOfVatican(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[Vatican].Parent", "[Store].[All Stores]");
     }
@@ -119,7 +119,7 @@ class RaggedHierarchyTest {
     // PrevMember must return something at the same level -- a city
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPrevMemberOfHaifa(TestContext context) {
+    void testPrevMemberOfHaifa(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[Israel].[Haifa].PrevMember",
             "[Store].[Canada].[BC].[Victoria]");
@@ -128,7 +128,7 @@ class RaggedHierarchyTest {
     // PrevMember must return something at the same level -- a city
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNextMemberOfTelAviv(TestContext context) {
+    void testNextMemberOfTelAviv(Context context) {
         assertRaggedReturns(context.getConnection(),
             "[Store].[Israel].[Tel Aviv].NextMember",
             "[Store].[Mexico].[DF].[Mexico City]");
@@ -136,7 +136,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNextMemberOfBC(TestContext context) {
+    void testNextMemberOfBC(Context context) {
         // The next state after BC is Israel, but it's hidden
         assertRaggedReturns(context.getConnection(),
             "[Store].[Canada].[BC].NextMember",
@@ -145,7 +145,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testLead(TestContext context) {
+    void testLead(Context context) {
         Connection connection = context.getConnection();
         assertRaggedReturns(connection,
             "[Store].[Mexico].[DF].Lead(1)",
@@ -171,7 +171,7 @@ class RaggedHierarchyTest {
     // [null] member
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    public void dont_testDescendantsOfVatican(TestContext context) {
+    public void dont_testDescendantsOfVatican(Context context) {
         assertRaggedReturns(context.getConnection(),
             "Descendants([Store].[Vatican])",
             "[Store].[Vatican]\n"
@@ -181,7 +181,7 @@ class RaggedHierarchyTest {
     // The only child of Vatican at state level is hidden
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testDescendantsOfVaticanAtStateLevel(TestContext context) {
+    void testDescendantsOfVaticanAtStateLevel(Context context) {
         assertRaggedReturns(context.getConnection(),
             "Descendants([Store].[Vatican], [Store].[Store State])",
             "");
@@ -189,7 +189,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testDescendantsOfRootAtCity(TestContext context) {
+    void testDescendantsOfRootAtCity(Context context) {
         assertRaggedReturns(context.getConnection(),
             "Descendants([Store], [Store City])",
             "[Store].[Canada].[BC].[Vancouver]\n"
@@ -220,7 +220,7 @@ class RaggedHierarchyTest {
     // no ancestor at the State level
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testAncestorOfHaifa(TestContext context) {
+    void testAncestorOfHaifa(Context context) {
         assertRaggedReturns(context.getConnection(),
             "Ancestor([Store].[Israel].[Haifa], [Store].[Store State])",
             "");
@@ -228,7 +228,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testHierarchize(TestContext context) {
+    void testHierarchize(Context context) {
         // Haifa and Tel Aviv should appear directly after Israel
         // Vatican should have no children
         // Washington should appear after WA
@@ -286,7 +286,7 @@ class RaggedHierarchyTest {
     // [null] member
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    public void dont_testMeasuresVatican(TestContext context) {
+    public void dont_testMeasuresVatican(Context context) {
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Unit Sales]} ON COLUMNS,\n"
             + " {Descendants([Store].[Vatican])} ON ROWS\n"
@@ -309,7 +309,7 @@ class RaggedHierarchyTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    public void dont_testMeasures(TestContext context) {
+    public void dont_testMeasures(Context context) {
         assertQueryReturns(context.getConnection(),
             "SELECT {[Measures].[Unit Sales]} ON COLUMNS,\n"
             + " NON EMPTY {Descendants([Store])} ON ROWS\n"
@@ -395,7 +395,7 @@ class RaggedHierarchyTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNullMember(TestContext context) {
+    void testNullMember(Context context) {
         assertQueryReturns(context.getConnection(),
             "With \n"
             + " Set [*NATIVE_CJ_SET] as '[*BASE_MEMBERS_Geography]' \n"
@@ -465,7 +465,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testHideIfBlankHidesWhitespace(TestContext context) {
+    void testHideIfBlankHidesWhitespace(Context context) {
         if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
             != DatabaseProduct.ORACLE)
         {
@@ -505,7 +505,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNativeFilterWithHideMemberIfBlankOnLeaf(TestContext context) throws Exception {
+    void testNativeFilterWithHideMemberIfBlankOnLeaf(Context context) throws Exception {
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
             "Sales Ragged",
@@ -560,7 +560,7 @@ class RaggedHierarchyTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNativeCJWithHideMemberIfBlankOnLeaf(TestContext context) throws Exception {
+    void testNativeCJWithHideMemberIfBlankOnLeaf(Context context) throws Exception {
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
             "Sales Ragged",

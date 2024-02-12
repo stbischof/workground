@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Evaluator.SetEvaluator;
@@ -51,7 +52,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.Mockito;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -401,7 +401,7 @@ class SqlConstraintUtilsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testReplaceCompoundSlicerPlaceholder(TestContext context) {
+    void testReplaceCompoundSlicerPlaceholder(Context context) {
         final Connection connection = context.getConnection();
 
         final String queryText =
@@ -623,7 +623,7 @@ class SqlConstraintUtilsTest {
     // test with a placeholder member
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testExpandSupportedCalculatedMembers2(TestContext context) {
+    void testExpandSupportedCalculatedMembers2(Context context) {
       final Connection connection = context.getConnection();
 
       final String queryText =
@@ -824,7 +824,7 @@ class SqlConstraintUtilsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testConstrainLevel(TestContext context){
+    void testConstrainLevel(Context context){
 
         final RolapCubeLevel level = mock( RolapCubeLevel.class);
         final RolapCube baseCube = mock(RolapCube.class);

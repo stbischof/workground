@@ -20,15 +20,16 @@ package org.opencube.junit5.propupdator;
 
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.sample.expressivenames.record.ExpressiveNamesRecordDbMappingSchemaProvider;
 import org.opencube.junit5.context.TestContext;
 
 public class AppandExpressiveNamesCatalog implements TestContextUpdater {
 
 	@Override
-	public void updateContext(TestContext context) {
+	public void updateContext(Context context) {
 
-		context.setDatabaseMappingSchemaProviders(List.of(new ExpressiveNamesRecordDbMappingSchemaProvider()));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new ExpressiveNamesRecordDbMappingSchemaProvider()));
 	}
 
 }

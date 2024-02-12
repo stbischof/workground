@@ -60,6 +60,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
@@ -291,43 +292,43 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample0(TestContext context) {
+  void testSample0(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[0].query, sampleQueries[0].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample1(TestContext context) {
+  void testSample1(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[1].query, sampleQueries[1].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample2(TestContext context) {
+  void testSample2(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[2].query, sampleQueries[2].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample3(TestContext context) {
+  void testSample3(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[3].query, sampleQueries[3].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample4(TestContext context) {
+  void testSample4(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[4].query, sampleQueries[4].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample5(TestContext context) {
+  void testSample5(Context context) {
     assertQueryReturns(context.getConnection(),  sampleQueries[5].query, sampleQueries[5].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample5Snowflake(TestContext context) {
+  void testSample5Snowflake(Context context) {
     SystemWideProperties.instance().FilterChildlessSnowflakeMembers = false;
     //final TestContext context = getTestContext().withFreshConnection();
     Connection connection = context.getConnection();
@@ -371,19 +372,19 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample6(TestContext context) {
+  void testSample6(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[6].query, sampleQueries[6].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample7(TestContext context) {
+  void testSample7(Context context) {
     assertQueryReturns(context.getConnection(), sampleQueries[7].query, sampleQueries[7].result );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSample8(TestContext context) {
+  void testSample8(Context context) {
     Connection connection = context.getConnection();
     if (getDatabaseProduct(TestUtil.getDialect(connection).getDialectName()) == DatabaseProduct.INFOBRIGHT ) {
       // Skip this test on Infobright, because [Promotion Sales] is
@@ -395,7 +396,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testGoodComments(TestContext context) {
+  void testGoodComments(Context context) {
     Connection connection = context.getConnection();
     assertQueryReturns(connection, "SELECT {} ON ROWS, {} ON COLUMNS FROM [Sales]/* trailing comment*/", EmptyResult );
 
@@ -530,7 +531,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBadComments(TestContext context) {
+  void testBadComments(Context context) {
     Connection connection = context.getConnection();
     // Comments cannot appear inside identifiers.
     assertQueryThrows(connection, "SELECT {[Measures].[Unit Sales]} ON COLUMNS,\n" + " {[Gender].MEMBERS} ON ROWS\n"
@@ -551,7 +552,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBothAxesEmpty(TestContext context) {
+  void testBothAxesEmpty(Context context) {
     Connection connection = context.getConnection();
     assertQueryReturns(connection, "SELECT {} ON ROWS, {} ON COLUMNS FROM [Sales]", EmptyResult );
 
@@ -570,7 +571,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCompoundSlicer(TestContext context) {
+  void testCompoundSlicer(Context context) {
     Connection connection = context.getConnection();
     // two tuples
     assertQueryReturns(connection, "SELECT {[Measures].[Unit Sales]} ON COLUMNS,\n" + " {[Gender].MEMBERS} ON ROWS\n"
@@ -683,7 +684,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCompoundSlicerNonEmpty(TestContext context) {
+  void testCompoundSlicerNonEmpty(Context context) {
     Connection connection = context.getConnection();
     // With MONDRIAN-814, cell totals would be about a factor of 4 smaller,
     // and the number of rows returned would be the same (1220) if 21, 22
@@ -705,7 +706,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testEmptyTupleSlicerFails(TestContext context) {
+  void testEmptyTupleSlicerFails(Context context) {
     Connection connection = context.getConnection();
     assertQueryThrows(connection, "select [Measures].[Unit Sales] on 0,\n" + "[Product].Children on 1\n"
         + "from [Warehouse and Sales]\n" + "where ()", "Syntax error at line 4, column 8, token ')'" );
@@ -717,7 +718,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBigQuery(TestContext context) {
+  void testBigQuery(Context context) {
     Result result =
         executeQuery( context.getConnection(), "SELECT {[Measures].[Unit Sales]} on columns,\n" + " {[Product].members} on rows\n"
             + "from Sales" );
@@ -731,7 +732,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testGetContext(TestContext context) {
+  void testGetContext(Context context) {
     if ( !SystemWideProperties.instance().SsasCompatibleNaming ) {
       return;
     }
@@ -757,7 +758,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmpty1(TestContext context) {
+  void testNonEmpty1(Context context) {
     assertSize(context.getConnection(), "select\n" + "  NON EMPTY CrossJoin({[Product].[All Products].[Drink].Children},\n"
         + "    {[Customers].[All Customers].[USA].[WA].[Bellingham]}) on rows,\n" + "  CrossJoin(\n"
         + "    {[Measures].[Unit Sales], [Measures].[Store Sales]},\n"
@@ -769,7 +770,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmpty2(TestContext context) {
+  void testNonEmpty2(Context context) {
     assertSize(context.getConnection(), "select\n" + "  NON EMPTY CrossJoin(\n" + "    {[Product].[All Products].Children},\n"
         + "    {[Customers].[All Customers].[USA].[WA].[Bellingham]}) on rows,\n" + "  NON EMPTY CrossJoin(\n"
         + "    {[Measures].[Unit Sales]},\n" + "    { [Promotion Media].[All Media].[Cash Register Handout],\n"
@@ -780,7 +781,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testOneDimensionalQueryWithTupleAsSlicer(TestContext context) {
+  void testOneDimensionalQueryWithTupleAsSlicer(Context context) {
     Result result =
         executeQuery(context.getConnection(), "select\n" + "  [Product].[All Products].[Drink].children on columns\n" + "from Sales\n"
             + "where ([Measures].[Unit Sales], [Promotion Media].[All Media].[Street Handout], [Time].[1997])" );
@@ -792,7 +793,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSlicerIsEvaluatedBeforeAxes(TestContext context) {
+  void testSlicerIsEvaluatedBeforeAxes(Context context) {
     // about 10 products exceeded 20000 units in 1997, only 2 for Q1
     assertSize(context.getConnection(), "SELECT {[Measures].[Unit Sales]} on columns,\n"
         + " filter({[Product].members}, [Measures].[Unit Sales] > 20000) on rows\n" + "FROM Sales\n"
@@ -801,7 +802,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSlicerWithCalculatedMembers(TestContext context) {
+  void testSlicerWithCalculatedMembers(Context context) {
     assertSize(context.getConnection(), "WITH Member [Time].[Time].[1997].[H1] as ' Aggregate({[Time].[1997].[Q1], [Time].[1997].[Q2]})' \n"
         + "  MEMBER [Measures].[Store Margin] as '[Measures].[Store Sales] - [Measures].[Store Cost]'\n"
         + "SELECT {[Gender].members} on columns,\n" + " filter({[Product].members}, [Gender].[F] > 10000) on rows\n"
@@ -812,14 +813,14 @@ public class BasicQueryTest {
   @Disabled
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testEver(TestContext context) {
+  public void _testEver(Context context) {
     assertQueryReturns(context.getConnection(), "select\n" + " {[Measures].[Unit Sales], [Measures].[Ever]} on columns,\n"
         + " [Gender].members on rows\n" + "from Sales", "xxx" );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testDairy(TestContext context) {
+  public void _testDairy(Context context) {
     assertQueryReturns(context.getConnection(), "with\n"
         + "  member [Product].[Non dairy] as '[Product].[All Products] - [Product].[Food].[Dairy]'\n"
         + "  member [Measures].[Dairy ever] as 'sum([Time].members, ([Measures].[Unit Sales],[Product].[Food]"
@@ -837,7 +838,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSolveOrder(TestContext context) {
+  void testSolveOrder(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "   MEMBER [Measures].[StoreType] AS \n"
         + "   '[Store].CurrentMember.Properties(\"Store Type\")',\n" + "   SOLVE_ORDER = 2\n"
         + "   MEMBER [Measures].[ProfitPct] AS \n"
@@ -875,7 +876,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSolveOrderNonMeasure(TestContext context) {
+  void testSolveOrderNonMeasure(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "   MEMBER [Product].[ProdCalc] as '1', SOLVE_ORDER=1\n"
         + "   MEMBER [Measures].[MeasuresCalc] as '2', SOLVE_ORDER=2\n"
         + "   Member [Time].[Time].[1997].[TimeCalc] as '3', SOLVE_ORDER=3\n" + "SELECT\n"
@@ -888,7 +889,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSolveOrderNonMeasure2(TestContext context) {
+  void testSolveOrderNonMeasure2(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "   MEMBER [Store].[StoreCalc] as '0', SOLVE_ORDER=0\n"
         + "   MEMBER [Product].[ProdCalc] as '1', SOLVE_ORDER=1\n" + "SELECT\n"
         + "   { [Product].[ProdCalc] } ON columns,\n" + "   { [Store].[StoreCalc] } ON rows\n" + "FROM Sales",
@@ -907,7 +908,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSolveOrderAmbiguous1(TestContext context) {
+  void testSolveOrderAmbiguous1(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "   MEMBER [Promotions].[Calc] AS '1'\n" + "   MEMBER [Customers].[Calc] AS '2'\n"
         + "SELECT\n" + "   { [Promotions].[Calc] } ON COLUMNS,\n" + "   {  [Customers].[Calc] } ON ROWS\n"
         + "FROM Sales",
@@ -921,7 +922,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSolveOrderAmbiguous2(TestContext context) {
+  void testSolveOrderAmbiguous2(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "   MEMBER [Promotions].[Calc] AS '1'\n" + "   MEMBER [Product].[Calc] AS '2'\n"
         + "SELECT\n" + "   { [Promotions].[Calc] } ON COLUMNS,\n" + "   { [Product].[Calc] } ON ROWS\n" + "FROM Sales",
 
@@ -931,7 +932,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCalculatedMemberWhichIsNotAMeasure(TestContext context) {
+  void testCalculatedMemberWhichIsNotAMeasure(Context context) {
     assertQueryReturns(context.getConnection(), "WITH MEMBER [Product].[BigSeller] AS\n"
         + "  'IIf([Product].[Drink].[Alcoholic Beverages].[Beer and Wine] > 100, \"Yes\",\"No\")'\n"
         + "SELECT {[Product].[BigSeller],[Product].children} ON COLUMNS,\n"
@@ -948,7 +949,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMultipleCalculatedMembersWhichAreNotMeasures(TestContext context) {
+  void testMultipleCalculatedMembersWhichAreNotMeasures(Context context) {
     assertQueryReturns(context.getConnection(), "WITH\n" + "  MEMBER [Store].[x] AS '1'\n" + "  MEMBER [Product].[x] AS '1'\n"
         + "SELECT {[Store].[x]} ON COLUMNS\n" + "FROM Sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Store].[x]}\n"
             + "Row #0: 1\n" );
@@ -965,7 +966,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMultipleCalculatedMembersWhichAreNotMeasures2(TestContext context) {
+  void testMultipleCalculatedMembersWhichAreNotMeasures2(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "  MEMBER [Product].[x] AS '1'\n" + "  MEMBER [Store].[x] AS '1'\n"
         + "SELECT {[Store].[x]} ON COLUMNS\n" + "FROM Sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Store].[x]}\n"
             + "Row #0: 1\n" );
@@ -977,7 +978,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMultipleCalculatedMembersWhichAreNotMeasures3(TestContext context) {
+  void testMultipleCalculatedMembersWhichAreNotMeasures3(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "  MEMBER [Product].[x] AS '1'\n" + "  MEMBER [Store].[x] AS '1'\n"
         + "SELECT {[Store].[x]} ON COLUMNS\n" + "FROM Sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Store].[x]}\n"
             + "Row #0: 1\n" );
@@ -985,21 +986,21 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testConstantString(TestContext context) {
+  void testConstantString(Context context) {
     String s = executeExpr(context.getConnection(), " \"a string\" " );
     assertEquals( "a string", s );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testConstantNumber(TestContext context) {
+  void testConstantNumber(Context context) {
     String s = executeExpr(context.getConnection(), " 1234 " );
     assertEquals( "1,234", s );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCyclicalCalculatedMembers(TestContext context) {
+  void testCyclicalCalculatedMembers(Context context) {
      executeQuery(context.getConnection(), "WITH\n" + "   MEMBER [Product].[X] AS '[Product].[Y]'\n"
         + "   MEMBER [Product].[Y] AS '[Product].[X]'\n" + "SELECT\n" + "   {[Product].[X]} ON COLUMNS,\n"
         + "   {Store.[Store Name].Members} ON ROWS\n" + "FROM Sales" ) ;
@@ -1012,7 +1013,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCycle(TestContext context) {
+  void testCycle(Context context) {
     Connection connection = context.getConnection();
     if ( false ) {
       assertExprThrows(connection, "[Time].[1997].[Q4]", "infinite loop" );
@@ -1024,7 +1025,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testHalfYears(TestContext context) {
+  void testHalfYears(Context context) {
     executeQuery(context.getConnection(), "WITH MEMBER [Measures].[ProfitPercent] AS\n"
         + "     '([Measures].[Store Sales]-[Measures].[Store Cost])/([Measures].[Store Cost])',\n"
         + " FORMAT_STRING = '#.00%', SOLVE_ORDER = 1\n"
@@ -1035,7 +1036,7 @@ public class BasicQueryTest {
         + " FROM [Sales]\n" + " WHERE ([Measures].[ProfitPercent])" ) ;
   }
 
-  public void _testHalfYearsTrickyCase(TestContext context) {
+  public void _testHalfYearsTrickyCase(Context context) {
     executeQuery(context.getConnection(), "WITH MEMBER MEASURES.ProfitPercent AS\n"
         + "     '([Measures].[Store Sales]-[Measures].[Store Cost])/([Measures].[Store Cost])',\n"
         + " FORMAT_STRING = '#.00%', SOLVE_ORDER = 1\n"
@@ -1048,7 +1049,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAsSample7ButUsingVirtualCube(TestContext context) {
+  void testAsSample7ButUsingVirtualCube(Context context) {
     executeQuery(context.getConnection(), "with member [Measures].[Accumulated Sales] as 'Sum(YTD(),[Measures].[Store Sales])'\n"
         + "select\n" + "    {[Measures].[Store Sales],[Measures].[Accumulated Sales]} on columns,\n"
         + "    {Descendants([Time].[1997],[Time].[Month])} on rows\n" + "from [Warehouse and Sales]" );
@@ -1056,7 +1057,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testVirtualCube(TestContext context) {
+  void testVirtualCube(Context context) {
     assertQueryReturns(context.getConnection(),
         // Note that Unit Sales is independent of Warehouse.
         "select CrossJoin(\n" + "  {[Warehouse].DefaultMember, [Warehouse].[USA].children},\n"
@@ -1088,17 +1089,17 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testUseDimensionAsShorthandForMember(TestContext context) {
+  void testUseDimensionAsShorthandForMember(Context context) {
  executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
         + " {[Store], [Store].children} on rows\n" + "from [Sales]" ) ;
   }
 
-  public void _testMembersFunction(TestContext context) {
+  public void _testMembersFunction(Context context) {
     executeQuery(context.getConnection(), "select {[Measures].[Unit Sales]} on columns,\n"
         + " {[Customers].members(0)} on rows\n" + "from [Sales]" ) ;
   }
 
-  public void _testProduct2(TestContext context) {
+  public void _testProduct2(Context context) {
     final Axis axis = executeAxis(context.getConnection(), "{[Product2].members}" );
     System.out.println( TestUtil.toString( axis.getPositions() ) );
   }
@@ -1356,43 +1357,43 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib0(TestContext context) {
+  void testTaglib0(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 0 ).query, taglibQueries.get( 0 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib1(TestContext context) {
+  void testTaglib1(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 1 ).query, taglibQueries.get( 1 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib2(TestContext context) {
+  void testTaglib2(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 2 ).query, taglibQueries.get( 2 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib3(TestContext context) {
+  void testTaglib3(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 3 ).query, taglibQueries.get( 3 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib4(TestContext context) {
+  void testTaglib4(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 4 ).query, taglibQueries.get( 4 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTaglib5(TestContext context) {
+  void testTaglib5(Context context) {
     assertQueryReturns( context.getConnection(),taglibQueries.get( 5 ).query, taglibQueries.get( 5 ).result );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCellValue(TestContext context) {
+  void testCellValue(Context context) {
     Result result =
         executeQuery(context.getConnection(), "select {[Measures].[Unit Sales],[Measures].[Store Sales]} on columns,\n"
             + " {[Gender].[M]} on rows\n" + "from Sales" );
@@ -1409,7 +1410,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDynamicFormat(TestContext context) {
+  void testDynamicFormat(Context context) {
     assertQueryReturns( context.getConnection(),"with member [Measures].[USales] as [Measures].[Unit Sales],\n"
         + "  format_string = iif([Measures].[Unit Sales] > 50000, \"\\<b\\>#.00\\<\\/b\\>\", \"\\<i\\>#"
         + ".00\\<\\/i\\>\")\n" + "select \n" + "  {[Measures].[USales]} on columns,\n"
@@ -1426,7 +1427,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatOfNulls(TestContext context) {
+  void testFormatOfNulls(Context context) {
     assertQueryReturns( context.getConnection(),"with member [Measures]._Foo as '([Measures].[Store Sales])',\n"
         + " format_string = '$#,##0.00;($#,##0.00);ZERO;NULL;Nil'\n" + "select\n"
         + " {[Measures].[_Foo]} on columns,\n" + " {[Customers].[Country].members} on rows\n" + "from Sales",
@@ -1446,7 +1447,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatOfNil(TestContext context) {
+  void testFormatOfNil(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.formatTest as '0.000001',\n" + " FORMAT_STRING='#.##;(#.##)' \n"
         + "select { measures.formatTest } on 0 from sales ", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
             + "{[Measures].[formatTest]}\n" + "Row #0: .\n" );
@@ -1459,7 +1460,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBugMondrian14(TestContext context) {
+  void testBugMondrian14(Context context) {
     assertQueryReturns( context.getConnection(),"with member [Measures].[USales] as '[Measures].[Unit Sales]',\n"
         + " format_string = iif([Measures].[Sales Count] > 30, \"#.00 good\",\"#.00 bad\")\n"
         + "select {[Measures].[USales], [Measures].[Store Cost], [Measures].[Store Sales]} ON columns,\n"
@@ -1498,7 +1499,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBugMondrian34(TestContext context) {
+  void testBugMondrian34(Context context) {
     assertQueryReturns( context.getConnection(),"with member [Measures].[xxx] as '[Measures].[Store Sales]',\n"
         + " format_string = IIf([Measures].[Unit Sales] > 100000, \"AAA######.00\",\"BBB###.00\")\n"
         + "select {[Measures].[xxx]} ON columns,\n" + " {[Product].children} ON rows\n"
@@ -1515,7 +1516,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBugMondrian36(TestContext context) {
+  void testBugMondrian36(Context context) {
     assertQueryReturns( context.getConnection(),"select {[Measures].[Unit Sales]} ON columns,\n" + " {[Gender].Children} ON rows\n"
         + "from [Sales]\n" + "where ([Time].[1997], [Customers])", "Axis #0:\n"
             + "{[Time].[1997], [Customers].[All Customers]}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n"
@@ -1528,7 +1529,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBugMondrian46(TestContext context) {
+  void testBugMondrian46(Context context) {
     TestUtil.flushSchemaCache(context.getConnection());
     assertQueryReturns( context.getConnection(),"select {[Measures].[Customer Count]} ON columns,\n"
         + "  {([Promotion Media].[All Media], [Product].[All Products])} ON rows\n" + "from [Sales]\n"
@@ -1545,7 +1546,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testStoreCube(TestContext context) {
+  void testStoreCube(Context context) {
     assertQueryReturns( context.getConnection(),"select {[Measures].members} on columns,\n" + " {[Store Type].members} on rows\n"
         + "from [Store]" + "where [Store].[USA].[CA]",
 
@@ -1562,13 +1563,13 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSchemaLevelTableIsBad(TestContext context) {
+  void testSchemaLevelTableIsBad(Context context) {
     // todo: <Level table="nonexistentTable">
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSchemaLevelTableInAnotherHierarchy(TestContext context) {
+  void testSchemaLevelTableInAnotherHierarchy(Context context) {
     // todo:
     // <Cube>
     // <Hierarchy name="h1"><Table name="t1"/></Hierarchy>
@@ -1581,7 +1582,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSchemaLevelWithViewSpecifiesTable(TestContext context) {
+  void testSchemaLevelWithViewSpecifiesTable(Context context) {
     // todo:
     // <Hierarchy>
     // <View><SQL dialect="generic">select * from emp</SQL></View>
@@ -1592,7 +1593,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSchemaLevelOrdinalInOtherTable(TestContext context) {
+  void testSchemaLevelOrdinalInOtherTable(Context context) {
     // todo:
     // Hierarchy is based upon a join.
     // Level's name expression is in a different table than its ordinal.
@@ -1600,7 +1601,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSchemaTopLevelNotUnique(TestContext context) {
+  void testSchemaTopLevelNotUnique(Context context) {
     // todo:
     // Should get error if the top level of a hierarchy does not have
     // uniqueNames="true"
@@ -1613,7 +1614,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBugMondrian8(TestContext context) {
+  void testBugMondrian8(Context context) {
     // minimal test case
     assertQueryReturns( context.getConnection(),"select {[Measures].[Unit Sales]} ON columns,\n"
         + "{[Product].[All Products].[Drink].[Beverages].[Drinks].[Flavored Drinks].children} ON rows\n"
@@ -1641,7 +1642,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBug636687(TestContext context) {
+  void testBug636687(Context context) {
     executeQuery(context.getConnection(), "select {[Measures].[Unit Sales], [Measures].[Store Cost],[Measures].[Store Sales]} ON columns, "
         + "Order(" + "{([Store].[All Stores].[USA].[CA], [Product].[All Products].[Drink].[Alcoholic Beverages]), "
         + "([Store].[All Stores].[USA].[CA], [Product].[All Products].[Drink].[Beverages]), "
@@ -1678,7 +1679,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBug769114(TestContext context) {
+  void testBug769114(Context context) {
     assertQueryReturns(context.getConnection(),
         "select {[Measures].[Unit Sales], [Measures].[Store Cost], [Measures].[Store Sales]} ON columns,\n"
             + " Order(TopCount({[Product].[Product Category].Members}, 10.0, [Measures].[Unit Sales]), [Measures].[Store "
@@ -1705,7 +1706,7 @@ public class BasicQueryTest {
    * Bug 793616: Deeply nested UNION function takes forever to validate. (Problem was that each argument of a function
    * was validated twice, hence the validation time was <code>O(2 ^ depth)</code>.)
    */
-  public void _testBug793616(TestContext context) {
+  public void _testBug793616(Context context) {
     if ( context.getConfig().testExpDependencies() > 0 ) {
       // Don't run this test if dependency-checking is enabled.
       // Dependency checking will hugely slow down evaluation, and give
@@ -1784,7 +1785,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCatalogHierarchyBasedOnView(TestContext context) {
+  void testCatalogHierarchyBasedOnView(Context context) {
     // Don't run this test if aggregates are enabled: two levels mapped to
     // the "gender" column confuse the agg engine.
     if ( context.getConfig().readAggregates() ) {
@@ -1822,7 +1823,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMemberSameNameAsLevel(TestContext context) throws SQLException {
+  void testMemberSameNameAsLevel(Context context) throws SQLException {
     // http://jira.pentaho.com/browse/ANALYZER-1618
     // Tests the case where the Level name matches the name of a member
     // in the level. We were failing to resolve such members.
@@ -1862,7 +1863,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCatalogHierarchyBasedOnView2(TestContext context) {
+  void testCatalogHierarchyBasedOnView2(Context context) {
     // Don't run this test if aggregates are enabled: two levels mapped to
     // the "gender" column confuse the agg engine.
     if ( context.getConfig().readAggregates() ) {
@@ -1927,7 +1928,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCountDistinct(TestContext context) {
+  void testCountDistinct(Context context) {
     assertQueryReturns( context.getConnection(),"select {[Measures].[Unit Sales], [Measures].[Customer Count]} on columns,\n"
         + " {[Gender].members} on rows\n" + "from Sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
             + "{[Measures].[Unit Sales]}\n" + "{[Measures].[Customer Count]}\n" + "Axis #2:\n"
@@ -1942,7 +1943,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCountDistinctAgg(TestContext context) {
+  void testCountDistinctAgg(Context context) {
     boolean use_agg_orig = context.getConfig().useAggregates();
 
     // turn off caching
@@ -1967,7 +1968,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSameColumnAndColumnNameInLevelAttribute(TestContext context) {
+  void testSameColumnAndColumnNameInLevelAttribute(Context context) {
     String mdx =
         "" + "SELECT\n" + "[Measures].[Unit Sales] ON COLUMNS,\n"
             + "FILTER([Time].[Quarter].MEMBERS, NOT ISEMPTY ([Measures].[Unit Sales])) ON ROWS\n" + "FROM [Sales]";
@@ -2005,7 +2006,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDifferentNameAndKeyColumn(TestContext context) {
+  void testDifferentNameAndKeyColumn(Context context) {
     String mdx =
         "" + "With\n" + "Set [*NATIVE_CJ_SET] as 'NonEmptyCrossJoin(\n" + "[Product].[Product Subcategory].Members,\n"
             + "{[Time].[October].[October],[Time].[December].[December]})'\n" + "Select\n"
@@ -2043,7 +2044,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testVirtualCubeAndCalculatedMeasure(TestContext context) {
+  void testVirtualCubeAndCalculatedMeasure(Context context) {
     String mdx =
         "" + "WITH\n"
             + "SET [*NATIVE_CJ_SET] AS 'NONEMPTYCROSSJOIN([Time].[Year].MEMBERS,[Warehouse].[Country].MEMBERS)'\n"
@@ -2104,7 +2105,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testRollupAvgFromSum(TestContext context) {
+  void testRollupAvgFromSum(Context context) {
     String mdx =
         "" + "select\n" + "[Measures].[Unit Sales] on columns,\n"
             + "Descendants([Time].[1997], [Time].[Quarter]) on rows\n" + "from [Sales]";
@@ -2157,7 +2158,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testRollupSumFromAvg(TestContext context) {
+  void testRollupSumFromAvg(Context context) {
     String mdx =
         "" + "select\n" + "[Measures].[Unit Sales] on columns,\n"
             + "Descendants([Time].[1997], [Time].[Quarter]) on rows\n" + "from [Sales]";
@@ -2203,7 +2204,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testWithoutRollupType(TestContext context) {
+  void testWithoutRollupType(Context context) {
     String mdx =
         "" + "select\n" + "[Measures].[Unit Sales] on columns,\n"
             + "Descendants([Time].[1997], [Time].[Quarter]) on rows\n" + "from [Sales]";
@@ -2279,7 +2280,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMemberWithNullKey(TestContext context) {
+  void testMemberWithNullKey(Context context) {
     if ( !isDefaultNullMemberRepresentation() ) {
       return;
     }
@@ -2332,7 +2333,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCrossjoinWithDescendantsAndUnknownMember(TestContext context) {
+  void testCrossjoinWithDescendantsAndUnknownMember(Context context) {
     ((TestConfig)context.getConfig()).setIgnoreInvalidMembersDuringQuery(true);
     assertQueryReturns( context.getConnection(),"select {[Measures].[Unit Sales]} on columns,\n" + "NON EMPTY CrossJoin(\n"
         + " Descendants([Product].[All Products], [Product].[Product Family]),\n"
@@ -2346,7 +2347,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSlicerOverride(TestContext context) {
+  void testSlicerOverride(Context context) {
     assertQueryReturns( context.getConnection(),"with member [Measures].[Radio Unit Sales] as \n"
         + " '([Measures].[Unit Sales], [Promotion Media].[Radio])'\n"
         + "select {[Measures].[Unit Sales], [Measures].[Radio Unit Sales]} on columns,\n"
@@ -2360,7 +2361,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMembersOfLargeDimensionTheHardWay(TestContext context) {
+  void testMembersOfLargeDimensionTheHardWay(Context context) {
     final Connection connection = context.getConnection();
     // Avoid this test if memory is scarce.
     if ( Bug.avoidMemoryOverflow( getDialect(connection), context.getConfig().memoryMonitor() ) ) {
@@ -2376,7 +2377,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testUnparse(TestContext context) {
+  void testUnparse(Context context) {
     Connection connection = context.getConnection();
     QueryImpl query =
         connection.parseQuery( "with member [Measures].[Rendite] as \n"
@@ -2405,7 +2406,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testUnparse2(TestContext context) {
+  void testUnparse2(Context context) {
       Connection connection = context.getConnection();
     QueryImpl query =
         connection.parseQuery( "with member [Measures].[Foo] as '1', " + "format_string='##0.00', "
@@ -2439,7 +2440,7 @@ public class BasicQueryTest {
    * The following MDX query, however, uses the LookupCube function to retrieve unit sales information for each store
    * from the Sales cube, presenting it side by side with the budget information from the Budget cube.
    */
-  public void _testLookupCube(TestContext context) {
+  public void _testLookupCube(Context context) {
     assertQueryReturns( context.getConnection(),"WITH MEMBER Measures.[Store Unit Sales] AS \n"
         + " 'LookupCube(\"Sales\", \"(\" + MemberToStr(Store.CurrentMember) + \", Measures.[Unit Sales])\")'\n"
         + "SELECT\n" + " {Measures.Amount, Measures.[Store Unit Sales]} ON COLUMNS,\n" + " Store.CA.CHILDREN ON ROWS\n"
@@ -2471,7 +2472,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBasketAnalysis(TestContext context) {
+  void testBasketAnalysis(Context context) {
     assertQueryReturns( context.getConnection(),"WITH MEMBER [Measures].[Qualified Count] AS\n"
         + " 'COUNT(FILTER(DESCENDANTS(Customers.CURRENTMEMBER, [Customers].[Name]),\n"
         + "               ([Measures].[Store Sales]) > 10000 OR ([Measures].[Unit Sales]) > 10))'\n"
@@ -2505,7 +2506,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBasketAnalysisAfterFlush(TestContext context) {
+  void testBasketAnalysisAfterFlush(Context context) {
     flushSchemaCache(context.getConnection());
     testBasketAnalysis(context);
   }
@@ -2535,7 +2536,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testStringComparisons(TestContext context) {
+  void testStringComparisons(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT {Measures.[Unit Sales]} ON COLUMNS,\n" + "  FILTER([Product].[Product Name].MEMBERS,\n"
         + "         INSTR(LCASE([Product].CURRENTMEMBER.NAME), \"fruit\") <> 0) ON ROWS \n" + "FROM Sales",
         "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
@@ -2580,7 +2581,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMid(TestContext context) {
+  void testMid(Context context) {
     assertQueryReturns( context.getConnection(),"with\n" + "member measures.x as 'Mid(\"yahoo\",5, 1)'\n"
         + "select {measures.x} ON COLUMNS from [Sales] ", "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[x]}\n"
             + "Row #0: o\n" );
@@ -2606,7 +2607,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testPercentagesAsMeasures(TestContext context) {
+  void testPercentagesAsMeasures(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: "Store.[USA].[CA]" should be "Store.CA"
         "WITH MEMBER Measures.[Unit Sales Percent] AS\n" + "  '((Store.CURRENTMEMBER, Measures.[Unit Sales]) /\n"
@@ -2663,7 +2664,7 @@ public class BasicQueryTest {
    * change with respect to its use in the Sum function. Since the named set is only evaluated once, it would not
    * satisfy the needs of this query.
    */
-  public void _testCumlativeSums(TestContext context) {
+  public void _testCumlativeSums(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: "[Store].[USA].[CA]" should be "Store.CA"; implement "AS"
         "WITH MEMBER Measures.[Cumulative No of Employees] AS\n"
@@ -2710,7 +2711,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testLogicalOps(TestContext context) {
+  void testLogicalOps(Context context) {
     assertQueryReturns(context.getConnection(),"WITH MEMBER [Product].[Food OR Drink] AS\n"
         + "  '([Product].[Food], Measures.[Unit Sales]) + ([Product].[Drink], Measures.[Unit Sales])'\n"
         + "SELECT {Measures.[Unit Sales]} ON COLUMNS,\n"
@@ -2732,7 +2733,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testLogicalAnd(TestContext context) {
+  void testLogicalAnd(Context context) {
     assertQueryReturns(context.getConnection(),"SELECT {Measures.[Unit Sales]} ON COLUMNS,\n"
         + "  DESCENDANTS([Time].[1997], [Quarter], SELF_AND_BEFORE) ON ROWS\n" + "FROM Sales\n"
         + "WHERE ([Product].[Drink], [Store].USA)",
@@ -2756,7 +2757,7 @@ public class BasicQueryTest {
    * The named set, [Good AND Pearl Stores], restricts the displayed unit sales totals only to those stores that have
    * sold both Good products and Pearl products.
    */
-  public void _testSet(TestContext context) {
+  public void _testSet(Context context) {
     assertQueryReturns(context.getConnection(),"WITH SET [Good AND Pearl Stores] AS\n" + "  'FILTER(Store.Members,\n"
         + "          ([Product].[Good], Measures.[Unit Sales]) > 0 AND \n"
         + "          ([Product].[Pearl], Measures.[Unit Sales]) > 0)'\n"
@@ -2781,7 +2782,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCustomMemberProperties(TestContext context) {
+  void testCustomMemberProperties(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT {[Measures].[Units Shipped], [Measures].[Units Ordered]} ON COLUMNS,\n"
         + "  NON EMPTY [Store].[Store Name].MEMBERS\n"
         + "    DIMENSION PROPERTIES [Store].[Store Name].[Store Sqft] ON ROWS\n" + "FROM Warehouse", "Axis #0:\n"
@@ -2819,7 +2820,7 @@ public class BasicQueryTest {
    * property for each member in the Store dimension. The benefit to this technique is that the calculated member is
    * readily apparent and easily accessible in client applications that do not support member properties.
    */
-  public void _testMemberPropertyAsCalcMember(TestContext context) {
+  public void _testMemberPropertyAsCalcMember(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement <member>.PROPERTIES
         "WITH MEMBER Measures.[Store SqFt] AS '[Store].CURRENTMEMBER.PROPERTIES(\"Store SQFT\")'\n"
@@ -2872,7 +2873,7 @@ public class BasicQueryTest {
    * returned set contains members at the Country and City levels, the Country, State Province, and City levels
    * determine the order of the members.
    */
-  public void _testDrillingDownMoreThanOneLevel(TestContext context) {
+  public void _testDrillingDownMoreThanOneLevel(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement "GENERATE"
         "SELECT  {[Measures].[Unit Sales]} ON COLUMNS,\n" + "  EXCEPT(GENERATE([Customers].[Country].MEMBERS,\n"
@@ -2903,7 +2904,7 @@ public class BasicQueryTest {
    * A combination of the MDX Generate, TopCount, and Descendants functions are used to create a set containing the top
    * stores in unit sales for each country.
    */
-  public void _testTopmost(TestContext context) {
+  public void _testTopmost(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement "GENERATE"
         "WITH MEMBER Measures.[Country Name] AS \n" + "  'Ancestor(Store.CurrentMember, [Store Country]).Name'\n"
@@ -2940,7 +2941,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTopmost2(TestContext context) {
+  void testTopmost2(Context context) {
     RolapSchemaPool.instance().clear();
     assertQueryReturns( context.getConnection(),"SELECT {Measures.[Unit Sales]} ON COLUMNS,\n" + "  CROSSJOIN(Customers.CHILDREN,\n"
         + "    TOPCOUNT(DESCENDANTS([Store].CURRENTMEMBER, [Store].[Store Name]),\n"
@@ -2978,7 +2979,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testRank(TestContext context) {
+  void testRank(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT {[Measures].[Unit Sales]} ON COLUMNS, \n"
         + "  ORDER([Store].[Store Name].MEMBERS, (Measures.[Unit Sales]), BDESC) ON ROWS\n" + "FROM Sales\n"
         + "WHERE [Product].[Non-Consumable]", "Axis #0:\n" + "{[Product].[Non-Consumable]}\n" + "Axis #1:\n"
@@ -3026,7 +3027,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDifferentCalculationsForDifferentLevels(TestContext context) {
+  void testDifferentCalculationsForDifferentLevels(Context context) {
     assertQueryReturns(context.getConnection(),"WITH MEMBER Measures.[Average Units Ordered] AS\n"
         + "  'AVG(DESCENDANTS([Store].CURRENTMEMBER, [Store].[Store Name]), [Measures].[Units Ordered])',\n"
         + "  FORMAT_STRING='#.00'\n"
@@ -3052,7 +3053,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDifferentCalculations2(TestContext context) {
+  void testDifferentCalculations2(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: "[Store].[USA].[CA]" should be "[Store].CA",
         // "[Product].[Drink].[Alcoholic Beverages].[Beer and Wine].[Beer]"
@@ -3103,7 +3104,7 @@ public class BasicQueryTest {
    * provides a measure representing the average number of units shipped per month, as demonstrated in the following MDX
    * query.
    */
-  public void _testDifferentCalculationsForDifferentDimensions(TestContext context) {
+  public void _testDifferentCalculationsForDifferentDimensions(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement "NONEMPTYCROSSJOIN"
         "WITH MEMBER [Measures].[Avg Units Shipped] AS\n" + "  '[Measures].[Units Shipped] / \n"
@@ -3124,7 +3125,7 @@ public class BasicQueryTest {
    * used to create a calculated measure to supply the value of inventory on hand, as demonstrated in the following MDX
    * query.
    */
-  public void _testDifferentCalculationsForDifferentDimensions2(TestContext context) {
+  public void _testDifferentCalculationsForDifferentDimensions2(Context context) {
     assertQueryReturns( context.getConnection(),"WITH MEMBER Measures.[Closing Balance] AS\n" + "  '([Measures].[Units Ordered], \n"
         + "    CLOSINGPERIOD([Time].[Month], [Time].CURRENTMEMBER)) -\n" + "   ([Measures].[Units Shipped], \n"
         + "    CLOSINGPERIOD([Time].[Month], [Time].CURRENTMEMBER))'\n"
@@ -3165,7 +3166,7 @@ public class BasicQueryTest {
    * For example, the Sales cube uses a time dimension that supports Year, Quarter, and Month levels. To add a six-month
    * and nine-month total, two calculated members are created in the following MDX query.
    */
-  public void _testDateRange(TestContext context) {
+  public void _testDateRange(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement "AddCalculatedMembers"
         "WITH Member [Time].[Time].[1997].[Six Month] AS\n" + "  'SUM([Time].[1]:[Time].[6])'\n"
@@ -3198,7 +3199,7 @@ public class BasicQueryTest {
    * The LastPeriods function, finally, is then used to retrieve the last 12 periods at this level, including the
    * current period.
    */
-  public void _testRolling(TestContext context) {
+  public void _testRolling(Context context) {
     assertQueryReturns(context.getConnection(),"WITH SET Rolling12 AS\n" + "  'LASTPERIODS(12, TAIL(FILTER([Time].[Month].MEMBERS, \n"
         + "    ([Customers].[All Customers], \n" + "    [Education Level].[All Education Level],\n"
         + "    [Gender].[All Gender],\n" + "    [Marital Status].[All Marital Status],\n"
@@ -3232,7 +3233,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDifferentCalcsForDifferentTimePeriods(TestContext context) {
+  void testDifferentCalcsForDifferentTimePeriods(Context context) {
     assertQueryReturns(context.getConnection(),
         // note: "[Product].[Drink Forecast - Standard]"
         // was "[Drink Forecast - Standard]"
@@ -3290,7 +3291,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testDc4dtp2(TestContext context) {
+  public void _testDc4dtp2(Context context) {
     assertQueryReturns(context.getConnection(),"WITH MEMBER [Product].[Drink Forecast - Standard] AS\n"
         + "  '[Product].[All Products].[Drink] * 2'\n" + "MEMBER [Product].[Drink Forecast - Dynamic] AS \n"
         + "  '[Product].[All Products].[Drink] * \n"
@@ -3383,7 +3384,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testWarehouseProfit(TestContext context) {
+  public void _testWarehouseProfit(Context context) {
     assertQueryReturns( context.getConnection(),"select \n"
         + "{[Measures].[Warehouse Cost], [Measures].[Warehouse Sales], [Measures].[Warehouse Profit]}\n"
         + " ON COLUMNS from [Warehouse]",
@@ -3417,7 +3418,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testYtdGrowth(TestContext context) {
+  public void _testYtdGrowth(Context context) {
     assertQueryReturns(context.getConnection(),
         // todo: implement "ParallelPeriod"
         "WITH MEMBER [Measures].[YTD Unit Sales] AS\n" + "  'COALESCEEMPTY(SUM(YTD(), [Measures].[Unit Sales]), 0)'\n"
@@ -3446,7 +3447,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void dont_testParallelMutliple(TestContext context) {
+  public void dont_testParallelMutliple(Context context) {
 	  RolapSchemaPool.instance().clear();
       ((TestConfig)context.getConfig()).setMaxEvalDepth(MAX_EVAL_DEPTH_VALUE);
     Connection connection = context.getConnection();
@@ -3460,19 +3461,19 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void dont_testParallelNot(TestContext context) {
+  public void dont_testParallelNot(Context context) {
     runParallelQueries(context.getConnection(), 1, 1, false );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void dont_testParallelSomewhat(TestContext context) {
+  public void dont_testParallelSomewhat(Context context) {
     runParallelQueries(context.getConnection(), 3, 2, false );
   }
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void dont_testParallelFlushCache(TestContext context) {
+  public void dont_testParallelFlushCache(Context context) {
 	RolapSchemaPool.instance().clear();
     ((TestConfig)context.getConfig()).setMaxEvalDepth(MAX_EVAL_DEPTH_VALUE);
     runParallelQueries(context.getConnection(), 4, 6, true );
@@ -3480,7 +3481,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void dont_testParallelVery(TestContext context) {
+  public void dont_testParallelVery(Context context) {
       ((TestConfig)context.getConfig()).setMaxEvalDepth( MAX_EVAL_DEPTH_VALUE);
     runParallelQueries(context.getConnection(), 6, 10, false );
   }
@@ -3526,7 +3527,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDependsOn(TestContext context) {
+  void testDependsOn(Context context) {
     assertQueryReturns(context.getConnection(),"with member [Customers].[my] as \n"
         + "  'Aggregate(Filter([Customers].[City].Members, (([Measures].[Unit Sales] / ([Measures].[Unit Sales], "
         + "[Product].[All Products])) > 0.1)))' \n" + "select  \n" + "  {[Measures].[Unit Sales]} ON columns, \n"
@@ -3546,7 +3547,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFilterWithCrossJoin(TestContext context) throws Exception {
+  void testFilterWithCrossJoin(Context context) throws Exception {
     String queryWithFilter =
         "WITH SET [#DataSet#] AS 'Filter(Crossjoin({[Store].[All Stores]}, {[Customers].[All Customers]}), "
             + "[Measures].[Unit Sales] > 5)' " + "MEMBER [Customers].[#GT#] as 'Aggregate({[#DataSet#]})' "
@@ -3594,7 +3595,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFilteredCrossJoin(TestContext context) {
+  void testFilteredCrossJoin(Context context) {
     Connection connection = context.getConnection();
     flushSchemaCache(connection);
     Result result =
@@ -3617,7 +3618,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyCrossJoin(TestContext context) {
+  void testNonEmptyCrossJoin(Context context) {
     Connection connection = context.getConnection();
     if ( !context.getConfig().enableNativeCrossJoin() ) {
       // If we try to evaluate the crossjoin in memory we run out of
@@ -3641,7 +3642,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyNonEmptyCrossJoin1(TestContext context) {
+  void testNonEmptyNonEmptyCrossJoin1(Context context) {
     Connection connection = context.getConnection();
     flushSchemaCache(connection);
     Result result =
@@ -3655,7 +3656,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyNonEmptyCrossJoin2(TestContext context) {
+  void testNonEmptyNonEmptyCrossJoin2(Context context) {
     Connection connection = context.getConnection();
     flushSchemaCache(connection);
     Result result =
@@ -3669,7 +3670,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyNonEmptyCrossJoin3(TestContext context) {
+  void testNonEmptyNonEmptyCrossJoin3(Context context) {
     Connection connection = context.getConnection();
     flushSchemaCache(connection);
     Result result =
@@ -3683,7 +3684,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyNonEmptyCrossJoin4(TestContext context) {
+  void testNonEmptyNonEmptyCrossJoin4(Context context) {
     Connection connection = context.getConnection();
     flushSchemaCache(connection);
     Result result =
@@ -3702,7 +3703,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testHierDifferentKeyClass(TestContext context) {
+  void testHierDifferentKeyClass(Context context) {
       Connection connection = context.getConnection();
     Result result =
         executeQuery(connection, "with member [Time].[Time].[1997].[Q1].[xxx] as\n"
@@ -3720,7 +3721,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testOverlappingCalculatedMembers(TestContext context) {
+  void testOverlappingCalculatedMembers(Context context) {
     assertQueryReturns( context.getConnection(),"WITH MEMBER [Store].[Total] AS 'SUM([Store].[Store Country].MEMBERS)' "
         + "MEMBER [Store Type].[Total] AS 'SUM([Store Type].[Store Type].MEMBERS)' "
         + "MEMBER [Gender].[Total] AS 'SUM([Gender].[Gender].MEMBERS)' "
@@ -3736,7 +3737,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testEmptyProperty(TestContext context) {
+  void testEmptyProperty(Context context) {
     assertQueryReturns( context.getConnection(),"select     {[Measures].[Unit Sales]} on columns, " + "filter([Store].[Store Name].members,"
         + "[Store].currentmember.properties(\"Store Manager\")=\"Smith\") on rows" + " from Sales", "Axis #0:\n"
             + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
@@ -3747,7 +3748,7 @@ public class BasicQueryTest {
    * This test modifies the Sales cube to contain both the regular usage of the [Store] shared dimension, and another
    * usage called [Other Store] which is connected to the [Unit Sales] column
    */
-  public void _testCubeWhichUsesSameSharedDimTwice(TestContext context) {
+  public void _testCubeWhichUsesSameSharedDimTwice(Context context) {
     // Create a second usage of the "Store" shared dimension called "Other
     // Store". Attach it to the "unit_sales" column (which has values [1,
     // 6] whereas store has values [1, 24].
@@ -3825,7 +3826,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMemberVisibility(TestContext context) {
+  void testMemberVisibility(Context context) {
     String cubeName = "Sales_MemberVis";
     /*
       String baseSchema = TestUtil.getRawSchema(context);
@@ -3862,7 +3863,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAllMemberCaption(TestContext context) {
+  void testAllMemberCaption(Context context) {
      /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube("Sales",
             "<Dimension name=\"Gender3\" foreignKey=\"customer_id\">\n"
@@ -3885,7 +3886,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAllLevelName(TestContext context) {
+  void testAllLevelName(Context context) {
       /*
       ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube("Sales",
             "<Dimension name=\"Gender4\" foreignKey=\"customer_id\">\n"
@@ -3909,7 +3910,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDimWithoutAll(TestContext context) {
+  void testDimWithoutAll(Context context) {
     // Create a test context with a new ""Sales_DimWithoutAll" cube, and
     // which evaluates expressions against that cube.
       /*
@@ -3966,7 +3967,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMemberOnAxis(TestContext context) {
+  void testMemberOnAxis(Context context) {
     assertQueryReturns(context.getConnection(),
         "select [Measures].[Sales Count] on 0, non empty [Store].[Store State].members on 1 from [Sales]", "Axis #0:\n"
             + "{}\n" + "Axis #1:\n" + "{[Measures].[Sales Count]}\n" + "Axis #2:\n" + "{[Store].[USA].[CA]}\n"
@@ -3976,7 +3977,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testScalarOnAxisFails(TestContext context) {
+  void testScalarOnAxisFails(Context context) {
     assertQueryThrows(context.getConnection(),
         "select [Measures].[Sales Count] + 1 on 0, non empty [Store].[Store State].members on 1 from [Sales]",
         "Axis 'COLUMNS' expression is not a set" );
@@ -3987,7 +3988,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSameDimOnTwoAxesFails(TestContext context) {
+  void testSameDimOnTwoAxesFails(Context context) {
     Connection connection = context.getConnection();
     assertQueryThrows(connection, "select {[Measures].[Unit Sales]} on columns,\n" + " {[Measures].[Store Sales]} on rows\n"
         + "from [Sales]", "Hierarchy '[Measures]' appears in more than one independent axis" );
@@ -4015,14 +4016,14 @@ public class BasicQueryTest {
         + "   {[Product].children},\n" + "   {[Store].children}) on Rows\n" + "from [Sales]" );
   }
 
-  public void _testSetArgToTupleFails(TestContext context) {
+  public void _testSetArgToTupleFails(Context context) {
     Connection connection = context.getConnection();
     assertQueryThrows(connection, "select CrossJoin(\n" + "    {[Product].children},\n"
         + "    {[Measures].[Unit Sales]}) on columns,\n" + "    {([Product],\n" + "      [Store].members)} on rows\n"
         + "from [Sales]", "Dimension '[Product]' appears in more than one independent axis" );
   }
 
-  public void _badArgsToTupleFails(TestContext context) {
+  public void _badArgsToTupleFails(Context context) {
     Connection connection = context.getConnection();
     // clash within slicer
     assertQueryThrows(connection, "select {[Measures].[Unit Sales]} on columns,\n" + " {[Store].Members} on rows\n"
@@ -4037,7 +4038,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNullMember(TestContext context) {
+  void testNullMember(Context context) {
     RolapSchemaPool.instance().clear();
     if ( isDefaultNullMemberRepresentation() ) {
       assertQueryReturns( context.getConnection(),"SELECT \n" + "{[Measures].[Store Cost]} ON columns, \n"
@@ -4049,7 +4050,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNullMemberWithOneNonNull(TestContext context) {
+  void testNullMemberWithOneNonNull(Context context) {
     if ( isDefaultNullMemberRepresentation() ) {
       assertQueryReturns( context.getConnection(),"SELECT \n" + "{[Measures].[Store Cost]} ON columns, \n"
           + "{[Store Size in SQFT].[All Store Size in SQFTs].[#null],"
@@ -4067,7 +4068,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMultipleConstraintsOnSameColumn(TestContext context) {
+  void testMultipleConstraintsOnSameColumn(Context context) {
     final String cubeName = "Sales_withCities";
       /*
       String baseSchema = TestUtil.getRawSchema(context);
@@ -4113,7 +4114,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testOverrideDimension(TestContext context) {
+  void testOverrideDimension(Context context) {
     assertQueryReturns( context.getConnection(),"with member  [Gender].[test] as '\n" + "  aggregate(\n"
         + "  filter (crossjoin( [Gender].[Gender].members, [Time].[Time].members), \n"
         + "      [time].[Time].CurrentMember = [Time].[1997].[Q1]   AND\n" + "[measures].[unit sales] > 50) )\n"
@@ -4124,7 +4125,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBadMeasure1(TestContext context) {
+  void testBadMeasure1(Context context) {
       /*
       String schema = SchemaUtil.getSchema(baseSchema, null, "<Cube name=\"SalesWithBadMeasure\">\n"
             + "  <Table name=\"sales_fact_1997\"/>\n"
@@ -4146,7 +4147,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBadMeasure2(TestContext context) {
+  void testBadMeasure2(Context context) {
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema, null, "<Cube name=\"SalesWithBadMeasure2\">\n"
@@ -4171,7 +4172,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testInvalidMembersInQuery(TestContext context) {
+  void testInvalidMembersInQuery(Context context) {
 	RolapSchemaPool.instance().clear();
     String mdx =
         "select {[Measures].[Unit Sales]} on columns,\n" + " {[Time].[1997].[Q1], [Time].[1997].[QTOO]} on rows\n"
@@ -4218,7 +4219,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMONDRIAN2608(TestContext context) {
+  void testMONDRIAN2608(Context context) {
     // this issue takes place only for the case when ordinalColumn is defined
     // and CompareSiblingsByOrderKey=false and ExpandNonNative=true
     SystemWideProperties.instance().CompareSiblingsByOrderKey = false;
@@ -4315,7 +4316,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMemberOrdinalCaching(TestContext context) {
+  void testMemberOrdinalCaching(Context context) {
     SystemWideProperties.instance().CompareSiblingsByOrderKey = true;
     // Use a fresh connection to make sure bad member ordinals haven't
     // been assigned by previous tests.
@@ -4364,7 +4365,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCancel(TestContext context) {
+  void testCancel(Context context) {
     // the cancel is issued after 2 seconds so the test query needs to
     // run for at least that long; it will because the query references
     // a Udf that has a 1 ms sleep in it; and there are enough rows
@@ -4376,7 +4377,7 @@ public class BasicQueryTest {
     executeAndCancel(context, query, 2000 );
   }
 
-  private void executeAndCancel(TestContext context, String queryString, int waitMillis ) {
+  private void executeAndCancel(Context context, String queryString, int waitMillis ) {
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema, null, null, null, null, "<UserDefinedFunction name=\"SleepUdf\" className=\""
@@ -4433,7 +4434,7 @@ public class BasicQueryTest {
   @Disabled //has not been fixed during creating Daanse project
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCancelSqlFetchReadTuples(TestContext context) throws Exception {
+  void testCancelSqlFetchReadTuples(Context context) throws Exception {
     // 512 rows
     final int cancelInterval = 50;
     final String query =
@@ -4453,7 +4454,7 @@ public class BasicQueryTest {
   @Disabled //has not been fixed during creating Daanse project
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCancelSqlFetchSegmentLoad(TestContext context) throws Exception {
+  void testCancelSqlFetchSegmentLoad(Context context) throws Exception {
     // 512 rows
     final int cancelInterval = 101;
     ((TestConfig)context.getConfig()).setCheckCancelOrTimeoutInterval(cancelInterval);
@@ -4475,7 +4476,7 @@ public class BasicQueryTest {
   @Disabled //has not been fixed during creating Daanse project
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCancelSqlFetchMemberChildren(TestContext context) throws Exception {
+  void testCancelSqlFetchMemberChildren(Context context) throws Exception {
     // 106 rows
     final int cancelInterval = 33;
     final String query =
@@ -4487,7 +4488,7 @@ public class BasicQueryTest {
     assertEquals(new Long( cancelInterval ), rows, "Query not aborted at first interval");
   }
 
-  private Long executeAndCancelAtSqlFetch(TestContext context,  final String query, final String triggerSql, final String component )
+  private Long executeAndCancelAtSqlFetch(Context context,  final String query, final String triggerSql, final String component )
     throws Exception {
     // avoid cache to ensure sql executes
     //TestContext context = getTestContext().withFreshConnection();
@@ -4579,7 +4580,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testQueryTimeout(TestContext context) {
+  void testQueryTimeout(Context context) {
     // timeout is issued after 2 seconds so the test query needs to
     // run for at least that long; it will because the query references
     // a Udf that has a 1 ms sleep in it; and there are enough rows
@@ -4605,7 +4606,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatInheritance(TestContext context) {
+  void testFormatInheritance(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.foo as 'measures.bar' " + "member measures.bar as "
         + "'measures.profit' select {measures.foo} on 0 from sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
             + "{[Measures].[foo]}\n" + "Row #0: $339,610.90\n" );
@@ -4613,7 +4614,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatInheritanceWithIIF(TestContext context) {
+  void testFormatInheritanceWithIIF(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.foo as 'measures.bar' " + "member measures.bar as "
         + "'iif(not isempty(measures.profit),measures.profit,null)' " + "select from sales where measures.foo",
         "Axis #0:\n" + "{[Measures].[foo]}\n" + "$339,610.90" );
@@ -4625,7 +4626,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatInheritanceWorksWithFirstFormatItFinds(TestContext context) {
+  void testFormatInheritanceWorksWithFirstFormatItFinds(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.foo as 'measures.bar' " + "member measures.bar as "
         + "'iif(measures.profit>3000,measures.[unit sales],measures.[Customer Count])' "
         + "select {[Store].[All Stores].[USA].[WA].children} on 0 " + "from sales where measures.foo", "Axis #0:\n"
@@ -4643,7 +4644,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatStringAppliedToStringValue(TestContext context) {
+  void testFormatStringAppliedToStringValue(Context context) {
     // "23" as an integer value
     assertQueryReturns( context.getConnection(),"with member [Measures].[Test] as '23', FORMAT_STRING = '|<|arrow=\"up\"'\n"
         + "select [Measures].[Test] on 0\n" + "from [Sales]", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
@@ -4663,7 +4664,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testAvgCastProblem(TestContext context) {
+  void testAvgCastProblem(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.bar as "
         + "'iif(measures.profit>3000,min([Education Level].[Education Level].Members),min([Education Level]"
         + ".[Education Level].Members))' " + "select {[Store].[All Stores].[USA].[WA].children} on 0 "
@@ -4680,7 +4681,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatInheritanceUseSecondIfFirstHasNoFormat(TestContext context) {
+  void testFormatInheritanceUseSecondIfFirstHasNoFormat(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.foo as 'measures.bar+measures.blah'" + " member measures.bar as '10'"
         + " member measures.blah as '20',format_string='$##.###.00' " + "select from sales where measures.foo",
         "Axis #0:\n" + "{[Measures].[foo]}\n" + "$30.00" );
@@ -4692,7 +4693,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testFormatInheritanceUseFirstValid(TestContext context) {
+  void testFormatInheritanceUseFirstValid(Context context) {
     assertQueryReturns( context.getConnection(),"with member measures.foo as '13+31*measures.[Unit Sales]/"
         + "iif(measures.profit>0,measures.profit,measures.[Customer Count])'"
         + " select {[Store].[All Stores].[USA].[CA].children} on 0 " + "from sales where measures.foo", "Axis #0:\n"
@@ -4704,7 +4705,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testQueryIterationLimit(TestContext context) {
+  void testQueryIterationLimit(Context context) {
     // Query will need to iterate 4*3 times to compute aggregates,
     // so set iteration limit to 11
     String queryString =
@@ -4744,7 +4745,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testGetCaptionUsingMemberDotCaption(TestContext context) {
+  void testGetCaptionUsingMemberDotCaption(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT Filter(Store.allmembers, "
         + "[store].currentMember.caption = \"USA\") on 0 FROM SALES", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
             + "{[Store].[USA]}\n" + "Row #0: 266,773\n" );
@@ -4752,7 +4753,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testGetCaptionUsingMemberDotPropertiesCaption(TestContext context) {
+  void testGetCaptionUsingMemberDotPropertiesCaption(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT Filter(Store.allmembers, "
         + "[store].currentMember.properties(\"caption\") = \"USA\") " + "on 0 FROM SALES", "Axis #0:\n" + "{}\n"
             + "Axis #1:\n" + "{[Store].[USA]}\n" + "Row #0: 266,773\n" );
@@ -4760,7 +4761,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDefaultMeasureInCube(TestContext context) {
+  void testDefaultMeasureInCube(Context context) {
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema, null, "<Cube name=\"DefaultMeasureTesting\" defaultMeasure=\"Supply Time\">\n"
@@ -4780,7 +4781,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDefaultMeasureInCubeForIncorrectMeasureName(TestContext context) {
+  void testDefaultMeasureInCubeForIncorrectMeasureName(Context context) {
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema, null,
@@ -4794,7 +4795,7 @@ public class BasicQueryTest {
        */
     RolapSchemaPool.instance().clear();
     MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-    context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "Supply Time Error")));
+    ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "Supply Time Error")));
     String queryWithoutFilter = "select store.members on 0 from " + "DefaultMeasureTesting";
     String queryWithFirstMeasure =
         "select store.members on 0 " + "from DefaultMeasureTesting where [measures].[Store Invoice]";
@@ -4803,7 +4804,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDefaultMeasureInCubeForCaseSensitivity(TestContext context) {
+  void testDefaultMeasureInCubeForCaseSensitivity(Context context) {
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema, null, "<Cube name=\"DefaultMeasureTesting\" defaultMeasure=\"SUPPLY TIME\">\n"
@@ -4817,7 +4818,7 @@ public class BasicQueryTest {
 
     RolapSchemaPool.instance().clear();
     MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-    context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "SUPPLY TIME")));
+    ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "SUPPLY TIME")));
     String queryWithoutFilter = "select store.members on 0 from " + "DefaultMeasureTesting";
     String queryWithFirstMeasure =
         "select store.members on 0 " + "from DefaultMeasureTesting where [measures].[Store Invoice]";
@@ -4836,7 +4837,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNumericToLogicalConversion(TestContext context) {
+  void testNumericToLogicalConversion(Context context) {
     assertQueryReturns(context.getConnection(),"select " + "{[Measures].[Unit Sales]} on columns, " + "Filter(Descendants("
         + "[Product].[Food].[Baked Goods].[Bread]), " + "Count([Product].currentMember.children)) on Rows "
         + "from [Sales]", "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
@@ -4866,7 +4867,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testRollupQuery(TestContext context) {
+  void testRollupQuery(Context context) {
     assertQueryReturns( context.getConnection(),"SELECT {[Product].[Product Department].MEMBERS} ON AXIS(0),\n"
         + "{{[Gender].[Gender].MEMBERS}, {[Gender].[All Gender]}} ON AXIS(1)\n"
         + "FROM [Sales 2] WHERE {[Measures].[Unit Sales]}", "Axis #0:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #1:\n"
@@ -4904,7 +4905,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testBug1630754(TestContext context) {
+  void testBug1630754(Context context) {
     // In order to reproduce this bug a dimension with 2 levels with more
     // than 1000 member each was necessary. The customer_id column has more
     // than 1000 distinct members so it was used for this test.
@@ -4937,7 +4938,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNonEmptyCrossjoinFilter(TestContext context) {
+  void testNonEmptyCrossjoinFilter(Context context) {
     String desiredResult =
         "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
             + "{[Product].[All Products], [Time].[1997].[Q2].[5]}\n" + "Row #0: 21,081\n";
@@ -4953,14 +4954,14 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDuplicateAxisFails(TestContext context) {
+  void testDuplicateAxisFails(Context context) {
     assertQueryThrows(context.getConnection(), "select [Gender].Members on columns," + " [Measures].Members on columns " + "from [Sales]",
         "Duplicate axis name 'COLUMNS'." );
   }
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testInvalidAxisFails(TestContext context) {
+  void testInvalidAxisFails(Context context) {
       Connection connection = context.getConnection();
     assertQueryThrows(connection, "select [Gender].Members on 0," + " [Measures].Members on 10 " + "from [Sales]",
         "Axis numbers specified in a query must be sequentially specified,"
@@ -4982,7 +4983,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testSummingProperties(TestContext context) {
+  void testSummingProperties(Context context) {
     final String expected =
         "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Store].[USA]}\n" + "{[Store].[USA].[CA]}\n" + "Axis #2:\n"
             + "{[Gender].[F]}\n" + "{[Gender].[M]}\n" + "Row #0: 131,558\n" + "Row #0: 36,759\n" + "Row #1: 135,215\n"
@@ -5019,7 +5020,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithTupleFirstAndMemberNextWithMeasure(TestContext context) {
+  void testIifWithTupleFirstAndMemberNextWithMeasure(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg "
         + "AS 'IIF(1=1, ([Gender].[All Gender],measures.[unit sales])," + "([Gender].[All Gender]))', SOLVE_ORDER = 4 "
         + "SELECT {[Measures].[unit sales]} ON 0, " + "{{[Gender].[Gender].MEMBERS},{([Gender].agg)}} on 1 FROM sales",
@@ -5030,7 +5031,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithMemberFirstAndTupleNextWithMeasure(TestContext context) {
+  void testIifWithMemberFirstAndTupleNextWithMeasure(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg " + "AS 'IIF(1=1, ([Gender].[All Gender]),"
         + "([Gender].[All Gender],measures.[unit sales]))', SOLVE_ORDER = 4 "
         + "SELECT {[Measures].[unit sales]} ON 0, " + "{{[Gender].[Gender].MEMBERS},{([Gender].agg)}} on 1 FROM sales",
@@ -5041,7 +5042,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithMemberFirstAndTupleNextWithoutMeasure(TestContext context) {
+  void testIifWithMemberFirstAndTupleNextWithoutMeasure(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg " + "AS 'IIF(1=1, ([Gender].[All Gender]),"
         + "([Gender].[All Gender],[Time].[1997]))', SOLVE_ORDER = 4 " + "SELECT {[Measures].[unit sales]} ON 0, "
         + "{{[Gender].[Gender].MEMBERS},{([Gender].agg)}} on 1 FROM sales", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
@@ -5051,7 +5052,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithTupleFirstAndMemberNextWithoutMeasure(TestContext context) {
+  void testIifWithTupleFirstAndMemberNextWithoutMeasure(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg " + "AS 'IIF(1=1, "
         + "([Store].[All Stores].[USA], [Gender].[All Gender]), " + "([Gender].[All Gender]))', " + "SOLVE_ORDER = 4 "
         + "SELECT {[Measures].[unit sales]} ON 0, " + "{([Gender].agg)} on 1 FROM sales", "Axis #0:\n" + "{}\n"
@@ -5061,7 +5062,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithTuplesOfUnequalSizes(TestContext context) {
+  void testIifWithTuplesOfUnequalSizes(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg "
         + "AS 'IIF(Measures.currentMember is [Measures].[Unit Sales], "
         + "([Store].[All Stores],[Gender].[All Gender],measures.[unit sales]),"
@@ -5074,7 +5075,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testIifWithTuplesOfUnequalSizesAndOrder(TestContext context) {
+  void testIifWithTuplesOfUnequalSizesAndOrder(Context context) {
     assertQueryReturns( context.getConnection(),"WITH\n" + "MEMBER [Gender].agg "
         + "AS 'IIF(Measures.currentMember is [Measures].[Unit Sales], "
         + "([Store].[All Stores],[Gender].[M],measures.[unit sales]),"
@@ -5086,7 +5087,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testEmptyAggregationListDueToFilterDoesNotThrowException(TestContext context) {
+  void testEmptyAggregationListDueToFilterDoesNotThrowException(Context context) {
     ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
     assertQueryReturns( context.getConnection(),"WITH \n" + "MEMBER [GENDER].[AGG] "
         + "AS 'AGGREGATE(FILTER([S1], (NOT ISEMPTY([MEASURES].[STORE SALES]))))' " + "SET [S1] "
@@ -5102,7 +5103,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testEmptySqlBug(TestContext context) {
+  void testEmptySqlBug(Context context) {
     final String expectedResult =
         "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
             + "{[Store].[All Stores], [Product].[All Products], [Customers].[All Customers]}\n" + "Row #0: 266,773\n";
@@ -5142,7 +5143,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testHeterogeneousAxis(TestContext context) {
+  void testHeterogeneousAxis(Context context) {
       Connection connection = context.getConnection();
     // SSAS2005 gives error:
     // Query (1, 8) Two sets specified in the function have different
@@ -5155,7 +5156,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testQueryWithNullMember(TestContext context) {
+  void testQueryWithNullMember(Context context) {
     // https://jira.pentaho.com/browse/MONDRIAN-2643
     assertQueryReturns( context.getConnection(),"WITH\n"
         + " SET [*NATIVE_CJ_SET] AS 'FILTER( FILTER([Store Size in SQFT].[Store Sqft].MEMBERS,\n" + "\n"
@@ -5183,7 +5184,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testHierarchiesOfSameDimensionOnDifferentAxes(TestContext context) {
+  void testHierarchiesOfSameDimensionOnDifferentAxes(Context context) {
     if ( !SystemWideProperties.instance().SsasCompatibleNaming ) {
       return;
     }
@@ -5203,7 +5204,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian1432(TestContext context) {
+  void testMondrian1432(Context context) {
       /*
       ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube( "Sales", null, "<Measure name='zero' aggregator='sum'>\n"
             + "  <MeasureExpression>\n" + "  <SQL dialect='generic'>\n" + "    0"
@@ -5220,7 +5221,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian1432_ZeroAxisSegment(TestContext context) {
+  void testMondrian1432_ZeroAxisSegment(Context context) {
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema, null, "<Cube name='FooBarZerOneAnything'>\n" + "  <Table name='sales_fact_1997'/>\n"
@@ -5345,7 +5346,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testHighCardSqlTupleReaderLeakingConnections(TestContext context) {
+  void testHighCardSqlTupleReaderLeakingConnections(Context context) {
     assertQueryReturns( context.getConnection(),"WITH MEMBER [Measures].[NegativeSales] AS '- [Measures].[Store Sales]' "
         + "MEMBER [Product].[SameName] AS 'Aggregate(Filter("
         + "[Product].[Product Name].members,([Measures].[Store Sales] > 0)))' " + "MEMBER [Measures].[SameName] AS "
@@ -5360,7 +5361,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testZeroValuesAreNotTreatedAsNull(TestContext context) {
+  void testZeroValuesAreNotTreatedAsNull(Context context) {
     String mdx =
         "select" + "  {" + "    ("
             + "      [Product].[All Products].[Food].[Produce].[Vegetables].[Fresh Vegetables].[Tell Tale].[Tell Tale "
@@ -5378,7 +5379,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testDirectMemberReferenceOnDimensionWithCalculationsDefined(TestContext context) {
+  void testDirectMemberReferenceOnDimensionWithCalculationsDefined(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube( "Sales", null,
             "<CalculatedMember dimension=\"Gender\" visible=\"true\" name=\"last\">"
@@ -5395,7 +5396,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testConcurrentStatementRun(TestContext context) throws Exception {
+  void testConcurrentStatementRun(Context context) throws Exception {
     final Connection connection = context.getConnection();
 
     final String mdxQuery =
@@ -5435,7 +5436,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testRollup(TestContext context) {
+  void testRollup(Context context) {
     switch ( 2 ) {
       case 0:
         assertQueryReturns( context.getConnection(),"select [Gender].Children * [Product].Children on 0\n" + "from [Sales]", "Axis #0:\n"
@@ -5493,7 +5494,7 @@ public class BasicQueryTest {
   @Disabled //disabled for CI build
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testStatistics(TestContext context) {
+  void testStatistics(Context context) {
     Connection connection = context.getConnection();
     final String product = getDialect(connection).getDialectName();
     final String dialectClassName = getDialect(connection).getClass().getName();
@@ -5537,7 +5538,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testResultLimit(TestContext context) throws Exception {
+  void testResultLimit(Context context) throws Exception {
     SystemWideProperties.instance().ResultLimit = 1000;
     assertAxisThrows(context.getConnection(), "CrossJoin([Product].[Brand Name].Members, [Gender].[Gender].Members)",
         "result (1,001) exceeded limit (1,000)" );
@@ -5545,7 +5546,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testResultLimitWithinLimit(TestContext context) {
+  void testResultLimitWithinLimit(Context context) {
     SystemWideProperties.instance().ResultLimit = 5000;
     executeQuery(context.getConnection(),
         "select CrossJoin([Product].[Brand Name].Members, [Gender].[Gender].Members) on columns from [Sales]" );
@@ -5557,7 +5558,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testConcurrentStatementRun_2(TestContext context) throws Exception {
+  void testConcurrentStatementRun_2(Context context) throws Exception {
     // timeout is issued after 2 seconds so the test query needs to
     // run for at least that long; it will because the query references
     // a Udf that has a 1 ms sleep in it; and there are enough rows
@@ -5616,7 +5617,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCaseInsensitiveResolution(TestContext context) {
+  void testCaseInsensitiveResolution(Context context) {
     SystemWideProperties.instance().CaseSensitive = false;
     String[] equivalentMemberNames =
         { "gender.gender.F", "gender.gender.f", "gender.[All gender].F", "gender.[All gender].f" };
@@ -5653,7 +5654,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian1506(TestContext context) throws Exception {
+  void testMondrian1506(Context context) throws Exception {
     // First test. Run two queries in parallel. Cancel one.
     // The exception should appear on thread 1 and thread 2
     // should succeed.
@@ -5739,7 +5740,7 @@ public class BasicQueryTest {
         final Runnable r1, final Runnable r2 ) throws Exception;
   }
 
-  private void runMondrian1506(TestContext context, Mondrian1506Lambda lambda ) throws Exception {
+  private void runMondrian1506(Context context, Mondrian1506Lambda lambda ) throws Exception {
     if ( getDatabaseProduct(getDialect(context.getConnection()).getDialectName()) != DatabaseProduct.MYSQL ) {
       // This only works on MySQL because of Sleep()
       return;
@@ -5812,7 +5813,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testArrayIndexOutOfBoundsWithEmptySegment(TestContext context) {
+  void testArrayIndexOutOfBoundsWithEmptySegment(Context context) {
     /*
     ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube( "Sales", null, "<Measure name='zero' aggregator='sum'>\n"
             + " <MeasureExpression>\n" + " <SQL dialect='generic'>\n" + " NULL" + " </SQL>"
@@ -5844,7 +5845,7 @@ public class BasicQueryTest {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  public void _testSqlPoolAndQueue(TestContext context) throws Exception {
+  public void _testSqlPoolAndQueue(Context context) throws Exception {
     // We use 10 SQL threads and the query needs about 30-ish.
     // If the bug exists, it'll fail.
     ((TestConfig)context.getConfig()).setSegmentCacheManagerNumberSqlThreads(10);
@@ -5926,7 +5927,7 @@ public class BasicQueryTest {
    */
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNameExpressionSnowflake(TestContext context) {
+  void testNameExpressionSnowflake(Context context) {
     Connection connection = context.getConnection();
     Dialect dialect = getDialect(connection);
     /*
@@ -5957,7 +5958,7 @@ public class BasicQueryTest {
      */
         RolapSchemaPool.instance().clear();
         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        context.setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier8(schema, dialect)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier8(schema, dialect)));
 
         connection = context.getConnection();
     assertAxisReturns(connection, "[Example.Example Hierarchy].[Non-Zero]",
@@ -5970,7 +5971,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian2245(TestContext context) {
+  void testMondrian2245(Context context) {
     String mdxWithoutBug =
         "" + "SELECT " + "   {[Measures].[Sales]} ON Axis(0),\n"
             + "   Hierarchize({[Product - no Bug].[Product Family].Members}) ON Axis(1)\n" + "FROM " + "   [No Bug]";
@@ -6020,7 +6021,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCurrentMemberWithCompoundSlicer(TestContext context) {
+  void testCurrentMemberWithCompoundSlicer(Context context) {
     String mdx =
         "" + "with\n" + "member [Measures].[Gender Current Member] " + "as '[Gender].CurrentMember.Name'\n"
             + "select [Measures].[Gender Current Member] on 0\n" + "from [Sales]\n"
@@ -6036,7 +6037,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCurrentMemberWithCompoundSlicerIgnoreException(TestContext context) {
+  void testCurrentMemberWithCompoundSlicerIgnoreException(Context context) {
     	RolapSchemaPool.instance().clear();
         ((TestConfig)context.getConfig()).setCurrentMemberWithCompoundSlicerAlert("OFF" );
 
@@ -6058,7 +6059,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCurrentMemberWithCompoundSlicer2(TestContext context) {
+  void testCurrentMemberWithCompoundSlicer2(Context context) {
     RolapSchemaPool.instance().clear();
     String mdx =
         "with\n" + "member [Measures].[Drink Sales Previous Period] as\n"
@@ -6078,7 +6079,7 @@ public class BasicQueryTest {
 
     @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testCurrentMemberWithCompoundSlicer2IgnoreException(TestContext context) {
+  void testCurrentMemberWithCompoundSlicer2IgnoreException(Context context) {
     	RolapSchemaPool.instance().clear();
         ((TestConfig)context.getConfig()).setCurrentMemberWithCompoundSlicerAlert("OFF");
 
@@ -6104,7 +6105,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian625(TestContext context) {
+  void testMondrian625(Context context) {
     Connection connection = context.getConnection();
     assertQueriesReturnSimilarResults(connection, "select\n" + "    {[Measures].[Unit Sales]} ON COLUMNS,\n"
         + "    {Descendants([Customers].[All Customers], 4)} ON ROWS\n" + "from\n" + "    [Sales]\n" + "where\n"
@@ -6122,7 +6123,7 @@ public class BasicQueryTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testMondrian2630(TestContext context) {
+  void testMondrian2630(Context context) {
     String mdx =
         "WITH\n" + "SET [*NATIVE_CJ_SET_WITH_SLICER] AS '[*BASE_MEMBERS__Store Size in SQFT_]'\n"
             + "SET [*NATIVE_CJ_SET] AS '[SQFT 2].[Store Sqft].MEMBERS'\n"

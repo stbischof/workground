@@ -12,12 +12,12 @@ package mondrian.test;
 
 import mondrian.olap.SystemWideProperties;
 import mondrian.rolap.SchemaModifiers;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -84,7 +84,7 @@ class IgnoreUnrelatedDimensionsTest {
         + "  <VirtualCubeMeasure cubeName=\"Warehouse\" name=\"[Measures].[Warehouse Sales]\"/>\n"
         + "</VirtualCube>";
 
-    private void prepareContext(TestContext context) {
+    private void prepareContext(Context context) {
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -135,7 +135,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testTotalingOnCrossJoinOfJoiningAndNonJoiningDimensions(TestContext context) {
+    void testTotalingOnCrossJoinOfJoiningAndNonJoiningDimensions(Context context) {
     	prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Unit Sales VM] AS "
@@ -157,7 +157,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testVMShouldNotPushUpAggMemberDefinedOnNonJoiningDimension(TestContext context) {
+    void testVMShouldNotPushUpAggMemberDefinedOnNonJoiningDimension(Context context) {
     	prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Total Sales] AS "
@@ -180,7 +180,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testAggMemberDefinedOnNonJoiningDimensionWithNonAllDefltMember(TestContext context)
+    void testAggMemberDefinedOnNonJoiningDimensionWithNonAllDefltMember(Context context)
     {
         // Gender dim to have Gender.F as default member
         /*
@@ -215,7 +215,7 @@ class IgnoreUnrelatedDimensionsTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testIgnoreUnrelatedDimsOnSlicer(TestContext context) {
+    void testIgnoreUnrelatedDimsOnSlicer(Context context) {
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -238,7 +238,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testIgnoreUnrelatedDimsOnCompoundSlicer(TestContext context) {
+    void testIgnoreUnrelatedDimsOnCompoundSlicer(Context context) {
         // MONDRIAN-2072
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
         /*
@@ -264,7 +264,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testRelatedAndUnrelatedDimsOnCompoundSlicer(TestContext context) {
+    void testRelatedAndUnrelatedDimsOnCompoundSlicer(Context context) {
         // MONDRIAN-2072
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
         /*
@@ -293,7 +293,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testPartiallyRelatedMeasureWithCompoundSlicer(TestContext context) {
+    void testPartiallyRelatedMeasureWithCompoundSlicer(Context context) {
         // MONDRIAN-2072
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
         /*
@@ -344,7 +344,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testNonJoiningDimWithMeasureInCompoundSlicer(TestContext context) {
+    void testNonJoiningDimWithMeasureInCompoundSlicer(Context context) {
         // MONDRIAN-2072
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
         prepareContext(context);
@@ -362,7 +362,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testTotalingForValidAndNonValidMeasuresWithJoiningDimensions(TestContext context) {
+    void testTotalingForValidAndNonValidMeasuresWithJoiningDimensions(Context context) {
     	prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Unit Sales VM] AS "
@@ -386,7 +386,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testTotalingWhenIgnoreUnrelatedDimensionsPropertyIsTrue(TestContext context) {
+    void testTotalingWhenIgnoreUnrelatedDimensionsPropertyIsTrue(Context context) {
     	prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Unit Sales VM] AS "
@@ -445,7 +445,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testTotalingOnNonJoiningDimension(TestContext context) {
+    void testTotalingOnNonJoiningDimension(Context context) {
     	prepareContext(context);
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Unit Sales VM] AS "
@@ -523,7 +523,7 @@ class IgnoreUnrelatedDimensionsTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testUnrelatedDimPropOverridesIgnoreMeasure(TestContext context) {
+    void testUnrelatedDimPropOverridesIgnoreMeasure(Context context) {
         ((TestConfig)context.getConfig()).setIgnoreMeasureForNonJoiningDimension(true);
 
         prepareContext(context);

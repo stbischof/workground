@@ -11,13 +11,13 @@ package mondrian.test;
 
 import mondrian.olap.QueryImpl;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -40,7 +40,7 @@ class CaptionTest{
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testMeasureCaption(TestContext context) {
+    void testMeasureCaption(Context context) {
         withSchema(context, MyFoodmartModifier::new);
         final Connection monConnection =
                 context.getConnection();
@@ -61,7 +61,7 @@ class CaptionTest{
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testDimCaption(TestContext context) {
+    void testDimCaption(Context context) {
         withSchema(context, MyFoodmartModifier::new);
         final Connection monConnection =
                 context.getConnection();
@@ -83,7 +83,7 @@ class CaptionTest{
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testDimCaptionShared(TestContext context) {
+    void testDimCaptionShared(Context context) {
         String mdxQuery =
                 "SELECT {[Measures].[Unit Sales]} ON COLUMNS, "
                         + "{[Store Size in SQFT].[All Store Size in SQFTs]} ON ROWS "
@@ -112,7 +112,7 @@ class CaptionTest{
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testLevelCaptionExpression(TestContext context) {
+    void testLevelCaptionExpression(Context context) {
 
         switch (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())) {
             case ACCESS:

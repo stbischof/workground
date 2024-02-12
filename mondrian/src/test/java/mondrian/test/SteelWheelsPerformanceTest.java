@@ -9,10 +9,10 @@
 
 package mondrian.test;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.SteelWheelsDataLoader;
 import org.opencube.junit5.propupdator.AppandSteelWheelsCatalog;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ class SteelWheelsPerformanceTest {
     @ParameterizedTest
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandSteelWheelsCatalog.class, dataloader = SteelWheelsDataLoader.class)
-    void testComplexFilters(TestContext context) throws Exception {
+    void testComplexFilters(Context context) throws Exception {
         final String query =
             "with set [*NATIVE_CJ_SET] as 'NonEmptyCrossJoin([*BASE_MEMBERS_Product], NonEmptyCrossJoin([*BASE_MEMBERS_Markets], NonEmptyCrossJoin([*BASE_MEMBERS_Customers], NonEmptyCrossJoin([*BASE_MEMBERS_Time], [*BASE_MEMBERS_Order Status]))))'\n"
             + "  set [*METRIC_CJ_SET] as 'Filter(Filter([*NATIVE_CJ_SET], (([Measures].[*Sales_SEL~AGG] > 0.0) AND ([Measures].[*Quantity_SEL~AGG] > 0.0))), (NOT IsEmpty([Measures].[Quantity])))'\n"

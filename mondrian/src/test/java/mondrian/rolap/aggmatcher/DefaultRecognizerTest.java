@@ -14,11 +14,11 @@ import mondrian.rolap.RolapSchemaPool;
 import mondrian.rolap.SchemaModifiers;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -44,7 +44,7 @@ class DefaultRecognizerTest {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testDefaultRecognizerWithFactAlias(TestContext context) {
+    void testDefaultRecognizerWithFactAlias(Context context) {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -111,7 +111,7 @@ class DefaultRecognizerTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testTupleReaderWithDistinctCountMeasureInContext(TestContext context) {
+    void testTupleReaderWithDistinctCountMeasureInContext(Context context) {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);

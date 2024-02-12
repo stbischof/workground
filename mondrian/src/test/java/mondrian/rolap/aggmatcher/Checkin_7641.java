@@ -12,6 +12,7 @@ package mondrian.rolap.aggmatcher;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import mondrian.olap.SystemWideProperties;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -54,7 +54,7 @@ public class Checkin_7641 extends CsvDBTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    public void testImplicitMember(TestContext context) throws Exception {
+    public void testImplicitMember(Context context) throws Exception {
         // explicit use of [Product].[Class1]
         prepareContext(context);
         String mdx =

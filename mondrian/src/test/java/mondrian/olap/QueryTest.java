@@ -16,6 +16,7 @@ package mondrian.olap;
 import static mondrian.olap.Util.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.query.component.CellProperty;
 import org.eclipse.daanse.olap.api.query.component.Formula;
@@ -23,7 +24,6 @@ import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -44,7 +44,7 @@ class QueryTest {
     private QueryImpl queryWithoutCellProps;
 
 
-    private void beforeTest(TestContext context)
+    private void beforeTest(Context context)
     {
 
         ConnectionBase connection =
@@ -74,7 +74,7 @@ class QueryTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testHasCellPropertyWhenQueryHasCellProperties(TestContext context) {
+    void testHasCellPropertyWhenQueryHasCellProperties(Context context) {
         beforeTest(context);
         assertTrue(queryWithCellProps.hasCellProperty("Value"));
         assertFalse(queryWithCellProps.hasCellProperty("Language"));
@@ -82,7 +82,7 @@ class QueryTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testIsCellPropertyEmpty(TestContext context) {
+    void testIsCellPropertyEmpty(Context context) {
         beforeTest(context);
         assertTrue(queryWithoutCellProps.isCellPropertyEmpty());
     }

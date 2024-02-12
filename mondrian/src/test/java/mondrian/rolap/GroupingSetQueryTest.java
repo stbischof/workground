@@ -22,13 +22,13 @@ import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Olap4jUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -65,7 +65,7 @@ class GroupingSetQueryTest extends BatchTestCase{
         SystemWideProperties.instance().populateInitial();
     }
 
-    private void pripareContext(TestContext context) {
+    private void pripareContext(Context context) {
         // This test warns of missing sql patterns for
         //
         // ACCESS
@@ -86,7 +86,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGroupingSetsWithAggregateOverDefaultMember(TestContext context) {
+    void testGroupingSetsWithAggregateOverDefaultMember(Context context) {
         pripareContext(context);
         // testcase for MONDRIAN-705
         Connection connection = context.getConnection();
@@ -115,7 +115,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGroupingSetForSingleColumnConstraint(TestContext context) {
+    void testGroupingSetForSingleColumnConstraint(Context context) {
         pripareContext(context);
         ((TestConfig)context.getConfig()).setDisableCaching(false);
         Connection connection = context.getConnection();
@@ -200,7 +200,7 @@ class GroupingSetQueryTest extends BatchTestCase{
     }
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNotUsingGroupingSetWhenGroupUsesDifferentAggregateTable(TestContext context) {
+    void testNotUsingGroupingSetWhenGroupUsesDifferentAggregateTable(Context context) {
         pripareContext(context);
         if (!(context.getConfig().useAggregates()
               && context.getConfig().readAggregates()))
@@ -246,7 +246,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testNotUsingGroupingSet(TestContext context) {
+    void testNotUsingGroupingSet(Context context) {
         pripareContext(context);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
             return;
@@ -296,7 +296,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGroupingSetForMultipleMeasureAndSingleConstraint(TestContext context) {
+    void testGroupingSetForMultipleMeasureAndSingleConstraint(Context context) {
         pripareContext(context);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
             return;
@@ -363,7 +363,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGroupingSetForASummaryCanBeGroupedWith2DetailBatch(TestContext context) {
+    void testGroupingSetForASummaryCanBeGroupedWith2DetailBatch(Context context) {
         pripareContext(context);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
             return;
@@ -436,7 +436,7 @@ class GroupingSetQueryTest extends BatchTestCase{
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testGroupingSetForMultipleColumnConstraint(TestContext context) {
+    void testGroupingSetForMultipleColumnConstraint(Context context) {
         pripareContext(context);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
             return;
@@ -518,7 +518,7 @@ class GroupingSetQueryTest extends BatchTestCase{
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     public void
-        testGroupingSetForMultipleColumnConstraintAndCompoundConstraint(TestContext context)
+        testGroupingSetForMultipleColumnConstraintAndCompoundConstraint(Context context)
     {
         pripareContext(context);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
@@ -583,7 +583,7 @@ class GroupingSetQueryTest extends BatchTestCase{
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testBug2004202(TestContext context) {
+    void testBug2004202(Context context) {
         pripareContext(context);
         assertQueryReturns(context.getConnection(),
             "with member store.allbutwallawalla as\n"

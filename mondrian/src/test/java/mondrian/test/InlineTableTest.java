@@ -10,6 +10,7 @@
 package mondrian.test;
 
 import mondrian.enums.DatabaseProduct;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
@@ -30,7 +31,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -52,7 +52,7 @@ class InlineTableTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testInlineTable(TestContext context) {
+    void testInlineTable(Context context) {
         final String cubeName = "Sales_inline";
         class TestInlineTableModifier extends RDbMappingSchemaModifier {
 
@@ -203,7 +203,7 @@ class InlineTableTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testInlineTableInSharedDim(TestContext context) {
+    void testInlineTableInSharedDim(Context context) {
         final String cubeName = "Sales_inline_shared";
 
         class TestInlineTableInSharedDimModifier extends RDbMappingSchemaModifier {
@@ -367,7 +367,7 @@ class InlineTableTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testInlineTableSnowflake(TestContext context) {
+    void testInlineTableSnowflake(Context context) {
         if (getDatabaseProduct(getDialect(context.getConnection()).getDialectName())
             == DatabaseProduct.INFOBRIGHT)
         {
@@ -580,7 +580,7 @@ class InlineTableTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testInlineTableDate(TestContext context) {
+    void testInlineTableDate(Context context) {
         final String cubeName = "Sales_Inline_Date";
         class TestInlineTableDateModifier extends RDbMappingSchemaModifier {
 

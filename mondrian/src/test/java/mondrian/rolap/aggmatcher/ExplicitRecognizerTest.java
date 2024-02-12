@@ -10,6 +10,7 @@
 package mondrian.rolap.aggmatcher;
 
 import mondrian.olap.SystemWideProperties;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
@@ -29,7 +30,6 @@ import org.opencube.junit5.ContextArgumentsProvider;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -68,7 +68,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitAggExtraColsRequiringJoin(TestContext context) throws SQLException {
+    void testExplicitAggExtraColsRequiringJoin(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -174,7 +174,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitForeignKey(TestContext context) {
+    void testExplicitForeignKey(Context context) {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -309,7 +309,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitAggOrdinalOnAggTable(TestContext context) throws SQLException {
+    void testExplicitAggOrdinalOnAggTable(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -392,7 +392,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitAggCaptionOnAggTable(TestContext context) throws SQLException {
+    void testExplicitAggCaptionOnAggTable(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -475,7 +475,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitAggNameColumnOnAggTable(TestContext context) throws SQLException {
+    void testExplicitAggNameColumnOnAggTable(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -570,7 +570,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testExplicitAggPropertiesOnAggTable(TestContext context) throws SQLException {
+    void testExplicitAggPropertiesOnAggTable(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -711,7 +711,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCountDistinctAllowableRollup(TestContext context) throws SQLException {
+    void testCountDistinctAllowableRollup(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -837,7 +837,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCountDisallowedRollup(TestContext context) throws SQLException {
+    void testCountDisallowedRollup(Context context) throws SQLException {
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
@@ -934,7 +934,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
     }
 
     public static void setupMultiColDimCube(
-        TestContext context, List<MappingAggTable> aggTables, String yearCols, String qtrCols, String monthCols,
+        Context context, List<MappingAggTable> aggTables, String yearCols, String qtrCols, String monthCols,
         String monthCaptionCol, String monthOrdinalCol, String monthNameCol, List<MappingProperty> monthProp)
     {
         setupMultiColDimCube(context,
@@ -942,7 +942,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
     }
 
     public static void setupMultiColDimCube(
-        TestContext context, List<MappingAggTable> aggTables, String yearCol, String qtrCol, String monthCol,
+        Context context, List<MappingAggTable> aggTables, String yearCol, String qtrCol, String monthCol,
         String monthCaptionCol, String monthOrdinalCol, String monthNameCol,
         List<MappingProperty> monthProp, String defaultMeasure)
     {

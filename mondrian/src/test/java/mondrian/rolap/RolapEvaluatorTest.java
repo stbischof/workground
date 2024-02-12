@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.executeQuery;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -23,7 +23,7 @@ class RolapEvaluatorTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testGetSlicerPredicateInfo(TestContext context) throws Exception {
+    void testGetSlicerPredicateInfo(Context context) throws Exception {
         RolapResult result = (RolapResult) executeQuery(context.getConnection(),
             "select  from sales "
             + "WHERE {[Time].[1997].Q1, [Time].[1997].Q2} "
@@ -56,7 +56,7 @@ class RolapEvaluatorTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testListColumnPredicateInfo(TestContext context) throws Exception {
+    void testListColumnPredicateInfo(Context context) throws Exception {
       RolapResult result = (RolapResult) executeQuery(context.getConnection(),
           "select  from sales "
           + "WHERE {[Product].[Drink],[Product].[Non-Consumable]} ");
@@ -71,7 +71,7 @@ class RolapEvaluatorTest {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testOrPredicateInfo(TestContext context) throws Exception {
+    void testOrPredicateInfo(Context context) throws Exception {
       RolapResult result = (RolapResult) executeQuery(context.getConnection(),
           "select  from sales "
           + "WHERE {[Product].[Drink].[Beverages],[Product].[Food].[Produce],[Product].[Non-Consumable]} ");

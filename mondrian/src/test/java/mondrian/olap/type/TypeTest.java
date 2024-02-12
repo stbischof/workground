@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Quoting;
@@ -32,7 +33,6 @@ import org.eclipse.daanse.olap.api.type.Type;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -49,7 +49,7 @@ class TypeTest {
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testConversions(TestContext foodMartContext) {
+    void testConversions(Context foodMartContext) {
         final Connection connection = foodMartContext.getConnection();
         Cube salesCube =
             getCubeWithName("Sales", connection.getSchema().getCubes());
@@ -180,7 +180,7 @@ class TypeTest {
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCommonTypeWhenSetTypeHavingMemberTypeAndTupleType(TestContext foodMartContext) {
+    void testCommonTypeWhenSetTypeHavingMemberTypeAndTupleType(Context foodMartContext) {
         Connection connection=	foodMartContext.getConnection();
         MemberType measureMemberType =
             getMemberTypeHavingMeasureInIt(getUnitSalesMeasure(connection));
@@ -211,7 +211,7 @@ class TypeTest {
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCommonTypeOfMemberandTupleTypeIsTupleType(TestContext foodMartContext) {
+    void testCommonTypeOfMemberandTupleTypeIsTupleType(Context foodMartContext) {
         Connection connection=	foodMartContext.getConnection();
         MemberType measureMemberType =
             getMemberTypeHavingMeasureInIt(getUnitSalesMeasure(connection));
@@ -237,7 +237,7 @@ class TypeTest {
 
 	@ParameterizedTest
 	@ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void testCommonTypeBetweenTuplesOfDifferentSizesIsATupleType(TestContext foodMartContext) {
+    void testCommonTypeBetweenTuplesOfDifferentSizesIsATupleType(Context foodMartContext) {
     Connection connection=	foodMartContext.getConnection();
         MemberType measureMemberType =
             getMemberTypeHavingMeasureInIt(getUnitSalesMeasure(connection));

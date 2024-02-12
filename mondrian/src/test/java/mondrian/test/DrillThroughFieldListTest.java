@@ -22,13 +22,13 @@ import java.util.List;
 
 import mondrian.olap.SystemWideProperties;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -52,7 +52,7 @@ class DrillThroughFieldListTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testOneJoin(TestContext context) {
+  void testOneJoin(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     String mdx = "SELECT\n"
         + "[Measures].[Unit Sales] ON COLUMNS,\n"
@@ -124,7 +124,7 @@ class DrillThroughFieldListTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testOneJoinTwoMeasures(TestContext context) {
+  void testOneJoinTwoMeasures(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     String mdx = "SELECT\n"
         + "{[Measures].[Unit Sales], [Measures].[Store Cost]} ON COLUMNS,\n"
@@ -200,7 +200,7 @@ class DrillThroughFieldListTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testTwoJoins(TestContext context) {
+  void testTwoJoins(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     String mdx = "SELECT\n"
         + "{[Measures].[Unit Sales], [Measures].[Store Cost]} ON COLUMNS,\n"
@@ -285,7 +285,7 @@ class DrillThroughFieldListTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testNoJoin(TestContext context) {
+  void testNoJoin(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     String mdx = "SELECT\n"
         + "Measures.[Store Sqft] on COLUMNS\n"
@@ -332,7 +332,7 @@ class DrillThroughFieldListTest {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-  void testVirtualCube(TestContext context) {
+  void testVirtualCube(Context context) {
     ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);
     String mdx = " SELECT\n"
         + " [Measures].[Unit Sales] ON COLUMNS\n"

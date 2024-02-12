@@ -14,6 +14,7 @@ import mondrian.olap.SystemWideProperties;
 
 import mondrian.test.SqlPattern;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
@@ -30,7 +31,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
@@ -67,7 +67,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testInFilterSimple(TestContext context) throws Exception {
+  void testInFilterSimple(Context context) throws Exception {
       ((TestConfig)context.getConfig()).setExpandNonNative(false);
       ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -93,7 +93,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testNotInFilterSimple(TestContext context) throws Exception {
+  void testNotInFilterSimple(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -119,7 +119,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testInFilterAND(TestContext context) throws Exception {
+  void testInFilterAND(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -147,7 +147,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testIsFilterSimple(TestContext context) throws Exception {
+  void testIsFilterSimple(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -173,7 +173,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  void testNotIsFilterSimple(TestContext context) throws Exception {
+  void testNotIsFilterSimple(Context context) throws Exception {
       ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -199,7 +199,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testMixedInIsFilters(TestContext context) throws Exception {
+  public void  testMixedInIsFilters(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -237,7 +237,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testInFilterNonNative(TestContext context) throws Exception {
+  public void  testInFilterNonNative(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -258,7 +258,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testTopCountOverInFilter(TestContext context) throws Exception {
+  public void  testTopCountOverInFilter(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
     ((TestConfig)context.getConfig()).setEnableNativeTopCount(true);
@@ -289,7 +289,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInFilterKeepNullMember(TestContext context) throws Exception {
+  public void  testNotInFilterKeepNullMember(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -349,7 +349,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInFilterExcludeNullMember(TestContext context) throws Exception {
+  public void  testNotInFilterExcludeNullMember(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -407,7 +407,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInMultiLevelMemberConstraintNonNullParent(TestContext context) {
+  public void  testNotInMultiLevelMemberConstraintNonNullParent(Context context) {
     if ( context.getConfig().readAggregates() ) {
       // If aggregate tables are enabled, generates similar SQL involving
       // agg tables.
@@ -483,7 +483,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInMultiLevelMemberConstraintNonNullSameParent(TestContext context) {
+  public void  testNotInMultiLevelMemberConstraintNonNullSameParent(Context context) {
     if ( context.getConfig().readAggregates() ) {
       // If aggregate tables are enabled, generates similar SQL involving
       // agg tables.
@@ -556,7 +556,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInMultiLevelMemberConstraintMixedNullNonNullParent(TestContext context) {
+  public void  testNotInMultiLevelMemberConstraintMixedNullNonNullParent(Context context) {
     if ( !isDefaultNullMemberRepresentation() ) {
       return;
     }
@@ -734,7 +734,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNotInMultiLevelMemberConstraintSingleNullParent(TestContext context) {
+  public void  testNotInMultiLevelMemberConstraintSingleNullParent(Context context) {
     if ( !isDefaultNullMemberRepresentation() ) {
       return;
     }
@@ -900,7 +900,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testCachedNativeSetUsingFilters(TestContext context) throws Exception {
+  public void  testCachedNativeSetUsingFilters(Context context) throws Exception {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -943,7 +943,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNativeFilter(TestContext context) {
+  public void  testNativeFilter(Context context) {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -967,7 +967,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testCmNativeFilter(TestContext context) {
+  public void  testCmNativeFilter(Context context) {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -1039,7 +1039,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNonNativeFilterWithNullMeasure(TestContext context) {
+  public void  testNonNativeFilterWithNullMeasure(Context context) {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(false);
     checkNotNative(context,
@@ -1085,7 +1085,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNativeFilterWithNullMeasure(TestContext context) {
+  public void  testNativeFilterWithNullMeasure(Context context) {
     // Currently this behaves differently from the non-native evaluation.
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
@@ -1124,7 +1124,7 @@ class FilterTest extends BatchTestCase {
 
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNonNativeFilterWithCalcMember(TestContext context) {
+  public void  testNonNativeFilterWithCalcMember(Context context) {
     // Currently this query cannot run natively
     ((TestConfig)context.getConfig()).setEnableNativeFilter(false);
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
@@ -1155,7 +1155,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testNativeFilterNonEmpty(TestContext context) {
+  public void  testNativeFilterNonEmpty(Context context) {
     ((TestConfig)context.getConfig()).setExpandNonNative(false);
     ((TestConfig)context.getConfig()).setEnableNativeFilter(true);
 
@@ -1183,7 +1183,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testBugMondrian706(TestContext context) {
+  public void  testBugMondrian706(Context context) {
       ((TestConfig)context.getConfig()).setUseAggregates(false);
       ((TestConfig) context.getConfig()).setReadAggregates(false);
     ((TestConfig) context.getConfig()).setDisableCaching(false);
@@ -1314,7 +1314,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testBug779(TestContext context) {
+  public void  testBug779(Context context) {
     final String query1 =
       "With Set [*NATIVE_CJ_SET] as 'Filter([*BASE_MEMBERS_Product], Not IsEmpty ([Measures].[Unit Sales]))' Set "
         + "[*BASE_MEMBERS_Product] as 'Filter([Product].[Product Department].Members,(Ancestor([Product]"
@@ -1389,7 +1389,7 @@ class FilterTest extends BatchTestCase {
    */
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-  public void  testMultiValueInWithNullVals(TestContext context) {
+  public void  testMultiValueInWithNullVals(Context context) {
     // MONDRIAN-1458 - Native exclusion predicate doesn't use agg table
     // when checking for nulls
     //TestContext context = getTestContext();

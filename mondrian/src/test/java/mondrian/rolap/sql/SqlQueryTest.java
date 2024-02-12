@@ -19,6 +19,7 @@ import mondrian.test.SqlPattern;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.db.common.JdbcDialectImpl;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -103,7 +104,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testToStringForSingleGroupingSetSql(TestContext context) {
+    void testToStringForSingleGroupingSetSql(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (!isGroupingSetsSupported(connection)) {
@@ -152,7 +153,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testOrderBy(TestContext context) throws SQLException {
+    void testOrderBy(Context context) throws SQLException {
         Connection connection = context.getConnection();
         prepareContext(connection);
         // Test with requireAlias = true
@@ -207,7 +208,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testToStringForForcedIndexHint(TestContext context) {
+    void testToStringForForcedIndexHint(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         Map<String, String> hints = new HashMap<>();
@@ -301,7 +302,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPredicatesAreOptimizedWhenPropertyIsTrue(TestContext context) {
+    void testPredicatesAreOptimizedWhenPropertyIsTrue(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
@@ -347,7 +348,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testTableNameIsIncludedWithParentChildQuery(TestContext context) {
+    void testTableNameIsIncludedWithParentChildQuery(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         String sql =
@@ -388,7 +389,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPredicatesAreNotOptimizedWhenPropertyIsFalse(TestContext context) {
+    void testPredicatesAreNotOptimizedWhenPropertyIsFalse(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
@@ -435,7 +436,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testPredicatesAreOptimizedWhenAllTheMembersAreIncluded(TestContext context) {
+    void testPredicatesAreOptimizedWhenAllTheMembersAreIncluded(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (context.getConfig().readAggregates() && context.getConfig().useAggregates()) {
@@ -479,7 +480,7 @@ class SqlQueryTest  extends BatchTestCase {
         assertSqlEqualsOptimzePredicates(context, false, mdx, sqlPatterns);
     }
 
-    private void assertSqlEqualsOptimzePredicates(TestContext context,
+    private void assertSqlEqualsOptimzePredicates(Context context,
         boolean optimizePredicatesValue,
         String inputMdx,
         SqlPattern[] sqlPatterns)
@@ -497,7 +498,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testToStringForGroupingSetSqlWithEmptyGroup(TestContext context) {
+    void testToStringForGroupingSetSqlWithEmptyGroup(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (!isGroupingSetsSupported(connection)) {
@@ -549,7 +550,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testToStringForMultipleGroupingSetsSql(TestContext context) {
+    void testToStringForMultipleGroupingSetsSql(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         if (!isGroupingSetsSupported(connection)) {
@@ -618,7 +619,7 @@ class SqlQueryTest  extends BatchTestCase {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testDoubleInList(TestContext context) {
+    void testDoubleInList(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         final Dialect dialect = getDialect(context.getConnection());
@@ -779,7 +780,7 @@ class SqlQueryTest  extends BatchTestCase {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testInvalidSqlMemberLookup(TestContext context) {
+    void testInvalidSqlMemberLookup(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         String sqlMySql =
@@ -814,7 +815,7 @@ class SqlQueryTest  extends BatchTestCase {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testApproxRowCountOverridesCount(TestContext context) {
+    void testApproxRowCountOverridesCount(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         final String cubeSchema =
@@ -913,7 +914,7 @@ class SqlQueryTest  extends BatchTestCase {
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testLimitedRollupMemberRetrievableFromCache(TestContext context) throws Exception {
+    void testLimitedRollupMemberRetrievableFromCache(Context context) throws Exception {
         Connection connection = context.getConnection();
         prepareContext(connection);
         final String mdx =
@@ -1001,7 +1002,7 @@ class SqlQueryTest  extends BatchTestCase {
             + " ISNULL(`store`.`store_state`) ASC, `store`.`store_state` ASC";
         SqlPattern myPattern = new SqlPattern(MYSQL, mySql, mySql.length());
         SqlPattern[] patterns = {pgPattern, myPattern};
-        connection = context.getConnection(List.of("justCA"));
+        connection = ((TestContext)context).getConnection(List.of("justCA"));
         executeQuery(mdx, connection);
         assertQuerySqlOrNot(connection, mdx, patterns, true, false, false);
     }
@@ -1014,7 +1015,7 @@ class SqlQueryTest  extends BatchTestCase {
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-    void testAvgAggregator(TestContext context) {
+    void testAvgAggregator(Context context) {
         Connection connection = context.getConnection();
         prepareContext(connection);
         ((TestConfig)context.getConfig()).setGenerateFormattedSql(true);

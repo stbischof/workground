@@ -10,6 +10,7 @@ package mondrian.rolap.agg;
 
 import mondrian.olap.SystemWideProperties;
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
@@ -46,19 +47,19 @@ class AggregationOnInvalidRoleTest extends CsvDBTestCase {
     }
 
 
-    protected void prepareContext(TestContext context) {
+    protected void prepareContext(Context context) {
         super.prepareContext(context);
     }
 
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
-    void test_ExecutesCorrectly_WhenIgnoringInvalidMembers(TestContext context) {
+    void test_ExecutesCorrectly_WhenIgnoringInvalidMembers(Context context) {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setIgnoreInvalidMembers(true);
         prepareContext(context);
-        Connection connection = context.getConnection(List.of("Test"));
+        Connection connection = ((TestContext)context).getConnection(List.of("Test"));
         //TestContext context = getTestContext().withFreshConnection();
         try {
             executeAnalyzerQuery(connection);

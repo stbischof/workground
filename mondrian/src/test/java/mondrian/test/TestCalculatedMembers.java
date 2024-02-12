@@ -23,6 +23,7 @@ import static org.opencube.junit5.TestUtil.executeExprRaw;
 import static org.opencube.junit5.TestUtil.withSchema;
 
 import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Axis;
@@ -33,16 +34,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestConfig;
-import org.opencube.junit5.context.TestContext;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
-import org.opentest4j.AssertionFailedError;
 
 import mondrian.enums.DatabaseProduct;
 import mondrian.olap.SystemWideProperties;
 import mondrian.rolap.BatchTestCase;
-import mondrian.rolap.RolapSchemaPool;
 import mondrian.rolap.SchemaModifiers;
 
 /**
@@ -68,7 +65,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberInCube(TestContext context) {
+     void testCalculatedMemberInCube(Context context) {
         assertExprReturns(context.getConnection(), "[Measures].[Profit]", "$339,610.90");
 
         // Testcase for bug 829012.
@@ -94,7 +91,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberInCubeWithSpace(TestContext context) {
+     void testCalculatedMemberInCubeWithSpace(Context context) {
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
             "Warehouse and Sales",
@@ -110,7 +107,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberInCubeAndQuery(TestContext context) {
+     void testCalculatedMemberInCubeAndQuery(Context context) {
         // Profit is defined in the cube.
         // Profit Change is defined in the query.
         assertQueryReturns(context.getConnection(),
@@ -138,7 +135,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testQueryCalculatedMemberOverridesCube(TestContext context) {
+     void testQueryCalculatedMemberOverridesCube(Context context) {
         // Profit is defined in the cube, and has a format string "$#,###".
         // We define it in a query to make sure that the format string in the
         // cube doesn't change.
@@ -173,7 +170,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testQueryCalcMemberOverridesShallowerStoredMember(TestContext context) {
+     void testQueryCalcMemberOverridesShallowerStoredMember(Context context) {
         if (!SystemWideProperties.instance().SsasCompatibleNaming) {
             // functionality requires new name resolver
             return;
@@ -210,7 +207,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testEarlierCalcMember(TestContext context) {
+     void testEarlierCalcMember(Context context) {
         if (!SystemWideProperties.instance().SsasCompatibleNaming) {
             // functionality requires new name resolver
             return;
@@ -233,7 +230,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void _testWhole(TestContext context) {
+     void _testWhole(Context context) {
         // "allmembers" tests compatibility with MSAS
 
         executeQuery(
@@ -345,7 +342,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberCaption(TestContext context) {
+     void testCalculatedMemberCaption(Context context) {
         String mdx =
             "select {[Measures].[Profit Growth]} on columns from Sales";
         Result result = executeQuery(mdx, context.getConnection());
@@ -358,7 +355,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberIsSetFails(TestContext context) {
+     void testCalcMemberIsSetFails(Context context) {
         // A member which is a set, and more important, cannot be converted to
         // a value, is an error.
         String queryString =
@@ -430,7 +427,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testBracketInCalcMemberName(TestContext context) {
+     void testBracketInCalcMemberName(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Measures].[has a [bracket]] in it] as \n"
             + "' [Measures].CurrentMember.Name '\n"
@@ -449,7 +446,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNpeInIif(TestContext context) {
+     void testNpeInIif(Context context) {
         assertQueryReturns(context.getConnection(),
             "WITH MEMBER [Measures].[Foo] AS ' 1 / [Measures].[Unit Sales] ',\n"
             + "  FORMAT_STRING=IIf([Measures].[Foo] < .3, \"|0.0|style=red\",\"0.0\")\n"
@@ -483,7 +480,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testBracketInCubeCalcMemberName(TestContext context) {
+     void testBracketInCubeCalcMemberName(Context context) {
         final String cubeName = "Sales_BracketInCubeCalcMemberName";
         /*
         String s =
@@ -535,7 +532,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testPropertyReferencesCalcMember(TestContext context) {
+     void testPropertyReferencesCalcMember(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Measures].[Foo] as ' [Measures].[Unit Sales] * 2 ',"
             + " FORMAT_STRING=IIf([Measures].[Foo] < 600000, \"|#,##0|style=red\",\"#,##0\")  "
@@ -551,7 +548,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberWithQuote(TestContext context) {
+     void testCalcMemberWithQuote(Context context) {
         // MSAS ignores single-quotes
         assertQueryReturns(context.getConnection(),
             "with member [Measures].[Foo] as '1 + 2'\n"
@@ -693,7 +690,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testQuoteInCalcMember(TestContext context) {
+     void testQuoteInCalcMember(Context context) {
         final String cubeName = "Sales_Bug1410383";
         /*
         String s =
@@ -773,7 +770,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testChildrenOfCalcMembers(TestContext context) {
+     void testChildrenOfCalcMembers(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Time].[Time].[# Months Product Sold] as 'Count(Descendants([Time].[Time].LastSibling, [Time].[Month]), EXCLUDEEMPTY)'\n"
             + "select Crossjoin([Time].[# Months Product Sold].Children,\n"
@@ -790,7 +787,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNonCharacterMembers(TestContext context) {
+     void testNonCharacterMembers(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Has Coffee Bar].[Maybe] as \n"
             + "'SUM([Has Coffee Bar].members)' \n"
@@ -808,7 +805,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testFormatString(TestContext context) {
+     void testFormatString(Context context) {
         // Verify that
         // (a) a calculated member without a format string does not
         //     override the format string of a base measure
@@ -858,7 +855,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNegativeSolveOrder(TestContext context) {
+     void testNegativeSolveOrder(Context context) {
         // Negative solve orders are OK.
         assertQueryReturns(context.getConnection(),
             "with member measures.blah as 'measures.[unit sales]', SOLVE_ORDER = -6 select {measures.[unit sales], measures.blah} on 0 from sales",
@@ -897,7 +894,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInQuery(TestContext context) {
+     void testCalcMemberCustomFormatterInQuery(Context context) {
         // calc measure defined in query
         assertQueryReturns(context.getConnection(),
             "with member [Measures].[Foo] as ' [Measures].[Unit Sales] * 2 ',\n"
@@ -926,7 +923,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInQueryNegative(TestContext context) {
+     void testCalcMemberCustomFormatterInQueryNegative(Context context) {
         assertQueryThrows(context,
             "with member [Measures].[Foo] as ' [Measures].[Unit Sales] * 2 ',\n"
             + " CELL_FORMATTER='mondrian.test.NonExistentCellFormatter' \n"
@@ -938,7 +935,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInQueryNegative2(TestContext context) {
+     void testCalcMemberCustomFormatterInQueryNegative2(Context context) {
         String query =
             "with member [Measures].[Foo] as ' [Measures].[Unit Sales] * 2 ',\n"
             + " CELL_FORMATTER='java.lang.String' \n"
@@ -955,7 +952,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInNonMeasureInQuery(TestContext context) {
+     void testCalcMemberCustomFormatterInNonMeasureInQuery(Context context) {
         // CELL_FORMATTER is ignored for calc members which are not measures.
         //
         // We could change this behavior if it makes sense. In fact, we would
@@ -978,7 +975,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInSchema(TestContext context) {
+     void testCalcMemberCustomFormatterInSchema(Context context) {
         // calc member defined in schema
         /*
         String cubeName = "Sales";
@@ -1020,7 +1017,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberCustomFormatterInSchemaNegative(TestContext context) {
+     void testCalcMemberCustomFormatterInSchemaNegative(Context context) {
         // calc member defined in schema
         /*
         String cubeName = "Sales";
@@ -1049,7 +1046,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testStrToSetInCubeCalcMember(TestContext context) {
+     void testStrToSetInCubeCalcMember(Context context) {
         // calc member defined in schema
         /*
         String cubeName = "Sales";
@@ -1083,7 +1080,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCreateCalculatedMember(TestContext context) {
+     void testCreateCalculatedMember(Context context) {
         // REVIEW: What is the purpose of this test?
         String query =
             "WITH MEMBER [Product].[Calculated Member] as 'AGGREGATE({})'\n"
@@ -1112,7 +1109,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testSetIncludesSelf(TestContext context) {
+     void testSetIncludesSelf(Context context) {
         assertQueryReturns(context.getConnection(),
             "with set [Top Products] as ' [Product].Children '\n"
             + "member [Product].[Top Product Total] as ' Aggregate([Top Products]) '\n"
@@ -1143,7 +1140,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNegativeSolveOrderForCalMemberWithFilter(TestContext context) {
+     void testNegativeSolveOrderForCalMemberWithFilter(Context context) {
         assertQueryReturns(context.getConnection(),
             "With "
             + "Set [*NATIVE_CJ_SET] as 'NonEmptyCrossJoin([*BASE_MEMBERS_Education Level],[*BASE_MEMBERS_Product])' "
@@ -1186,7 +1183,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNegativeSolveOrderForCalMemberWithFilters2(TestContext context) {
+     void testNegativeSolveOrderForCalMemberWithFilters2(Context context) {
         assertQueryReturns(context.getConnection(),
             "With "
             + "Set [*NATIVE_CJ_SET] as 'NonEmptyCrossJoin([*BASE_MEMBERS_Education Level],[*BASE_MEMBERS_Product])' "
@@ -1234,7 +1231,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNonTopLevelCalculatedMember(TestContext context) {
+     void testNonTopLevelCalculatedMember(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Product].[Test] as '[Product].[Food]' "
             + "select {[Measures].[Unit Sales]} on columns, "
@@ -1272,7 +1269,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberChildren(TestContext context) {
+     void testCalculatedMemberChildren(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Product].[Test] as '[Product].[Food]' "
             + "select {[Measures].[Unit Sales]} on columns, "
@@ -1297,7 +1294,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalculatedMemberMSASCompatibility(TestContext context) {
+     void testCalculatedMemberMSASCompatibility(Context context) {
         SystemWideProperties.instance().CaseSensitive = false;
         assertQueryReturns(context.getConnection(),
             "with "
@@ -1344,7 +1341,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testSimulatedCompoundSlicer(TestContext context) {
+     void testSimulatedCompoundSlicer(Context context) {
         assertQueryReturns(context.getConnection(),
             "with\n"
             + "  member [Measures].[Price per Unit] as\n"
@@ -1421,7 +1418,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCompoundSlicerOverTuples(TestContext context) {
+     void testCompoundSlicerOverTuples(Context context) {
         // reference query
         assertQueryReturns(context.getConnection(),
             "select [Measures].[Unit Sales] on 0,\n"
@@ -1504,7 +1501,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testExponentialPerformanceBugMondrian608(TestContext context) {
+     void testExponentialPerformanceBugMondrian608(Context context) {
         // Run variants of the same query with increasing expression complexity.
         // With MONDRIAN-608, running time triples each iteration (for
         // example, i=10 takes 2.7s, i=11 takes 9.6s), so 20 would be very
@@ -1582,7 +1579,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCycleFalsePositive(TestContext context) {
+     void testCycleFalsePositive(Context context) {
         if (SystemWideProperties.instance().SsasCompatibleNaming) {
             // This test uses old-style [dimension.hierarchy] names.
             return;
@@ -1697,7 +1694,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testBugMondrian852(TestContext context) {
+     void testBugMondrian852(Context context) {
         // Simpler repro case.
         assertQueryReturns(context.getConnection(),
             "with member [Measures].[Bar] as cast(123 as string)\n"
@@ -1779,7 +1776,7 @@ import mondrian.rolap.SchemaModifiers;
      */
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testNonCanonical(TestContext context) {
+     void testNonCanonical(Context context) {
         // define without 'all', refer with 'all'
         final String expected =
             "Axis #0:\n"
@@ -1805,7 +1802,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberParentOfCalcMember(TestContext context) {
+     void testCalcMemberParentOfCalcMember(Context context) {
         // SSAS fails with "The X calculated member cannot be used as a parent
         // of another calculated member."
         assertQueryThrows(context,
@@ -1819,7 +1816,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberSameNameDifferentHierarchies(TestContext context) {
+     void testCalcMemberSameNameDifferentHierarchies(Context context) {
         assertQueryReturns(context.getConnection(),
             "with member [Gender].[X] as 4\n"
             + " member [Marital Status].[X] as 5\n"
@@ -1835,7 +1832,7 @@ import mondrian.rolap.SchemaModifiers;
 
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
-     void testCalcMemberTooDeep(TestContext context) {
+     void testCalcMemberTooDeep(Context context) {
         // SSAS fails with "The X calculated member cannot be created because
         // its parent is at the lowest level in the Gender hierarchy."
         assertQueryThrows(context,
