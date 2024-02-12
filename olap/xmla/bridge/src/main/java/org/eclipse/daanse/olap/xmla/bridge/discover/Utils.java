@@ -418,7 +418,7 @@ public class Utils {
         Optional<OriginEnum> oOrigin
     ) {
         List<MdSchemaFunctionsResponseRow> result = new ArrayList<>();
-        List<FunctionMetaData> fmList = c.getConnection().getSchema().getFunTable().getFunctionMetaDatas();
+        List<FunctionMetaData> fmList = c.getConnection().getContext().getFunctionService().getFunctionMetaDatas();
         StringBuilder buf = new StringBuilder(50);
         for (FunctionMetaData fm : fmList) {
 			if (fm.operationAtom() instanceof EmptyOperationAtom//

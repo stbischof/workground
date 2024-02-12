@@ -156,10 +156,8 @@ class DbSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(schema1.name()).thenReturn("schema1Name");
         when(schema1.description()).thenReturn("schema1Description");
 
-        when(schema2.name()).thenReturn("schema2Name");
         when(schema2.description()).thenReturn("schema2Description");
 
         when(role1.name()).thenReturn("role1");
@@ -177,17 +175,17 @@ class DbSchemaDiscoverServiceTest {
 
         List<DbSchemaCatalogsResponseRow> rows = service.dbSchemaCatalogs(request);
         verify(context1, times(1)).getName();
-        verify(context2, times(1)).getName();
+        verify(context2, times(3)).getName();
         assertThat(rows).isNotNull().hasSize(2);
         DbSchemaCatalogsResponseRow row = rows.get(0);
         assertThat(row).isNotNull();
-        assertThat(row.catalogName()).contains("schema1Name");
+        assertThat(row.catalogName()).contains("foo");
         assertThat(row.description()).contains("schema1Description");
         assertThat(row.roles()).contains("role1,role2");
 
         row = rows.get(1);
         assertThat(row).isNotNull();
-        assertThat(row.catalogName()).contains("schema2Name");
+        assertThat(row.catalogName()).contains("foo");
         assertThat(row.description()).contains("schema2Description");
         assertThat(row.roles()).contains("role1,role2");
 

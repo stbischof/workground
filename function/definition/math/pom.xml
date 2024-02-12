@@ -19,18 +19,18 @@
   </parent>
   <artifactId>org.eclipse.daanse.function.definition.math</artifactId>
   <dependencies>
-    <dependency>
+    <!--dependency>
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.function.api</artifactId>
       <version>${revision}</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!--dependency>
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.function.core</artifactId>
       <version>${revision}</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>biz.aQute.bnd</groupId>
       <artifactId>biz.aQute.bndlib</artifactId>

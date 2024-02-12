@@ -78,8 +78,8 @@
     <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.db.statistics.nop</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
     <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.db.statistics.query</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
     <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.emondrian</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
-    <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.api</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
-    <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.core</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
+    <!--dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.api</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency-->
+    <!--dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.core</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency-->
     <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.definition.math</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
      <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.definition.vba</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>
     <dependency>       <groupId>org.eclipse.daanse</groupId>       <artifactId>org.eclipse.daanse.function.user.api</artifactId>       <version>${revision}</version>       <scope>compile</scope>     </dependency>

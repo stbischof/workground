@@ -19,7 +19,7 @@
   </parent>
   <artifactId>org.eclipse.daanse.function.definition.vba</artifactId>
   <dependencies>
-    <dependency>
+    <!--dependency>
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.function.api</artifactId>
       <version>${revision}</version>
@@ -30,7 +30,7 @@
       <artifactId>org.eclipse.daanse.function.core</artifactId>
       <version>${revision}</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>biz.aQute.bnd</groupId>
       <artifactId>biz.aQute.bndlib</artifactId>

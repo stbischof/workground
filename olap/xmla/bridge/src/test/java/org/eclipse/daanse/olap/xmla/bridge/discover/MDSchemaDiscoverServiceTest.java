@@ -37,7 +37,7 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.NamedSet;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.function.FunctionMetaData;
-import org.eclipse.daanse.olap.api.function.FunctionTable;
+import org.eclipse.daanse.olap.api.function.FunctionService;
 import org.eclipse.daanse.olap.api.result.Property;
 import org.eclipse.daanse.olap.operation.api.FunctionOperationAtom;
 import org.eclipse.daanse.olap.operation.api.MethodOperationAtom;
@@ -206,8 +206,10 @@ class MDSchemaDiscoverServiceTest {
 
         MdSchemaCubesRequest request = mock(MdSchemaCubesRequest.class);
         MdSchemaCubesRestrictions restrictions = mock(MdSchemaCubesRestrictions.class);
-
+        Properties properties = mock(Properties.class); 
+        when(properties.catalog()).thenReturn(Optional.empty());
         when(request.restrictions()).thenReturn(restrictions);
+        when(request.properties()).thenReturn(properties);
         when(restrictions.catalogName()).thenReturn("foo");
 
         when(mappingSchema1.name()).thenReturn("schema1Name");
@@ -372,13 +374,9 @@ class MDSchemaDiscoverServiceTest {
 
         MdSchemaFunctionsRequest request = mock(MdSchemaFunctionsRequest.class);
         MdSchemaFunctionsRestrictions restrictions = mock(MdSchemaFunctionsRestrictions.class);
-        FunctionTable functionTable = mock(FunctionTable.class);
-        OperationAtom functionAtom1 = mock(FunctionOperationAtom.class);
-        OperationAtom functionAtom2 = mock(MethodOperationAtom.class);
-        when(functionAtom1.name()).thenReturn("functionAtom1Name");
-
-        when(functionAtom2.name()).thenReturn("functionAtom2Name");
-
+        FunctionService functionService = mock(FunctionService.class);
+        OperationAtom functionAtom1 = new FunctionOperationAtom("functionAtom1Name");
+        OperationAtom functionAtom2 = new MethodOperationAtom("functionAtom2Name");
         FunctionMetaData functionMetaData1 = mock(FunctionMetaData.class);
         FunctionMetaData functionMetaData2 = mock(FunctionMetaData.class);
         when(functionMetaData1.parameterDataTypes()).thenAnswer(setupDummyArrayAnswer(DataType.INTEGER,
@@ -392,15 +390,14 @@ class MDSchemaDiscoverServiceTest {
         when(functionMetaData1.operationAtom()).thenReturn(functionAtom1);
         when(functionMetaData2.operationAtom()).thenReturn(functionAtom2);
 
-        when(functionTable.getFunctionMetaDatas()).thenAnswer(setupDummyListAnswer(functionMetaData1,
+        when(functionService.getFunctionMetaDatas()).thenAnswer(setupDummyListAnswer(functionMetaData1,
             functionMetaData2));
 
         when(request.restrictions()).thenReturn(restrictions);
-        when(schema1.getFunTable()).thenReturn(functionTable);
-        when(connection.getSchema()).thenReturn(schema1);
+        when(connection.getContext()).thenReturn(context1);
 
         when(context1.getConnection()).thenReturn(connection);
-
+        when(context1.getFunctionService()).thenReturn(functionService);
         List<MdSchemaFunctionsResponseRow> rows = service.mdSchemaFunctions(request);
         assertThat(rows).isNotNull().hasSize(2);
         checkMdSchemaFunctionsResponseRow(rows.get(0), "functionAtom1Name",
