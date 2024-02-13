@@ -12,6 +12,7 @@ package mondrian.rolap;
 import java.util.Map;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.CastInvalidTypeException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
@@ -20,7 +21,6 @@ import mondrian.olap.Property;
 import mondrian.olap.StringLiteralImpl;
 import mondrian.spi.CellFormatter;
 
-import static mondrian.resource.MondrianResource.CastInvalidType;
 import static mondrian.resource.MondrianResource.UnknownAggregator;
 import static mondrian.resource.MondrianResource.message;
 
@@ -147,7 +147,7 @@ public class RolapBaseCubeMeasure
             }
         }
         if (RolapBaseCubeMeasure.DataType.valueOf(datatype.getValue()) == null) {
-            throw new MondrianException(message(CastInvalidType, datatype.getValue()));
+            throw new CastInvalidTypeException(datatype.getValue());
         }
         setProperty(Property.DATATYPE.name, datatype.getValue());
     }

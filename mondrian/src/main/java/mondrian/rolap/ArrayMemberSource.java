@@ -17,13 +17,10 @@ import java.util.Collections;
 import java.util.List;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.MdxCantFindMemberException;
 import org.eclipse.daanse.olap.api.Segment;
 
 import mondrian.olap.Util;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxCantFindMember;
-
 /**
  * <code>ArrayMemberSource</code> implements a flat, static hierarchy. There is
  * no root member, and all members are siblings.
@@ -90,7 +87,7 @@ abstract class ArrayMemberSource implements MemberSource {
             }
         }
         if (failIfNotFound) {
-            throw new MondrianException(message( MdxCantFindMember, uniqueName));
+            throw new MdxCantFindMemberException(uniqueName);
         } else {
             return null;
         }

@@ -11,12 +11,9 @@
 */
 
 package mondrian.olap.fun;
-
-import static mondrian.resource.MondrianResource.FunctionMbrAndLevelHierarchyMismatch;
-import static mondrian.resource.MondrianResource.message;
-
 import java.util.List;
 
+import mondrian.olap.exceptions.FunctionMbrAndLevelHierarchyMismatchException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Validator;
@@ -36,7 +33,6 @@ import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 
-import mondrian.olap.MondrianException;
 import mondrian.olap.Util;
 import mondrian.olap.type.MemberType;
 import mondrian.rolap.RolapCube;
@@ -140,11 +136,10 @@ class OpeningClosingPeriodFunDef extends AbstractFunctionDefinition {
                 memberCalc.getType().getDimension();
             final Dimension levelDimension = levelCalc.getType().getDimension();
             if (!memberDimension.equals(levelDimension)) {
-                throw new MondrianException(message(
-                    FunctionMbrAndLevelHierarchyMismatch,
+                throw new FunctionMbrAndLevelHierarchyMismatchException(
                         opening ? "OpeningPeriod" : "ClosingPeriod",
                         levelDimension.getUniqueName(),
-                        memberDimension.getUniqueName()));
+                        memberDimension.getUniqueName());
             }
         }
         return new AbstractProfilingNestedMemberCalc(

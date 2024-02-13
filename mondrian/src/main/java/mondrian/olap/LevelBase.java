@@ -11,6 +11,7 @@
 
 package mondrian.olap;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.MatchType;
@@ -25,10 +26,6 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 
 import mondrian.spi.MemberFormatter;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxLevelName;
-
 /**
  * Skeleton implementation of {@link Level}.
  *
@@ -49,6 +46,7 @@ public abstract class LevelBase
     protected int  approxRowCount;
     protected int cardinality = 0;
     protected List<Member> members;
+    private final static String mdxLevelName = "level ''{0}''";
 
     protected LevelBase(
         Hierarchy hierarchy,
@@ -80,7 +78,7 @@ public abstract class LevelBase
     // from Element
     @Override
 	public String getQualifiedName() {
-        return message(MdxLevelName, getUniqueName());
+        return MessageFormat.format(mdxLevelName, getUniqueName());
     }
 
     @Override

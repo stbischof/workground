@@ -13,7 +13,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.MdxCantFindMember;
 import static mondrian.resource.MondrianResource.NativeEvaluationUnsupported;
 import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.RelationUtil.getAlias;
@@ -34,6 +33,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 
+import mondrian.olap.exceptions.MdxCantFindMemberException;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
@@ -299,8 +299,7 @@ public class RolapUtil {
             }
         }
         if (member == null && failIfNotFound) {
-            throw new MondrianException(message(MdxCantFindMember,
-                Util.implode(segments)));
+            throw new MdxCantFindMemberException(Util.implode(segments));
         }
         return member;
     }

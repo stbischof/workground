@@ -12,6 +12,7 @@
 
 package mondrian.olap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +25,6 @@ import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxHierarchyName;
-
 /**
  * Skeleton implementation for {@link Hierarchy}.
  *
@@ -63,6 +60,7 @@ public abstract class HierarchyBase
     protected String allLevelName;
     protected String origin = "1";
     protected List<Member> members = new ArrayList<>();
+    private final static String mdxHierarchyName = "hierarchy ''{0}''";
 
     protected HierarchyBase(
         Dimension dimension,
@@ -147,7 +145,7 @@ public abstract class HierarchyBase
 
     @Override
 	public String getQualifiedName() {
-        return message(MdxHierarchyName, getUniqueName());
+        return MessageFormat.format(mdxHierarchyName, getUniqueName());
     }
 
     public abstract boolean isRagged();

@@ -11,6 +11,7 @@
 
 package mondrian.olap;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.MatchType;
@@ -20,10 +21,6 @@ import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.OlapElement;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxDimensionName;
-
 /**
  * Abstract implementation for a {@link Dimension}.
  *
@@ -39,6 +36,7 @@ public abstract class DimensionBase
     protected final String description;
     protected Hierarchy[] hierarchies;
     protected DimensionType dimensionType;
+    private final static String mdxDimensionName = "dimension ''{0}''";
 
     /**
      * Creates a DimensionBase.
@@ -98,7 +96,7 @@ public abstract class DimensionBase
 
     @Override
 	public String getQualifiedName() {
-        return message(MdxDimensionName, getUniqueName());
+        return MessageFormat.format(mdxDimensionName, getUniqueName());
     }
 
     @Override

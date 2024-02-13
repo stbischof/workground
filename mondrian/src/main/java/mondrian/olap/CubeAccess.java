@@ -14,16 +14,13 @@ package mondrian.olap;
 import java.util.ArrayList;
 import java.util.List;
 
+import mondrian.olap.exceptions.MdxCubeSlicerHierarchyErrorException;
+import mondrian.olap.exceptions.MdxCubeSlicerMemberErrorException;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxCubeSlicerHierarchyError;
-import static mondrian.resource.MondrianResource.MdxCubeSlicerMemberError;
-
 /**
  * This class implements object of type GrantCube to apply permissions
  * on user's MDX query
@@ -117,8 +114,8 @@ public class CubeAccess {
             SchemaReader schemaReader = mdxCube.getSchemaReader(null);
             Member member = schemaReader.getMemberByUniqueName(sMembers, fail);
             if (member == null) {
-                throw new MondrianException(message(MdxCubeSlicerMemberError,
-                    sMember, sHierarchy, mdxCube.getUniqueName()));
+                throw new MdxCubeSlicerMemberErrorException(
+                    sMember, sHierarchy, mdxCube.getUniqueName());
             }
             // there should be only slicer per hierarchy; ignore the rest
             if (getLimitedMemberForHierarchy(member.getHierarchy()) == null) {
@@ -131,8 +128,7 @@ public class CubeAccess {
                     new IdImpl.NameSegmentImpl(sHierarchy),
                     fail);
             if (hierarchy == null) {
-                throw new MondrianException(
-                    message(MdxCubeSlicerHierarchyError, sHierarchy, mdxCube.getUniqueName()));
+                throw new MdxCubeSlicerHierarchyErrorException(sHierarchy, mdxCube.getUniqueName());
             }
             hierarchyList.add(hierarchy);
         }

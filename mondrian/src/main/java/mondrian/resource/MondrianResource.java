@@ -20,27 +20,6 @@ public class MondrianResource {
     private MondrianResource() {
     }
 
-    public final static String MdxChildObjectNotFound = "MDX object ''{0}'' not found in {1}";
-
-    public final static String MemberNotFound = "Member ''{0}'' not found";
-
-    public final static String MdxCubeName = "cube ''{0}''";
-
-    public final static String MdxHierarchyName = "hierarchy ''{0}''";
-
-
-    public final static String MdxDimensionName = "dimension ''{0}''";
-
-    public final static String MdxLevelName = "level ''{0}''";
-
-    public final static String MdxMemberName = "member ''{0}''";
-
-    public final static String FailedToParseQuery = "Failed to parse query ''{0}''";
-
-    public final static String MdxCubeSlicerMemberError = "Failed to add Cube Slicer with member ''{0}'' for hierarchy ''{1}'' on cube ''{2}''";
-
-    public final static String MdxCubeSlicerHierarchyError = "Failed to add Cube Slicer for hierarchy ''{0}'' on cube ''{1}''";
-
     public final static String MdxCalculatedHierarchyError = "Hierarchy for calculated member ''{0}'' not found";
 
     public final static String MdxAxisIsNotSet = "Axis ''{0}'' expression is not a set";
@@ -53,11 +32,7 @@ public class MondrianResource {
 
     public final static String MdxFuncNotHier = "Argument ''{0,number}'' of function ''{1}'' must be a hierarchy";
 
-    public final static String UnknownParameter = "Unknown parameter ''{0}''";
-
     public final static String MdxFormulaNotFound = "Calculated {0} ''{1}'' has not been found in query ''{2}''";
-
-    public final static String MdxCantFindMember = "Cannot find MDX member ''{0}''. Make sure it is indeed a member and not a level or a hierarchy.";
 
     public final static String CalculatedMember = "calculated member";
 
@@ -81,10 +56,6 @@ public class MondrianResource {
 
     public final static String ToggleDrillStateRecursiveNotSupported = "'RECURSIVE' is not supported in ToggleDrillState.";
 
-    public final static String FunctionMbrAndLevelHierarchyMismatch = "The <level> and <member> arguments to {0} must be from the same hierarchy. The level was from ''{1}'' but the member was from ''{2}''.";
-
-    public final static String CousinHierarchyMismatch = "The member arguments to the Cousin function must be from the same hierarchy. The members are ''{0}'' and ''{1}''.";
-
     public final static String HierarchyInIndependentAxes = "Hierarchy ''{0}'' appears in more than one independent axis.";
 
     public final static String ArgsMustHaveSameHierarchy = "All arguments to function ''{0}'' must have same hierarchy.";
@@ -102,13 +73,9 @@ public class MondrianResource {
 
     public final static String VisualTotalsAppliedToTuples = "Argument to 'VisualTotals' function must be a set of members; got set of tuples.";
 
-    public final static String ParameterIsNotModifiable = "Parameter ''{0}'' (defined at ''{1}'' scope) is not modifiable";
-
     public final static String ParameterDefinedMoreThanOnce = "Parameter ''{0}'' is defined more than once in this statement";
 
     public final static String CycleDuringParameterEvaluation = "Cycle occurred while evaluating parameter ''{0}''";
-
-    public final static String CastInvalidType = "Unknown type ''{0}''; values are NUMERIC, STRING, BOOLEAN";
 
     public final static String NullNotSupported = "Function does not support NULL member parameter";
 

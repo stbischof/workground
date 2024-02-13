@@ -17,9 +17,6 @@ package mondrian.olap;
 import static mondrian.olap.fun.FunUtil.DOUBLE_EMPTY;
 import static mondrian.olap.fun.FunUtil.DOUBLE_NULL;
 import static mondrian.resource.MondrianResource.LimitExceededDuringCrossjoin;
-import static mondrian.resource.MondrianResource.MdxCantFindMember;
-import static mondrian.resource.MondrianResource.MdxChildObjectNotFound;
-import static mondrian.resource.MondrianResource.MemberNotFound;
 import static mondrian.resource.MondrianResource.UdfClassMustBePublicAndStatic;
 import static mondrian.resource.MondrianResource.UdfClassWrongIface;
 import static mondrian.resource.MondrianResource.message;
@@ -34,12 +31,10 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.lang.annotation.Annotation;
 import java.lang.ref.Reference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -90,6 +85,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import mondrian.olap.exceptions.MdxCantFindMemberException;
+import mondrian.olap.exceptions.MdxChildObjectNotFoundException;
+import mondrian.olap.exceptions.MemberNotFoundException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.MatchType;
 import org.eclipse.daanse.olap.api.Parameter;
@@ -97,7 +95,6 @@ import org.eclipse.daanse.olap.api.QueryTiming;
 import org.eclipse.daanse.olap.api.Quoting;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
-import org.eclipse.daanse.olap.api.Syntax;
 import org.eclipse.daanse.olap.api.Validator;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.access.Role;
@@ -121,7 +118,6 @@ import org.eclipse.daanse.olap.api.query.component.ParameterExpression;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.query.component.QueryAxis;
 import org.eclipse.daanse.olap.api.result.CellSet;
-import org.eclipse.daanse.olap.api.result.Olap4jUtil;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.profile.CalculationProfile;
@@ -718,10 +714,10 @@ public class Util {
                 if (!failIfNotFound) {
                     return null;
                 } else if (category == DataType.MEMBER) {
-                    throw new MondrianException(message(MemberNotFound,
-                        quoteMdxIdentifier(names)));
+                    throw new MemberNotFoundException(
+                        quoteMdxIdentifier(names));
                 } else {
-                    throw new MondrianException(message(MdxChildObjectNotFound, name.toString(), parent.getQualifiedName()));
+                    throw new MdxChildObjectNotFoundException(name.toString(), parent.getQualifiedName());
                 }
             }
             parent = child;
@@ -771,8 +767,7 @@ public class Util {
             if (parent instanceof Member) {
                 return parent;
             } else if (failIfNotFound) {
-                throw new MondrianException(message( MdxCantFindMember,
-                    implode(names)));
+                throw new MdxCantFindMemberException(implode(names));
             } else {
                 return null;
             }
@@ -907,19 +902,16 @@ public class Util {
                 if (olapElement != null) {
                     olapElement = olapElement.getHierarchy().getNullMember();
                 } else {
-                    throw new MondrianException(message(MdxChildObjectNotFound,
-                            fullName, cube.getQualifiedName()));
+                    throw new MdxChildObjectNotFoundException(fullName, cube.getQualifiedName());
                 }
             } else {
-                throw new MondrianException(message(MdxChildObjectNotFound,
-                        fullName, cube.getQualifiedName()));
+                throw new MdxChildObjectNotFoundException(fullName, cube.getQualifiedName());
             }
         }
 
         Role role = schemaReader.getRole();
         if (!role.canAccess(olapElement)) {
-            throw new MondrianException(message(MdxChildObjectNotFound,
-                    fullName, cube.getQualifiedName()));
+            throw new MdxChildObjectNotFoundException(fullName, cube.getQualifiedName());
         }
         if (olapElement instanceof Member member) {
             olapElement =
@@ -1825,8 +1817,8 @@ public class Util {
         String type;
         switch (category) {
         case MEMBER:
-            return new MondrianException(message(MemberNotFound,
-                identifierNode.toString()));
+            return new MemberNotFoundException(
+                identifierNode.toString());
         case UNKNOWN:
             type = "Element";
             break;

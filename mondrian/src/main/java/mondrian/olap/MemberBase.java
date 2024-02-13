@@ -10,6 +10,7 @@
 */
 package mondrian.olap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +27,6 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import mondrian.olap.fun.FunUtil;
 import mondrian.spi.MemberFormatter;
 import mondrian.util.Bug;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxMemberName;
-
 /**
  * <code>MemberBase</code> is a partial implementation of {@link Member}.
  *
@@ -79,8 +76,9 @@ public abstract class MemberBase
    * {@link Object#clone}.
    */
   private static final MemberType[] MEMBER_TYPE_VALUES = MemberType.values();
+    private final static String mdxMemberName = "member ''{0}''";
 
-  protected MemberBase(
+    protected MemberBase(
     Member parentMember,
     Level level,
     MemberType memberType ) {
@@ -102,7 +100,7 @@ public abstract class MemberBase
 
   @Override
 public String getQualifiedName() {
-    return message(MdxMemberName, getUniqueName() );
+    return MessageFormat.format( mdxMemberName, getUniqueName() );
   }
 
   @Override

@@ -11,6 +11,7 @@
 
 package mondrian.olap;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.MatchType;
@@ -24,10 +25,6 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
-
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxCubeName;
-
 /**
  * <code>CubeBase</code> is an abstract implementation of {@link Cube}.
  *
@@ -40,6 +37,7 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
     private final String uniqueName;
     private final String description;
     protected Dimension[] dimensions;
+    private final static String mdxCubeName = "cube ''{0}''";
 
     /**
      * Creates a CubeBase.
@@ -78,7 +76,7 @@ public abstract class CubeBase extends OlapElementBase implements Cube {
 
     @Override
 	public String getQualifiedName() {
-        return message(MdxCubeName, getName());
+        return MessageFormat.format(mdxCubeName, getName());
     }
 
     @Override

@@ -11,11 +11,9 @@
 
 package mondrian.olap;
 
-import static mondrian.resource.MondrianResource.FailedToParseQuery;
-import static mondrian.resource.MondrianResource.message;
-
 import java.util.List;
 
+import mondrian.olap.exceptions.FailedToParseQueryException;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Schema;
@@ -83,7 +81,7 @@ public abstract class ConnectionBase implements Connection {
                 parser.parseInternal(
                     statement, query, debug, funTable, strictValidation);
         } catch (Exception e) {
-            throw new MondrianException(message(FailedToParseQuery, query), e);
+            throw new FailedToParseQueryException(query, e);
         }
     }
 
@@ -112,7 +110,7 @@ public abstract class ConnectionBase implements Connection {
                 parser.parseInternal(
                     statement, query, debug, funTable, strictValidation);
         } catch (Exception e) {
-            throw new MondrianException(message(FailedToParseQuery, query), e);
+            throw new FailedToParseQueryException(query, e);
         }
     }
 }

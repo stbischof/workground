@@ -9,9 +9,7 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.FunctionMbrAndLevelHierarchyMismatch;
-import static mondrian.resource.MondrianResource.message;
-
+import mondrian.olap.exceptions.FunctionMbrAndLevelHierarchyMismatchException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Validator;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -30,7 +28,6 @@ import org.eclipse.daanse.olap.calc.base.constant.ConstantIntegerCalc;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 
-import mondrian.olap.MondrianException;
 import mondrian.olap.type.DecimalType;
 import mondrian.olap.type.MemberType;
 import mondrian.rolap.RolapCube;
@@ -157,10 +154,10 @@ class ParallelPeriodFunDef extends AbstractFunctionDefinition {
         // The ancestorLevel and the member must be from the
         // same hierarchy.
         if (member.getHierarchy() != ancestorLevel.getHierarchy()) {
-            new MondrianException(message(FunctionMbrAndLevelHierarchyMismatch,
+            new FunctionMbrAndLevelHierarchyMismatchException(
                 "ParallelPeriod",
                 ancestorLevel.getHierarchy().getUniqueName(),
-                member.getHierarchy().getUniqueName()));
+                member.getHierarchy().getUniqueName());
         }
 
         if (lagValue == Integer.MIN_VALUE) {

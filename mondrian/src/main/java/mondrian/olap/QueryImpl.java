@@ -23,8 +23,6 @@ import static mondrian.resource.MondrianResource.MdxCalculatedFormulaUsedOnSlice
 import static mondrian.resource.MondrianResource.MdxFormulaNotFound;
 import static mondrian.resource.MondrianResource.NonContiguousAxis;
 import static mondrian.resource.MondrianResource.ParameterDefinedMoreThanOnce;
-import static mondrian.resource.MondrianResource.ParameterIsNotModifiable;
-import static mondrian.resource.MondrianResource.UnknownParameter;
 import static mondrian.resource.MondrianResource.message;
 
 import java.io.PrintWriter;
@@ -39,6 +37,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import mondrian.olap.exceptions.ParameterIsNotModifiableException;
+import mondrian.olap.exceptions.UnknownParameterException;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
@@ -942,12 +942,11 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         final Parameter param =
             getSchemaReader(false).getParameter(parameterName);
         if (param == null) {
-            throw new MondrianException(message(UnknownParameter,
-                parameterName));
+            throw new UnknownParameterException(parameterName);
         }
         if (!param.isModifiable()) {
-            throw new MondrianException(message(ParameterIsNotModifiable,
-                parameterName, param.getScope().name()));
+            throw new ParameterIsNotModifiableException(
+                parameterName, param.getScope().name());
         }
         final Object value2 =
         Locus.execute(

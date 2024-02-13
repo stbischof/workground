@@ -11,8 +11,6 @@
 */
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.CousinHierarchyMismatch;
-import static mondrian.resource.MondrianResource.MdxChildObjectNotFound;
 import static mondrian.resource.MondrianResource.MemberNotInLevelHierarchy;
 import static mondrian.resource.MondrianResource.message;
 
@@ -25,12 +23,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import mondrian.olap.exceptions.CousinHierarchyMismatchException;
+import mondrian.olap.exceptions.MdxChildObjectNotFoundException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.MatchType;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
-import org.eclipse.daanse.olap.api.Syntax;
 import org.eclipse.daanse.olap.api.Validator;
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.element.Dimension;
@@ -507,7 +506,7 @@ public class FunUtil extends Util {
       }
     }
   }
- 
+
   public static OperationAtom decodeSyntacticTypeToOp( String flags,String name ) {
 	    char c = flags.charAt( 0 );
 	    switch ( c ) {
@@ -1163,8 +1162,8 @@ public class FunUtil extends Util {
       return ancestorMember;
     }
     if ( member.getHierarchy() != ancestorMember.getHierarchy() ) {
-      throw new MondrianException(message(CousinHierarchyMismatch,
-        member.getUniqueName(), ancestorMember.getUniqueName() ));
+      throw new CousinHierarchyMismatchException(
+        member.getUniqueName(), ancestorMember.getUniqueName() );
     }
     if ( member.getLevel().getDepth()
       < ancestorMember.getLevel().getDepth() ) {
@@ -1700,8 +1699,8 @@ public class FunUtil extends Util {
     // todo: check for garbage at end of string
     final Member member = members[ 0 ];
     if ( member == null ) {
-      throw new MondrianException(message(MdxChildObjectNotFound,
-        string, evaluator.getCube().getQualifiedName() ));
+      throw new MdxChildObjectNotFoundException(
+        string, evaluator.getCube().getQualifiedName() );
     }
     return member;
   }

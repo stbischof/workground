@@ -12,7 +12,6 @@ package mondrian.olap;
 import static mondrian.resource.MondrianResource.MdxMemberExpIsSet;
 import static mondrian.resource.MondrianResource.MoreThanOneFunctionMatchesSignature;
 import static mondrian.resource.MondrianResource.NoFunctionMatchesSignature;
-import static mondrian.resource.MondrianResource.UnknownParameter;
 import static mondrian.resource.MondrianResource.message;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mondrian.olap.exceptions.UnknownParameterException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Parameter;
 import org.eclipse.daanse.olap.api.SchemaReader;
@@ -404,7 +404,7 @@ abstract class ValidatorImpl implements Validator {
             if (param != null) {
                 return param;
             }
-            throw new MondrianException(message(UnknownParameter, name));
+            throw new UnknownParameterException(name);
         }
     }
 

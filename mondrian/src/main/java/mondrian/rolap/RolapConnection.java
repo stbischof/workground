@@ -29,9 +29,6 @@
 
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.FailedToParseQuery;
-import static mondrian.resource.MondrianResource.message;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
+import mondrian.olap.exceptions.FailedToParseQueryException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
@@ -65,7 +63,6 @@ import org.slf4j.LoggerFactory;
 
 import mondrian.calc.impl.TupleCollections;
 import mondrian.olap.ConnectionBase;
-import mondrian.olap.MondrianException;
 import mondrian.olap.QueryCanceledException;
 import mondrian.olap.QueryImpl;
 import mondrian.olap.QueryTimeoutException;
@@ -340,9 +337,9 @@ public Result execute( Query query ) {
         );
       }
     };
-    
+
 	MemoryMonitor mm = context.getConfig().memoryMonitor() ? new NotificationMemoryMonitor() : new FauxMemoryMonitor();
-	
+
     final long currId = execution.getId();
     try {
       mm.addListener( listener, context.getConfig().memoryMonitorThreshold() );
@@ -474,9 +471,7 @@ public Expression parseExpression( String expr ) {
       MdxParserValidator parser = createParser();
       return parser.parseExpression( statement, expr, debug, context.getFunctionService() );
     } catch ( Throwable exception ) {
-      throw new MondrianException(message(FailedToParseQuery,
-        expr),
-        exception );
+      throw new FailedToParseQueryException( expr, exception );
     }
   }
 
