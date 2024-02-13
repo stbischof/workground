@@ -222,11 +222,10 @@ class SqlConstraintUtilsTest {
         Expression aggregateArg0 = new MemberExpressionImpl(aggregatedMember0);
 
         FunctionMetaData functionInformation = Mockito.mock(FunctionMetaData.class);
-        OperationAtom functionAtom = Mockito.mock(FunctionOperationAtom.class);
+        OperationAtom functionAtom = new FunctionOperationAtom("dummy");
 
 
         Mockito.doReturn(functionAtom).when(functionInformation).operationAtom();
-        Mockito.doReturn("dummy").when(functionAtom).name();
 
 
         FunctionDefinition funDef = new AggregateFunDef(functionInformation);

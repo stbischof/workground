@@ -15,6 +15,7 @@ import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -85,6 +86,7 @@ public class Vba {
         + "Date.")
     public static Date cDate(Object expression) {
         String str = String.valueOf(expression);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         if (expression instanceof Date date) {
             return date;
         } else if (expression == null) {
@@ -95,7 +97,7 @@ public class Vba {
             // "October 19, 1962"
             // "4:35:47 PM"
             try {
-                return DateFormat.getTimeInstance().parse(str);
+                return sdf.parse(str);
             } catch (ParseException ex0) {
                 try {
                     return DateFormat.getDateTimeInstance().parse(str);

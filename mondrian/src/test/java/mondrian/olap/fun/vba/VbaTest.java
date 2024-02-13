@@ -245,6 +245,7 @@ class VbaTest   {
         Date date = new Date();
         assertEquals(date, Vba.cDate(date));
         assertNull(Vba.cDate(null));
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         // CInt rounds to the nearest even number
         try {
             assertEquals(
@@ -254,7 +255,7 @@ class VbaTest   {
                 DateFormat.getDateInstance().parse("October 19, 1962"),
                 Vba.cDate("October 19, 1962"));
             assertEquals(
-                DateFormat.getTimeInstance().parse("4:35:47 PM"),
+            		sdf.parse("4:35:47 PM"),
                 Vba.cDate("4:35:47 PM"));
             assertEquals(
                 DateFormat.getDateInstance().parse(
@@ -595,17 +596,17 @@ class VbaTest   {
     void testFormatDateTime() {
         try {
             Date date = new SimpleDateFormat("MMM d, yyyy h:mm:ss a", Locale.ENGLISH).parse("October 19, 1962 4:35:47 PM");
-            assertEquals("Oct 19, 1962, 4:35:47 PM", Vba.formatDateTime(date));
+            assertEquals("Oct 19, 1962, 4:35:47 PM", Vba.formatDateTime(date));
             assertEquals(
-                "Oct 19, 1962, 4:35:47 PM", Vba.formatDateTime(date, 0));
+                "Oct 19, 1962, 4:35:47 PM", Vba.formatDateTime(date, 0));
             assertEquals("October 19, 1962", Vba.formatDateTime(date, 1));
             assertEquals("10/19/62", Vba.formatDateTime(date, 2));
             String datestr = Vba.formatDateTime(date, 3);
             assertNotNull(datestr);
             // skip the timezone so this test runs everywhere
             // in EST, this string is "4:35:47 PM EST"
-            assertTrue(datestr.startsWith("4:35:47 PM"));
-            assertEquals("4:35 PM", Vba.formatDateTime(date, 4));
+            assertTrue(datestr.startsWith("4:35:47 PM"));
+            assertEquals("4:35 PM", Vba.formatDateTime(date, 4));
         } catch (ParseException e) {
             e.printStackTrace();
             fail();
