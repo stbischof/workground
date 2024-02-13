@@ -10,9 +10,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.NonTimeLevelInTimeHierarchy;
-import static mondrian.resource.MondrianResource.TimeLevelInNonTimeHierarchy;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.genericExpression;
 import static mondrian.rolap.util.LevelUtil.getPropertyExp;
 
@@ -21,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
+import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.MatchType;
@@ -234,16 +232,14 @@ public class RolapLevel extends LevelBase {
         Dimension dim = hierarchy.getDimension();
         if (dim.getDimensionType() == DimensionType.TIME_DIMENSION) {
             if (!levelType.isTime() && !isAll()) {
-                throw new MondrianException(message(
-                    NonTimeLevelInTimeHierarchy, getUniqueName()));
+                throw new NonTimeLevelInTimeHierarchyException(getUniqueName());
             }
         } else if (dim.getDimensionType() == null) {
             // there was no dimension type assigned to the dimension
             // - check later
         } else {
             if (levelType.isTime()) {
-                throw new MondrianException(message(
-                    TimeLevelInNonTimeHierarchy, getUniqueName()));
+                throw new TimeLevelInNonTimeHierarchyException(getUniqueName());
             }
         }
         this.internalType = internalType;

@@ -9,8 +9,6 @@
 package mondrian.rolap;
 
 import static mondrian.resource.MondrianResource.RoleUnionGrants;
-import static mondrian.resource.MondrianResource.UnknownRole;
-import static mondrian.resource.MondrianResource.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -32,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import mondrian.olap.exceptions.UnknownRoleException;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.SchemaReader;
@@ -155,7 +154,7 @@ class RolapSchemaTest {
             createSchema().createUnionRole(role);
         } catch (MondrianException ex) {
             assertMondrianException(
-                new MondrianException(message(UnknownRole, roleName)), ex);
+                new UnknownRoleException(roleName), ex);
             return;
         }
         fail("Should fail if union and schema grants exist simultaneously");

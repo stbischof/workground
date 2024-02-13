@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.SegmentCacheFailedToLoadSegmentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +23,12 @@ import mondrian.spi.SegmentHeader;
 import mondrian.util.ClassResolver;
 import mondrian.util.ServiceDiscovery;
 
+import static mondrian.olap.exceptions.SegmentCacheFailedToLoadSegmentException.segmentCacheFailedToLoadSegment;
 import static mondrian.resource.MondrianResource.SegmentCacheFailedToDeleteSegment;
 import static mondrian.resource.MondrianResource.SegmentCacheFailedToInstanciate;
-import static mondrian.resource.MondrianResource.SegmentCacheFailedToLoadSegment;
 import static mondrian.resource.MondrianResource.SegmentCacheFailedToSaveSegment;
 import static mondrian.resource.MondrianResource.SegmentCacheFailedToScanSegments;
 import static mondrian.resource.MondrianResource.SegmentCacheIsNotImplementingInterface;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Utility class to interact with the {@link SegmentCache}.
@@ -139,9 +139,9 @@ public final class SegmentCacheWorker {
         try {
             return cache.get(header);
         } catch (Throwable t) {
-            LOGGER.error(SegmentCacheFailedToLoadSegment,
+            LOGGER.error(segmentCacheFailedToLoadSegment,
                 t);
-            throw new MondrianException(SegmentCacheFailedToLoadSegment, t);
+            throw new SegmentCacheFailedToLoadSegmentException(t);
         }
     }
 

@@ -10,13 +10,13 @@
 package mondrian.olap.fun;
 
 import static mondrian.resource.MondrianResource.MdxFuncArgumentsNum;
-import static mondrian.resource.MondrianResource.MdxFuncNotHier;
-import static mondrian.resource.MondrianResource.NullValue;
 import static mondrian.resource.MondrianResource.message;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import mondrian.olap.exceptions.ArgumentFunctionNotHierarchyException;
+import mondrian.olap.exceptions.EmptyExpressionWasSpecifiedException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Validator;
@@ -76,7 +76,7 @@ class StrToTupleFunDef extends AbstractFunctionDefinition {
                     String string = stringCalc.evaluate(evaluator);
                     if (string == null) {
                         throw FunUtil.newEvalException(
-                            new MondrianException(NullValue));
+                            new EmptyExpressionWasSpecifiedException());
                     }
                     return FunUtil.parseMember(evaluator, string, hierarchy);
                 }
@@ -90,7 +90,7 @@ class StrToTupleFunDef extends AbstractFunctionDefinition {
                     String string = stringCalc.evaluate(evaluator);
                     if (string == null) {
                         throw FunUtil.newEvalException(
-                            new MondrianException(NullValue));
+                            new EmptyExpressionWasSpecifiedException());
                     }
                     return FunUtil.parseTuple(evaluator, string, hierarchies);
                 }
@@ -113,8 +113,8 @@ class StrToTupleFunDef extends AbstractFunctionDefinition {
             } else if (arg instanceof HierarchyExpressionImpl) {
                 // nothing
             } else {
-                throw new MondrianException(message( MdxFuncNotHier,
-                    String.valueOf(i + 1), getFunctionMetaData().operationAtom().name()));
+                throw new ArgumentFunctionNotHierarchyException(
+                    i + 1, getFunctionMetaData().operationAtom().name());
             }
         }
         return super.createCall(validator, args);

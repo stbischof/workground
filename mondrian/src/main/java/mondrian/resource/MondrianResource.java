@@ -30,13 +30,7 @@ public class MondrianResource {
 
     public final static String MdxFuncArgumentsNum = "Function ''{0}'' must have at least 2 arguments";
 
-    public final static String MdxFuncNotHier = "Argument ''{0,number}'' of function ''{1}'' must be a hierarchy";
-
     public final static String MdxFormulaNotFound = "Calculated {0} ''{1}'' has not been found in query ''{2}''";
-
-    public final static String CalculatedMember = "calculated member";
-
-    public final static String CalculatedSet = "calculated set";
 
     public final static String MdxCalculatedFormulaUsedOnAxis = "Cannot delete {0} ''{1}''. It is used on {2} axis.";
 
@@ -45,8 +39,6 @@ public class MondrianResource {
     public final static String MdxCalculatedFormulaUsedInFormula = "Cannot delete {0} ''{1}''. It is used in definition of {2} ''{3}''.";
 
     public final static String MdxCalculatedFormulaUsedInQuery = "Cannot delete {0} ''{1}''. It is used in query ''{2}''.";
-
-    public final static String MdxAxisShowSubtotalsNotSupported = "Show/hide subtotals operation on axis ''{0,number}'' is not supported.";
 
     public final static String NoFunctionMatchesSignature = "No function matches signature ''{0}''";
 
@@ -85,21 +77,11 @@ public class MondrianResource {
 
     public final static String HierarchyHasNoAccessibleMembers = "Hierarchy ''{0}'' has no accessible members.";
 
-    public final static String NullValue = "An MDX expression was expected. An empty expression was specified.";
-
     public final static String DrillthroughDisabled = "Can''t perform drillthrough operations because ''{0}'' is set to false.";
 
     public final static String DrillthroughCalculatedMember = "Can''t perform drillthrough operations because ''{0}'' is a calculated member.";
 
     public final static String ValidMeasureUsingCalculatedMember = "The function ValidMeasure cannot be used with the measure ''{0}'' because it is a calculated member. The function should be used to wrap the base measure in the source cube.";
-
-    public final static String UnsupportedCalculatedMember = "Calculated member ''{0}'' is not supported within a compound predicate";
-
-    public final static String CurrentMemberWithCompoundSlicer = "The MDX function CURRENTMEMBER failed because the coordinate for the ''{0}'' hierarchy contains a set";
-
-    public final static String NonTimeLevelInTimeHierarchy = "Level ''{0}'' belongs to a time hierarchy, so its level-type must be  ''Regular'', ''TimeYears'', ''TimeHalfYears'', ''TimeHalfYear'', ''TimeQuarters'', ''TimeMonths'', ''TimeWeeks'', ''TimeDays'', ''TimeHours'', ''TimeMinutes'', ''TimeSeconds'', ''TimeUndefined''.";
-
-    public final static String TimeLevelInNonTimeHierarchy = "Level ''{0}'' does not belong to a time hierarchy, so its level-type must be ''Standard''.";
 
     public final static String MustSpecifyPrimaryKeyForHierarchy = "In usage of hierarchy ''{0}'' in cube ''{1}'', you must specify a primary key.";
 
@@ -143,8 +125,6 @@ public class MondrianResource {
 
     public final static String UdfClassMustBePublicAndStatic = "Failed to load user-defined function ''{0}'': class ''{1}'' must be public and static";
 
-    public final static String UdfClassWrongIface = "Failed to load user-defined function ''{0}'': class ''{1}'' does not implement the required interface ''{2}''";
-
     public final static String UdfDuplicateName = "Duplicate user-defined function ''{0}''";
 
     public final static String NamedSetNotUnique = "Named set ''{0}'' already exists in cube ''{1}''";
@@ -163,13 +143,9 @@ public class MondrianResource {
 
     public final static String RoleUnionGrants = "Union role must not contain grants";
 
-    public final static String UnknownRole = "Unknown role ''{0}''";
-
     public final static String DescendantsAppliedToSetOfTuples = "Argument to Descendants function must be a member or set of members, not a set of tuples";
 
     public final static String CannotDeduceTypeOfSet = "Cannot deduce type of set";
-
-    public final static String NotANamedSet = "Not a named set";
 
     public final static String HierarchyHasNoLevels = "Hierarchy ''{0}'' must have at least one level.";
 
@@ -178,10 +154,6 @@ public class MondrianResource {
     public final static String IllegalLeftDeepJoin = "Left side of join must not be a join; mondrian only supports right-deep joins.";
 
     public final static String LevelTableParentNotFound = "The level {0} makes use of the ''parentColumn'' attribute, but a parent member for key {1} is missing. This can be due to the usage of the NativizeSet MDX function with a list of members form a parent-child hierarchy that doesn''t include all parent members in its definition. Using NativizeSet with a parent-child hierarchy requires the parent members to be included in the set, or the hierarchy cannot be properly built natively.";
-
-    public final static String CreateTableFailed = "Mondrian loader could not create table ''{0}''.";
-
-    public final static String CreateIndexFailed = "Mondrian loader could not create index ''{0}'' on table ''{1}''.";
 
     public final static String MissingArg = "Argument ''{0}'' must be specified.";
 
@@ -241,11 +213,7 @@ public class MondrianResource {
 
     public final static String MissingDefaultAggRule = "There is no default aggregate recognition rule with tag ''{0}''.";
 
-    public final static String AggRuleParse = "Error while parsing default aggregate recognition ''{0}''.";
-
     public final static String BadMeasureName = "Context ''{0}'': Failed to find Measure name ''{1}'' for cube ''{2}''.";
-
-    public final static String BadRolapStarLeftJoinCondition = "Context ''{0}'': Bad RolapStar left join condition type: ''{1}'' ''{2}''.";
 
     public final static String SqlQueryFailed = "Context ''{0}'': Sql query failed to run ''{1}''.";
 
@@ -295,19 +263,11 @@ public class MondrianResource {
 
     public final static String SegmentCacheFailedToInstanciate = "An exception was encountered while creating the SegmentCache.";
 
-    public final static String SegmentCacheFailedToLoadSegment = "An exception was encountered while loading a segment from the SegmentCache.";
-
     public final static String SegmentCacheFailedToSaveSegment = "An exception was encountered while loading a segment from the SegmentCache.";
-
-    public final static String SegmentCacheFailedToLookupSegment = "An exception was encountered while performing a segment lookup in the SegmentCache.";
 
     public final static String SegmentCacheFailedToScanSegments = "An exception was encountered while getting a list of segment headers in the SegmentCache.";
 
     public final static String SegmentCacheFailedToDeleteSegment = "An exception was encountered while deleting a segment from the SegmentCache.";
-
-    public final static String SegmentCacheReadTimeout = "Timeout reached while reading segment from SegmentCache.";
-
-    public final static String SegmentCacheWriteTimeout = "Timeout reached while writing segment to SegmentCache.";
 
     public final static String SegmentCacheLookupTimeout = "Timeout reached while performing a segment lookup in SegmentCache.";
 

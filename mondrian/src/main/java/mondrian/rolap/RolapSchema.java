@@ -36,7 +36,6 @@ import static mondrian.resource.MondrianResource.PublicDimensionMustNotHaveForei
 import static mondrian.resource.MondrianResource.RoleUnionGrants;
 import static mondrian.resource.MondrianResource.UdfClassNotFound;
 import static mondrian.resource.MondrianResource.UdfDuplicateName;
-import static mondrian.resource.MondrianResource.UnknownRole;
 import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.NamedSetUtil.getFormula;
 
@@ -56,6 +55,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import mondrian.olap.exceptions.UnknownRoleException;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
@@ -571,8 +571,8 @@ public class RolapSchema implements Schema {
         for (MappingRoleUsage roleUsage : usages) {
             Role role = mapNameToRole.get(roleUsage.roleName());
             if (role == null) {
-                throw new MondrianException(message(UnknownRole,
-                    roleUsage.roleName()));
+                throw new UnknownRoleException(
+                    roleUsage.roleName());
             }
             roleList.add(role);
         }

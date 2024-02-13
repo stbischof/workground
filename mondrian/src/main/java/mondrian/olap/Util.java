@@ -18,7 +18,6 @@ import static mondrian.olap.fun.FunUtil.DOUBLE_EMPTY;
 import static mondrian.olap.fun.FunUtil.DOUBLE_NULL;
 import static mondrian.resource.MondrianResource.LimitExceededDuringCrossjoin;
 import static mondrian.resource.MondrianResource.UdfClassMustBePublicAndStatic;
-import static mondrian.resource.MondrianResource.UdfClassWrongIface;
 import static mondrian.resource.MondrianResource.message;
 
 import java.io.BufferedReader;
@@ -88,6 +87,7 @@ import java.util.stream.Collectors;
 import mondrian.olap.exceptions.MdxCantFindMemberException;
 import mondrian.olap.exceptions.MdxChildObjectNotFoundException;
 import mondrian.olap.exceptions.MemberNotFoundException;
+import mondrian.olap.exceptions.UdfClassWrongInterfaceException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.MatchType;
 import org.eclipse.daanse.olap.api.Parameter;
@@ -3194,23 +3194,23 @@ public class Util {
         }
         // 3. Else, no constructor suitable.
         if (constructor == null) {
-            throw new MondrianException(message(UdfClassWrongIface,
+            throw new UdfClassWrongInterfaceException(
                 functionNameOrEmpty,
                 className,
-                UserDefinedFunction.class.getName()));
+                UserDefinedFunction.class.getName());
         }
         // Instantiate class.
         try {
             udf = (UserDefinedFunction) constructor.newInstance(args);
         } catch (InstantiationException | ClassCastException e) {
-            throw new MondrianException(message(UdfClassWrongIface,
+            throw new UdfClassWrongInterfaceException(
                 functionNameOrEmpty,
-                className, UserDefinedFunction.class.getName()));
+                className, UserDefinedFunction.class.getName());
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new MondrianException(message(UdfClassWrongIface,
+            throw new UdfClassWrongInterfaceException(
                 functionName,
                 className,
-                UserDefinedFunction.class.getName()));
+                UserDefinedFunction.class.getName());
         }
 
         return udf;

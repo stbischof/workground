@@ -9,8 +9,7 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.NullValue;
-
+import mondrian.olap.exceptions.EmptyExpressionWasSpecifiedException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.function.FunctionDefinition;
@@ -20,8 +19,6 @@ import org.eclipse.daanse.olap.calc.api.StringCalc;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedMemberCalc;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
-
-import mondrian.olap.MondrianException;
 
 /**
  * Definition of the <code>StrToMember</code> MDX function.
@@ -51,7 +48,7 @@ class StrToMemberFunDef extends AbstractFunctionDefinition {
                     memberNameCalc.evaluate(evaluator);
                 if (memberName == null) {
                     throw FunUtil.newEvalException(
-                        new MondrianException(NullValue));
+                        new EmptyExpressionWasSpecifiedException());
                 }
                 return FunUtil.parseMember(evaluator, memberName, null);
             }

@@ -8,12 +8,10 @@
 */
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.CurrentMemberWithCompoundSlicer;
-import static mondrian.resource.MondrianResource.message;
-
 import java.util.Map;
 import java.util.Set;
 
+import mondrian.olap.exceptions.CurrentMemberWithCompoundSlicerException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -126,12 +124,12 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
 
       if ( members != null && members.size() > 1 ) {
           MondrianException exception =
-            new MondrianException(message(CurrentMemberWithCompoundSlicer,  hierarchy.getUniqueName() ));
+            new CurrentMemberWithCompoundSlicerException( hierarchy.getUniqueName() );
 
         if ( alertValue.equalsIgnoreCase( "WARN" ) ) {
           HierarchyCurrentMemberFunDef.LOGGER.warn( exception.getMessage() );
         } else if ( alertValue.equalsIgnoreCase("ERROR") ) {
-          throw new MondrianException(message(CurrentMemberWithCompoundSlicer,  hierarchy.getUniqueName() ));
+          throw new CurrentMemberWithCompoundSlicerException( hierarchy.getUniqueName() );
         }
       }
     }

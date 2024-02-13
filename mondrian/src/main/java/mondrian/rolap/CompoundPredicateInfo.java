@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.UnsupportedCalculatedMemberException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Expression;
@@ -33,9 +33,6 @@ import mondrian.rolap.agg.OrPredicate;
 import mondrian.rolap.agg.ValueColumnPredicate;
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.util.Pair;
-
-import static mondrian.resource.MondrianResource.UnsupportedCalculatedMember;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Constructs a Pair<BitKey, StarPredicate> based on an tuple list and measure, along with the string representation of
@@ -359,7 +356,7 @@ public class CompoundPredicateInfo {
     } else if ( type.getArity() == 1 ) {
       return makeUnaryPredicate( member, baseCube, evaluator );
     } else {
-      throw new MondrianException(message(UnsupportedCalculatedMember, member.getName(), null ));
+      throw new UnsupportedCalculatedMemberException( member.getName() );
     }
   }
 
@@ -369,7 +366,7 @@ public class CompoundPredicateInfo {
     List<Member> expandedMemberList = constraint.getMembers();
     for ( Member checkMember : expandedMemberList ) {
       if ( checkMember == null || checkMember.isCalculated() || !( checkMember instanceof RolapCubeMember ) ) {
-        throw new MondrianException(message(UnsupportedCalculatedMember, member.getName(), null ));
+        throw new UnsupportedCalculatedMemberException( member.getName() );
       }
     }
     List<StarPredicate> predicates = new ArrayList<>( expandedMemberList.size() );

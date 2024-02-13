@@ -15,6 +15,8 @@ package mondrian.rolap;
 import java.util.Map;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
+import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -29,10 +31,6 @@ import mondrian.olap.DimensionBase;
 import mondrian.olap.DimensionType;
 import mondrian.olap.Util;
 import mondrian.rolap.util.DimensionTypeUtil;
-
-import static mondrian.resource.MondrianResource.NonTimeLevelInTimeHierarchy;
-import static mondrian.resource.MondrianResource.TimeLevelInNonTimeHierarchy;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * <code>RolapDimension</code> implements {@link Dimension}for a ROLAP
@@ -157,16 +155,14 @@ class RolapDimension extends DimensionBase {
                             && !lev.getLevelType().isTime()
                             && !lev.isAll())
                         {
-                            throw new MondrianException(message(
-                                NonTimeLevelInTimeHierarchy,
-                                    getUniqueName()));
+                            throw new NonTimeLevelInTimeHierarchyException(
+                                    getUniqueName());
                         }
                         if (dimensionType != DimensionType.TIME_DIMENSION
                             && lev.getLevelType().isTime())
                         {
-                            throw new MondrianException(message(
-                                TimeLevelInNonTimeHierarchy,
-                                    getUniqueName()));
+                            throw new TimeLevelInNonTimeHierarchyException(
+                                    getUniqueName());
                         }
                     }
                 }

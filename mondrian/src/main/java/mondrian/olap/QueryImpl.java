@@ -11,11 +11,8 @@
 */
 package mondrian.olap;
 
-import static mondrian.resource.MondrianResource.CalculatedMember;
-import static mondrian.resource.MondrianResource.CalculatedSet;
 import static mondrian.resource.MondrianResource.DuplicateAxis;
 import static mondrian.resource.MondrianResource.HierarchyInIndependentAxes;
-import static mondrian.resource.MondrianResource.MdxAxisShowSubtotalsNotSupported;
 import static mondrian.resource.MondrianResource.MdxCalculatedFormulaUsedInFormula;
 import static mondrian.resource.MondrianResource.MdxCalculatedFormulaUsedInQuery;
 import static mondrian.resource.MondrianResource.MdxCalculatedFormulaUsedOnAxis;
@@ -37,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import mondrian.olap.exceptions.MdxAxisShowSubtotalsNotSupportedException;
 import mondrian.olap.exceptions.ParameterIsNotModifiableException;
 import mondrian.olap.exceptions.UnknownParameterException;
 import org.eclipse.daanse.olap.api.Connection;
@@ -233,8 +231,10 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     private final List<ScopedNamedSet> scopedNamedSets =
         new ArrayList<>();
     private boolean ownStatement;
+    private final static String calculatedMember = "calculated member";
+    private final static String calculatedSet = "calculated set";
 
-  /**
+    /**
    * Creates a Query.
    */
   public QueryImpl(Statement statement, Formula[] formulas, QueryAxis[] axes, String cubeName, QueryAxis slicerAxis,
@@ -1258,8 +1258,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                 // mdxElement is used in the query. lets find on on which axis
                 // or formula
                 String formulaType = formula.isMember()
-                    ? CalculatedMember
-                    : CalculatedSet;
+                    ? calculatedMember
+                    : calculatedSet;
 
                 int i = 0;
                 Object parent = walker.getAncestor(i);
@@ -1276,8 +1276,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
                         } else if (parent instanceof Formula form) {
                             String parentFormulaType =
                                 form.isMember()
-                                    ? CalculatedMember
-                                    : CalculatedSet;
+                                    ? calculatedMember
+                                    : calculatedSet;
                             throw new MondrianException(message(
                                 MdxCalculatedFormulaUsedInFormula,
                                     formulaType, uniqueName, parentFormulaType,
@@ -1392,8 +1392,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
      */
     public void setAxisShowEmptyCells(int axis, boolean showEmpty) {
         if (axis >= axes.length) {
-            throw new MondrianException(message(MdxAxisShowSubtotalsNotSupported,
-                axis));
+            throw new MdxAxisShowSubtotalsNotSupportedException(
+                axis);
         }
         axes[axis].setNonEmpty(!showEmpty);
     }
@@ -1405,8 +1405,8 @@ public class QueryImpl extends AbstractQueryPart implements Query {
     @Override
     public Hierarchy[] getMdxHierarchiesOnAxis(AxisOrdinal axis) {
         if (axis.logicalOrdinal() >= axes.length) {
-            throw new MondrianException(message(MdxAxisShowSubtotalsNotSupported,
-                axis.logicalOrdinal()));
+            throw new MdxAxisShowSubtotalsNotSupportedException(
+                axis.logicalOrdinal());
         }
         QueryAxis queryAxis =
             axis.isFilter()

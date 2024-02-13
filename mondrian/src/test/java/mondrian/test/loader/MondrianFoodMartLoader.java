@@ -11,8 +11,6 @@
 package mondrian.test.loader;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
-import static mondrian.resource.MondrianResource.CreateIndexFailed;
-import static mondrian.resource.MondrianResource.CreateTableFailed;
 import static mondrian.resource.MondrianResource.InvalidInsertLine;
 import static mondrian.resource.MondrianResource.MissingArg;
 import static mondrian.resource.MondrianResource.message;
@@ -46,6 +44,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import mondrian.olap.exceptions.CreateIndexFailedException;
+import mondrian.olap.exceptions.CreateTableFailedException;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2229,8 +2229,8 @@ public class MondrianFoodMartLoader {
             final String createDDL = buf.toString();
             executeDDL(createDDL);
         } catch (Exception e) {
-            throw new MondrianException(message(CreateIndexFailed,
-                indexName, tableName), e);
+            throw new CreateIndexFailedException(
+                indexName, tableName, e);
         }
     }
 
@@ -2760,8 +2760,8 @@ public class MondrianFoodMartLoader {
                     try {
                         executeDDL("DELETE FROM " + quoteId(schema, name));
                     } catch (SQLException e) {
-                        throw new MondrianException(message(CreateTableFailed,
-                            name), e);
+                        throw new CreateTableFailedException(
+                            name, e);
                     }
                 }
                 return;
@@ -2829,7 +2829,7 @@ public class MondrianFoodMartLoader {
             final String ddl = buf.toString();
             executeDDL(ddl);
         } catch (Exception e) {
-            throw new MondrianException(message(CreateTableFailed, name), e);
+            throw new CreateTableFailedException(name, e);
         }
     }
 

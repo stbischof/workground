@@ -9,8 +9,7 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.NotANamedSet;
-
+import mondrian.olap.exceptions.NotANamedSetException;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Validator;
 import org.eclipse.daanse.olap.api.query.component.Expression;
@@ -20,8 +19,6 @@ import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.calc.base.nested.AbstractProfilingNestedIntegerCalc;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
-
-import mondrian.olap.MondrianException;
 
 /**
  * Definition of the <code>&lt;Named Set&gt;.CurrentOrdinal</code> MDX builtin
@@ -46,7 +43,7 @@ public class NamedSetCurrentOrdinalFunDef extends AbstractFunctionDefinition {
         assert args.length == 1;
         final Expression arg0 = args[0];
         if (!(arg0 instanceof NamedSetExpression)) {
-            throw new MondrianException(NotANamedSet);
+            throw new NotANamedSetException();
         }
         return super.createCall(validator, args);
     }
