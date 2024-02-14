@@ -122,6 +122,9 @@ public class MDSchemaDiscoverService {
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
         Optional<VisibilityEnum> oDimensionVisibility = request.restrictions().dimensionVisibility();
         Optional<Boolean> deep = request.properties().deep();
+        if (oCatalogName.isEmpty()) {
+        	oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
