@@ -11,9 +11,7 @@
 package mondrian.test.loader;
 
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
-import static mondrian.resource.MondrianResource.InvalidInsertLine;
-import static mondrian.resource.MondrianResource.MissingArg;
-import static mondrian.resource.MondrianResource.message;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,12 +44,13 @@ import java.util.zip.ZipFile;
 
 import mondrian.olap.exceptions.CreateIndexFailedException;
 import mondrian.olap.exceptions.CreateTableFailedException;
+import mondrian.olap.exceptions.InvalidInsertLineException;
+import mondrian.olap.exceptions.MissingArgException;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.enums.DatabaseProduct;
-import mondrian.olap.MondrianException;
 import mondrian.olap.Util;
 import mondrian.rolap.RolapUtil;
 
@@ -274,8 +273,8 @@ public class MondrianFoodMartLoader {
         }
         if (errorMessage.length() > 0) {
             usage();
-            throw new MondrianException(message(MissingArg,
-                errorMessage.toString()));
+            throw new MissingArgException(
+                errorMessage.toString());
         }
 
         if (LOGGER.isInfoEnabled()) {
@@ -611,8 +610,8 @@ public class MondrianFoodMartLoader {
                 //   values = "1, 'bar'"
                 final Matcher matcher = regex.matcher(line);
                 if (!matcher.matches()) {
-                    throw new MondrianException(message(InvalidInsertLine,
-                        lineNumber, line));
+                    throw new InvalidInsertLineException(
+                        lineNumber, line);
                 }
                 String tableName = matcher.group(1); // e.g. "foo"
                 String columnNames = matcher.group(2);

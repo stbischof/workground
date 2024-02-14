@@ -11,12 +11,27 @@
 
 package mondrian.olap;
 
+import java.text.MessageFormat;
+
 /**
  * Exception which indicates some resource limit was exceeded.
  */
 public class ResourceLimitExceededException
     extends ResultLimitExceededException
 {
+    private final static String message1 =
+        "Number of members to be read exceeded limit ({0,number})";
+
+    private final static String message2 =
+        "Size of CrossJoin result ({0,number}) exceeded limit ({1,number})";
+
+    public ResourceLimitExceededException(Number result, Number limit) {
+        this(MessageFormat.format(message2, result, limit));
+    }
+
+    public ResourceLimitExceededException(Number limit) {
+        this(MessageFormat.format(message1, limit));
+    }
     /**
      * Creates a ResourceLimitExceededException
      *

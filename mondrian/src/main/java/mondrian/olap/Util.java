@@ -16,9 +16,6 @@ package mondrian.olap;
 
 import static mondrian.olap.fun.FunUtil.DOUBLE_EMPTY;
 import static mondrian.olap.fun.FunUtil.DOUBLE_NULL;
-import static mondrian.resource.MondrianResource.LimitExceededDuringCrossjoin;
-import static mondrian.resource.MondrianResource.UdfClassMustBePublicAndStatic;
-import static mondrian.resource.MondrianResource.message;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +42,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -221,6 +219,8 @@ public class Util {
 
 
     private static final SecureRandom random = new SecureRandom();
+    private static final String udfClassMustBePublicAndStatic =
+        "Failed to load user-defined function ''{0}'': class ''{1}'' must be public and static";
 
     static {
         compatible = new UtilCompatibleJdk16();
@@ -943,7 +943,7 @@ public class Util {
             }
         }
         if (fail) {
-            throw new MondrianException(message("MDX cube ''{0}'' not found", cubeName));
+            throw new MondrianException(MessageFormat.format("MDX cube ''{0}'' not found", cubeName));
         }
         return null;
     }
@@ -2077,14 +2077,14 @@ public class Util {
      * Creates an internal error with a given message.
      */
     public static RuntimeException newInternal(String message) {
-        return new MondrianException(message("Internal error: {0}", message));
+        return new MondrianException(MessageFormat.format("Internal error: {0}", message));
     }
 
     /**
      * Creates an internal error with a given message and cause.
      */
     public static RuntimeException newInternal(Throwable e, String message) {
-        return new MondrianException(message("Internal error: {0}", message), e);
+        return new MondrianException(MessageFormat.format("Internal error: {0}", message), e);
     }
 
     /**
@@ -3163,7 +3163,7 @@ public class Util {
                 || (udfClass.getEnclosingClass() != null
                     && !Modifier.isStatic(udfClass.getModifiers())))
         {
-            throw new MondrianException(message(UdfClassMustBePublicAndStatic,
+            throw new MondrianException(MessageFormat.format(udfClassMustBePublicAndStatic,
                 functionName,
                 className));
         }
@@ -3234,15 +3234,15 @@ public class Util {
         // Throw an exeption, if the size of the crossjoin exceeds the result
         // limit.
         if (resultLimit > 0 && resultLimit < resultSize) {
-            throw new ResourceLimitExceededException(message(LimitExceededDuringCrossjoin,
-                resultSize, resultLimit));
+            throw new ResourceLimitExceededException(
+                resultSize, resultLimit);
         }
 
         // Throw an exception if the crossjoin exceeds a reasonable limit.
         // (Yes, 4 billion is a reasonable limit.)
         if (resultSize > Integer.MAX_VALUE) {
-            throw new ResourceLimitExceededException(message(LimitExceededDuringCrossjoin,
-                resultSize, Integer.MAX_VALUE));
+            throw new ResourceLimitExceededException(
+                resultSize, Integer.MAX_VALUE);
         }
     }
 

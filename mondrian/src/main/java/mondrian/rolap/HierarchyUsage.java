@@ -13,15 +13,11 @@
 
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.DimensionUsageHasUnknownLevel;
-import static mondrian.resource.MondrianResource.MustSpecifyForeignKeyForHierarchy;
-import static mondrian.resource.MondrianResource.MustSpecifyPrimaryKeyForHierarchy;
-import static mondrian.resource.MondrianResource.MustSpecifyPrimaryKeyTableForHierarchy;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.getTableAlias;
 import static mondrian.rolap.util.RelationUtil.find;
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import mondrian.olap.MondrianException;
@@ -60,6 +56,15 @@ import mondrian.olap.Util;
  */
 public class HierarchyUsage {
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchyUsage.class);
+    private final static String mustSpecifyPrimaryKeyForHierarchy =
+        "In usage of hierarchy ''{0}'' in cube ''{1}'', you must specify a primary key.";
+    private final static String dimensionUsageHasUnknownLevel =
+        "In usage of dimension ''{0}'' in cube ''{1}'', the level ''{2}'' is unknown";
+    private final static String mustSpecifyForeignKeyForHierarchy = """
+        In usage of hierarchy ''{0}'' in cube ''{1}'', you must specify a foreign key, because the hierarchy table is different from the fact table.
+    """;
+    private final static String mustSpecifyPrimaryKeyTableForHierarchy =
+        "Must specify a primary key table for hierarchy ''{0}'', because it has more than one table.";
 
     enum Kind {
         UNKNOWN,
@@ -364,8 +369,8 @@ public class HierarchyUsage {
             RolapLevel joinLevel = (RolapLevel)
                     Util.lookupHierarchyLevel(hierarchy, cubeDim.level());
             if (joinLevel == null) {
-                throw new MondrianException(message(
-                    DimensionUsageHasUnknownLevel,
+                throw new MondrianException(MessageFormat.format(
+                    dimensionUsageHasUnknownLevel,
                         hierarchy.getUniqueName(),
                         cube.getName(),
                         cubeDim.level()));
@@ -404,14 +409,14 @@ public class HierarchyUsage {
         final boolean inFactTable = this.joinTable.equals(cube.getFact());
         if (!inFactTable) {
             if (this.joinExp == null) {
-                throw new MondrianException(message(
-                    MustSpecifyPrimaryKeyForHierarchy,
+                throw new MondrianException(MessageFormat.format(
+                    mustSpecifyPrimaryKeyForHierarchy,
                         hierarchy.getUniqueName(),
                         cube.getName()));
             }
             if (foreignKey == null) {
-                throw new MondrianException(message(
-                    MustSpecifyForeignKeyForHierarchy,
+                throw new MondrianException(MessageFormat.format(
+                    mustSpecifyForeignKeyForHierarchy,
                         hierarchy.getUniqueName(),
                         cube.getName()));
             }
@@ -434,8 +439,8 @@ public class HierarchyUsage {
         if (tableName == null) {
             table = hierarchy.getUniqueTable();
             if (table == null) {
-                throw new MondrianException(message(
-                    MustSpecifyPrimaryKeyTableForHierarchy,
+                throw new MondrianException(MessageFormat.format(
+                    mustSpecifyPrimaryKeyTableForHierarchy,
                         hierarchy.getUniqueName()));
             }
         } else {

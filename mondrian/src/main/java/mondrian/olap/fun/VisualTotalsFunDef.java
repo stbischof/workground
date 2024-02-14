@@ -9,8 +9,6 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.VisualTotalsAppliedToTuples;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +57,8 @@ public class VisualTotalsFunDef extends AbstractFunctionDefinition {
             "Dynamically totals child members specified in a set using a pattern for the total label in the result set.",
             new String[] {"fxx", "fxxS"},
             VisualTotalsFunDef.class);
+    private final static String visualTotalsAppliedToTuples =
+        "Argument to 'VisualTotals' function must be a set of members; got set of tuples.";
 
     public VisualTotalsFunDef(FunctionMetaData functionMetaData) {
         super(functionMetaData);
@@ -76,7 +76,7 @@ public class VisualTotalsFunDef extends AbstractFunctionDefinition {
             final SetType setType = (SetType) validatedArg.getType();
             final Type elementType = setType.getElementType();
             if (!(elementType instanceof MemberType)) {
-                throw new MondrianException(VisualTotalsAppliedToTuples);
+                throw new MondrianException(visualTotalsAppliedToTuples);
             }
         }
         return validatedArg;

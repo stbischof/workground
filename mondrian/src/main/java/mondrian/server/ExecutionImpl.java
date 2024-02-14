@@ -10,8 +10,6 @@
 */
 package mondrian.server;
 
-import static mondrian.resource.MondrianResource.QueryCanceled;
-
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -147,10 +145,10 @@ public class ExecutionImpl implements Execution{
 							new ServertEventCommon(
     		new EventCommon(Instant.now()), context.getName()),connection
             .getId()), statement.getId()), id), phase, hitCountInc, missCountInc, pendingCountInc);
-    		
+
 	context.getMonitor().accept(executionPhaseEvent);
 //    		new ExecutionPhaseEvent( System.currentTimeMillis(), context.getName(), connection
-//        .getId(), statement.getId(), id, phase, hitCountInc, missCountInc, pendingCountInc ) 
+//        .getId(), statement.getId(), id, phase, hitCountInc, missCountInc, pendingCountInc )
     ++phase;
     this.cellCacheHitCount = hitCount;
     this.cellCacheMissCount = missCount;
@@ -216,7 +214,7 @@ public class ExecutionImpl implements Execution{
             Thread.currentThread().interrupt();
           }
         }
-        throw new QueryCanceledException(QueryCanceled);
+        throw new QueryCanceledException();
       case RUNNING:
       case TIMEOUT:
         if ( timeoutTimeMillis > 0 ) {
@@ -224,7 +222,7 @@ public class ExecutionImpl implements Execution{
 //          if ( currTime > timeoutTimeMillis ) {
 //            this.state = State.TIMEOUT;
 //            fireExecutionEndEvent();
-//            throw new InvalidArgumentException(message(QueryTimeout, timeoutIntervalMillis / 1000 ));
+//            throw new InvalidArgumentException(MessageFormat.format(QueryTimeout, timeoutIntervalMillis / 1000 ));
 //          }
         }
         break;
@@ -409,10 +407,10 @@ public class ExecutionImpl implements Execution{
   private void fireExecutionEndEvent() {
     final Connection connection = statement.getMondrianConnection();
     final Context context = connection.getContext();
-    
+
 	ExecutionEndEvent endEvent = new ExecutionEndEvent(
 			new ExecutionEventCommon(
-					
+
 					new MdxStatementEventCommon(
 							new ConnectionEventCommon(
 									new ServertEventCommon(
@@ -423,14 +421,14 @@ public class ExecutionImpl implements Execution{
 	context.getMonitor().accept(endEvent);
 //    		new ExecutionEndEvent( , context.getName(), connection.getId(),
 //        , this.id, this.phase, this.state, this.cellCacheHitCount, this.cellCacheMissCount,
-//        this.cellCachePendingCount, expCacheHitCount, expCacheMissCount ) 
+//        this.cellCachePendingCount, expCacheHitCount, expCacheMissCount )
   }
 
   private void fireExecutionStartEvent() {
     final Connection connection = statement.getMondrianConnection();
     final Context context = connection.getContext();
-    
-    
+
+
 	ExecutionStartEvent executionStartEvent = new ExecutionStartEvent(new ExecutionEventCommon(
 
 			new MdxStatementEventCommon(new ConnectionEventCommon(
@@ -439,7 +437,7 @@ public class ExecutionImpl implements Execution{
 			id), getMdx());
 	context.getMonitor().accept(executionStartEvent);
 //    		new ExecutionStartEvent( startTimeMillis, context.getName(), connection.getId(),
-//        statement.getId(), id, getMdx() ) 
+//        statement.getId(), id, getMdx() )
   }
 
   public void setCellCacheHitCount( int cellCacheHitCount ) {

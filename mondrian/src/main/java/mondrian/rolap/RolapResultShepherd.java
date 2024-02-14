@@ -9,9 +9,7 @@
 
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.QueryLimitReached;
-import static mondrian.resource.MondrianResource.message;
-
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -78,12 +76,16 @@ public class RolapResultShepherd implements ResultShepherd {
                 1000000,
                 "mondrian.rolap.RolapResultShepherd$executor",
                 new RejectedExecutionHandler() {
+                    private final static String queryLimitReached = """
+                    The number of concurrent MDX statements that can be processed simultaneously by this Mondrian server instance ({0,number}) has been reached. To change the limit, set the ''{1}'' property.
+                    """;
+
                     @Override
 					public void rejectedExecution(
                         Runnable r,
                         ThreadPoolExecutor executor)
                     {
-                        throw new MondrianException(message(QueryLimitReached,
+                        throw new MondrianException(MessageFormat.format(queryLimitReached,
                             maximumPoolSize,
                             "rolapConnectionShepherdNbThreads"));
                     }

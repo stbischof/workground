@@ -11,11 +11,9 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.DrillthroughDisabled;
-import static mondrian.resource.MondrianResource.message;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +83,8 @@ public class RolapCell implements Cell {
     private final RolapResult result;
     protected final int[] pos;
     protected RolapResult.CellInfo ci;
+    private final static String drillthroughDisabled =
+        "Can''t perform drillthrough operations because ''{0}'' is set to false.";
 
     /**
      * Creates a RolapCell.
@@ -165,8 +165,8 @@ public class RolapCell implements Cell {
         if (!result.getExecution().getMondrianStatement().getMondrianConnection().getContext().getConfig()
             .enableDrillThrough())
         {
-            throw new MondrianException(message(
-                DrillthroughDisabled,
+            throw new MondrianException(MessageFormat.format(
+                drillthroughDisabled,
                         "enableDrillThrough"));
         }
         final Member[] currentMembers = getMembersForDrillThrough();
@@ -551,7 +551,7 @@ public class RolapCell implements Cell {
         int resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;
         int resultSetConcurrency = ResultSet.CONCUR_READ_ONLY;
         final Schema schema = statement.getSchema();
-        
+
         Dialect dialect = execution.getMondrianStatement().getMondrianConnection().getContext().getDialect();
         if (!dialect.supportsResultSetConcurrency(
                 resultSetType, resultSetConcurrency)

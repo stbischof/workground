@@ -12,7 +12,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.IllegalLeftDeepJoin;
 import static mondrian.rolap.util.ExpressionUtil.genericExpression;
 import static mondrian.rolap.util.JoinUtil.getLeftAlias;
 import static mondrian.rolap.util.JoinUtil.getRightAlias;
@@ -130,6 +129,8 @@ public class RolapStar {
         new HashMap<>();
 
     private final RolapStatisticsCache statisticsCache;
+    private final static String illegalLeftDeepJoin =
+        "Left side of join must not be a join; mondrian only supports right-deep joins.";
 
     /**
      * Creates a RolapStar. Please use
@@ -377,7 +378,7 @@ public class RolapStar {
             }
         } else if (relOrJoin instanceof MappingJoin join) {
             if (left(join) instanceof MappingJoin) {
-                throw new MondrianException(IllegalLeftDeepJoin);
+                throw new MondrianException(illegalLeftDeepJoin);
             }
             final MappingRelationOrJoin left;
             final MappingRelationOrJoin right;

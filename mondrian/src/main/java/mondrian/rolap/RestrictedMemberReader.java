@@ -10,6 +10,7 @@
 */
 package mondrian.rolap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -27,8 +28,6 @@ import mondrian.olap.RoleImpl;
 import mondrian.rolap.sql.MemberChildrenConstraint;
 import mondrian.rolap.sql.TupleConstraint;
 
-import static mondrian.resource.MondrianResource.HierarchyHasNoAccessibleMembers;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * A <code>RestrictedMemberReader</code> reads only the members of a hierarchy
@@ -44,6 +43,7 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
     private final SqlConstraintFactory sqlConstraintFactory =
         SqlConstraintFactory.instance();
     final Role role;
+    private final static String hierarchyHasNoAccessibleMembers = "Hierarchy ''{0}'' has no accessible members.";
 
     /**
      * Creates a <code>RestrictedMemberReader</code>.
@@ -230,8 +230,8 @@ public class RestrictedMemberReader extends DelegatingMemberReader {
             final List<RolapMember> memberList =
                 getMembersInLevel(topLevel);
             if (memberList.isEmpty()) {
-                throw new MondrianException(message(
-                    HierarchyHasNoAccessibleMembers,
+                throw new MondrianException(MessageFormat.format(
+                    hierarchyHasNoAccessibleMembers,
                         getHierarchy().getUniqueName()));
             }
             return memberList;

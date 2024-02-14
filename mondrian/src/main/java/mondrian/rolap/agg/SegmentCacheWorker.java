@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.exceptions.SegmentCacheFailedToInstanciateException;
 import mondrian.olap.exceptions.SegmentCacheFailedToLoadSegmentException;
+import mondrian.olap.exceptions.SegmentCacheFailedToSaveSegmentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +25,9 @@ import mondrian.spi.SegmentHeader;
 import mondrian.util.ClassResolver;
 import mondrian.util.ServiceDiscovery;
 
+import static mondrian.olap.exceptions.SegmentCacheFailedToInstanciateException.segmentCacheFailedToInstanciate;
 import static mondrian.olap.exceptions.SegmentCacheFailedToLoadSegmentException.segmentCacheFailedToLoadSegment;
-import static mondrian.resource.MondrianResource.SegmentCacheFailedToDeleteSegment;
-import static mondrian.resource.MondrianResource.SegmentCacheFailedToInstanciate;
-import static mondrian.resource.MondrianResource.SegmentCacheFailedToSaveSegment;
-import static mondrian.resource.MondrianResource.SegmentCacheFailedToScanSegments;
-import static mondrian.resource.MondrianResource.SegmentCacheIsNotImplementingInterface;
+import static mondrian.olap.exceptions.SegmentCacheFailedToSaveSegmentException.segmentCacheFailedToSaveSegment;
 
 /**
  * Utility class to interact with the {@link SegmentCache}.
@@ -40,10 +39,18 @@ public final class SegmentCacheWorker {
 
     private static final Logger LOGGER =
         LoggerFactory.getLogger(SegmentCacheWorker.class);
+    private final static String segmentCacheIsNotImplementingInterface = """
+    The mondrian.rolap.SegmentCache property points to a class name which is not an
+            implementation of mondrian.spi.SegmentCache.
+    """;
 
     final SegmentCache cache;
     private final Thread cacheMgrThread;
     private final boolean supportsRichIndex;
+    private final static String segmentCacheFailedToDeleteSegment =
+        "An exception was encountered while deleting a segment from the SegmentCache.";
+    private final static String segmentCacheFailedToScanSegments =
+        "An exception was encountered while getting a list of segment headers in the SegmentCache.";
 
     /**
      * Creates a worker.
@@ -114,12 +121,12 @@ public final class SegmentCacheWorker {
             LOGGER.debug("Starting cache instance: " + cacheName);
             return ClassResolver.INSTANCE.instantiateSafe(cacheName);
         } catch (ClassCastException e) {
-            throw new MondrianException(SegmentCacheIsNotImplementingInterface);
+            throw new MondrianException(segmentCacheIsNotImplementingInterface);
         } catch (Exception e) {
             LOGGER.error(
-                    SegmentCacheFailedToInstanciate,
+                    segmentCacheFailedToInstanciate,
                 e);
-            throw new MondrianException(SegmentCacheFailedToInstanciate, e);
+            throw new SegmentCacheFailedToInstanciateException(e);
         }
     }
 
@@ -157,14 +164,14 @@ public final class SegmentCacheWorker {
         try {
             final boolean result = cache.put(header, body);
             if (!result) {
-                LOGGER.error(SegmentCacheFailedToSaveSegment);
-                throw new MondrianException(SegmentCacheFailedToSaveSegment);
+                LOGGER.error(segmentCacheFailedToSaveSegment);
+                throw new SegmentCacheFailedToSaveSegmentException();
             }
         } catch (Throwable t) {
             LOGGER.error(
-                    SegmentCacheFailedToSaveSegment,
+                    segmentCacheFailedToSaveSegment,
                 t);
-            throw new MondrianException(SegmentCacheFailedToSaveSegment, t);
+            throw new SegmentCacheFailedToSaveSegmentException(t);
         }
     }
 
@@ -179,9 +186,9 @@ public final class SegmentCacheWorker {
         try {
             return cache.remove(header);
         } catch (Throwable t) {
-            LOGGER.error(SegmentCacheFailedToDeleteSegment,
+            LOGGER.error(segmentCacheFailedToDeleteSegment,
                 t);
-            throw new MondrianException(SegmentCacheFailedToDeleteSegment, t);
+            throw new MondrianException(segmentCacheFailedToDeleteSegment, t);
         }
     }
 
@@ -197,7 +204,7 @@ public final class SegmentCacheWorker {
         } catch (Throwable t) {
             LOGGER.error("Failed to get a list of segment headers.", t);
             throw new MondrianException(
-                SegmentCacheFailedToScanSegments, t);
+                segmentCacheFailedToScanSegments, t);
         }
     }
 

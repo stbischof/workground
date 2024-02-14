@@ -9,9 +9,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.JavaDoubleOverflow;
-import static mondrian.resource.MondrianResource.message;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
@@ -21,6 +18,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -95,8 +93,9 @@ public class SqlStatement {
   private State state = State.FRESH;
   private final long id;
   private Consumer<Statement> callback;
+  public final static String javaDoubleOverflow = "Big decimal value in ''{0}'' exceeds double size.";
 
-  /**
+    /**
    * Creates a SqlStatement.
    *
    * @param context              Context
@@ -203,15 +202,15 @@ public class SqlStatement {
 				new SqlStatementEventCommon(new EventCommon(startTime), id, mdxStatementId, sql, getPurpose()),
 				getCellRequestCount());
 		locus.getContext().getMonitor().accept(event);
-    		  
+
 //        new SqlStatementStartEvent(
 //          startTimeMillis,
 //          id,
 //          locus,
 //          sql,
 //          getPurpose(),
-//          getCellRequestCount() ) 
-        
+//          getCellRequestCount() )
+
 
       this.resultSet = statement.executeQuery( sql );
 
@@ -238,20 +237,20 @@ public class SqlStatement {
       final long executeMillis = executeNanos / 1000000;
       status = new StringBuilder(", exec ").append(executeMillis).append(" ms").toString();
 
-      
+
 		SqlStatementExecuteEvent execEvent = new SqlStatementExecuteEvent(//
 				new SqlStatementEventCommon(new EventCommon(timeMillis), id, mdxStatementId, sql, getPurpose()),
 				executeNanos);
 
 		locus.getContext().getMonitor().accept(execEvent);
-		
+
 //      new SqlStatementExecuteEvent(
 //    		  timeMillis,
 //    		  id,
 //    		  locus,
 //    		  sql,
 //    		  getPurpose(),
-//    		  executeNanos ) 
+//    		  executeNanos )
 
       // Compute accessors. They ensure that we use the most efficient
       // method (e.g. getInt, getDouble, getObject) for the type of the
@@ -357,7 +356,7 @@ public class SqlStatement {
 			false, null);
 
 	locus.getContext().getMonitor().accept(endEvent);
-	
+
 //      new SqlStatementEndEvent(
 //        endTime,
 //        id,
@@ -366,7 +365,7 @@ public class SqlStatement {
 //        getPurpose(),
 //        rowCount,
 //        false,
-//        null ) 
+//        null )
   }
 
   public String formatTimingStatus( Duration duration, int rowCount ) {
@@ -461,7 +460,7 @@ public class SqlStatement {
             final double val = resultSet.getBigDecimal( columnPlusOne ).doubleValue();
             if ( val == Double.NEGATIVE_INFINITY || val == Double.POSITIVE_INFINITY ) {
               throw new SQLDataException(
-                  message(JavaDoubleOverflow, resultSet.getMetaData().getColumnName( columnPlusOne ) ));
+                  MessageFormat.format(javaDoubleOverflow, resultSet.getMetaData().getColumnName( columnPlusOne ) ));
             }
             return val;
           }

@@ -11,10 +11,8 @@
 
 package mondrian.olap;
 
-import static mondrian.resource.MondrianResource.MdxAxisIsNotSet;
-import static mondrian.resource.MondrianResource.message;
-
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 
 import org.eclipse.daanse.olap.api.SubtotalVisibility;
 import org.eclipse.daanse.olap.api.Validator;
@@ -64,6 +62,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
      */
     private SubtotalVisibility subtotalVisibility;
     private final Id[] dimensionProperties;
+    private final static String mdxAxisIsNotSet = "Axis ''{0}'' expression is not a set";
 
     /**
      * Creates an axis.
@@ -264,7 +263,7 @@ public class QueryAxisImpl extends AbstractQueryPart implements QueryAxis {
                         new Expression[] {exp});
                 exp = validator.validate(exp, false);
             } else {
-                throw new MondrianException(message(MdxAxisIsNotSet,
+                throw new MondrianException(MessageFormat.format(mdxAxisIsNotSet,
                     axisOrdinal.name()));
             }
         }

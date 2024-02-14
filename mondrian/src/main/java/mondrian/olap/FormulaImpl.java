@@ -13,11 +13,13 @@
 package mondrian.olap;
 
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import mondrian.olap.exceptions.MdxMemberExpIsSetException;
 import org.eclipse.daanse.olap.api.NameSegment;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
@@ -47,10 +49,7 @@ import mondrian.olap.type.NumericType;
 import mondrian.olap.type.TypeUtil;
 import mondrian.rolap.RolapCalculatedMember;
 
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.MdxCalculatedHierarchyError;
-import static mondrian.resource.MondrianResource.MdxMemberExpIsSet;
-import static mondrian.resource.MondrianResource.MdxSetExpNotSet;
+
 
 /**
  * A <code>Formula</code> is a clause in an MDX query which defines a Set or a
@@ -73,6 +72,8 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
 
     private Member mdxMember;
     private NamedSet mdxSet;
+    private final static String mdxCalculatedHierarchyError = "Hierarchy for calculated member ''{0}'' not found";
+    private final static String mdxSetExpNotSet = "Set expression ''{0}'' must be a set";
 
     /**
      * Constructs formula specifying a set.
@@ -142,12 +143,12 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
         final Type type = exp.getType();
         if (isMember) {
             if (!TypeUtil.canEvaluate(type)) {
-                throw new MondrianException(message(MdxMemberExpIsSet,
-                    exp.toString()));
+                throw new MdxMemberExpIsSetException(
+                    exp.toString());
             }
         } else {
             if (!TypeUtil.isSet(type)) {
-                throw new MondrianException(message(MdxSetExpNotSet, idInner));
+                throw new MondrianException(MessageFormat.format(mdxSetExpNotSet, idInner));
             }
         }
         for (MemberProperty memberProperty : memberProperties) {
@@ -263,7 +264,7 @@ public class FormulaImpl extends AbstractQueryPart implements Formula {
                         }
                         if (hierarchy == null) {
                             throw new MondrianException(
-                                message(MdxCalculatedHierarchyError, id.toString()));
+                                MessageFormat.format(mdxCalculatedHierarchyError, id.toString()));
                         }
                         level = hierarchy.getLevels()[0];
                     }

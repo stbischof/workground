@@ -8,15 +8,12 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.CacheFlushCrossjoinDimensionsInCommon;
-import static mondrian.resource.MondrianResource.CacheFlushRegionMustContainMembers;
-import static mondrian.resource.MondrianResource.CacheFlushUnionDimensionalityMismatch;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.genericExpression;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,6 +68,12 @@ public class CacheControlImpl implements CacheControl {
      * mondrian.
      */
     private static final Object MEMBER_CACHE_LOCK = new Object();
+    private final static String cacheFlushRegionMustContainMembers =
+        "Region of cells to be flushed must contain measures.";
+    private final static String cacheFlushCrossjoinDimensionsInCommon =
+        "Cannot crossjoin cell regions which have dimensions in common. (Dimensionalities are {0}.)";
+    private final static String cacheFlushUnionDimensionalityMismatch =
+        "Cannot union cell regions of different dimensionalities. (Dimensionalities are ''{0}'', ''{1}''.)";
 
     /**
      * Creates a CacheControlImpl.
@@ -126,7 +129,7 @@ public class CacheControlImpl implements CacheControl {
             set.addAll(dimensionality);
             if (set.size() < prevSize + dimensionality.size()) {
                 throw new MondrianException(
-                    message(CacheFlushCrossjoinDimensionsInCommon, getDimensionalityList(regions)));
+                    MessageFormat.format(cacheFlushCrossjoinDimensionsInCommon, getDimensionalityList(regions)));
             }
 
             flattenCrossjoin((CellRegionImpl) region, list);
@@ -163,8 +166,8 @@ public class CacheControlImpl implements CacheControl {
             if (!region.getDimensionality().equals(
                     regions[0].getDimensionality()))
             {
-                throw new MondrianException(message(
-                    CacheFlushUnionDimensionalityMismatch,
+                throw new MondrianException(MessageFormat.format(
+                    cacheFlushUnionDimensionalityMismatch,
                         regions[0].getDimensionality().toString(),
                         region.getDimensionality().toString()));
             }
@@ -224,7 +227,7 @@ public class CacheControlImpl implements CacheControl {
             }
         }
         if (!found) {
-            throw new MondrianException(CacheFlushRegionMustContainMembers);
+            throw new MondrianException(cacheFlushRegionMustContainMembers);
         }
         final UnionCellRegion union = normalize((CellRegionImpl) region);
         for (CellRegionImpl cellRegion : union.regions) {

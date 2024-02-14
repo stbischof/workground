@@ -89,8 +89,6 @@ import mondrian.olap.type.StringType;
 import mondrian.olap.type.TupleType;
 import mondrian.olap.type.TypeUtil;
 
-import static mondrian.resource.MondrianResource.NullNotSupported;
-
 /**
  * Abstract implementation of the {@link org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler} interface.
  *
@@ -103,6 +101,7 @@ public class AbstractExpCompiler implements ExpressionCompiler {
     private final Map<Parameter, ParameterSlotImpl> parameterSlots =
             new HashMap<>();
     private List<ResultStyle> resultStyles;
+    private final static String nullNotSupported = "Function does not support NULL member parameter";
 
     /**
      * Creates an AbstractExpCompiler
@@ -225,7 +224,7 @@ public class AbstractExpCompiler implements ExpressionCompiler {
             return hierarchyToMember(hierarchyCalc);
         }
         if (type instanceof NullType) {
-            throw new MondrianException(NullNotSupported);
+            throw new MondrianException(nullNotSupported);
         } else if (type instanceof DimensionType) {
             final HierarchyCalc hierarchyCalc = compileHierarchy(exp);
             return hierarchyToMember(hierarchyCalc);

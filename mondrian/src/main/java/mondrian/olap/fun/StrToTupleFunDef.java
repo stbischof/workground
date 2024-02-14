@@ -9,14 +9,12 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.MdxFuncArgumentsNum;
-import static mondrian.resource.MondrianResource.message;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.exceptions.ArgumentFunctionNotHierarchyException;
 import mondrian.olap.exceptions.EmptyExpressionWasSpecifiedException;
+import mondrian.olap.exceptions.MdxFuncArgumentsNumException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Validator;
@@ -102,8 +100,7 @@ class StrToTupleFunDef extends AbstractFunctionDefinition {
 	public Expression createCall(Validator validator, Expression[] args) {
         final int argCount = args.length;
         if (argCount <= 1) {
-            throw new MondrianException(
-                message( MdxFuncArgumentsNum, getFunctionMetaData().operationAtom().name() ));
+            throw new MdxFuncArgumentsNumException( getFunctionMetaData().operationAtom().name() );
         }
         for (int i = 1; i < argCount; i++) {
             final Expression arg = args[i];

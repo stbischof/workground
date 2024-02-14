@@ -11,9 +11,9 @@
 */
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.MemberNotInLevelHierarchy;
-import static mondrian.resource.MondrianResource.message;
 
+
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -114,8 +114,9 @@ public class FunUtil extends Util {
    * Null value in three-valued boolean logic. Actually, a placeholder until we actually implement 3VL.
    */
   public static final boolean BOOLEAN_NULL = false;
+    private final static String memberNotInLevelHierarchy = "The member ''{0}'' is not in the same hierarchy as the level ''{1}''.";
 
-  /**
+    /**
    * Creates an exception which indicates that an error has occurred while executing a given function.
    *
    * @param funDef  Function being executed
@@ -1221,7 +1222,7 @@ public class FunUtil extends Util {
     Level targetLevel ) {
     if ( ( targetLevel != null )
       && ( member.getHierarchy() != targetLevel.getHierarchy() ) ) {
-      throw new MondrianException(message(MemberNotInLevelHierarchy,
+      throw new MondrianException(MessageFormat.format(memberNotInLevelHierarchy,
         member.getUniqueName(), targetLevel.getUniqueName() ));
     }
 

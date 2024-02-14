@@ -9,17 +9,14 @@
 // All Rights Reserved.
 */
 package mondrian.rolap.agg;
-
-import static mondrian.resource.MondrianResource.JavaDoubleOverflow;
-import static mondrian.resource.MondrianResource.SegmentFetchLimitExceeded;
-import static mondrian.resource.MondrianResource.message;
-
+import static mondrian.rolap.SqlStatement.javaDoubleOverflow;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -79,8 +76,9 @@ import mondrian.util.Pair;
 public class SegmentLoader {
 
   private final SegmentCacheManager cacheMgr;
+    private final static String segmentFetchLimitExceeded = "Number of cell results to be read exceeded limit of ({0,number})";
 
-  /**
+    /**
    * Creates a SegmentLoader.
    *
    * @param cacheMgr
@@ -641,7 +639,7 @@ public class SegmentLoader {
             } else {
               final double val = rawRows.getBigDecimal( columnIndex + 1 ).doubleValue();
               if ( val == Double.NEGATIVE_INFINITY || val == Double.POSITIVE_INFINITY ) {
-                throw new SQLDataException(message(JavaDoubleOverflow, rawRows.getMetaData().getColumnName(
+                throw new SQLDataException(MessageFormat.format(javaDoubleOverflow, rawRows.getMetaData().getColumnName(
                     columnIndex + 1 ) ));
               }
               axisValueSets[axisIndex].add( val );
@@ -715,7 +713,7 @@ public class SegmentLoader {
             } else {
               final double val = rawRows.getBigDecimal( columnIndex + 1 ).doubleValue();
               if ( val == Double.NEGATIVE_INFINITY || val == Double.POSITIVE_INFINITY ) {
-                throw new SQLDataException(message(JavaDoubleOverflow, rawRows.getMetaData().getColumnName(
+                throw new SQLDataException(MessageFormat.format(javaDoubleOverflow, rawRows.getMetaData().getColumnName(
                     columnIndex + 1 ) ));
               }
               processedRows.setDouble( columnIndex, val );
@@ -737,7 +735,7 @@ public class SegmentLoader {
   private void checkResultLimit( int currentCount ) {
     final int limit = SystemWideProperties.instance().ResultLimit;
     if ( limit > 0 && currentCount > limit ) {
-      throw new ResourceLimitExceededException(message(SegmentFetchLimitExceeded, limit ));
+      throw new ResourceLimitExceededException(MessageFormat.format(segmentFetchLimitExceeded, limit ));
     }
   }
 

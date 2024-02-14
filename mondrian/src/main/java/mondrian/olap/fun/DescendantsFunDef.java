@@ -13,9 +13,6 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.CannotDeduceTypeOfSet;
-import static mondrian.resource.MondrianResource.DescendantsAppliedToSetOfTuples;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,8 +79,11 @@ class DescendantsFunDef extends AbstractFunctionDefinition {
       new String[] { "fxx", "fxxl", "fxxly", "fxxn", "fxxny", "fxxey" },
       DescendantsFunDef.class,
       Flag.asReservedWords() );
+    private final static String descendantsAppliedToSetOfTuples =
+        "Argument to Descendants function must be a member or set of members, not a set of tuples";
+    private final static String cannotDeduceTypeOfSet = "Cannot deduce type of set";
 
-  public DescendantsFunDef( FunctionMetaData functionMetaData ) {
+    public DescendantsFunDef( FunctionMetaData functionMetaData ) {
     super( functionMetaData );
   }
 
@@ -92,13 +92,13 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
     final Type type0 = call.getArg( 0 ).getType();
     if ( type0 instanceof SetType setType ) {
       if ( setType.getElementType() instanceof TupleType ) {
-        throw new MondrianException(DescendantsAppliedToSetOfTuples);
+        throw new MondrianException(descendantsAppliedToSetOfTuples);
       }
 
       MemberType memberType = (MemberType) setType.getElementType();
       final Hierarchy hierarchy = memberType.getHierarchy();
       if ( hierarchy == null ) {
-        throw new MondrianException(CannotDeduceTypeOfSet);
+        throw new MondrianException(cannotDeduceTypeOfSet);
       }
       // Convert
       //   Descendants(<set>, <args>)
@@ -118,7 +118,7 @@ public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler ) {
             new Expression[] {
               call.getArg( 0 ),
               new UnresolvedFunCallImpl(
-            		  new FunctionOperationAtom( 
+            		  new FunctionOperationAtom(
                 DESCENDANTS),
                 descendantsArgs )
             } ),

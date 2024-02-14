@@ -69,7 +69,6 @@ import mondrian.olap.StringLiteralImpl;
 import mondrian.olap.SubcubeImpl;
 import mondrian.olap.SymbolLiteralImpl;
 import mondrian.olap.UpdateImpl;
-import mondrian.resource.MondrianResource;
 
 /**
  * MDX parser, generated from MdxParser.jj.
@@ -1486,7 +1485,9 @@ QueryAxis axisSpecification() :
             if (number.doubleValue() < 0
                 || number.doubleValue() != number.intValue())
             {
-                throw new MondrianException(MondrianResource.message(MondrianResource.InvalidAxis,
+                String invalidAxis =
+                "Invalid axis specification. The axis number must be a non-negative integer, but it was {0,number}.";
+                throw new MondrianException(java.text.MessageFormat.format(invalidAxis,
                     number.doubleValue()));
             }
 

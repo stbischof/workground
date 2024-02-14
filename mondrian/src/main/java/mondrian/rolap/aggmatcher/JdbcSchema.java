@@ -18,6 +18,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +43,6 @@ import org.slf4j.LoggerFactory;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapLevel;
 import mondrian.rolap.RolapStar;
-
-import static mondrian.resource.MondrianResource.AttemptToChangeTableUsage;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Metadata gleaned from JDBC about the tables and columns in the star schema.
@@ -317,6 +315,9 @@ public class JdbcSchema {
      * A table in a database.
      */
     public class Table {
+
+        private final static String attemptToChangeTableUsage =
+            "JdbcSchema.Table ''{0}'' already set to usage ''{1}'' and can not be reset to usage ''{2}''.";
 
         /**
          * A column in a table.
@@ -973,7 +974,7 @@ public class JdbcSchema {
             if ((this.tableUsageType != TableUsageType.UNKNOWN)
                 && (this.tableUsageType != tableUsageType))
             {
-                throw new MondrianException(message(AttemptToChangeTableUsage,
+                throw new MondrianException(MessageFormat.format(attemptToChangeTableUsage,
                     getName(),
                     this.tableUsageType.name(),
                     tableUsageType.name()));

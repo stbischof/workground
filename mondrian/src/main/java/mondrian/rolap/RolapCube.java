@@ -11,21 +11,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.BadMeasureSource;
-import static mondrian.resource.MondrianResource.CalcMemberHasBadDimension;
-import static mondrian.resource.MondrianResource.CalcMemberHasBothDimensionAndHierarchy;
-import static mondrian.resource.MondrianResource.CalcMemberHasDifferentParentAndHierarchy;
-import static mondrian.resource.MondrianResource.CalcMemberHasUnknownParent;
-import static mondrian.resource.MondrianResource.CalcMemberNotUnique;
-import static mondrian.resource.MondrianResource.ExprAndValueForMemberProperty;
-import static mondrian.resource.MondrianResource.HierarchyInvalidForeignKey;
-import static mondrian.resource.MondrianResource.HierarchyMustHaveForeignKey;
-import static mondrian.resource.MondrianResource.MeasureOrdinalsNotUnique;
-import static mondrian.resource.MondrianResource.NamedSetNotUnique;
-import static mondrian.resource.MondrianResource.NeitherExprNorValueForCalcMemberProperty;
-import static mondrian.resource.MondrianResource.NoTimeDimensionInCube;
-import static mondrian.resource.MondrianResource.UnknownNamedSetHasBadFormula;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.CalculatedMemberUtil.getFormatString;
 import static mondrian.rolap.util.CalculatedMemberUtil.getFormula;
 import static mondrian.rolap.util.JoinUtil.changeLeftRight;
@@ -35,6 +20,7 @@ import static mondrian.rolap.util.JoinUtil.left;
 import static mondrian.rolap.util.JoinUtil.right;
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,6 +33,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import mondrian.olap.exceptions.BadMeasureSourceException;
+import mondrian.olap.exceptions.CalcMemberNotUniqueException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
@@ -222,6 +210,28 @@ public class RolapCube extends CubeBase {
      */
     private List<RolapCube> baseCubes;
     private Context context;
+    private final static String noTimeDimensionInCube =
+        "Cannot use the function ''{0}'', no time dimension is available for this cube.";
+    private final static String calcMemberHasBadDimension =
+        "Unknown dimension ''{0}'' for calculated member ''{1}'' in cube ''{2}''";
+    private final static String calcMemberHasBothDimensionAndHierarchy =
+        "Cannot specify both a dimension and hierarchy for calculated member ''{0}'' in cube ''{1}''";
+    private final static String calcMemberHasDifferentParentAndHierarchy =
+        "The calculated member ''{0}'' in cube ''{1}'' is defined for hierarchy ''{2}'' but its parent member is not part of that hierarchy";
+    private final static String calcMemberHasUnknownParent =
+        "Cannot find a parent with name ''{0}'' for calculated member ''{1}'' in cube ''{2}''";
+    private final static String exprAndValueForMemberProperty =
+        "Member property must not have both a value and an expression. (Property ''{0}'' of member ''{1}'' of cube ''{2}''.)";
+    private final static String hierarchyInvalidForeignKey =
+        "Foreign key ''{0}'' of hierarchy ''{1}'' in cube ''{2}'' is not a column in the fact table.";
+    private final static String hierarchyMustHaveForeignKey =
+        "Hierarchy ''{0}'' in cube ''{1}'' must have a foreign key, since it is not based on the cube''s fact table.";
+    private final static String measureOrdinalsNotUnique =
+        "Cube ''{0}'': Ordinal {1} is not unique: ''{2}'' and ''{3}''";
+    private final static String namedSetNotUnique = "Named set ''{0}'' already exists in cube ''{1}''";
+    private final static String neitherExprNorValueForCalcMemberProperty =
+        "Member property must have a value or an expression. (Property ''{0}'' of member ''{1}'' of cube ''{2}''.)";
+    private final static String unknownNamedSetHasBadFormula = "Named set in cube ''{0}'' has bad formula";
 
     /**
      * Private constructor used by both normal cubes and virtual cubes.
@@ -601,8 +611,8 @@ public class RolapCube extends CubeBase {
         MappingExpression measureExp;
         if (mappingMeasure.column() != null) {
             if (mappingMeasure.measureExpression() != null) {
-                throw new MondrianException(message(BadMeasureSource,
-                    mappingCube.name(), mappingMeasure.name()));
+                throw new BadMeasureSourceException(
+                    mappingCube.name(), mappingMeasure.name());
             }
             measureExp = new ColumnR(
                 getAlias(fact), mappingMeasure.column());
@@ -612,8 +622,8 @@ public class RolapCube extends CubeBase {
             // it's ok if count has no expression; it means 'count(*)'
             measureExp = null;
         } else {
-            throw new MondrianException(message(BadMeasureSource,
-                mappingCube.name(), mappingMeasure.name()));
+            throw new BadMeasureSourceException(
+                mappingCube.name(), mappingMeasure.name());
         }
 
         // Validate aggregator name. Substitute deprecated "distinct count"
@@ -1147,7 +1157,7 @@ public class RolapCube extends CubeBase {
             if (!ordinals.containsKey(ordinal)) {
                 ordinals.put(ordinal, measure.getUniqueName());
             } else {
-                throw new MondrianException(message(MeasureOrdinalsNotUnique,
+                throw new MondrianException(MessageFormat.format(measureOrdinalsNotUnique,
                     cubeName,
                     ordinal.toString(),
                     ordinals.get(ordinal),
@@ -1247,7 +1257,7 @@ public class RolapCube extends CubeBase {
                     }
                 });
         } catch (Exception e) {
-            throw new MondrianException(message(UnknownNamedSetHasBadFormula, getName()), e);
+            throw new MondrianException(MessageFormat.format(unknownNamedSetHasBadFormula, getName()), e);
         }
     }
 
@@ -1293,7 +1303,7 @@ public class RolapCube extends CubeBase {
         StringBuilder buf)
     {
         if (!nameSet.add(mappingNamedSet.name())) {
-            throw new MondrianException(message(NamedSetNotUnique,
+            throw new MondrianException(MessageFormat.format(namedSetNotUnique,
                 mappingNamedSet.name(), getName()));
         }
 
@@ -1368,8 +1378,8 @@ public class RolapCube extends CubeBase {
         if (mappingCalcMember.hierarchy() != null
             && mappingCalcMember.dimension() != null)
         {
-            throw  new MondrianException(message(
-                CalcMemberHasBothDimensionAndHierarchy,
+            throw  new MondrianException(MessageFormat.format(
+                calcMemberHasBothDimensionAndHierarchy,
                     mappingCalcMember.name(), getName()));
         }
 
@@ -1396,7 +1406,7 @@ public class RolapCube extends CubeBase {
                     DataType.HIERARCHY);
         }
         if (hierarchy == null) {
-            throw new MondrianException(message(CalcMemberHasBadDimension,
+            throw new MondrianException(MessageFormat.format(calcMemberHasBadDimension,
                 dimName, mappingCalcMember.name(), getName()));
         }
 
@@ -1419,14 +1429,14 @@ public class RolapCube extends CubeBase {
                     DataType.UNKNOWN);
 
             if (parent == null) {
-                throw new MondrianException(message(
-                    CalcMemberHasUnknownParent,
+                throw new MondrianException(MessageFormat.format(
+                    calcMemberHasUnknownParent,
                         parentFqName, mappingCalcMember.name(), getName()));
             }
 
             if (parent.getHierarchy() != hierarchy) {
-                throw  new MondrianException(message(
-                CalcMemberHasDifferentParentAndHierarchy,
+                throw  new MondrianException(MessageFormat.format(
+                calcMemberHasDifferentParentAndHierarchy,
                     mappingCalcMember.name(), getName(), hierarchy.getUniqueName()));
             }
         }
@@ -1444,9 +1454,9 @@ public class RolapCube extends CubeBase {
                     hierarchy))
             {
                 if (errOnDup) {
-                    throw new MondrianException(message(CalcMemberNotUnique,
+                    throw new CalcMemberNotUniqueException(
                         fqName,
-                        getName()));
+                        getName());
                 } else {
                     calculatedMemberList.remove(i);
                     --i;
@@ -1457,9 +1467,7 @@ public class RolapCube extends CubeBase {
         // Check this calc member doesn't clash with one earlier in this
         // batch.
         if (!fqNames.add(fqName)) {
-            throw new MondrianException(message(CalcMemberNotUnique,
-                fqName,
-                getName()));
+            throw new CalcMemberNotUniqueException(fqName, getName());
         }
 
         final List<? extends MappingCalculatedMemberProperty> mappingProperties =
@@ -1579,13 +1587,13 @@ public class RolapCube extends CubeBase {
         }
         for (MappingCalculatedMemberProperty mappingProperty : mappingProperties) {
             if (mappingProperty.expression() == null && mappingProperty.value() == null) {
-                throw  new MondrianException(message(
-                    NeitherExprNorValueForCalcMemberProperty,
+                throw  new MondrianException(MessageFormat.format(
+                    neitherExprNorValueForCalcMemberProperty,
                         mappingProperty.name(), memberName, getName()));
             }
             if (mappingProperty.expression() != null && mappingProperty.value() != null) {
                 throw new MondrianException(
-                    message(ExprAndValueForMemberProperty, mappingProperty.name(), memberName, getName()));
+                    MessageFormat.format(exprAndValueForMemberProperty, mappingProperty.name(), memberName, getName()));
             }
             propNames.add(mappingProperty.name());
             if (mappingProperty.expression() != null) {
@@ -2090,8 +2098,8 @@ public class RolapCube extends CubeBase {
                 if (relation != null && !relation.equals(table.getRelation())) {
                     // HierarchyUsage should have checked this.
                     if (hierarchyUsage.getForeignKey() == null) {
-                        throw new MondrianException(message(
-                            HierarchyMustHaveForeignKey,
+                        throw new MondrianException(MessageFormat.format(
+                            hierarchyMustHaveForeignKey,
                                 hierarchy.getName(), getName()));
                     }
                     // jhyde: check is disabled until we handle <View> correctly
@@ -2099,8 +2107,8 @@ public class RolapCube extends CubeBase {
                         && !starInner.getFactTable().containsColumn(
                             hierarchyUsage.getForeignKey()))
                     {
-                        throw  new MondrianException(message(
-                            HierarchyInvalidForeignKey,
+                        throw  new MondrianException(MessageFormat.format(
+                            hierarchyInvalidForeignKey,
                                 hierarchyUsage.getForeignKey(),
                                 hierarchy.getName(),
                                 getName()));
@@ -2705,7 +2713,7 @@ public class RolapCube extends CubeBase {
             }
         }
 
-        throw new MondrianException(message(NoTimeDimensionInCube, funName));
+        throw new MondrianException(MessageFormat.format(noTimeDimensionInCube, funName));
     }
 
     /**
@@ -3012,7 +3020,7 @@ public class RolapCube extends CubeBase {
         return measuresHierarchy.getMemberReader().getMembers();
     }
 
-  
+
 
     /**
      * Creates a calculated member.

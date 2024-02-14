@@ -12,6 +12,7 @@
 */
 package mondrian.rolap;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,8 +35,6 @@ import mondrian.rolap.agg.OrPredicate;
 import mondrian.rolap.agg.RangeColumnPredicate;
 import mondrian.rolap.agg.ValueColumnPredicate;
 
-import static mondrian.resource.MondrianResource.DrillthroughCalculatedMember;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * <code>RolapAggregationManager</code> manages all
@@ -49,6 +48,9 @@ import static mondrian.resource.MondrianResource.message;
  * @since 30 August, 2001
  */
 public abstract class RolapAggregationManager {
+
+    private final static String drillthroughCalculatedMember =
+        "Can''t perform drillthrough operations because ''{0}'' is a calculated member.";
 
     /**
      * Creates the RolapAggregationManager.
@@ -466,7 +468,7 @@ public abstract class RolapAggregationManager {
                         ((RolapBaseCubeMeasure)member).getStarMeasure());
             return;
         } else if (member instanceof RolapHierarchy.RolapCalculatedMeasure) {
-            throw new MondrianException(message(DrillthroughCalculatedMember,
+            throw new MondrianException(MessageFormat.format(drillthroughCalculatedMember,
                 member.getUniqueName()));
         } else {
             throw new MondrianException(

@@ -9,6 +9,7 @@
 
 package mondrian.rolap;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 import mondrian.olap.MondrianException;
@@ -20,9 +21,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnu
 import mondrian.olap.Property;
 import mondrian.olap.StringLiteralImpl;
 import mondrian.spi.CellFormatter;
-
-import static mondrian.resource.MondrianResource.UnknownAggregator;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Measure which is computed from a SQL column (or expression) and which is
@@ -37,6 +35,9 @@ public class RolapBaseCubeMeasure
     extends RolapMemberBase
     implements RolapStoredMeasure
 {
+
+    private final static String unknownAggregator = "Unknown aggregator ''{0}''; valid aggregators are: {1}";
+
     static enum DataType {
         Integer,
         Numeric,
@@ -131,7 +132,7 @@ public class RolapBaseCubeMeasure
                 buf.append(aggName);
                 buf.append('\'');
             }
-            throw new MondrianException(message(UnknownAggregator,
+            throw new MondrianException(MessageFormat.format(unknownAggregator,
                 aggregatorName,
                 buf.toString()));
         }

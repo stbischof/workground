@@ -11,11 +11,8 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.CycleDuringParameterEvaluation;
-import static mondrian.resource.MondrianResource.TotalMembersLimitExceeded;
-import static mondrian.resource.MondrianResource.message;
-
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1509,8 +1506,9 @@ public Cell getCell( int[] pos ) {
     private int totalCellCount;
     private int axisCount;
     private boolean countOnly;
+    private final static String totalMembersLimitExceeded = "Total number of Members in result ({0,number}) exceeded limit ({1,number})";
 
-    AxisMemberList() {
+      AxisMemberList() {
       this.countOnly = false;
       this.members = new ArrayList<>();
       this.membersByHierarchy = new HashMap<>();
@@ -1542,7 +1540,7 @@ public Cell getCell( int[] pos ) {
       if ( this.limit > 0 ) {
         this.totalCellCount *= this.axisCount;
         if ( this.totalCellCount > this.limit ) {
-          throw new ResourceLimitExceededException(message(TotalMembersLimitExceeded, String.valueOf(this.totalCellCount), String.valueOf(this.limit) ));
+          throw new ResourceLimitExceededException(MessageFormat.format(totalMembersLimitExceeded, String.valueOf(this.totalCellCount), String.valueOf(this.limit) ));
         }
         this.axisCount = 0;
       }
@@ -1657,8 +1655,9 @@ public Cell getCell( int[] pos ) {
     final RolapResult result;
     private static final Object CycleSentinel = new Object();
     private static final Object NullSentinel = new Object();
+      private final static String cycleDuringParameterEvaluation = "Cycle occurred while evaluating parameter ''{0}''";
 
-    public RolapResultEvaluatorRoot( RolapResult result ) {
+      public RolapResultEvaluatorRoot( RolapResult result ) {
       super( result.execution );
       this.result = result;
     }
@@ -1734,7 +1733,7 @@ public Cell getCell( int[] pos ) {
       Object value;
       if ( liftedValue != null ) {
         if ( liftedValue == CycleSentinel ) {
-          throw new MondrianException(message(CycleDuringParameterEvaluation, slot.getParameter().getName() ));
+          throw new MondrianException(MessageFormat.format(cycleDuringParameterEvaluation, slot.getParameter().getName() ));
         }
         if ( liftedValue == NullSentinel ) {
           value = null;

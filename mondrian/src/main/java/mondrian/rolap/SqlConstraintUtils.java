@@ -12,11 +12,9 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.AggTableNoConstraintGenerated;
-import static mondrian.resource.MondrianResource.NativeSqlInClauseTooLarge;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,11 +79,17 @@ import mondrian.util.FilteredIterableList;
  */
 public class SqlConstraintUtils {
 
-  private static final String ADD_MEMBER_CONSTRAINT_CANNOT_RESTRICT_SQL_TO_CALCULATED_MEMBER = "addMemberConstraint: cannot restrict SQL to calculated member :";
-private static final String AND = " and ";
-private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.class );
+    private static final String ADD_MEMBER_CONSTRAINT_CANNOT_RESTRICT_SQL_TO_CALCULATED_MEMBER = "addMemberConstraint: cannot restrict SQL to calculated member :";
+    private static final String AND = " and ";
+    private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.class );
+    private final static String aggTableNoConstraintGenerated = """
+    Aggregate star fact table ''{0}'':  A constraint will not be generated because name column is not the same as key column.
+    """;
+    private final static String nativeSqlInClauseTooLarge = """
+    Cannot use native aggregation constraints for level ''{0}'' because the number of members is larger than the value of ''mondrian.rolap.maxConstraints'' ({1})
+    """;
 
-  /** Utility class */
+    /** Utility class */
   private SqlConstraintUtils() {
   }
 
@@ -1374,7 +1378,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
         AggStar.Table.Column aggColumn = aggStar.lookupColumn( bitPos );
 
         if ( aggColumn == null ) {
-          LOG.warn(message(AggTableNoConstraintGenerated, aggStar.getFactTable().getName() ) );
+          LOG.warn(MessageFormat.format(aggTableNoConstraintGenerated, aggStar.getFactTable().getName() ) );
           return new StringBuilder();
         }
 
@@ -1826,7 +1830,7 @@ private static final Logger LOG = LoggerFactory.getLogger( SqlConstraintUtils.cl
         // Simply get them all, do not create where-clause.
         // Below are two alternative approaches (and code). They
         // both have problems.
-        LOG.debug(message(NativeSqlInClauseTooLarge, level.getUniqueName(), maxConstraints ) );
+        LOG.debug(MessageFormat.format(nativeSqlInClauseTooLarge, level.getUniqueName(), maxConstraints ) );
         sqlQuery.setSupported( false );
       } else {
         String where = RolapStar.Column.createInExpr( q, cc, level.getDatatype(), sqlQuery );

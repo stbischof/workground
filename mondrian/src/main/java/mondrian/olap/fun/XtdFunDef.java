@@ -11,8 +11,7 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.TimeArgNeeded;
-import static mondrian.resource.MondrianResource.message;
+
 
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Validator;
@@ -39,6 +38,8 @@ import mondrian.olap.type.MemberType;
 import mondrian.olap.type.SetType;
 import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapHierarchy;
+
+import java.text.MessageFormat;
 
 /**
  * Definition of <code>Ytd</code>, <code>Qtd</code>, <code>Mtd</code>, and <code>Wtd</code> MDX builtin functions.
@@ -70,8 +71,9 @@ class XtdFunDef extends AbstractFunctionDefinition {
             "fx", "fxm" }, LevelType.TIME_YEARS);
 
   private static final String TIMING_NAME = XtdFunDef.class.getSimpleName();
+    private final static String timeArgNeeded = "Argument to function ''{0}'' must belong to Time hierarchy.";
 
-  public XtdFunDef( FunctionMetaData functionMetaData , LevelType levelType ) {
+    public XtdFunDef( FunctionMetaData functionMetaData , LevelType levelType ) {
     super( functionMetaData );
     this.levelType = levelType;
   }
@@ -87,7 +89,7 @@ public Type getResultType( Validator validator, Expression[] args ) {
     }
     final Type type = args[0].getType();
     if ( type.getDimension().getDimensionType() != DimensionType.TIME_DIMENSION) {
-      throw new MondrianException(message(TimeArgNeeded, getFunctionMetaData().operationAtom().name() ));
+      throw new MondrianException(MessageFormat.format(timeArgNeeded, getFunctionMetaData().operationAtom().name() ));
     }
     return super.getResultType( validator, args );
   }

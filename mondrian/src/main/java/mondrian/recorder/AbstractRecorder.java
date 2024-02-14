@@ -11,12 +11,10 @@
 
 package mondrian.recorder;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
-import static mondrian.resource.MondrianResource.ForceMessageRecorderError;
-import static mondrian.resource.MondrianResource.TooManyMessageRecorderErrors;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Abstract implemention of the {@link MessageRecorder} interface.
@@ -24,6 +22,11 @@ import static mondrian.resource.MondrianResource.message;
  * @author Richard M. Emberson
  */
 public abstract class AbstractRecorder implements MessageRecorder {
+
+    private final static String tooManyMessageRecorderErrors =
+        "Context ''{0}'': Exceeded number of allowed errors ''{1,number}''";
+    private final static String forceMessageRecorderError =
+        "Context ''{0}'': Client forcing return with errors ''{1,number}''";
 
     /**
      * Helper method to format a message and write to logger.
@@ -166,7 +169,7 @@ public abstract class AbstractRecorder implements MessageRecorder {
 	public void throwRTException() throws RecorderException {
         if (hasErrors()) {
             final String errorMsg =
-                message(ForceMessageRecorderError,
+                MessageFormat.format(forceMessageRecorderError,
                     getContext(),
                     String.valueOf(errorMsgCount));
             throw new RecorderException(errorMsg);
@@ -203,7 +206,7 @@ public abstract class AbstractRecorder implements MessageRecorder {
 
         if (errorMsgCount >= errorMsgLimit) {
             final String errorMsg =
-                message(TooManyMessageRecorderErrors,
+                MessageFormat.format(tooManyMessageRecorderErrors,
                     getContext(),
                     String.valueOf(errorMsgCount));
             throw new RecorderException(errorMsg);

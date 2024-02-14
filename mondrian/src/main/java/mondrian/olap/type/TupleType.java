@@ -11,6 +11,7 @@
 
 package mondrian.olap.type;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,8 +22,7 @@ import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.type.Type;
 
-import static mondrian.resource.MondrianResource.message;
-import static mondrian.resource.MondrianResource.DupHierarchiesInTuple;
+
 
 /**
  * Tuple type.
@@ -31,6 +31,8 @@ import static mondrian.resource.MondrianResource.DupHierarchiesInTuple;
  * @since Feb 17, 2005
  */
 public class TupleType implements Type {
+
+    private final static String dupHierarchiesInTuple = "Tuple contains more than one member of hierarchy ''{0}''.";
     public final Type[] elementTypes;
     private final String digest;
 
@@ -213,7 +215,7 @@ public class TupleType implements Type {
                 final Hierarchy hierarchy = memberType.getHierarchy();
                 final Hierarchy hierarchy1 = member1.getHierarchy();
                 if (hierarchy != null && hierarchy == hierarchy1) {
-                    throw new MondrianException(message(DupHierarchiesInTuple,
+                    throw new MondrianException(MessageFormat.format(dupHierarchiesInTuple,
                         hierarchy.getUniqueName()));
                 }
             }

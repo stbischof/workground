@@ -18,6 +18,11 @@ package mondrian.olap;
  * a query was canceled automatically due to a timeout.
  */
 public class QueryCanceledException extends ResultLimitExceededException {
+    private final static String message = "Query canceled";
+
+    public QueryCanceledException() {
+        this(message);
+    }
     /**
      * Creates a QueryCanceledException.
      *

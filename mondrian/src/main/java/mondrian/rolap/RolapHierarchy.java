@@ -11,12 +11,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.HierarchyHasNoLevels;
-import static mondrian.resource.MondrianResource.HierarchyLevelNamesNotUnique;
-import static mondrian.resource.MondrianResource.HierarchyMustNotHaveMoreThanOneSource;
-import static mondrian.resource.MondrianResource.InvalidHierarchyCondition;
-import static mondrian.resource.MondrianResource.LevelMustHaveNameExpression;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.getTableAlias;
 import static mondrian.rolap.util.JoinUtil.changeLeftRight;
 import static mondrian.rolap.util.JoinUtil.left;
@@ -24,6 +18,7 @@ import static mondrian.rolap.util.JoinUtil.right;
 import static mondrian.rolap.util.LevelUtil.getKeyExp;
 
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,6 +121,11 @@ import mondrian.util.UnionIterator;
 public class RolapHierarchy extends HierarchyBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RolapHierarchy.class);
+    private final static String levelMustHaveNameExpression =
+        "Level ''{0}'' must have a name expression (a ''column'' attribute or an <Expression> child";
+    private final static String hierarchyHasNoLevels = "Hierarchy ''{0}'' must have at least one level.";
+    private final static String hierarchyLevelNamesNotUnique = "Level names within hierarchy ''{0}'' are not unique; there is more than one level with name ''{1}''.";
+    private final static String hierarchyMustNotHaveMoreThanOneSource = "Hierarchy ''{0}'' has more than one source (memberReaderClass, <Table>, <Join> or <View>)";
 
     /**
      * The raw member reader. For a member reader which incorporates access
@@ -160,6 +160,7 @@ public class RolapHierarchy extends HierarchyBase {
     final RolapHierarchy closureFor;
 
     protected String displayFolder = null;
+    private final static String invalidHierarchyCondition = "Hierarchy ''{0}'' is invalid (has no members)";
 
     /**
      * Creates a hierarchy.
@@ -348,14 +349,14 @@ public class RolapHierarchy extends HierarchyBase {
         this.allMember.setOrdinal(0);
 
         if (xmlHierarchy.levels().isEmpty()) {
-            throw new MondrianException(message(HierarchyHasNoLevels,
+            throw new MondrianException(MessageFormat.format(hierarchyHasNoLevels,
                 getUniqueName()));
         }
 
         Set<String> levelNameSet = new HashSet<>();
         for (MappingLevel level : xmlHierarchy.levels()) {
             if (!levelNameSet.add(level.name())) {
-                throw new MondrianException(message(HierarchyLevelNamesNotUnique,
+                throw new MondrianException(MessageFormat.format(hierarchyLevelNamesNotUnique,
                         getUniqueName(), level.name()));
             }
         }
@@ -369,8 +370,8 @@ public class RolapHierarchy extends HierarchyBase {
                 if (getKeyExp(xmlLevel) == null
                     && xmlHierarchy.memberReaderClass() == null)
                 {
-                    throw new MondrianException(message(
-                        LevelMustHaveNameExpression, xmlLevel.name()));
+                    throw new MondrianException(MessageFormat.format(
+                        levelMustHaveNameExpression, xmlLevel.name()));
                 }
                 levels[i + 1] = new RolapLevel(this, i + 1, xmlLevel);
             }
@@ -394,8 +395,8 @@ public class RolapHierarchy extends HierarchyBase {
         if (xmlHierarchyRelation != null
             && xmlHierarchy.memberReaderClass() != null)
         {
-            throw new MondrianException(message(
-                HierarchyMustNotHaveMoreThanOneSource, getUniqueName()));
+            throw new MondrianException(MessageFormat.format(
+                hierarchyMustNotHaveMoreThanOneSource, getUniqueName()));
         }
         if (!Util.isEmpty(xmlHierarchy.caption())) {
             setCaption(xmlHierarchy.caption());
@@ -637,7 +638,7 @@ public class RolapHierarchy extends HierarchyBase {
                 break;
             }
             if (defaultMember == null) {
-                throw new InvalidHierarchyException(message(InvalidHierarchyCondition,
+                throw new InvalidHierarchyException(MessageFormat.format(invalidHierarchyCondition,
                     this.getUniqueName()));
             }
         }

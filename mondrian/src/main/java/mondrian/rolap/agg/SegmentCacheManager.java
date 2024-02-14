@@ -9,9 +9,6 @@
 */
 package mondrian.rolap.agg;
 
-import static mondrian.resource.MondrianResource.SegmentCacheLimitReached;
-import static mondrian.resource.MondrianResource.SqlQueryLimitReached;
-
 import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -280,8 +277,14 @@ public class SegmentCacheManager {
   private static final Logger LOGGER =
     LoggerFactory.getLogger( AggregationManager.class );
   private final Context context;
+    private final static String sqlQueryLimitReached = """
+    The number of concurrent SQL statements which can be used simultaneously by this Mondrian server instance has been reached. Set ''mondrian.rolap.maxSqlThreads'' to change the current limit.
+    """;
+    private final static String segmentCacheLimitReached = """
+    The number of concurrent segment cache operations which can be run simultaneously by this Mondrian server instance has been reached. Set ''mondrian.rolap.maxCacheThreads'' to change the current limit.
+    """;
 
-  public SegmentCacheManager( Context context ) {
+    public SegmentCacheManager( Context context ) {
     this.context = context;
     this.sqlExecutor = createSqlExecutor(context);
     this.cacheExecutor = createCacheExecutor(context);
@@ -337,7 +340,7 @@ public class SegmentCacheManager {
             1,
             "mondrian.rolap.agg.SegmentCacheManager$cacheExecutor",
             ( r, executor ) -> {
-                throw new MondrianException(SegmentCacheLimitReached);
+                throw new MondrianException(segmentCacheLimitReached);
             } );
     }
 
@@ -353,7 +356,7 @@ public class SegmentCacheManager {
             1,
             "mondrian.rolap.agg.SegmentCacheManager$sqlExecutor",
             ( r, executor ) -> {
-                throw new MondrianException(SqlQueryLimitReached);
+                throw new MondrianException(sqlQueryLimitReached);
             } );
     }
 
@@ -644,7 +647,7 @@ public class SegmentCacheManager {
           event.header,
           event.body );
 
-      
+
 		CellCacheSegmentCreateEvent cacheSegmentCreateEvent = new CellCacheSegmentCreateEvent(
 				new CellCacheEventCommon(new ExecutionEventCommon(
 						new MdxStatementEventCommon(
@@ -655,7 +658,7 @@ public class SegmentCacheManager {
 				event.header.getConstrainedColumns().size(), event.body == null ? 0 : event.body.getValueMap().size());
 
 		event.monitor.accept(cacheSegmentCreateEvent);
-		
+
 //        new CellCacheSegmentCreateEvent(
 //          event.timestamp,
 //          event.serverId,
@@ -666,7 +669,7 @@ public class SegmentCacheManager {
 //          event.body == null
 //            ? 0
 //            : event.body.getValueMap().size(),
-//          CellCacheEvent.Source.SQL ) 
+//          CellCacheEvent.Source.SQL )
     }
 
     @Override
@@ -682,7 +685,7 @@ public class SegmentCacheManager {
       indexRegistry.getIndex( event.star )
         .remove( event.header );
 
-      
+
 		CellCacheSegmentDeleteEvent cacheSegmentDeleteEvent = new CellCacheSegmentDeleteEvent(
 				new CellCacheEventCommon(new ExecutionEventCommon(
 						new MdxStatementEventCommon(
@@ -699,7 +702,7 @@ public class SegmentCacheManager {
 //          event.statementId,
 //          event.executionId,
 //          event.header.getConstrainedColumns().size(),
-//      CellCacheEvent.Source.CACHE_CONTROL ) 
+//      CellCacheEvent.Source.CACHE_CONTROL )
 
       // Remove the segment from external caches. Use an executor, because
       // it may take some time. We discard the future, because we don't
@@ -746,7 +749,7 @@ public class SegmentCacheManager {
         false );
 
       // Put an event on the monitor.
-      
+
 		CellCacheSegmentCreateEvent cacheSegmentCreateEvent = new CellCacheSegmentCreateEvent(
 				new CellCacheEventCommon(
 						new ExecutionEventCommon(
@@ -768,7 +771,7 @@ public class SegmentCacheManager {
 //          event.header.getConstrainedColumns().size(),
 //          0,
 //          CellCacheEvent.Source.EXTERNAL )
-        
+
     }
 
     @Override
@@ -782,7 +785,7 @@ public class SegmentCacheManager {
         return;
       }
       index.remove( event.header );
-      
+
 		CellCacheSegmentDeleteEvent cacheSegmentDeleteEvent = new CellCacheSegmentDeleteEvent(
 				new CellCacheEventCommon(new ExecutionEventCommon(
 						new MdxStatementEventCommon(
@@ -798,8 +801,8 @@ public class SegmentCacheManager {
 //          event.connectionId,
 //          event.statementId,
 //          event.executionId,
-//          
-//          CellCacheEvent.Source.EXTERNAL ) 
+//
+//          CellCacheEvent.Source.EXTERNAL )
     }
   }
 

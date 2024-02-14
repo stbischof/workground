@@ -11,6 +11,7 @@
 
 package mondrian.rolap.aggmatcher;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,8 +28,6 @@ import mondrian.rolap.RolapStar;
 import mondrian.rolap.aggmatcher.JdbcSchema.Table.Column;
 import mondrian.util.Pair;
 
-import static mondrian.resource.MondrianResource.AggMultipleMatchingMeasure;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * This is the default Recognizer. It uses the rules found in the file
@@ -39,6 +38,9 @@ import static mondrian.resource.MondrianResource.message;
 class DefaultRecognizer extends Recognizer {
 
     private final DefaultRules aggDefault;
+    private final static String aggMultipleMatchingMeasure = """
+        Context ''{0}'': Candidate aggregate table ''{1}'' for fact table ''{2}'' has ''{3,number}'' columns matching measure ''{4}'', ''{5}'', ''{6}''\".
+    """;
 
     DefaultRecognizer(
         final DefaultRules aggDefault,
@@ -148,7 +150,7 @@ class DefaultRecognizer extends Recognizer {
                 }
 
                 if (matchCount > 1) {
-                    String msg = message(AggMultipleMatchingMeasure,
+                    String msg = MessageFormat.format(aggMultipleMatchingMeasure,
                         msgRecorder.getContext(),
                         aggTable.getName(),
                         dbFactTable.getName(),

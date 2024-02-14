@@ -10,6 +10,7 @@
 package mondrian.util;
 
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -28,9 +29,6 @@ import org.slf4j.LoggerFactory;
 import mondrian.olap.Util;
 import mondrian.rolap.RolapUtil;
 
-import static mondrian.resource.MondrianResource.ExecutionStatementCleanupException;
-import static mondrian.resource.MondrianResource.message;
-
 // Only in Java6 and above
 
 /**
@@ -46,6 +44,8 @@ import static mondrian.resource.MondrianResource.message;
 public class UtilCompatibleJdk16 implements UtilCompatible  {
     private static final Logger LOGGER =
         LoggerFactory.getLogger(Util.class);
+    private final static String executionStatementCleanupException =
+        "An exception was encountered while trying to cleanup an execution context. A statement failed to cancel gracefully. Locus was : \"{0}\".";
 
     @Override
 	public <T> T compileScript(
@@ -90,8 +90,8 @@ public class UtilCompatibleJdk16 implements UtilCompatible  {
             // side.
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("",
-                    new MondrianException(message(
-                        ExecutionStatementCleanupException,
+                    new MondrianException(MessageFormat.format(
+                        executionStatementCleanupException,
                             t.getMessage()), t),
                     t);
             }

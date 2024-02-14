@@ -11,8 +11,6 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.TwoNullsNotSupported;
-
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -47,6 +45,8 @@ class RangeFunDef extends AbstractFunctionDefinition {
 
 	static OperationAtom functionAtom = new InfixOperationAtom(":");
 	static final RangeFunDef instance = new RangeFunDef();
+    private final static String twoNullsNotSupported = "Function does not support two NULL member parameters";
+
     private RangeFunDef() {
         super(new FunctionMetaDataR(functionAtom,
     			"Infix colon operator returns the set of members between a given pair of members.", "<Member> : <Member>",  DataType.SET,
@@ -84,7 +84,7 @@ class RangeFunDef extends AbstractFunctionDefinition {
         // if both objects are null, throw exception
 
         if (members[0] == null && members[1] == null) {
-            throw new MondrianException(TwoNullsNotSupported);
+            throw new MondrianException(twoNullsNotSupported);
         } else if (members[0] == null) {
             Member nullMember =
                 ((RolapMember) members[1].evaluate(null)).getHierarchy()

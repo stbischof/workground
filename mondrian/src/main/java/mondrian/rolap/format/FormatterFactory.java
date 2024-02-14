@@ -11,6 +11,7 @@ package mondrian.rolap.format;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 
 import org.eclipse.daanse.olap.api.element.MemberFormatter;
 
@@ -19,10 +20,6 @@ import mondrian.spi.CellFormatter;
 import mondrian.spi.PropertyFormatter;
 import mondrian.spi.impl.Scripts;
 
-import static mondrian.resource.MondrianResource.CellFormatterLoadFailed;
-import static mondrian.resource.MondrianResource.MemberFormatterLoadFailed;
-import static mondrian.resource.MondrianResource.PropertyFormatterLoadFailed;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Formatter factory to provide a single point
@@ -50,6 +47,10 @@ public class FormatterFactory {
 
 
     private static final FormatterFactory INSTANCE = new FormatterFactory();
+    private final static String memberFormatterLoadFailed = "Failed to load formatter class ''{0}'' for level ''{1}''.";
+    private final static String cellFormatterLoadFailed = "Failed to load formatter class ''{0}'' for member ''{1}''.";
+    private final static String propertyFormatterLoadFailed =
+        "Failed to load formatter class ''{0}'' for property ''{1}''.";
 
     private FormatterFactory() {
     }
@@ -76,7 +77,7 @@ public class FormatterFactory {
                     context.getScriptLanguage());
             }
         } catch (Exception e) {
-            throw new MondrianException(message(CellFormatterLoadFailed,
+            throw new MondrianException(MessageFormat.format(cellFormatterLoadFailed,
                 context.getFormatterClassName(),
                 context.getElementName(),
                 e));
@@ -105,7 +106,7 @@ public class FormatterFactory {
                     context.getScriptLanguage());
             }
         } catch (Exception e) {
-            throw new MondrianException(message(MemberFormatterLoadFailed,
+            throw new MondrianException(MessageFormat.format(memberFormatterLoadFailed,
                 context.getFormatterClassName(),
                 context.getElementName(),
                 e));
@@ -135,7 +136,7 @@ public class FormatterFactory {
                     context.getScriptLanguage());
             }
         } catch (Exception e) {
-            throw new MondrianException(message(PropertyFormatterLoadFailed,
+            throw new MondrianException(MessageFormat.format(propertyFormatterLoadFailed,
                 context.getFormatterClassName(),
                 context.getElementName(),
                 e));

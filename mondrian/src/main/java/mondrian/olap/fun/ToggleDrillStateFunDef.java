@@ -11,8 +11,6 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.ToggleDrillStateRecursiveNotSupported;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +44,8 @@ class ToggleDrillStateFunDef extends AbstractFunctionDefinition {
             new String[]{"fxxx", "fxxxy"},
             ToggleDrillStateFunDef.class,
             ToggleDrillStateFunDef.ReservedWords);
+    private final static String toggleDrillStateRecursiveNotSupported =
+        "'RECURSIVE' is not supported in ToggleDrillState.";
 
     public ToggleDrillStateFunDef(FunctionMetaData functionMetaData) {
         super(functionMetaData);
@@ -54,7 +54,7 @@ class ToggleDrillStateFunDef extends AbstractFunctionDefinition {
     @Override
 	public Calc compileCall( ResolvedFunCall call, ExpressionCompiler compiler) {
         if (call.getArgCount() > 2) {
-            throw new MondrianException(ToggleDrillStateRecursiveNotSupported);
+            throw new MondrianException(toggleDrillStateRecursiveNotSupported);
         }
         final TupleListCalc listCalc0 =
             compiler.compileList(call.getArg(0));

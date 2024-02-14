@@ -13,13 +13,12 @@
 package mondrian.rolap;
 
 import static mondrian.olap.fun.sort.Sorter.hierarchizeTupleList;
-import static mondrian.resource.MondrianResource.LevelTableParentNotFound;
-import static mondrian.resource.MondrianResource.MemberFetchLimitExceeded;
-import static mondrian.resource.MondrianResource.message;
+
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -146,7 +145,10 @@ public class SqlTupleReader implements TupleReader {
     final HashMap<Object, RolapMember> keyToMember =
       new HashMap<>();
     List<List<RolapMember>> siblings;
-    // if set, the rows for this target come from the array rather
+      private final static String levelTableParentNotFound = """
+        The level {0} makes use of the ''parentColumn'' attribute, but a parent member for key {1} is missing. This can be due to the usage of the NativizeSet MDX function with a list of members form a parent-child hierarchy that doesn''t include all parent members in its definition. Using NativizeSet with a parent-child hierarchy requires the parent members to be included in the set, or the hierarchy cannot be properly built natively.
+      """;
+      // if set, the rows for this target come from the array rather
     // than native sql
     // current member within the current result set row
     // for this target
@@ -215,7 +217,7 @@ public class SqlTupleReader implements TupleReader {
                 parentMember = keyToMember.get( parentValue );
               }
               if ( parentMember == null ) {
-                String msg = message(LevelTableParentNotFound,
+                String msg = MessageFormat.format(levelTableParentNotFound,
                         childLevel.getUniqueName(),
                         String.valueOf( parentValue ) );
                 LOGGER.warn(msg);
@@ -515,8 +517,7 @@ public Object getCacheKey() {
 
         if ( limit > 0 && limit < ++fetchCount ) {
           // result limit exceeded, throw an exception
-          throw new ResourceLimitExceededException(message(MemberFetchLimitExceeded,
-            (long) limit ));
+          throw new ResourceLimitExceededException((long) limit );
         }
 
         if ( enumTargetCount == 0 ) {

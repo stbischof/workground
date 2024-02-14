@@ -12,8 +12,7 @@
 package mondrian.rolap.aggmatcher;
 
 import static java.util.Collections.EMPTY_LIST;
-import static mondrian.resource.MondrianResource.SqlQueryFailed;
-import static mondrian.resource.MondrianResource.message;
+
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
 import static mondrian.rolap.util.ExpressionUtil.getTableAlias;
 
@@ -21,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -1069,6 +1069,8 @@ public class AggStar {
      */
     public class FactTable extends Table {
 
+        private final static String sqlQueryFailed = "Context ''{0}'': Sql query failed to run ''{1}''.";
+
         /**
          * This is a Column that is a Measure (contains an aggregator).
          */
@@ -1563,7 +1565,7 @@ public class AggStar {
                     ++stmt.rowCount;
                     numberOfRows = resultSet.getInt(1);
                 } else {
-                    String logMsg = message(SqlQueryFailed,
+                    String logMsg = MessageFormat.format(sqlQueryFailed,
                         "AggStar.FactTable.makeNumberOfRows",
                         query.toString());
                     getLogger().warn(logMsg);

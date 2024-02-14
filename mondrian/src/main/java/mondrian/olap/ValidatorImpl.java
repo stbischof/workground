@@ -9,17 +9,16 @@
 */
 package mondrian.olap;
 
-import static mondrian.resource.MondrianResource.MdxMemberExpIsSet;
-import static mondrian.resource.MondrianResource.MoreThanOneFunctionMatchesSignature;
-import static mondrian.resource.MondrianResource.NoFunctionMatchesSignature;
-import static mondrian.resource.MondrianResource.message;
 
+
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mondrian.olap.exceptions.MdxMemberExpIsSetException;
 import mondrian.olap.exceptions.UnknownParameterException;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Parameter;
@@ -70,6 +69,9 @@ abstract class ValidatorImpl implements Validator {
     private final Map<QueryComponent, QueryComponent> resolvedNodes =
         new HashMap<>();
     private static final QueryComponent placeHolder = NumericLiteralImpl.zero;
+    private final static String noFunctionMatchesSignature = "No function matches signature ''{0}''";
+    private final static String moreThanOneFunctionMatchesSignature =
+        "More than one function matches signature ''{0}''; they are: {1}";
 
     /**
      * Creates a ValidatorImpl.
@@ -121,8 +123,7 @@ abstract class ValidatorImpl implements Validator {
             final Type type = resolved.getType();
             if (!TypeUtil.canEvaluate(type)) {
                 String exprString = Util.unparse(resolved);
-                throw new MondrianException(message(MdxMemberExpIsSet,
-                    exprString));
+                throw new MdxMemberExpIsSetException(exprString);
             }
         }
 
@@ -238,7 +239,7 @@ abstract class ValidatorImpl implements Validator {
         }
         switch (matchDefs.size()) {
         case 0:
-            throw new MondrianException(message(NoFunctionMatchesSignature,
+            throw new MondrianException(MessageFormat.format(noFunctionMatchesSignature,
                 signature));
         case 1:
             break;
@@ -250,8 +251,8 @@ abstract class ValidatorImpl implements Validator {
                 }
                 buf.append(matchDef.getSignature());
             }
-            throw new MondrianException(message(
-                MoreThanOneFunctionMatchesSignature,
+            throw new MondrianException(MessageFormat.format(
+                moreThanOneFunctionMatchesSignature,
                     signature,
                     buf.toString()));
         }

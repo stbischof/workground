@@ -11,6 +11,7 @@
 package mondrian.rolap.aggmatcher;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,11 +36,6 @@ import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapSchema;
 import mondrian.rolap.RolapStar;
 
-import static mondrian.resource.MondrianResource.AggLoadingError;
-import static mondrian.resource.MondrianResource.AggLoadingExceededErrorCount;
-import static mondrian.resource.MondrianResource.AggTableZeroSize;
-import static mondrian.resource.MondrianResource.UnknownFactTableColumn;
-import static mondrian.resource.MondrianResource.message;
 
 /**
  * Manages aggregate tables.
@@ -60,6 +56,12 @@ public class AggTableManager {
         LoggerFactory.getLogger(AggTableManager.class);
 
     private final RolapSchema schema;
+    private final static String aggLoadingError = "Error while loading/reloading aggregates.";
+    private final static String aggLoadingExceededErrorCount =
+        "Too many errors, ''{0,number}'', while loading/reloading aggregates.";
+    private final static String aggTableZeroSize = "Zero size Aggregate table ''{0}'' for Fact Table ''{1}''.";
+    private final static String unknownFactTableColumn =
+        "Context ''{0}'': For Fact table ''{1}'', the column ''{2}'' is neither a measure or foreign key\".";
 
     public AggTableManager(final RolapSchema schema) {
         this.schema = schema;
@@ -99,7 +101,7 @@ public class AggTableManager {
             try {
                 loadRolapStarAggregates(connectionProps);
             } catch (SQLException ex) {
-                throw new MondrianException(AggLoadingError, ex);
+                throw new MondrianException(aggLoadingError, ex);
             }
         }
         printResults();
@@ -289,7 +291,7 @@ public class AggTableManager {
                             if (aggStar.getSize(schema.getInternalConnection().getContext().getConfig().chooseAggregateByVolume()) > 0) {
                                 star.addAggStar(aggStar);
                             } else {
-                                String msg = message(AggTableZeroSize,
+                                String msg = MessageFormat.format(aggTableZeroSize,
                                     aggStar.getFactTable().getName(),
                                     factTableName);
                                 getLogger().warn(msg);
@@ -310,7 +312,7 @@ public class AggTableManager {
             msgRecorder.logWarningMessage(getLogger());
             msgRecorder.logErrorMessage(getLogger());
             if (msgRecorder.hasErrors()) {
-                throw new MondrianException(message(AggLoadingExceededErrorCount,
+                throw new MondrianException(MessageFormat.format(aggLoadingExceededErrorCount,
                     msgRecorder.getErrorCount()));
             }
         }
@@ -420,7 +422,7 @@ public class AggTableManager {
                 // warn if it has not been identified
                 if (!factColumn.hasUsage() && getLogger().isDebugEnabled()) {
                     getLogger().debug(
-                        message(UnknownFactTableColumn,
+                        MessageFormat.format(unknownFactTableColumn,
                             msgRecorder.getContext(),
                             dbFactTable.getName(),
                             factColumn.getName()));

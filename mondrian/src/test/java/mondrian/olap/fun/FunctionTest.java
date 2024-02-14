@@ -14,7 +14,7 @@ package mondrian.olap.fun;
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static mondrian.olap.Util.assertTrue;
 import static mondrian.olap.exceptions.CousinHierarchyMismatchException.cousinHierarchyMismatch;
-import static mondrian.resource.MondrianResource.message;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

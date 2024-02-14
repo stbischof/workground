@@ -12,28 +12,12 @@ package mondrian.rolap.aggmatcher;
 
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
-import static mondrian.resource.MondrianResource.BadLevelNameFormat;
-import static mondrian.resource.MondrianResource.BadMeasureName;
-import static mondrian.resource.MondrianResource.BadMeasureNameFormat;
-import static mondrian.resource.MondrianResource.BadMeasures;
-import static mondrian.resource.MondrianResource.CubeRelationNotTable;
-import static mondrian.resource.MondrianResource.DuplicateFactForeignKey;
-import static mondrian.resource.MondrianResource.DuplicateLevelColumnNames;
-import static mondrian.resource.MondrianResource.DuplicateLevelMeasureColumnNames;
-import static mondrian.resource.MondrianResource.DuplicateLevelNames;
-import static mondrian.resource.MondrianResource.DuplicateMeasureColumnNames;
-import static mondrian.resource.MondrianResource.DuplicateMeasureNames;
-import static mondrian.resource.MondrianResource.EmptyAttributeString;
-import static mondrian.resource.MondrianResource.NullAttributeString;
-import static mondrian.resource.MondrianResource.UnknownHierarchyName;
-import static mondrian.resource.MondrianResource.UnknownLeftJoinCondition;
-import static mondrian.resource.MondrianResource.UnknownLevelName;
-import static mondrian.resource.MondrianResource.UnknownMeasureName;
-import static mondrian.resource.MondrianResource.message;
+
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,6 +68,9 @@ import mondrian.rolap.RolapStar;
  */
 public class ExplicitRules {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExplicitRules.class);
+    private final static String emptyAttributeString =
+        "Context ''{0}'': The value for the attribute ''{1}'' is empty (length is zero).";
+    private final static String nullAttributeString = "Context ''{0}'': The value for the attribute ''{1}'' is null.";
 
     /**
      * Returns whether the given is tableName explicitly excluded from
@@ -126,6 +113,9 @@ public class ExplicitRules {
      */
     public static class Group {
 
+        private final static String cubeRelationNotTable =
+            "The Cube ''{0}'' relation is not a MondrianDef.Table but rather ''{1}''.";
+
         /**
          * Make an ExplicitRules.Group for a given RolapCube given the
          * Cube associated with that cube.
@@ -157,7 +147,7 @@ public class ExplicitRules {
                     }
                 }
             } else {
-                String msg = message(CubeRelationNotTable,
+                String msg = MessageFormat.format(cubeRelationNotTable,
                     cube.getName(),
                     relation.getClass().getName());
                 LOGGER.warn(msg);
@@ -532,6 +522,20 @@ public class ExplicitRules {
      */
     public abstract static class TableDef {
 
+        private final static String duplicateFactForeignKey =
+            "Context ''{0}'': Duplicate fact foreign keys ''{1}'' for key ''{2}''.";
+        private final static String duplicateLevelColumnNames =
+            "Context ''{0}'': Two levels, ''{1}'' and ''{2}'',  share the same foreign column name ''{3}''";
+        private final static String duplicateLevelMeasureColumnNames =
+            "Context ''{0}'': The level ''{1}'' and the measuer ''{2}'',  share the same column name ''{3}''";
+        private final static String duplicateLevelNames = "Context ''{0}'': Two levels share the same name ''{1}''";
+        private final static String duplicateMeasureColumnNames =
+            "Context ''{0}'': Two measures, ''{1}'' and ''{2}'',  share the same column name ''{3}''";
+        private final static String duplicateMeasureNames = "Context ''{0}'': Two measures share the same name ''{1}''";
+        private final static String unknownLeftJoinCondition = """
+            Context ''{0}'': Failed to find left join condition in fact table ''{1}'' for foreign key ''{2}''.
+        """;
+
         /**
          * Given a AggTable instance create a TableDef instance
          * which is either a NameTableDef or PatternTableDef.
@@ -684,6 +688,12 @@ public class ExplicitRules {
             private final String ordinalColumn;
             private final String captionColumn;
             private final Map<String, String> properties;
+            private final static String unknownLevelName =
+                "Context ''{0}'': The Hierarchy Level ''{1}'' does not have a Level named ''{2}''";
+            private final static String badLevelNameFormat =
+                "Context ''{0}'': The Level name ''{1}'' should be [usage hierarchy name].[level name].";
+            private final static String unknownHierarchyName =
+                "Context ''{0}'': The Hierarchy ''{1}'' does not exist\"";
 
             Level(
                 final String name,
@@ -769,7 +779,7 @@ public class ExplicitRules {
                         && names.size() == 3))
                     {
                         msgRecorder.reportError(
-                            message(BadLevelNameFormat,
+                            MessageFormat.format(badLevelNameFormat,
                                 msgRecorder.getContext(),
                                 nameInner));
                     } else {
@@ -790,12 +800,12 @@ public class ExplicitRules {
                                     DataType.HIERARCHY);
                             if (hierarchy == null) {
                                 msgRecorder.reportError(
-                                    message(UnknownHierarchyName,
+                                    MessageFormat.format(unknownHierarchyName,
                                         msgRecorder.getContext(),
                                         names.get(0).toString()));
                             } else {
                                 msgRecorder.reportError(
-                                    message(UnknownLevelName,
+                                    MessageFormat.format(unknownLevelName,
                                         msgRecorder.getContext(),
                                         names.get(0).toString(),
                                         names.get(1).toString()));
@@ -906,6 +916,13 @@ public class ExplicitRules {
             private final String columnName;
             private final RollupType explicitRollupType;
             private RolapStar.Measure rolapMeasure;
+            private final static String badMeasureName =
+                "Context ''{0}'': Failed to find Measure name ''{1}'' for cube ''{2}''.";
+            private final static String badMeasureNameFormat =
+                "Context ''{0}'': The Measures name ''{1}'' should be [Measures].[measure name].";
+            private final static String badMeasures =
+                "Context ''{0}'': This name ''{1}'' must be the string \"Measures\".";
+            private final static String unknownMeasureName = "Context ''{0}'': Measures does not have a measure named ''{1}''";
 
             Measure(
                 final String name,
@@ -970,7 +987,7 @@ public class ExplicitRules {
                     List<Segment> names = Util.parseIdentifier(nameInner);
                     if (names.size() != 2) {
                         msgRecorder.reportError(
-                            message(BadMeasureNameFormat,
+                            MessageFormat.format(badMeasureNameFormat,
                                 msgRecorder.getContext(),
                                 nameInner));
                     } else {
@@ -987,12 +1004,12 @@ public class ExplicitRules {
                                         .equals("Measures")))
                             {
                                 msgRecorder.reportError(
-                                    message(BadMeasures,
+                                    MessageFormat.format(badMeasures,
                                         msgRecorder.getContext(),
                                         names.get(0).toString()));
                             } else {
                                 msgRecorder.reportError(
-                                    message(UnknownMeasureName,
+                                    MessageFormat.format(unknownMeasureName,
                                         msgRecorder.getContext(),
                                         names.get(1).toString()));
                             }
@@ -1005,7 +1022,7 @@ public class ExplicitRules {
                                 : null;
                         if (rolapMeasure == null) {
                             msgRecorder.reportError(
-                                message(BadMeasureName,
+                                MessageFormat.format(badMeasureName,
                                     msgRecorder.getContext(),
                                     names.get(1).toString(),
                                     cube.getName()));
@@ -1294,7 +1311,7 @@ public class ExplicitRules {
                     // Is the level name a duplicate
                     if (namesToObjects.containsKey(level.getName())) {
                         msgRecorder.reportError(
-                            message(DuplicateLevelNames,
+                            MessageFormat.format(duplicateLevelNames,
                                 msgRecorder.getContext(),
                                 level.getName()));
                     } else {
@@ -1306,7 +1323,7 @@ public class ExplicitRules {
                         Level l = (Level)
                             columnsToObjects.get(level.getColumnName());
                         msgRecorder.reportError(
-                            message(DuplicateLevelColumnNames,
+                            MessageFormat.format(duplicateLevelColumnNames,
                                 msgRecorder.getContext(),
                                 level.getName(),
                                 l.getName(),
@@ -1323,7 +1340,7 @@ public class ExplicitRules {
 
                     if (namesToObjects.containsKey(measure.getName())) {
                         msgRecorder.reportError(
-                            message(DuplicateMeasureNames,
+                            MessageFormat.format(duplicateMeasureNames,
                                 msgRecorder.getContext(),
                                 measure.getName()));
                         continue;
@@ -1336,7 +1353,7 @@ public class ExplicitRules {
                             columnsToObjects.get(measure.getColumnName());
                         if (o instanceof Measure m) {
                             msgRecorder.reportError(
-                                message(DuplicateMeasureColumnNames,
+                                MessageFormat.format(duplicateMeasureColumnNames,
                                     msgRecorder.getContext(),
                                     measure.getName(),
                                     m.getName(),
@@ -1344,7 +1361,7 @@ public class ExplicitRules {
                         } else {
                             Level l = (Level) o;
                             msgRecorder.reportError(
-                                message(DuplicateLevelMeasureColumnNames,
+                                MessageFormat.format(duplicateLevelMeasureColumnNames,
                                     msgRecorder.getContext(),
                                     l.getName(),
                                     measure.getName(),
@@ -1371,7 +1388,7 @@ public class ExplicitRules {
 
                     if (namesToObjects.containsKey(baseFKName)) {
                         msgRecorder.reportError(
-                            message(DuplicateFactForeignKey,
+                            MessageFormat.format(duplicateFactForeignKey,
                                 msgRecorder.getContext(),
                                 baseFKName,
                                 aggFKName));
@@ -1380,7 +1397,7 @@ public class ExplicitRules {
                     }
                     if (columnsToObjects.containsKey(aggFKName)) {
                         msgRecorder.reportError(
-                            message(DuplicateFactForeignKey,
+                            MessageFormat.format(duplicateFactForeignKey,
                                 msgRecorder.getContext(),
                                 baseFKName,
                                 aggFKName));
@@ -1392,7 +1409,7 @@ public class ExplicitRules {
                         new ColumnR(tableName, baseFKName);
                     if (factTable.findTableWithLeftCondition(c) == null) {
                         msgRecorder.reportError(
-                            message(UnknownLeftJoinCondition,
+                            MessageFormat.format(unknownLeftJoinCondition,
                                 msgRecorder.getContext(),
                                 tableName,
                                 baseFKName));
@@ -1670,11 +1687,11 @@ public class ExplicitRules {
         final String attrName)
     {
         if (attrValue == null) {
-            msgRecorder.reportError(message(NullAttributeString,
+            msgRecorder.reportError(MessageFormat.format(nullAttributeString,
                 msgRecorder.getContext(),
                 attrName));
         } else if (attrValue.length() == 0) {
-            msgRecorder.reportError(message(EmptyAttributeString,
+            msgRecorder.reportError(MessageFormat.format(emptyAttributeString,
                 msgRecorder.getContext(),
                 attrName));
         }

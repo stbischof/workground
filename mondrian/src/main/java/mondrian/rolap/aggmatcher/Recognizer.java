@@ -11,19 +11,10 @@
 
 package mondrian.rolap.aggmatcher;
 
-import static mondrian.resource.MondrianResource.AggUnknownColumn;
-import static mondrian.resource.MondrianResource.DoubleMatchForLevel;
-import static mondrian.resource.MondrianResource.NoAggregatorFound;
-import static mondrian.resource.MondrianResource.NoColumnNameFromExpression;
-import static mondrian.resource.MondrianResource.NoFactCountColumns;
-import static mondrian.resource.MondrianResource.NoMeasureColumns;
-import static mondrian.resource.MondrianResource.NonNumericFactCountColumn;
-import static mondrian.resource.MondrianResource.TooManyFactCountColumns;
-import static mondrian.resource.MondrianResource.TooManyMatchingForeignKeyColumns;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -74,6 +65,29 @@ import mondrian.rolap.sql.SqlQuery;
 public abstract class Recognizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Recognizer.class);
+    private final static String nonNumericFactCountColumn = """
+        Candidate aggregate table ''{0}'' for fact table ''{1}'' has candidate fact count column ''{2}'' has type ''{3}'' that is not numeric.
+    """;
+    private final static String aggUnknownColumn =
+        "Candidate aggregate table ''{0}'' for fact table ''{1}'' has a column ''{2}'' with unknown usage.";
+    private final static String doubleMatchForLevel = """
+        Double Match for candidate aggregate table ''{0}'' for fact table ''{1}'' and column ''{2}'' matched two hierarchies: 1) table=''{3}'', column=''{4}'' and 2) table=''{5}'', column=''{6}''
+    """;
+    private final static String noAggregatorFound = """
+    No aggregator found while converting fact table aggregator: for usage
+            ''{0}'', fact aggregator ''{1}'' and sibling aggregator ''{2}''
+            """;
+    private final static String noColumnNameFromExpression =
+        "Could not get a column name from a level key expression: ''{0}''.";
+    private final static String noFactCountColumns =
+        "Candidate aggregate table ''{0}'' for fact table ''{1}'' has no fact count columns.";
+    private final static String noMeasureColumns =
+        "Candidate aggregate table ''{0}'' for fact table ''{1}'' has no measure columns.";
+    private final static String tooManyFactCountColumns =
+        "Candidate aggregate table ''{0}'' for fact table ''{1}'' has ''{2,number}'' fact count columns.";
+    private final static String tooManyMatchingForeignKeyColumns = """
+        Candidate aggregate table ''{0}'' for fact table ''{1}'' had ''{2,number}'' columns matching foreign key ''{3}''
+    """;
 
     /**
      * This is used to wrap column name matching rules.
@@ -205,7 +219,7 @@ public abstract class Recognizer {
                         makeFactCount(aggColumn);
                         nosOfFactCounts++;
                     } else {
-                        String msg = message(NonNumericFactCountColumn,
+                        String msg = MessageFormat.format(nonNumericFactCountColumn,
                             aggTable.getName(),
                             dbFactTable.getName(),
                             aggColumn.getName(),
@@ -217,7 +231,7 @@ public abstract class Recognizer {
                 }
             }
             if (nosOfFactCounts == 0) {
-                String msg = message(NoFactCountColumns,
+                String msg = MessageFormat.format(noFactCountColumns,
                     aggTable.getName(),
                     dbFactTable.getName());
                 msgRecorder.reportError(msg);
@@ -225,7 +239,7 @@ public abstract class Recognizer {
                 returnValue = false;
 
             } else if (nosOfFactCounts > 1) {
-                String msg = message(TooManyFactCountColumns,
+                String msg = MessageFormat.format(tooManyFactCountColumns,
                     aggTable.getName(),
                     dbFactTable.getName(),
                     nosOfFactCounts);
@@ -292,7 +306,7 @@ public abstract class Recognizer {
 
         try {
             if (nosMeasures == 0) {
-                String msg = message(NoMeasureColumns,
+                String msg = MessageFormat.format(noMeasureColumns,
                     aggTable.getName(),
                     dbFactTable.getName());
                 msgRecorder.reportError(msg);
@@ -443,7 +457,7 @@ public abstract class Recognizer {
                 int matchCount = matchForeignKey(factUsage);
 
                 if (matchCount > 1) {
-                    String msg = message(TooManyMatchingForeignKeyColumns,
+                    String msg = MessageFormat.format(tooManyMatchingForeignKeyColumns,
                         aggTable.getName(),
                         dbFactTable.getName(),
                         matchCount,
@@ -643,7 +657,7 @@ public abstract class Recognizer {
                     if (!aggUsageMatchesHierarchyUsage(aggUsage,
                         hierarchyUsage, levelColumnName)) {
                         // Levels should have only one usage.
-                        String msg = message(DoubleMatchForLevel,
+                        String msg = MessageFormat.format(doubleMatchForLevel,
                             aggTable.getName(),
                             dbFactTable.getName(),
                             aggColumn.getName(),
@@ -834,7 +848,7 @@ public abstract class Recognizer {
             new TreeMap<>();
         for (JdbcSchema.Table.Column aggColumn : aggTable.getColumns()) {
             if (!aggColumn.hasUsage()) {
-                String msg = message(AggUnknownColumn,
+                String msg = MessageFormat.format(aggUnknownColumn,
                     aggTable.getName(),
                     dbFactTable.getName(),
                     aggColumn.getName());
@@ -921,7 +935,7 @@ public abstract class Recognizer {
         }
 
         if (rollupAgg == null && factAgg != null) {
-            String msg = message(NoAggregatorFound,
+            String msg = MessageFormat.format(noAggregatorFound,
                 aggUsage.getSymbolicName(),
                 factAgg.getName(),
                 siblingAgg.getName());
@@ -1030,7 +1044,7 @@ public abstract class Recognizer {
                 return key.toString();
             }
 
-            String msg = message(NoColumnNameFromExpression,
+            String msg = MessageFormat.format(noColumnNameFromExpression,
                 expr.toString());
             msgRecorder.reportError(msg);
 

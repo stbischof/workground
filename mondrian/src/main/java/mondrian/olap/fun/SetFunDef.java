@@ -12,10 +12,10 @@
 
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.ArgsMustHaveSameHierarchy;
-import static mondrian.resource.MondrianResource.message;
+
 
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,8 +80,10 @@ public class SetFunDef extends AbstractFunctionDefinition {
 	public static final String SIGNATURE = "{<Member> [, <Member>...]}";
 	public static final String DESCRIPTION = "Brace operator constructs a set.";
 	static final ResolverImpl Resolver = new ResolverImpl();
+    private final static String argsMustHaveSameHierarchy =
+        "All arguments to function ''{0}'' must have same hierarchy.";
 
-	SetFunDef(FunctionMetaData functionMetaData) {
+    SetFunDef(FunctionMetaData functionMetaData) {
 		super(functionMetaData);
 	}
 
@@ -108,8 +110,8 @@ public class SetFunDef extends AbstractFunctionDefinition {
                     type0 = type;
                 } else {
                     if (!TypeUtil.isUnionCompatible(type0, type)) {
-                        throw new MondrianException(message(
-                            ArgsMustHaveSameHierarchy, getFunctionMetaData().operationAtom().name()));
+                        throw new MondrianException(MessageFormat.format(
+                            argsMustHaveSameHierarchy, getFunctionMetaData().operationAtom().name()));
                     }
                 }
             }

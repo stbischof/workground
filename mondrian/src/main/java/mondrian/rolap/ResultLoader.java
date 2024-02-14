@@ -66,7 +66,7 @@ public class ResultLoader {
     public boolean loadResult() throws SQLException {
 /*
         if (limit > 0 && limit < ++fetchCount) {
-            throw new InvalidArgumentException(message(MemberFetchLimitExceeded,
+            throw new InvalidArgumentException(MessageFormat.format(MemberFetchLimitExceeded,
                     limit));
         }
 */

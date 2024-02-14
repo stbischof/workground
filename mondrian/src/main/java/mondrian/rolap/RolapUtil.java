@@ -13,8 +13,6 @@
 */
 package mondrian.rolap;
 
-import static mondrian.resource.MondrianResource.NativeEvaluationUnsupported;
-import static mondrian.resource.MondrianResource.message;
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
 import java.io.Serializable;
@@ -23,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,6 +73,9 @@ import mondrian.util.ClassResolver;
  * @since 22 December, 2001
  */
 public class RolapUtil {
+
+    private final static String nativeEvaluationUnsupported =
+        "Native evaluation not supported for this usage of function ''{0}''";
 
     private RolapUtil() {
         // constructor
@@ -407,7 +409,7 @@ public class RolapUtil {
                 "ERROR"))
         {
             LOGGER.error(alertMsg);
-            throw new NativeEvaluationUnsupportedException(message(NativeEvaluationUnsupported,
+            throw new NativeEvaluationUnsupportedException(MessageFormat.format(nativeEvaluationUnsupported,
                 functionName));
         }
     }

@@ -8,9 +8,7 @@
 */
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.IterationLimitExceeded;
-import static mondrian.resource.MondrianResource.message;
-
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -48,6 +46,9 @@ import mondrian.rolap.RolapStoredMeasure;
  * @since 2005/8/14
  */
 public abstract class AbstractAggregateFunDef extends AbstractFunctionDefinition {
+
+    private final static String iterationLimitExceeded = "Number of iterations exceeded limit of {0,number}";
+
     public AbstractAggregateFunDef(FunctionMetaData functionMetaData ) {
         super(functionMetaData);
     }
@@ -131,8 +132,8 @@ public abstract class AbstractAggregateFunDef extends AbstractFunctionDefinition
             evaluator.getQuery().getConnection().getContext().getConfig().iterationLimit();
         final int productLen = currLen * evaluator.getIterationLength();
         if (iterationLimit > 0 && productLen > iterationLimit) {
-                throw new ResourceLimitExceededException(message(
-                    IterationLimitExceeded, iterationLimit));
+                throw new ResourceLimitExceededException(MessageFormat.format(
+                    iterationLimitExceeded, iterationLimit));
         }
         evaluator.setIterationLength(currLen);
     }

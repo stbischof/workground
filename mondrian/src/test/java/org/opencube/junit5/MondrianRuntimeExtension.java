@@ -35,9 +35,7 @@ public class MondrianRuntimeExtension
 	}
 
 	private void defineLocale() {
-
 		Locale.setDefault(Locale.US);
-//		MondrianResource.setThreadLocale(Locale.US);
 	}
 
 	@Override

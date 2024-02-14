@@ -9,9 +9,7 @@
 */
 package mondrian.olap.fun;
 
-import static mondrian.resource.MondrianResource.ValidMeasureUsingCalculatedMember;
-import static mondrian.resource.MondrianResource.message;
-
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,6 +76,9 @@ public class ValidMeasureFunDef extends AbstractFunctionDefinition
         extends GenericCalc
     {
         private final Calc calc;
+        private final static String validMeasureUsingCalculatedMember = """
+            The function ValidMeasure cannot be used with the measure ''{0}'' because it is a calculated member. The function should be used to wrap the base measure in the source cube.
+        """;
 
         public CalcImpl(ResolvedFunCall call, Calc calc) {
             super(call.getType());
@@ -118,7 +119,7 @@ public class ValidMeasureFunDef extends AbstractFunctionDefinition
                 .isAssignableFrom(vcMeasure.getClass()))
             {
                 // Cannot use calculated members in ValidMeasure.
-                throw new MondrianException(message(ValidMeasureUsingCalculatedMember,vcMeasure.getUniqueName()));
+                throw new MondrianException(MessageFormat.format(validMeasureUsingCalculatedMember,vcMeasure.getUniqueName()));
             }
 
             baseCube = ((RolapVirtualCubeMeasure)vcMeasure).getCube();

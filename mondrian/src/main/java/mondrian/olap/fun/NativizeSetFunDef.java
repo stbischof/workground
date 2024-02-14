@@ -14,8 +14,6 @@ import static mondrian.olap.fun.NativizeSetFunDef.NativeElementType.LEVEL_MEMBER
 import static mondrian.olap.fun.NativizeSetFunDef.NativeElementType.NON_NATIVE;
 import static mondrian.olap.fun.NativizeSetFunDef.NativeElementType.OTHER_NATIVE;
 import static mondrian.olap.fun.NativizeSetFunDef.NativeElementType.SENTINEL;
-import static mondrian.resource.MondrianResource.LimitExceededDuringCrossjoin;
-import static mondrian.resource.MondrianResource.message;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -1173,8 +1171,7 @@ public class NativizeSetFunDef extends AbstractFunctionDefinition {
             // Throw an exeption if the size of the crossjoin exceeds the result
             // limit.
             if (resultLimit < resultSize) {
-                throw new ResourceLimitExceededException(message(
-                    LimitExceededDuringCrossjoin, resultSize, resultLimit));
+                throw new ResourceLimitExceededException(resultSize, resultLimit);
             }
         }
 
