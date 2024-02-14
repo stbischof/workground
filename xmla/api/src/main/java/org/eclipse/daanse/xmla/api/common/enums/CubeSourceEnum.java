@@ -35,7 +35,13 @@ public enum CubeSourceEnum {
         if (v == null) {
             return null;
         }
-        int vi = Integer.decode(v);
+        int val;
+        try {
+            val = Integer.decode(v);
+        } catch (NumberFormatException e) {
+            val = 1;
+        }
+        int vi = val;
         return Stream.of(CubeSourceEnum.values())
             .filter(e -> (e.value == vi))
             .findFirst()
