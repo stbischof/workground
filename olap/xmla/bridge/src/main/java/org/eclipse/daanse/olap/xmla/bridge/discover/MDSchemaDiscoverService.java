@@ -90,8 +90,8 @@ public class MDSchemaDiscoverService {
         Optional<String> schemaName = request.restrictions().schemaName();
         Optional<String> baseCubeName = request.restrictions().baseCubeName();
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
-        
-        
+
+
       //??????????????????
         Optional<String> oCatalog=  request.properties().catalog();
         if(oCatalog.isPresent()) {
@@ -122,6 +122,7 @@ public class MDSchemaDiscoverService {
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
         Optional<VisibilityEnum> oDimensionVisibility = request.restrictions().dimensionVisibility();
         Optional<Boolean> deep = request.properties().deep();
+        //??????????????????
         if (oCatalogName.isEmpty()) {
         	oCatalogName = request.properties().catalog();
         }
@@ -165,8 +166,8 @@ public class MDSchemaDiscoverService {
         Optional<VisibilityEnum> oHierarchyVisibility = request.restrictions().hierarchyVisibility();
         Optional<Integer> oHierarchyOrigin = request.restrictions().hierarchyOrigin();
         Optional<Boolean> deep = request.properties().deep();
-        
-        
+
+
         //??????????????????
 		if (oCatalogName.isEmpty()) {
 
@@ -175,7 +176,7 @@ public class MDSchemaDiscoverService {
 				oCatalogName = oCatalog;
 			}
         }
-		
+
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -201,6 +202,10 @@ public class MDSchemaDiscoverService {
         Optional<String> oCubeName = request.restrictions().cubeName();
         Optional<String> oKpiName = request.restrictions().kpiName();
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
+        //??????????????????
+        if (oCatalogName.isEmpty()) {
+            oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -225,8 +230,8 @@ public class MDSchemaDiscoverService {
         Optional<String> oLevelName = request.restrictions().levelName();
         Optional<String> oLevelUniqueName = request.restrictions().levelUniqueName();
         Optional<VisibilityEnum> oLevelVisibility = request.restrictions().levelVisibility();
-        
-        
+
+
         //??????????????????
 		if (oCatalogName.isEmpty()) {
 
@@ -235,9 +240,9 @@ public class MDSchemaDiscoverService {
 				oCatalogName = oCatalog;
 			}
         }
-        
-        
-        
+
+
+
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -264,6 +269,10 @@ public class MDSchemaDiscoverService {
         Optional<String> oMeasureGroupName = request.restrictions().measureGroupName();
         Optional<String> oDimensionUniqueName = request.restrictions().dimensionUniqueName();
         Optional<VisibilityEnum> oDimensionVisibility = request.restrictions().dimensionVisibility();
+        //??????????????????
+        if (oCatalogName.isEmpty()) {
+            oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -286,6 +295,10 @@ public class MDSchemaDiscoverService {
         Optional<String> oSchemaName = request.restrictions().schemaName();
         Optional<String> oCubeName = request.restrictions().cubeName();
         Optional<String> oMeasureGroupName = request.restrictions().measureGroupName();
+        //??????????????????
+        if (oCatalogName.isEmpty()) {
+            oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -312,8 +325,8 @@ public class MDSchemaDiscoverService {
         Optional<VisibilityEnum> oMeasureVisibility = request.restrictions().measureVisibility();
         boolean shouldEmitInvisibleMembers =
             oMeasureVisibility.isPresent() && VisibilityEnum.NOT_VISIBLE.equals(oMeasureVisibility.get());
-        
-        
+
+
         //??????????????????
 		if (oCatalogName.isEmpty()) {
 
@@ -322,8 +335,8 @@ public class MDSchemaDiscoverService {
 				oCatalogName = oCatalog;
 			}
         }
-        
-        
+
+
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -359,6 +372,10 @@ public class MDSchemaDiscoverService {
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
         Optional<TreeOpEnum> treeOp = request.restrictions().treeOp();
         Optional<Boolean> emitInvisibleMembers = request.properties().emitInvisibleMembers();
+        //??????????????????
+        if (oCatalogName.isEmpty()) {
+            oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
@@ -393,9 +410,6 @@ public class MDSchemaDiscoverService {
         Optional<CubeSourceEnum> oCubeSource = request.restrictions().cubeSource();
         Optional<VisibilityEnum> oPropertyVisibility = request.restrictions().propertyVisibility();
         PropertyTypeEnum propertyType = PropertyTypeEnum.PROPERTY_MEMBER;
-        if (oPropertyType.isPresent()) {
-            propertyType = oPropertyType.get();
-        }
 
       //??????????????????
 		if (oCatalogName.isEmpty()) {
@@ -405,7 +419,7 @@ public class MDSchemaDiscoverService {
 				oCatalogName = oCatalog;
 			}
         }
-		
+
         switch (propertyType) {
             case PROPERTY_MEMBER:
                 if (oCatalogName.isPresent()) {
@@ -462,6 +476,10 @@ public class MDSchemaDiscoverService {
         Optional<ScopeEnum> oScope = request.restrictions().scope();
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
         Optional<String> oHierarchyUniqueName = request.restrictions().hierarchyUniqueName();
+        //??????????????????
+        if (oCatalogName.isEmpty()) {
+            oCatalogName = request.properties().catalog();
+        }
         if (oCatalogName.isPresent()) {
             Optional<Context> oContext = oCatalogName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
