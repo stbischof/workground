@@ -1108,7 +1108,7 @@ public class Utils {
 
     private static List<Member> getMembersWithFilterByType(List<Member> members, Optional<MemberTypeEnum> oMemberType) {
         if (oMemberType.isPresent()) {
-            members.stream().filter(m -> oMemberType.get().equals(getMemberTypeEnum(m.getMemberType()))).toList();
+            return members.stream().filter(m -> oMemberType.get().equals(getMemberTypeEnum(m.getMemberType()))).toList();
         }
         return members;
     }
@@ -1138,7 +1138,7 @@ public class Utils {
         Optional<String> oMemberUniqueName
     ) {
         if (oMemberUniqueName.isPresent()) {
-            members.stream().filter(m -> oMemberUniqueName.get().equals(m.getUniqueName())).toList();
+            return members.stream().filter(m -> oMemberUniqueName.get().equals(m.getUniqueName())).toList();
         }
         return members;
     }
@@ -1209,7 +1209,7 @@ public class Utils {
         Optional<String> oHierarchyUniqueName
     ) {
         if (oHierarchyUniqueName.isPresent()) {
-            hierarchies.stream().filter(h -> oHierarchyUniqueName.get().equals(h.getUniqueName())).toList();
+            return hierarchies.stream().filter(h -> oHierarchyUniqueName.get().equals(h.getUniqueName())).toList();
         }
         return hierarchies;
     }
@@ -1479,8 +1479,8 @@ public class Utils {
         Optional<String> oLevelUniqueName,
         Optional<VisibilityEnum> oLevelVisibility
     ) {
-        List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions())
-        		.stream().sorted((d1, d2) -> DimensionType.MEASURES_DIMENSION.equals(d2.getDimensionType()) ? -1 : 0).toList();
+        List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions());
+        		//.stream().sorted((d1, d2) -> DimensionType.MEASURES_DIMENSION.equals(d2.getDimensionType()) ? -1 : 0).toList();
         return getDimensionsWithFilterByUniqueName(dimensions, oDimensionUniqueName)
             .stream()
             .map(d -> getMdSchemaLevelsResponseRow(catalogName, schemaName, cube.getName(), d, oHierarchyUniqueName,
@@ -1494,7 +1494,7 @@ public class Utils {
         Optional<String> oDimensionUniqueName
     ) {
         if (oDimensionUniqueName.isPresent()) {
-            dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.getUniqueName())).toList();
+            return dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.getHierarchy().getUniqueName())).toList();
         }
         return dimensions;
     }
@@ -1504,7 +1504,7 @@ public class Utils {
         Optional<String> oDimensionName
     ) {
         if (oDimensionName.isPresent()) {
-            dimensions.stream().filter(d -> oDimensionName.get().equals(d.getName())).toList();
+            return dimensions.stream().filter(d -> oDimensionName.get().equals(d.getName())).toList();
         }
         return dimensions;
     }
@@ -1538,7 +1538,7 @@ public class Utils {
         Optional<String> oHierarchyName
     ) {
         if (oHierarchyName.isPresent()) {
-            hierarchies.stream().filter(h -> oHierarchyName.get().equals(h.getName())).toList();
+            return hierarchies.stream().filter(h -> oHierarchyName.get().equals(h.getName())).toList();
         }
         return hierarchies;
     }
@@ -2230,7 +2230,7 @@ oHierarchyName)
         Optional<String> oPropertyName
     ) {
         if (oPropertyName.isPresent()) {
-            properties.stream().filter(p -> oPropertyName.get().equals(p.getName())).toList();
+            return properties.stream().filter(p -> oPropertyName.get().equals(p.getName())).toList();
         }
         return properties;
     }
