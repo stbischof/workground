@@ -18,12 +18,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import mondrian.rolap.RolapCube;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.element.Cube;
@@ -1018,7 +1018,8 @@ public class Utils {
             if (oLevelUniqueName.isPresent()) {
                 Optional<Level> l = lookupLevel(cube, oLevelUniqueName.get());
                 if (l.isPresent()) {
-                    return getMdSchemaMembersResponseRow(catalogName, schemaName, cube, l.get().getMembers(),
+                    List<Member> members = ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(l.get(), true);
+                    return getMdSchemaMembersResponseRow(catalogName, schemaName, cube, members,
                         oMemberUniqueName, oMemberType, emitInvisibleMembers);
                 }
             }
@@ -1079,7 +1080,7 @@ public class Utils {
             }
 
             Level level = levels[levelNumber];
-            List<Member> members = level.getMembers();
+            List<Member> members = ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(level, true);
             return getMdSchemaMembersResponseRow(catalogName, schemaName, cube, members,
                 oMemberUniqueName, oMemberType, emitInvisibleMembers);
         } else {
@@ -1089,7 +1090,7 @@ public class Utils {
             // now cached in the SchemaReader.
             List<Level> levels = hierarchy.getLevels() == null ? List.of() : Arrays.asList(hierarchy.getLevels());
             return levels.stream().map(l -> getMdSchemaMembersResponseRow(catalogName, schemaName, cube,
-                l.getMembers(), oMemberUniqueName, oMemberType, emitInvisibleMembers)).
+                ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(l, true), oMemberUniqueName, oMemberType, emitInvisibleMembers)).
                 flatMap(Collection::stream).toList();
         }
 
