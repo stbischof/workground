@@ -643,6 +643,7 @@ public class SoapUtil {
     private static void addMdSchemaLevelsResponseRow(SOAPElement root, MdSchemaLevelsResponseRow r) {
         String prefix = ROWSET;
         SOAPElement row = addChildElement(root, ROW, prefix);
+
         r.catalogName().ifPresent(v -> addChildElement(row, CATALOG_NAME, prefix, v));
         r.schemaName().ifPresent(v -> addChildElement(row, SCHEMA_NAME, prefix, v));
         r.cubeName().ifPresent(v -> addChildElement(row, CUBE_NAME, prefix, v));
@@ -661,14 +662,15 @@ public class SoapUtil {
             prefix, String.valueOf(v.getValue())));
         r.levelIsVisible().ifPresent(v -> addChildElement(row, "LEVEL_IS_VISIBLE", prefix, String.valueOf(v)));
         r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.levelOrderingProperty().ifPresent(v -> addChildElement(row, "LEVEL_ORDERING_PROPERTY", prefix, v));
-        r.levelDbType().ifPresent(v -> addChildElement(row, "LEVEL_DBTYPE", prefix, String.valueOf(v.getValue())));
-        r.levelMasterUniqueName().ifPresent(v -> addChildElement(row, "LEVEL_MASTER_UNIQUE_NAME", prefix, v));
-        r.levelNameSqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_NAME_SQL_COLUMN_NAME", prefix, v));
-        r.levelKeySqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_KEY_SQL_COLUMN_NAME", prefix, v));
-        r.levelUniqueNameSqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_UNIQUE_NAME_SQL_COLUMN_NAME", prefix, v));
-        r.levelAttributeHierarchyName().ifPresent(v -> addChildElement(row, "LEVEL_ATTRIBUTE_HIERARCHY_NAME", prefix, v));
-        r.levelKeyCardinality().ifPresent(v -> addChildElement(row, "LEVEL_KEY_CARDINALITY", prefix, String.valueOf(v)));
+        //absent in old mondrian
+        //r.levelOrderingProperty().ifPresent(v -> addChildElement(row, "LEVEL_ORDERING_PROPERTY", prefix, v));
+        //r.levelDbType().ifPresent(v -> addChildElement(row, "LEVEL_DBTYPE", prefix, String.valueOf(v.getValue())));
+        //r.levelMasterUniqueName().ifPresent(v -> addChildElement(row, "LEVEL_MASTER_UNIQUE_NAME", prefix, v));
+        //r.levelNameSqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_NAME_SQL_COLUMN_NAME", prefix, v));
+        //r.levelKeySqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_KEY_SQL_COLUMN_NAME", prefix, v));
+        //r.levelUniqueNameSqlColumnName().ifPresent(v -> addChildElement(row, "LEVEL_UNIQUE_NAME_SQL_COLUMN_NAME", prefix, v));
+        //r.levelAttributeHierarchyName().ifPresent(v -> addChildElement(row, "LEVEL_ATTRIBUTE_HIERARCHY_NAME", prefix, v));
+        //r.levelKeyCardinality().ifPresent(v -> addChildElement(row, "LEVEL_KEY_CARDINALITY", prefix, String.valueOf(v)));
         r.levelOrigin().ifPresent(v -> addChildElement(row, "LEVEL_ORIGIN", prefix, String.valueOf(v.getValue())));
     }
 
@@ -735,10 +737,10 @@ public class SoapUtil {
     private static void addMdSchemaMembersResponseRow(SOAPElement root, MdSchemaMembersResponseRow r) {
         String prefix = ROWSET;
         SOAPElement row = addChildElement(root, ROW, prefix);
+
         r.catalogName().ifPresent(v -> addChildElement(row, CATALOG_NAME, prefix, v));
         r.schemaName().ifPresent(v -> addChildElement(row, SCHEMA_NAME, prefix, v));
         r.cubeName().ifPresent(v -> addChildElement(row, CUBE_NAME, prefix, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
         r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
         r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, HIERARCHY_UNIQUE_NAME, prefix, v));
         r.levelUniqueName().ifPresent(v -> addChildElement(row, LEVEL_UNIQUE_NAME, prefix, v));
@@ -778,28 +780,29 @@ public class SoapUtil {
         r.propertyCaption().ifPresent(v -> addChildElement(row, "PROPERTY_CAPTION", prefix, v));
         r.dataType().ifPresent(v -> addChildElement(row, DATA_TYPE,
             prefix, String.valueOf(v.getValue())));
-        r.characterMaximumLength().ifPresent(v -> addChildElement(row, "CHARACTER_MAXIMUM_LENGTH"
-            , prefix, String.valueOf(v)));
-        r.characterOctetLength().ifPresent(v -> addChildElement(row, "CHARACTER_OCTET_LENGTH",
-            prefix, String.valueOf(v)));
-        r.numericPrecision().ifPresent(v -> addChildElement(row, NUMERIC_PRECISION
-            , prefix, String.valueOf(v)));
-        r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, prefix, String.valueOf(v)));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
+        //r.characterMaximumLength().ifPresent(v -> addChildElement(row, "CHARACTER_MAXIMUM_LENGTH"
+        //    , prefix, String.valueOf(v)));
+        //r.characterOctetLength().ifPresent(v -> addChildElement(row, "CHARACTER_OCTET_LENGTH",
+        //    prefix, String.valueOf(v)));
+        //r.numericPrecision().ifPresent(v -> addChildElement(row, NUMERIC_PRECISION
+        //    , prefix, String.valueOf(v)));
+        //r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, prefix, String.valueOf(v)));
         r.propertyContentType().ifPresent(v -> addChildElement(row, "PROPERTY_CONTENT_TYPE", prefix,
             String.valueOf(v.getValue())));
+        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
         r.sqlColumnName().ifPresent(v -> addChildElement(row, "SQL_COLUMN_NAME", prefix, v));
-        r.language().ifPresent(v -> addChildElement(row, "LANGUAGE", prefix, String.valueOf(v)));
+        //r.language().ifPresent(v -> addChildElement(row, "LANGUAGE", prefix, String.valueOf(v)));
         r.propertyOrigin().ifPresent(v -> addChildElement(row, "PROPERTY_ORIGIN"
             , prefix, String.valueOf(v.getValue())));
-        r.propertyAttributeHierarchyName().ifPresent(v -> addChildElement(row
-            , "PROPERTY_ATTRIBUTE_HIERARCHY_NAME", prefix, v));
-        r.propertyCardinality().ifPresent(v -> addChildElement(row, "PROPERTY_CARDINALITY"
-            , prefix, v.name()));
-        r.mimeType().ifPresent(v -> addChildElement(row, "MIME_TYPE"
-            , prefix, v));
-        r.propertyIsVisible().ifPresent(v -> addChildElement(row, "PROPERTY_IS_VISIBLE",
-            prefix, String.valueOf(v)));
+        //r.propertyAttributeHierarchyName().ifPresent(v -> addChildElement(row
+        //    , "PROPERTY_ATTRIBUTE_HIERARCHY_NAME", prefix, v));
+        //r.propertyCardinality().ifPresent(v -> addChildElement(row, "PROPERTY_CARDINALITY"
+        //    , prefix, v.name()));
+        //r.mimeType().ifPresent(v -> addChildElement(row, "MIME_TYPE"
+        //    , prefix, v));
+        r.cubeSource().ifPresent(v -> addChildElement(row, "CUBE_SOURCE", prefix, String.valueOf(v.getValue())));
+        r.propertyIsVisible().ifPresent(v -> addChildElement(row, "PROPERTY_VISIBILITY",
+            prefix, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaSetsResponseRow(SOAPElement root, MdSchemaSetsResponseRow r) {

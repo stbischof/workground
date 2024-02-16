@@ -26,6 +26,7 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
+import org.eclipse.daanse.xmla.model.jakarta.xml.bind.enums.VisibilityEnum;
 
 /**
  * This schema rowset describes the properties of members and cell properties.
@@ -304,8 +305,8 @@ public class MdSchemaPropertiesResponseRowXml extends AbstractMdSchemaResponseRo
      * When true, indicates that the
      * property is visible; otherwise false.
      */
-    @XmlElement(name = "PROPERTY_IS_VISIBLE", required = false)
-    private Boolean propertyIsVisible;
+    @XmlElement(name = "PROPERTY_VISIBILITY", required = false)
+    private VisibilityEnum propertyIsVisible;
 
     public String getDimensionUniqueName() {
         return dimensionUniqueName;
@@ -467,11 +468,11 @@ public class MdSchemaPropertiesResponseRowXml extends AbstractMdSchemaResponseRo
         this.mimeType = mimeType;
     }
 
-    public Boolean getPropertyIsVisible() {
+    public VisibilityEnum getPropertyIsVisible() {
         return propertyIsVisible;
     }
 
-    public void setPropertyIsVisible(Boolean propertyIsVisible) {
+    public void setPropertyIsVisible(VisibilityEnum propertyIsVisible) {
         this.propertyIsVisible = propertyIsVisible;
     }
 }

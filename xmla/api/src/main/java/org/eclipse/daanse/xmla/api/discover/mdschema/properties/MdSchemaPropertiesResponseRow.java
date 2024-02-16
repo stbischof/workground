@@ -15,11 +15,13 @@ package org.eclipse.daanse.xmla.api.discover.mdschema.properties;
 
 import java.util.Optional;
 
+import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyCardinalityEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyContentTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyTypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
 
 /**
  * This schema rowset describes the properties of members and cell properties.
@@ -285,9 +287,10 @@ public interface MdSchemaPropertiesResponseRow {
      */
     Optional<String> mimeType();
 
+    Optional<CubeSourceEnum> cubeSource();
     /**
      * @return When true, indicates that the
      * property is visible; otherwise false.
      */
-    Optional<Boolean> propertyIsVisible();
+    Optional<VisibilityEnum> propertyIsVisible();
 }

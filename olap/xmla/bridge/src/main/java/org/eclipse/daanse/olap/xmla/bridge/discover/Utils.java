@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -1478,7 +1479,8 @@ public class Utils {
         Optional<String> oLevelUniqueName,
         Optional<VisibilityEnum> oLevelVisibility
     ) {
-        List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions());
+        List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions())
+        		.stream().sorted((d1, d2) -> DimensionType.MEASURES_DIMENSION.equals(d2.getDimensionType()) ? -1 : 0).toList();
         return getDimensionsWithFilterByUniqueName(dimensions, oDimensionUniqueName)
             .stream()
             .map(d -> getMdSchemaLevelsResponseRow(catalogName, schemaName, cube.getName(), d, oHierarchyUniqueName,
@@ -2055,7 +2057,8 @@ oHierarchyName)
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty()
+                Optional.of(CubeSourceEnum.DIMENSION),
+                Optional.of(VisibilityEnum.VISIBLE)
             ));
         }
         return result;
@@ -2275,7 +2278,8 @@ oHierarchyName)
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
-            Optional.empty()
+            Optional.of(CubeSourceEnum.DIMENSION),
+            Optional.of(VisibilityEnum.VISIBLE)
         );
 
     }

@@ -90,7 +90,7 @@ public class MDSchemaDiscoverService {
         Optional<String> schemaName = request.restrictions().schemaName();
         Optional<String> baseCubeName = request.restrictions().baseCubeName();
         Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
-
+        List<MdSchemaCubesResponseRow> result = new ArrayList<>();
 
       //??????????????????
         Optional<String> oCatalog=  request.properties().catalog();
@@ -102,14 +102,14 @@ public class MDSchemaDiscoverService {
             Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(catalogName);
             if (oContext.isPresent()) {
                 Context context = oContext.get();
-                return getMdSchemaCubesResponseRow(context, schemaName, cubeName, baseCubeName, cubeSource);
+                result.addAll(getMdSchemaCubesResponseRow(context, schemaName, cubeName, baseCubeName, cubeSource));
             }
         } else {
-            return contextsListSupplyer.get().stream().map(c ->
+        	result.addAll(contextsListSupplyer.get().stream().map(c ->
                 getMdSchemaCubesResponseRow(c, schemaName, cubeName, baseCubeName, cubeSource)
-            ).flatMap(Collection::stream).toList();
+            ).flatMap(Collection::stream).toList());
         }
-        return List.of();
+        return result;
     }
 
     public List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest request) {

@@ -1950,7 +1950,8 @@ public class Convert {
         apiRow.mimeType()
             .ifPresent(row::setMimeType);
         apiRow.propertyIsVisible()
-            .ifPresent(row::setPropertyIsVisible);
+            .ifPresent(i -> row.setPropertyIsVisible(
+                org.eclipse.daanse.xmla.model.jakarta.xml.bind.enums.VisibilityEnum.fromValue(i.getValue())));
 
         return row;
     }

@@ -42,12 +42,11 @@ public enum VisibilityEnum {
         return value;
     }
 
-    public static VisibilityEnum fromValue(String v) {
+    public static VisibilityEnum fromValue(Integer v) {
         if (v == null) {
             return VISIBLE;
         }
-        int vi = Integer.decode(v);
-        return Stream.of(VisibilityEnum.values()).filter(e -> (e.value == vi)).findFirst()
+        return Stream.of(VisibilityEnum.values()).filter(e -> (e.value == v)).findFirst()
             .orElseThrow(() -> new IllegalArgumentException(
                 new StringBuilder("VisibilityEnum Illegal argument ").append(v)
                     .toString())

@@ -639,11 +639,11 @@ class ClientDiscoverTest {
 
     @Test
     void testCatalogs() throws Exception {
-    	
-		
+
+
 		RequestMetaData metaData= mock(RequestMetaData.class);
 		when(metaData.userAgent()).thenReturn(Optional.empty());
-		
+
         Provider<SOAPMessage> provider = registerService(CATALOGS);
         PropertiesR properties = new PropertiesR();
         properties.addProperty(PropertyListElementDefinition.DATA_SOURCE_INFO, "FoodMart");
@@ -2101,7 +2101,7 @@ class ClientDiscoverTest {
         assertThat(r.propertyAttributeHierarchyName()).isPresent().contains("PropertyAttributeHierarchyName");
         assertThat(r.propertyCardinality()).isPresent().contains(PropertyCardinalityEnum.ONE);
         assertThat(r.mimeType()).isPresent().contains("MimeType");
-        assertThat(r.propertyIsVisible()).isPresent().contains(true);
+        assertThat(r.propertyIsVisible()).isPresent().contains(VisibilityEnum.VISIBLE);
 
         verify(provider, (times(1))).invoke(requestMessageCaptor.capture());
 

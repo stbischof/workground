@@ -451,7 +451,7 @@ class DiscoverResponseTest {
     @Test
     void testDbschemaCatalogs(@InjectService XmlaService xmlaService) throws SOAPException, IOException,
         TransformerException {
-		
+
         DbSchemaCatalogsResponseRowR row = new DbSchemaCatalogsResponseRowR(
             Optional.of(CATALOG_NAME_LOW),
             Optional.of(DESCRIPTION_LOW),
@@ -1504,7 +1504,8 @@ class DiscoverResponseTest {
             Optional.of("propertyAttributeHierarchyName"),
             Optional.of(PropertyCardinalityEnum.ONE),
             Optional.of("mimeType"),
-            Optional.of(true)
+            Optional.of(CubeSourceEnum.DIMENSION),
+            Optional.of(VisibilityEnum.VISIBLE)
         );
 
         DiscoverService discoverService = xmlaService.discover();

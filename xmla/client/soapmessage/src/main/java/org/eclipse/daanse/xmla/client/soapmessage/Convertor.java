@@ -560,7 +560,8 @@ class Convertor {
                 Optional.ofNullable(m.get(PROPERTY_ATTRIBUTE_HIERARCHY_NAME)),
                 Optional.ofNullable(PropertyCardinalityEnum.fromValue(m.get(PROPERTY_CARDINALITY))),
                 Optional.ofNullable(m.get(MIME_TYPE)),
-                Optional.ofNullable(getBoolean(m.get(PROPERTY_IS_VISIBLE)))
+                Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE))),
+                Optional.ofNullable(VisibilityEnum.fromValue(m.get(PROPERTY_IS_VISIBLE)))
             )
         ).toList();
     }
