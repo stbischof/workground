@@ -37,46 +37,46 @@ public interface MdSchemaLevelsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
     /**
      * @return The unique name of the
      * dimension.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING, order = 3)
     Optional<String> dimensionUniqueName();
 
     /**
      * @return The unique name of the
      * hierarchy.
      */
-    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING, order = 4)
     Optional<String> hierarchyUniqueName();
 
     /**
      * The name of the level.
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_LEVEL_NAME, type = XSD_STRING, order = 5)
     Optional<String> levelName();
 
     /**
      * The unique name of the level.
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_LEVEL_UNIQUE_NAME, type = XSD_STRING, order = 6)
     Optional<String> levelUniqueName();
 
     /**
@@ -85,7 +85,7 @@ public interface MdSchemaLevelsRestrictions {
      * 0x02 - Dimension<218>
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 7)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
@@ -94,7 +94,7 @@ public interface MdSchemaLevelsRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_VISIBILITY, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_LEVEL_VISIBILITY, type = XSD_INTEGER, order = 8)
     Optional<VisibilityEnum> levelVisibility();
 
 }

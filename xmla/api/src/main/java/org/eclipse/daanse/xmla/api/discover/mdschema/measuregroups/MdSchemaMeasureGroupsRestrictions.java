@@ -29,25 +29,25 @@ public interface MdSchemaMeasureGroupsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
     /**
      * The name of the measure group.
      */
-    @Restriction(name = RESTRICTIONS_MEASUREGROUP_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEASUREGROUP_NAME, type = XSD_STRING, order = 3)
     Optional<String> measureGroupName();
 }

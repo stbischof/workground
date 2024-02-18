@@ -39,25 +39,25 @@ public interface MdSchemaActionsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     String cubeName();
 
     /**
      * @return The name of this action.
      */
-    @Restriction(name = RESTRICTIONS_ACTION_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_ACTION_NAME, type = XSD_STRING, order = 3)
     Optional<String> actionName();
 
     /**
@@ -74,7 +74,7 @@ public interface MdSchemaActionsRestrictions {
      * If the action is PROPRIETARY (0x40), then a value MUST be
      * provided in the APPLICATION column.
      */
-    @Restriction(name = RESTRICTIONS_ACTION_TYPE, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_ACTION_TYPE, type = XSD_INTEGER, order = 4)
     Optional<ActionTypeEnum> actionType();
 
     /**
@@ -83,7 +83,7 @@ public interface MdSchemaActionsRestrictions {
      * The COORDINATE MUST resolve to the object specified in
      * COORDINATE_TYPE.
      */
-    @Restriction(name = RESTRICTIONS_COORDINATE, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_COORDINATE, type = XSD_STRING, order = 5)
     Optional<String> coordinate();
 
     /**
@@ -96,7 +96,7 @@ public interface MdSchemaActionsRestrictions {
      * 5 - Action coordinate refers to a set.
      * 6 - Action coordinate refers to a cell.
      */
-    @Restriction(name = RESTRICTIONS_COORDINATE_TYPE, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_COORDINATE_TYPE, type = XSD_INTEGER, order = 6)
     CoordinateTypeEnum coordinateType();
 
     /**
@@ -108,7 +108,7 @@ public interface MdSchemaActionsRestrictions {
      * 4 - Indicates that the action is performed as part of a batch
      * operation.
      */
-    @Restriction(name = RESTRICTIONS_INVOCATION, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_INVOCATION, type = XSD_INTEGER, order = 7)
     InvocationEnum invocation();
 
     /**
@@ -117,6 +117,6 @@ public interface MdSchemaActionsRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 8)
     Optional<CubeSourceEnum> cubeSource();
 }

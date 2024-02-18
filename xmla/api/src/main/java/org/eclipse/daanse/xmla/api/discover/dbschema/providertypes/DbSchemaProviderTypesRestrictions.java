@@ -157,7 +157,7 @@ public interface DbSchemaProviderTypesRestrictions {
      * identify rows in a child
      * rowset.
      */
-    @Restriction(name = RESTRICTIONS_DATA_TYPE, type = XsdType.XSD_UNSIGNED_SHORT)
+    @Restriction(name = RESTRICTIONS_DATA_TYPE, type = XsdType.XSD_UNSIGNED_SHORT, order = 0)
     Optional<LevelDbTypeEnum> dataType();
 
     /**
@@ -174,7 +174,7 @@ public interface DbSchemaProviderTypesRestrictions {
      * DATA_TYPE column is the same, the BEST_MATCH
      * column is set to true in only one row.
      */
-    @Restriction(name = RESTRICTIONS_BEST_MATCH, type = XsdType.XSD_BOOLEAN)
+    @Restriction(name = RESTRICTIONS_BEST_MATCH, type = XsdType.XSD_BOOLEAN, order = 1)
     Optional<Boolean> bestMatch();
 
 }

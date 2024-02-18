@@ -35,7 +35,7 @@ public interface MdSchemaFunctionsRestrictions {
      * (0x3) RELATIONAL
      * (0x4) SCALAR
      */
-    @Restriction(name = RESTRICTIONS_ORIGIN, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_ORIGIN, type = XSD_INTEGER, order = 0)
     Optional<OriginEnum> origin();
 
     /**
@@ -45,12 +45,12 @@ public interface MdSchemaFunctionsRestrictions {
      * LOGICAL
      * FILTER
      */
-    @Restriction(name = RESTRICTIONS_INTERFACE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_INTERFACE_NAME, type = XSD_STRING, order = 2)
     Optional<InterfaceNameEnum> interfaceName();
 
     /**
      * @return The library that implements the function.
      */
-    @Restriction(name = RESTRICTIONS_LIBRARY_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_LIBRARY_NAME, type = XSD_STRING, order = 3)
     Optional<String> libraryName();
 }

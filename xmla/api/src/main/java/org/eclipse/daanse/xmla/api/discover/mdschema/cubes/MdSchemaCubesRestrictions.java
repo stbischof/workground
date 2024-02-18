@@ -32,26 +32,26 @@ public interface MdSchemaCubesRestrictions {
     /**
      * @return The catalog name.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     String catalogName();
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
     /**
      * @return The name of the source cube if this cube is
      * a perspective cube.
      */
-    @Restriction(name = RESTRICTIONS_BASE_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_BASE_CUBE_NAME, type = XSD_STRING, order = 3)
     Optional<String> baseCubeName();
 
     /**
@@ -59,6 +59,6 @@ public interface MdSchemaCubesRestrictions {
      * 0x01-Cube
      * 0x02-Dimension
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 4)
     Optional<CubeSourceEnum> cubeSource();
 }

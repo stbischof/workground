@@ -455,7 +455,7 @@ public class SoapUtil {
         String prefix = Constants.ROWSET.PREFIX;
 
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        
+
         r.catalogName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CATALOG_NAME, v));
         r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
         addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, r.cubeName());
@@ -976,9 +976,9 @@ public class SoapUtil {
         r.cubeType().ifPresent(v -> addChildElement(row, "CUBE_TYPE", prefix, v.name()));
         r.cubeGuid().ifPresent(v -> addChildElement(row, "CUBE_GUID", prefix, String.valueOf(v)));
         r.createdOn().ifPresent(v -> addChildElement(row, "CREATED_ON", prefix, String.valueOf(v)));
-        r.lastSchemaUpdate().ifPresent(v -> addChildElement(row, "LAST_SCHEMA_UPDATE", prefix, String.valueOf(v)));
+        r.lastSchemaUpdate().ifPresent(v -> addChildElement(row, "LAST_SCHEMA_UPDATE", prefix,  v.format(formatter)));
         r.schemaUpdatedBy().ifPresent(v -> addChildElement(row, "SCHEMA_UPDATED_BY", prefix, v));
-        r.lastDataUpdate().ifPresent(v -> addChildElement(row, "LAST_DATA_UPDATE", prefix, String.valueOf(v)));
+        r.lastDataUpdate().ifPresent(v -> addChildElement(row, "LAST_DATA_UPDATE", prefix, v.format(formatter)));
         r.dataUpdateDBy().ifPresent(v -> addChildElement(row, "DATA_UPDATED_BY", prefix, v));
         r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
         r.isDrillThroughEnabled()

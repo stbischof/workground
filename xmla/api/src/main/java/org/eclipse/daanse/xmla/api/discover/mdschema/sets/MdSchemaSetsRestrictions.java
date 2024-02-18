@@ -34,27 +34,27 @@ public interface MdSchemaSetsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
     /**
      * The name of the set, as specified in the CREATE SET
      * statement.
      */
-    @Restriction(name = RESTRICTIONS_SET_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SET_NAME, type = XSD_STRING, order = 3)
     Optional<String> setName();
 
     /**
@@ -64,7 +64,7 @@ public interface MdSchemaSetsRestrictions {
      * 1 - Global
      * 2 – Session
      */
-    @Restriction(name = RESTRICTIONS_SCOPE, type = "xsd:int")
+    @Restriction(name = RESTRICTIONS_SCOPE, type = "xsd:int", order = 4)
     Optional<ScopeEnum> scope();
 
     /**
@@ -73,12 +73,12 @@ public interface MdSchemaSetsRestrictions {
      * 0x02 - Dimension<233>
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int")
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 5)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
      * The unique name of the hierarchy that contains the set.
      */
-    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING, order = 6)
     Optional<String> hierarchyUniqueName();
 }

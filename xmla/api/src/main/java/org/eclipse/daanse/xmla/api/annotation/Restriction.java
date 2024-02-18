@@ -25,4 +25,6 @@ public @interface Restriction {
     String name();
 
     String type();
+
+    int order()default 0;;
 }

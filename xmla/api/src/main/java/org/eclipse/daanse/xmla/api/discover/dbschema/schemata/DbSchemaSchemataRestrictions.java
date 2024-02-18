@@ -26,18 +26,18 @@ public interface DbSchemaSchemataRestrictions {
     /**
      * @return Catalog name
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     String catalogName();
 
     /**
      * Schema name
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     String schemaName();
 
     /**
      * @return Schema owner
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_OWNER, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_OWNER, type = XSD_STRING, order = 2)
     String schemaOwner();
 }

@@ -409,7 +409,7 @@ public class MDSchemaDiscoverService {
         Optional<PropertyOriginEnum> oPropertyOrigin = request.restrictions().propertyOrigin();
         Optional<CubeSourceEnum> oCubeSource = request.restrictions().cubeSource();
         Optional<VisibilityEnum> oPropertyVisibility = request.restrictions().propertyVisibility();
-        PropertyTypeEnum propertyType = PropertyTypeEnum.PROPERTY_MEMBER;
+        PropertyTypeEnum propertyType = oPropertyType.orElse(PropertyTypeEnum.PROPERTY_MEMBER);
 
       //??????????????????
 		if (oCatalogName.isEmpty()) {

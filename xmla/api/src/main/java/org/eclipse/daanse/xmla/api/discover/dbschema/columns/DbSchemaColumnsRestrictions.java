@@ -29,26 +29,26 @@ public interface DbSchemaColumnsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_CATALOG, type = XsdType.XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_CATALOG, type = XsdType.XSD_STRING, order = 0)
     Optional<String> tableCatalog();
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_SCHEMA, type = XsdType.XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_SCHEMA, type = XsdType.XSD_STRING, order = 1)
     Optional<String> tableSchema();
 
     /**
      * @return The name of the table.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_NAME, type = XsdType.XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_NAME, type = XsdType.XSD_STRING, order = 2)
     Optional<String> tableName();
 
     /**
      * The name of the attribute hierarchy or
      * measure.
      */
-    @Restriction(name = RESTRICTIONS_COLUMN_NAME, type = XsdType.XSD_STRING)
+    @Restriction(name = RESTRICTIONS_COLUMN_NAME, type = XsdType.XSD_STRING, order = 3)
     Optional<String> columnName();
 
     /**
@@ -60,6 +60,6 @@ public interface DbSchemaColumnsRestrictions {
      * SCHEMA indicates that the object is a
      * column in a schema rowset table.
      */
-    @Restriction(name = RESTRICTIONS_COLUMN_OLAP_TYPE, type = XsdType.XSD_STRING)
+    @Restriction(name = RESTRICTIONS_COLUMN_OLAP_TYPE, type = XsdType.XSD_STRING, order = 4)
     Optional<ColumnOlapTypeEnum> columnOlapType();
 }

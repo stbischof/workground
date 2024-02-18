@@ -31,27 +31,27 @@ public interface MdSchemaKpisRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = "xsd:string")
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = "xsd:string", order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = "xsd:string")
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = "xsd:string", order = 2)
     Optional<String> cubeName();
 
     /**
      * The name of the set, as specified in the CREATE SET
      * statement.
      */
-    @Restriction(name = RESTRICTIONS_KPI_NAME, type = "xsd:string")
+    @Restriction(name = RESTRICTIONS_KPI_NAME, type = "xsd:string", order = 3)
     Optional<String> kpiName();
 
     /**
@@ -60,6 +60,6 @@ public interface MdSchemaKpisRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int")
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 4)
     Optional<CubeSourceEnum> cubeSource();
 }

@@ -33,32 +33,32 @@ public interface MdSchemaMeasureGroupDimensionsRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
     /**
      * @return The name of the measure group.
      */
-    @Restriction(name = RESTRICTIONS_MEASUREGROUP_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEASUREGROUP_NAME, type = XSD_STRING, order = 3)
     Optional<String> measureGroupName();
 
     /**
      * The unique name for the dimension.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING, order = 4)
     Optional<String> dimensionUniqueName();
 
     /**
@@ -67,6 +67,6 @@ public interface MdSchemaMeasureGroupDimensionsRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER, order = 5)
     Optional<VisibilityEnum> dimensionVisibility();
 }

@@ -42,57 +42,57 @@ public interface MdSchemaMembersRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CATALOG_NAME, type = XSD_STRING, order = 0)
     Optional<String> catalogName();
 
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_SCHEMA_NAME, type = XSD_STRING, order = 1)
     Optional<String> schemaName();
 
     /**
      * @return The name of the cube.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 3)
     Optional<String> cubeName();
 
     /**
      * The unique name of the dimension.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_DIMENSION_UNIQUE_NAME, type = XSD_STRING, order = 4)
     Optional<String> dimensionUniqueName();
 
     /**
      * The unique name of the hierarchy.
      */
-    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING, order = 5)
     Optional<String> hierarchyUniqueName();
 
     /**
      * The unique name of the level.
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_LEVEL_UNIQUE_NAME, type = XSD_STRING, order = 6)
     Optional<String> levelUniqueName();
 
     /**
      * The distance of the member from the root of the
      * hierarchy. The root level is zero (0).
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_NUMBER, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_LEVEL_NUMBER, type = XSD_INTEGER, order = 7)
     Optional<Integer> levelNumber();
 
     /**
      * @return The name of the member.
      */
-    @Restriction(name = RESTRICTIONS_MEMBER_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEMBER_NAME, type = XSD_STRING, order = 8)
     Optional<String> memberName();
 
     /**
      * @return The unique name of the member.
      */
-    @Restriction(name = RESTRICTIONS_MEMBER_UNIQUE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEMBER_UNIQUE_NAME, type = XSD_STRING, order = 9)
     Optional<String> memberUniqueName();
 
     /**
@@ -103,13 +103,13 @@ public interface MdSchemaMembersRestrictions {
      * 4 - Is a formula.
      * 0 - Is of unknown type.
      */
-    @Restriction(name = RESTRICTIONS_MEMBER_TYPE, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEMBER_TYPE, type = XSD_STRING, order = 10)
     Optional<MemberTypeEnum> memberType();
 
     /**
      * @return The caption of the member.
      */
-    @Restriction(name = RESTRICTIONS_MEMBER_CAPTION, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_MEMBER_CAPTION, type = XSD_STRING, order = 11)
     Optional<String> memberCaption();
 
     /**
@@ -118,7 +118,7 @@ public interface MdSchemaMembersRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER)
+    //@Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 0)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
@@ -130,6 +130,6 @@ public interface MdSchemaMembersRestrictions {
      * 0x08 – Returns only itself.
      * 0x10 - Returns all of the descendants.
      */
-    @Restriction(name = RESTRICTIONS_TREE_OP, type = XSD_INTEGER)
+    @Restriction(name = RESTRICTIONS_TREE_OP, type = XSD_INTEGER, order = 12)
     Optional<TreeOpEnum> treeOp();
 }

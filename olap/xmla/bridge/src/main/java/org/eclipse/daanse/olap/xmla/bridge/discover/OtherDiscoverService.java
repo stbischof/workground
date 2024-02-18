@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -273,12 +274,11 @@ public class OtherDiscoverService {
                     if (method.getName().equals("restrictions")) {
                         Class cl = method.getReturnType();
                         Method[] restrictionMethods = cl.getMethods();
-                        for (Method m : restrictionMethods) {
-                            if (m.isAnnotationPresent(org.eclipse.daanse.xmla.api.annotation.Restriction.class)) {
-                                org.eclipse.daanse.xmla.api.annotation.Restriction restriction =
-                                    m.getAnnotation(org.eclipse.daanse.xmla.api.annotation.Restriction.class);
+                        List<org.eclipse.daanse.xmla.api.annotation.Restriction> rList = Arrays.stream(restrictionMethods).filter(mm -> mm.isAnnotationPresent(org.eclipse.daanse.xmla.api.annotation.Restriction.class))
+                            .map(mm -> mm.getAnnotation(org.eclipse.daanse.xmla.api.annotation.Restriction.class))
+                            .sorted((r1, r2) -> Integer.compare(r1.order(), r2.order())).toList();
+                        for (org.eclipse.daanse.xmla.api.annotation.Restriction restriction : rList) {
                                 restrictions.add(new RestrictionR(restriction.name(), restriction.type()));
-                            }
                         }
                     }
                 }

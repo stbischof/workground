@@ -28,19 +28,19 @@ public interface DbSchemaTablesRestrictions {
     /**
      * @return The name of the database.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_CATALOG, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_CATALOG, type = XSD_STRING, order = 0)
     Optional<String> tableCatalog();
 
     /**
      * @return The name of the schema.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_SCHEMA, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_SCHEMA, type = XSD_STRING, order = 1)
     Optional<String> tableSchema();
 
     /**
      * @return The name of the table.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_NAME, type = XSD_STRING)
+    @Restriction(name = RESTRICTIONS_TABLE_NAME, type = XSD_STRING, order = 2)
     Optional<String> tableName();
 
     /**
@@ -49,7 +49,7 @@ public interface DbSchemaTablesRestrictions {
      * SYSTEM TABLE for dimension.
      * SCHEMA for schema rowset table.
      */
-    @Restriction(name = RESTRICTIONS_TABLE_TYPE, type = "xsd:string")
+    @Restriction(name = RESTRICTIONS_TABLE_TYPE, type = "xsd:string", order = 3)
     Optional<String> tableType();
 
 }

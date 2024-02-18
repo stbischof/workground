@@ -527,7 +527,7 @@ public class Utils {
                     Optional.of(CubeTypeEnum.CUBE), //TODO get cube type from olap
                     Optional.empty(),
                     Optional.empty(),
-                    Optional.empty(), //TODO get create date from olap
+                    Optional.of(LocalDateTime.now()), //TODO get create date from olap
                     Optional.empty(),
                     Optional.of(LocalDateTime.now()),
                     Optional.empty(),
@@ -536,7 +536,7 @@ public class Utils {
                     Optional.of(false),
                     Optional.of(false),
                     Optional.of(false),
-                    Optional.ofNullable(cube.caption()),
+                    Optional.ofNullable(cube.caption() == null ? cube.name() : cube.caption()),
                     Optional.empty(),
                     Optional.of(CubeSourceEnum.CUBE),
                     Optional.empty())
@@ -1011,7 +1011,7 @@ public class Utils {
         Optional<TreeOpEnum> oTreeOp,
         Optional<Boolean> emitInvisibleMembers
     ) {
-        if (oMemberUniqueName.isPresent()) {
+        if (!oMemberUniqueName.isPresent()) {
             //TODO
             return List.of();
         } else {
@@ -1481,7 +1481,6 @@ public class Utils {
         Optional<VisibilityEnum> oLevelVisibility
     ) {
         List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions());
-        		//.stream().sorted((d1, d2) -> DimensionType.MEASURES_DIMENSION.equals(d2.getDimensionType()) ? -1 : 0).toList();
         return getDimensionsWithFilterByUniqueName(dimensions, oDimensionUniqueName)
             .stream()
             .map(d -> getMdSchemaLevelsResponseRow(catalogName, schemaName, cube.getName(), d, oHierarchyUniqueName,
@@ -1495,7 +1494,7 @@ public class Utils {
         Optional<String> oDimensionUniqueName
     ) {
         if (oDimensionUniqueName.isPresent()) {
-            return dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.getHierarchy().getUniqueName())).toList();
+            return dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.getUniqueName())).toList();
         }
         return dimensions;
     }
