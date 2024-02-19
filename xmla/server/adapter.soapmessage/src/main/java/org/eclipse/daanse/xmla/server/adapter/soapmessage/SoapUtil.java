@@ -1400,15 +1400,16 @@ public class SoapUtil {
 
     private static void addMemberTypeList(SOAPElement e, String tagName, List<MemberType> list) {
         if (list != null) {
-            list.forEach(it -> addMemberType(e, tagName, it));
+            String prefix = Constants.MDDATASET.PREFIX;
+            SOAPElement el = addChildElement(e, tagName, prefix);
+            list.forEach(it -> addMemberType(el, it));
         }
     }
 
-    private static void addMemberType(SOAPElement e, String tagName, MemberType it) {
+    private static void addMemberType(SOAPElement e, MemberType it) {
         if (it != null) {
             String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, tagName, prefix);
-            SOAPElement seMember = addChildElement(el, "Member", prefix);
+            SOAPElement seMember = addChildElement(e, "Member", prefix);
             addCellInfoItemList(seMember, it.any());
             setAttribute(seMember, "Hierarchy", it.hierarchy());
         }

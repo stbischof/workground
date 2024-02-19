@@ -823,12 +823,9 @@ public class Convertor {
     private static Axis getAxis(CellSet cellSet, CellSetAxis axis, List<Property> props, String name) {
         List<Type> setType = new ArrayList<>();
 
-        List<MemberType> memberList = new ArrayList<>();
-        TupleType tupleType = new TupleTypeR(memberList);
-        List<TupleType> tuples = new ArrayList<>();
-        tuples.add(tupleType);
-        TuplesType tuplesType = new TuplesTypeR(tuples);
-        setType.add(tuplesType);
+
+
+
 
         HashMap<Level, ArrayList<Member>> levelMembers = new HashMap<>();
 
@@ -873,7 +870,12 @@ public class Convertor {
         Position position = pit.hasNext() ? pit.next() : null;
         Position nextPosition = pit.hasNext() ? pit.next() : null;
         while (position != null) {
-
+            List<MemberType> memberList = new ArrayList<>();
+            TupleType tupleType = new TupleTypeR(memberList);
+            List<TupleType> tuples = new ArrayList<>();
+            tuples.add(tupleType);
+            TuplesType tuplesType = new TuplesTypeR(tuples);
+            setType.add(tuplesType);
             int k = 0;
             for (Member member : position.getMembers()) {
                 memberList.add(getMember(
