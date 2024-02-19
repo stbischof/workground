@@ -6,7 +6,7 @@
       <Table name="Fact"/>
       <Level name="Level1" column="KEY" />
     </Hierarchy>
-	<Hierarchy hasAll="false" name="HierarchyWithoutHasAll" primaryKey="KEY">
+	  <Hierarchy hasAll="false" name="HierarchyWithoutHasAll" primaryKey="KEY">
       <Table name="Fact"/>
       <Level name="Level2" column="KEY" />
     </Hierarchy>
