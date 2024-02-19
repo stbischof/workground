@@ -32,10 +32,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import mondrian.server.ExecutionImpl;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.Execution;
+import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.monitor.event.SqlStatementEvent;
@@ -474,7 +476,7 @@ public Object getCacheKey() {
         stmt = RolapUtil.executeQuery(
           context, sql, types, maxRows, 0,
           new SqlStatement.StatementLocus(
-            LocusImpl.peek().getExecution(),
+        	getExecution(context),
             "SqlTupleReader.readTuples " + partialTargets,
             message,
             SqlStatementEvent.Purpose.TUPLES, 0 ),
@@ -509,7 +511,7 @@ public Object getCacheKey() {
         moreRows = currPartialResultIdx < partialResult.size();
       }
 
-      Execution execution = LocusImpl.peek().getExecution();
+      Execution execution = getExecution(context);
       while ( moreRows ) {
         // Check if the MDX query was canceled.
         CancellationChecker.checkCancelOrTimeout(
@@ -578,7 +580,16 @@ public Object getCacheKey() {
     }
   }
 
-  @Override
+    private Execution getExecution(Context context) {
+        if (LocusImpl.isEmpty()) {
+            final Statement statement = context.getConnection().getInternalStatement();
+            return new ExecutionImpl(statement, 0);
+        } else {
+            return LocusImpl.peek().getExecution();
+        }
+    }
+
+    @Override
 public TupleList readMembers(
     Context context,
     TupleList partialResult,
