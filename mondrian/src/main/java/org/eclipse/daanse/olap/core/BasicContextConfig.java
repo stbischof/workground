@@ -457,12 +457,12 @@ public interface BasicContextConfig {
 
     //Property that defines the timeout value (in seconds) for queries. A value of 0 (the default) indicates no timeout.
     @AttributeDefinition(name = "%queryTimeout.name", description = "%queryTimeout.description", type = AttributeType.INTEGER)
-    default Integer queryTimeout() { return 0; }
+    default Integer queryTimeout() { return 20; }
 
     //This controls query timeouts and cancellation, so a small value (a few milliseconds) is best. Setting this to a value higher than mondrian.rolap.queryTimeout will result the timeout not being enforced as expected. Default value is 1000ms. Default time unit is ms.
     @AttributeDefinition(name = "%rolapConnectionShepherdThreadPollingInterval.name", description = "%rolapConnectionShepherdThreadPollingInterval.description", type = AttributeType.LONG)
     default Long rolapConnectionShepherdThreadPollingInterval() { return 1000L; }
-    
+
     @AttributeDefinition(name = "%rolapConnectionShepherdThreadPollingIntervalUnit.name", description = "%rolapConnectionShepherdThreadPollingIntervalUnit.description")
     default TimeUnit rolapConnectionShepherdThreadPollingIntervalUnit() { return TimeUnit.MILLISECONDS; }
 

@@ -621,7 +621,6 @@ public class Convertor {
             List<MemberType> mem = new ArrayList<>();
             tuples.add(new TupleTypeR(mem));
             setTypes.add(new TuplesTypeR(tuples));
-            new AxisR(setTypes, SLICER_AXIS);
 
             Map<String, Integer> memberMap = new HashMap<>();
             Member positionMember;

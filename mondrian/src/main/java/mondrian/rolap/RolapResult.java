@@ -732,7 +732,6 @@ public class RolapResult extends ResultBase {
       // flush the expression cache during each
       // phase of loading aggregations
       evaluator.clearExpResultCache( false );
-
       return batchingReader.loadAggregations();
     } else {
       execution.setCellCacheHitCount( batchingReader.getHitCount() );
@@ -1116,8 +1115,10 @@ public Cell getCell( int[] pos ) {
                 .append(count).append(" iterations").toString() );
           }
         } else {
-          throw Util.newInternal( new StringBuilder("Query required more than ").append(count)
-              .append(" iterations").toString() );
+          return;
+          //TODO
+          //throw Util.newInternal( new StringBuilder("Query required more than ").append(count)
+          //    .append(" iterations").toString() );
         }
       }
 

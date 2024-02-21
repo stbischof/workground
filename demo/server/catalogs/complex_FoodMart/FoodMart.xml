@@ -188,6 +188,9 @@ WHERE "product"."product_class_id" = "product_class"."product_class_id"
           <SQL dialect="oracle">
 "fname" || ' ' || "lname"
           </SQL>
+           <SQL dialect="h2">
+"fname" || ' ' || "lname"
+          </SQL>
           <SQL dialect="hive">
 `customer`.`fullname`
           </SQL>
@@ -233,6 +236,9 @@ fullname
         </NameExpression>
         <OrdinalExpression>
           <SQL dialect="oracle">
+"fname" || ' ' || "lname"
+          </SQL>
+          <SQL dialect="h2">
 "fname" || ' ' || "lname"
           </SQL>
           <SQL dialect="hsqldb">
@@ -320,6 +326,9 @@ fullname
 Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
       </SQL>
       <SQL dialect="oracle">
+(case when "sales_fact_1997"."promotion_id" = 0 then 0 else "sales_fact_1997"."store_sales" end)
+      </SQL>
+      <SQL dialect="h2">
 (case when "sales_fact_1997"."promotion_id" = 0 then 0 else "sales_fact_1997"."store_sales" end)
       </SQL>
       <SQL dialect="hsqldb">
@@ -428,7 +437,7 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
   </CalculatedMember>
   <NamedSet name="Top Sellers">
     <Formula>TopCount([Warehouse].[Warehouse Name].MEMBERS, 5, [Measures].[Warehouse Sales])</Formula>
-  </NamedSet>    
+  </NamedSet>
 </Cube>
 
 <!-- Test a cube based upon a single table. -->
@@ -649,6 +658,9 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
       <Level name="Name" uniqueMembers="true">
         <KeyExpression>
           <SQL dialect="oracle">
+"fname" || ' ' || "lname"
+          </SQL>
+          <SQL dialect="h2">
 "fname" || ' ' || "lname"
           </SQL>
           <SQL dialect="hsqldb">

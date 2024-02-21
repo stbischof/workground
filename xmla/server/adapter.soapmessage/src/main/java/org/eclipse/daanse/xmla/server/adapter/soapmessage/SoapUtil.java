@@ -2575,7 +2575,7 @@ public class SoapUtil {
         SOAPElement s = addChildElement(ct1Sequence, "sequence", "xsd");
         s.setAttribute("maxOccurs", "unbounded");
         s.setAttribute("minOccurs", "0");
-        SOAPElement any = addChildElement(ct1Sequence, "any", "xsd");
+        SOAPElement any = addChildElement(s, "any", "xsd");
         any.setAttribute("processContents", "lax");
         any.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct1Attribute = addChildElement(ct1, "attribute", "xsd");
@@ -2618,7 +2618,7 @@ public class SoapUtil {
         SOAPElement ct6 = addChildElement(schema, "complexType", "xsd");
         ct6.setAttribute("name", "CrossProductType");
         SOAPElement ct6Sequence = addChildElement(ct6, "sequence", "xsd");
-        ct6Sequence.setAttribute("maxOccurs", "unbounded");
+        //ct6Sequence.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct6SequenceChoice = addChildElement(ct6Sequence, "choice", "xsd");
         ct6SequenceChoice.setAttribute("minOccurs", "0");
         ct6SequenceChoice.setAttribute("maxOccurs", "unbounded");
@@ -2672,7 +2672,7 @@ public class SoapUtil {
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElementCt = addChildElement(
                 ct7SequenceElement2CtSequenceElCtSequenceElement, "complexType", "xsd");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElementCt, "Sequence", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElementCt, "sequence", "xsd");
 
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1 = addChildElement(
                 ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence, "sequence", "xsd");

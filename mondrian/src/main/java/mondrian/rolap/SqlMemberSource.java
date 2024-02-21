@@ -1149,9 +1149,11 @@ RME is this right
         }
         for (int j = 0; j < properties.length; j++) {
             Property property = properties[j];
-            member.setProperty(
-                property.getName(),
-                getPooledValue(accessors.get(columnOffset + j).get()));
+            if (accessors.size() > (columnOffset + j)) { 
+            	member.setProperty(
+            			property.getName(),
+            			getPooledValue(accessors.get(columnOffset + j).get()));
+            }
         }
         cache.putMember(key, member);
         return member;
