@@ -13,15 +13,8 @@
  */
 package org.eclipse.daanse.olap.documentation.common;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
+import org.eclipse.daanse.db.jdbc.metadata.impl.Column;
+import org.eclipse.daanse.db.jdbc.metadata.impl.JdbcMetaDataServiceLiveImpl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.documentation.api.ConntextDocumentationProvider;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
@@ -40,7 +33,18 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
-import static java.lang.StringTemplate.RAW;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
 import static java.lang.StringTemplate.STR;
 
 @Component(service = ConntextDocumentationProvider.class, scope = ServiceScope.SINGLETON, immediate = true)
@@ -48,75 +52,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     public static final String EMPTY_STRING = "";
     private static String ENTER = System.lineSeparator();
-    private static StringTemplate schemaTemplate = RAW.
-        """
-        ### Schema {schemaName}:
-
-        """;
-
-    private static StringTemplate publicDimensionTemplate = RAW.
-            """
-            ### Public Dimensions:
-            {dimensions}
-
-            """;
-
-    private static StringTemplate publicDimensionTemplate1 = RAW.
-            """
-            ##### Dimension {dimension}:
-
-            Hierarchies:
-
-            {hierarchies}
-
-            """;
-
-    private static StringTemplate hierarchyTemplate = RAW.
-            """
-            ##### Hierarchy {name}:
-
-            Tables: {tables}
-            Levels: {levels}
-
-            """;
-
-    private static StringTemplate levelTemplate = RAW.
-            """
-            ###### Level {name} :
-
-            column(s): {columns}
-
-            """;
-
-    private static StringTemplate cubesTemplate = RAW.
-            """
-            ### Cubes :
-
-            {cubes}
-
-            """;
-
-    private static StringTemplate cubeTemplate = RAW.
-            """
-            #### Cube {name}:
-
-            {description}
-
-            ##### Table: {table}
-
-            """;
-
-    private static StringTemplate dimensionUsageTemplate = RAW.
-            """
-            ##### Dimension: {name} -> {source}:
-
-            """;
-
-    private static StringTemplate roleTemplate = RAW.
-            """
-            ##### Role: {name}
-
-            """;
 
     @Override
     public void createDocumentation(Context context, Path path) throws Exception {
@@ -126,21 +61,24 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         if (file.exists()) {
             Files.delete(path);
         }
-
+        String dbName = getCatalogName(context.getName());
         FileWriter writer = new FileWriter(file);
         writer.write("# Documentation");
         writer.write(ENTER);
-        writer.write("CatalogName : " + getCatalogName(context.getName()));
+        writer.write("### CatalogName : " + dbName);
+        writer.write(ENTER);
         writer.write("## Olap Context Details:");
+        writer.write(ENTER);
         writeSchemas(writer, context);
+        writeDatabaseInfo(writer, context, dbName);
         writer.flush();
         writer.close();
 
     }
 
     private String getCatalogName(String path) {
-        int index = path.lastIndexOf("\\");
-        if (path.length() < index) {
+        int index = path.lastIndexOf(File.separator);
+        if (path.length() > index) {
             return path.substring(index + 1);
         }
         return path;
@@ -156,15 +94,27 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeSchema(FileWriter writer, MappingSchema schema) {
         try {
-            String schemaName = schema.name();
             String dimensions = schema.dimensions().stream().map(d -> d.name())
-                .collect(Collectors.joining(","));
-            writer.write(STR.process(schemaTemplate));
-            writer.write(STR.process(publicDimensionTemplate));
+                .collect(Collectors.joining(", "));
+            String schemaName = schema.name();
+            writer.write(STR."### Schema \{schemaName} : ");
+            writer.write(ENTER);
+            writer.write(STR. """
+                ### Public Dimensions:
+
+                    \{dimensions}
+
+                """);
             writeList(writer, schema.dimensions(), this::writePublicDimension);
             String cubes = schema.cubes().stream().map(c -> c.name())
-                .collect(Collectors.joining(","));
-            writer.write(STR.process(cubesTemplate));
+                .collect(Collectors.joining(", "));
+            writer.write(STR. """
+                ---
+                ### Cubes :
+
+                    \{cubes}
+
+                """);
             writeList(writer, schema.cubes(), this::writeCube);
             //write roles
             writeRoles(writer, schema.roles());
@@ -189,7 +139,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeRole(FileWriter writer, MappingRole role) {
         try {
             String name = role.name();
-            writer.write(STR.process(roleTemplate));
+            writer.write(STR. """
+                ##### Role: "\{name}"
+
+                """);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,10 +151,18 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeCube(FileWriter writer, MappingCube cube) {
         try {
-            String description = cube.description();
+            String description = cube.description() != null ? cube.description() : EMPTY_STRING;
             String name = cube.name();
             String table = getTable(cube.fact());
-            writer.write(STR.process(cubeTemplate));
+            writer.write(STR. """
+                ---
+                #### Cube "\{name}":
+
+                    \{description}
+
+                ##### Table: "\{table}"
+
+                """);
             writeCubeDimensions(writer, cube.dimensionUsageOrDimensions());
 
         } catch (IOException e) {
@@ -212,6 +173,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeCubeDimensions(FileWriter writer, List<MappingCubeDimension> dimensionUsageOrDimensions) {
         try {
             writer.write("##### Dimensions:");
+            writer.write(ENTER);
             writeList(writer, dimensionUsageOrDimensions, this::writeCubeDimension);
         } catch (IOException e) {
             e.printStackTrace();
@@ -231,7 +193,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             String name = du.name();
             String source = du.source();
-            writer.write(STR.process(dimensionUsageTemplate));
+            writer.write(STR. """
+                ##### Dimension: "\{name} -> \{source}":
+
+                """);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -241,22 +206,45 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             String dimension = d.name();
             String description = d.description();
-            String hierarchies = d.hierarchies().stream().map(h -> h.name())
-                .collect(Collectors.joining(","));
-            writer.write(STR.process(publicDimensionTemplate1));
-            writeList(writer, d.hierarchies(), this::writeHierarchy);
+            AtomicInteger index = new AtomicInteger();
+            String hierarchies = d.hierarchies().stream().map(h -> h.name() == null ?
+                "Hierarchy" + index.getAndIncrement() : h.name())
+                .collect(Collectors.joining(", "));
+            writer.write(STR. """
+                ##### Dimension "\{dimension}":
+
+                Hierarchies:
+
+                    \{hierarchies}
+
+                """);
+            writeHierarchies(writer, d.hierarchies());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeHierarchy(FileWriter writer, MappingHierarchy h) {
+    private void writeHierarchies(FileWriter writer, List<MappingHierarchy> hierarchies) {
+        if (hierarchies != null) {
+            AtomicInteger index = new AtomicInteger();
+            hierarchies.forEach(h -> writeHierarchy(writer, index.getAndIncrement(), h));
+        }
+    }
+
+    private void writeHierarchy(FileWriter writer, int index, MappingHierarchy h) {
         try {
-            String name = h.name();
+            String name = h.name() == null ? "Hierarchy" + index : h.name();
             String tables = getTable(h.relation());
             String levels = h.levels() != null ? h.levels().stream().map(l -> l.name())
-                .collect(Collectors.joining(",")) : EMPTY_STRING;
-            writer.write(STR.process(hierarchyTemplate));
+                .collect(Collectors.joining(", ")) : EMPTY_STRING;
+            writer.write(STR. """
+                ##### Hierarchy \{name}:
+
+                Tables: "\{tables}"
+
+                Levels: "\{levels}"
+
+                """);
             writeList(writer, h.levels(), this::writeLevel);
         } catch (IOException e) {
             e.printStackTrace();
@@ -267,7 +255,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             String name = level.name();
             String description = level.description();
-            writer.write(STR.process(levelTemplate));
+            String columns = level.column();
+            writer.write(STR. """
+                ###### Level "\{name}" :
+
+                    column(s): \{columns}
+
+                """);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -301,6 +295,48 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             }
         }
         return "";
+    }
+
+    private void writeDatabaseInfo(FileWriter writer, Context context, String dbName) {
+        try (Connection connection = context.getDataSource().getConnection()) {
+            JdbcMetaDataServiceLiveImpl jdbcMetaDataService = new JdbcMetaDataServiceLiveImpl(connection);
+            List<String> tables = jdbcMetaDataService.getTables(dbName);
+            writeTables(writer, dbName, tables, jdbcMetaDataService);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeTables(final FileWriter writer, final String schemaName, final List<String> tables, final JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+        try {
+            if (tables != null && !tables.isEmpty()) {
+                writer.write("### Database :");
+                tables.forEach(t -> writeTable(writer, schemaName, t, jdbcMetaDataService));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeTable(FileWriter writer, String schemaName, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+        try {
+        List<Column> columnList = jdbcMetaDataService.getColumns(schemaName, name);
+        String columns = new StringBuilder("|")
+            .append(columnList.stream().map(c -> c.getName()).collect(Collectors.joining("|")))
+            .append("|").toString();
+        String line = new StringBuilder("|")
+            .append(columnList.stream().map(c -> "---").collect(Collectors.joining("|")))
+            .append("|").toString();
+        writer.write(STR. """
+                "\{name}":
+
+                \{columns}
+                \{line}
+
+                """);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

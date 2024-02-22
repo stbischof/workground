@@ -1,5 +1,5 @@
 -runtrace: true
--runvm: ${def;argLine}
+-runvm: --enable-preview ${def;argLine}
 
 -runproperties: \
     org.slf4j.simpleLogger.defaultLogLevel=error,\
@@ -12,7 +12,7 @@
 	ch.qos.logback.classic,\
 	ch.qos.logback.core,\
 	slf4j.api
-	
+
 -runee: JavaSE-21
 -runfw: org.apache.felix.framework
 #-runfw: org.eclipse.osgi
@@ -38,7 +38,8 @@
 	bnd.identity;id='org.eclipse.daanse.olap.filecatalog',\
 	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.provider.xml',\
 	bnd.identity;id='com.sun.xml.bind.jaxb-impl',\
-	bnd.identity;id='ch.qos.logback.classic'
+	bnd.identity;id='ch.qos.logback.classic',\
+	bnd.identity;id='org.eclipse.daanse.olap.documentation.common'
 
 
 
@@ -76,12 +77,15 @@
 	org.eclipse.daanse.db.dialect.resolver.basic;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.jdbc.dataloader.csv;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.jdbc.dataloader.csvtoh2;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.db.jdbc.metadata;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.jdbc.util;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.statistics.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.statistics.metadata;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.demo.server.play;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.emondrian;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.model.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.documentation.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.documentation.common;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.filecatalog;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.operation.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.model.api;version='[0.0.1,0.0.2)',\
@@ -96,8 +100,10 @@
 	org.eclipse.daanse.xmla.server.jakarta.saaj;version='[0.0.1,0.0.2)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[2.4.0,2.4.1)',\
 	org.jvnet.staxex.stax-ex;version='[2.1.0,2.1.1)',\
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	org.osgi.service.log;version='[1.5.0,1.5.1)',\
 	org.osgi.util.converter;version='[1.0.9,1.0.10)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.3.0,1.3.1)'
+

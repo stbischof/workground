@@ -1,2 +1,108 @@
 # Documentation
-CatalogName : /home/bischofs/git/daanse/demo/server/catalogs/min_hier_hidden_members
+### CatalogName : min_Level_hideMemberIf
+## Olap Context Details:
+## Schemas:
+### Schema Minimal_Single_Hierarchy_Hidden_Members : 
+### Public Dimensions:
+
+    DimensionMembersHiddenIfParentsName, DimensionMembersHiddenIfBlankName, DimensionMembersHiddenMultipleLevels
+
+##### Dimension "DimensionMembersHiddenIfParentsName":
+
+Hierarchies:
+
+    Hierarchy1
+
+##### Hierarchy Hierarchy1:
+
+Tables: "Level_2,Level_1"
+
+Levels: "Level1, Level2"
+
+###### Level "Level1" :
+
+    column(s): KEY
+
+###### Level "Level2" :
+
+    column(s): KEY
+
+##### Dimension "DimensionMembersHiddenIfBlankName":
+
+Hierarchies:
+
+    Hierarchy1
+
+##### Hierarchy Hierarchy1:
+
+Tables: "Level_2_NULL,Level_1"
+
+Levels: "Level1, Level2"
+
+###### Level "Level1" :
+
+    column(s): KEY
+
+###### Level "Level2" :
+
+    column(s): KEY
+
+##### Dimension "DimensionMembersHiddenMultipleLevels":
+
+Hierarchies:
+
+    Hierarchy1
+
+##### Hierarchy Hierarchy1:
+
+Tables: "Level_3_Multiple,Level_2_Multiple,Level_1_Multiple"
+
+Levels: "Level1, Level2, Level3"
+
+###### Level "Level1" :
+
+    column(s): KEY
+
+###### Level "Level2" :
+
+    column(s): KEY
+
+###### Level "Level3" :
+
+    column(s): KEY
+
+---
+### Cubes :
+
+    HiddenMembersIfParentName, HiddenMembersIfBlankName, HiddenMembersMultipleLevels
+
+---
+#### Cube "HiddenMembersIfParentName":
+
+    
+
+##### Table: "Fact"
+
+##### Dimensions:
+##### Dimension: "DimensionMembersHiddenIfParentsName -> DimensionMembersHiddenIfParentsName":
+
+---
+#### Cube "HiddenMembersIfBlankName":
+
+    
+
+##### Table: "Fact"
+
+##### Dimensions:
+##### Dimension: "DimensionMembersHiddenIfBlankName -> DimensionMembersHiddenIfBlankName":
+
+---
+#### Cube "HiddenMembersMultipleLevels":
+
+    
+
+##### Table: "Fact_Multiple"
+
+##### Dimensions:
+##### Dimension: "DimensionMembersHiddenMultipleLevels -> DimensionMembersHiddenMultipleLevels":
+

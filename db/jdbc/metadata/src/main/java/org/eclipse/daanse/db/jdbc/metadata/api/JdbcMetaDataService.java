@@ -21,4 +21,6 @@ public interface JdbcMetaDataService {
     List<ForeignKey> getForeignKeys(String schemaName, String tableName);
 
     List<Column> getColumns(String schemaName, String tableName);
+
+    List<String> getTables(String schemaName);
 }

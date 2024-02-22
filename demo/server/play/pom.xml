@@ -8,6 +8,9 @@
 		<version>${revision}</version>
 	</parent>
 	<artifactId>org.eclipse.daanse.demo.server.play</artifactId>
+  <properties>
+    <maven-failsafe-plugin.argLine>--enable-preview -Duser.language=en -Duser.country=US</maven-failsafe-plugin.argLine>
+  </properties>
 	<build>
 		<plugins>
 			<plugin>

@@ -16,7 +16,13 @@
 			<scope>compile</scope>
 			<version>${revision}</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.eclipse.daanse</groupId>
+            <artifactId>org.eclipse.daanse.db.jdbc.metadata</artifactId>
+            <version>${revision}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
   <build>
     <plugins>
       <plugin>

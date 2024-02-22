@@ -96,4 +96,34 @@ public class JdbcMetaDataServiceLiveImpl implements JdbcMetaDataService {
         return result;
     }
 
+    @Override
+    public List<String> getTables(String dbName) {
+        List result = new ArrayList();
+        try (ResultSet rs = getTablesResultSet(dbName)) {
+            if (rs != null) {
+                while (rs.next()) {
+                    result.add(rs.getString("TABLE_NAME"));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("getTables error", e);
+        }
+        return result;
+    }
+
+    private ResultSet getTablesResultSet(String dbName) throws SQLException {
+        try {
+            return metadata.getTables(
+                "",
+                dbName,
+                null,
+                new String[]{"TABLE", "VIEW"});
+        } catch (Exception e) {
+            // this is a workaround for databases that throw an exception
+            // when views are requested.
+            return metadata.getTables(
+                "", dbName, null, new String[]{"TABLE"});
+        }
+    }
+
 }
