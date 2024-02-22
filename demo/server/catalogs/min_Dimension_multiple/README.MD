@@ -56,3 +56,21 @@ Levels: "D2H1L1"
 
 ##### Dimension: "Dimension2 -> D2":
 
+### Database :"DIM_1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"DIM_2":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"Fact":
+
+|DIM1_KEY|DIM2_KEY|VALUE|
+|---|---|---|
+|INTEGER|INTEGER|INTEGER|
+

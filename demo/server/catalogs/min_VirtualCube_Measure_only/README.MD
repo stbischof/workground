@@ -28,3 +28,15 @@
 ##### Table: "C2_Fact"
 
 ##### Dimensions:
+### Database :"C1_Fact":
+
+|KEY|VALUE|
+|---|---|
+|STRING|INTEGER|
+
+"C2_Fact":
+
+|KEY|VALUE|
+|---|---|
+|STRING|INTEGER|
+

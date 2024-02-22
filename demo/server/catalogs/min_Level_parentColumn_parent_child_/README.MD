@@ -38,3 +38,15 @@ Levels: "Level"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"Fact":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Hier_One_Top_Member":
+
+|KEY|NAME|PARENT_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+

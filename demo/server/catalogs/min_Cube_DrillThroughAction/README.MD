@@ -56,3 +56,27 @@ Levels: "H2_Level1, H2_Level2"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"Fact":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"H1_L1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"H2_L1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"HX_L2":
+
+|KEY|NAME|H1L1_KEY|H2L1_KEY|
+|---|---|---|---|
+|INTEGER|STRING|INTEGER|INTEGER|
+

@@ -46,3 +46,9 @@ Levels: "Years, Quarters, Months"
 ##### Dimensions:
 ##### Dimension: "Time -> Time":
 
+### Database :"Fact":
+
+|DATE_KEY|VALUE|YEAR_ID|QTR_ID|QTR_NAME|MONTH_ID|MONTH_NAME|
+|---|---|---|---|---|---|---|
+|TIMESTAMP|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
+

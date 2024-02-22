@@ -48,3 +48,21 @@ Levels: "Level1"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"C1_Fact":
+
+|DIM_1_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"C2_Fact":
+
+|DIM_1_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Dim_1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+

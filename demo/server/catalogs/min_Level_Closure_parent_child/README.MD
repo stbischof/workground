@@ -38,3 +38,21 @@ Levels: "Level"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"Closure":
+
+|PARENT_KEY|CHILD_KEY|DIST|
+|---|---|---|
+|INTEGER|INTEGER|INTEGER|
+
+"Fact":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Hierarchy":
+
+|KEY|NAME|PARENT_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+

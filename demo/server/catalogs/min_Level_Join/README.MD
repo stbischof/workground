@@ -42,3 +42,21 @@ Levels: "Level1, Level2"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"Fact":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Level_1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"Level_2":
+
+|KEY|NAME|L1_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+

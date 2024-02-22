@@ -102,7 +102,9 @@ public class JdbcMetaDataServiceLiveImpl implements JdbcMetaDataService {
         try (ResultSet rs = getTablesResultSet(dbName)) {
             if (rs != null) {
                 while (rs.next()) {
-                    result.add(rs.getString("TABLE_NAME"));
+                    if ("PUBLIC".equals(rs.getString("TABLE_SCHEM"))) {
+                        result.add(rs.getString("TABLE_NAME"));
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -114,7 +116,7 @@ public class JdbcMetaDataServiceLiveImpl implements JdbcMetaDataService {
     private ResultSet getTablesResultSet(String dbName) throws SQLException {
         try {
             return metadata.getTables(
-                "",
+            	catalogName,
                 dbName,
                 null,
                 new String[]{"TABLE", "VIEW"});

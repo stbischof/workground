@@ -106,3 +106,51 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "DimensionMembersHiddenMultipleLevels -> DimensionMembersHiddenMultipleLevels":
 
+### Database :"Fact":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Fact_Multiple":
+
+|DIM_KEY|VALUE|
+|---|---|
+|INTEGER|INTEGER|
+
+"Level_1":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"Level_1_Multiple":
+
+|KEY|NAME|
+|---|---|
+|INTEGER|STRING|
+
+"Level_2":
+
+|KEY|NAME|L1_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+
+"Level_2_Multiple":
+
+|KEY|NAME|L1_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+
+"Level_2_NULL":
+
+|KEY|NAME|L1_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+
+"Level_3_Multiple":
+
+|KEY|NAME|L2_KEY|
+|---|---|---|
+|INTEGER|STRING|INTEGER|
+

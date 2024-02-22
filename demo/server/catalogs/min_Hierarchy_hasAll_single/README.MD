@@ -38,3 +38,9 @@ Levels: "Level1"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Database :"Fact":
+
+|KEY|VALUE|
+|---|---|
+|STRING|INTEGER|
+

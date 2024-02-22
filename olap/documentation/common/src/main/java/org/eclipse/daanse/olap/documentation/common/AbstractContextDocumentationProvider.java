@@ -14,7 +14,27 @@ package org.eclipse.daanse.olap.documentation.common;
 
 import org.eclipse.daanse.olap.documentation.api.ConntextDocumentationProvider;
 
+import java.sql.Types;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class AbstractContextDocumentationProvider implements ConntextDocumentationProvider {
 
-	
+    protected static final Map<Integer, String> TYPE_MAP;
+    static {
+        Map<Integer, String> typeMapInitial = new HashMap<>();
+        typeMapInitial.put(Types.SMALLINT, "INTEGER");
+        typeMapInitial.put(Types.INTEGER, "INTEGER");
+        typeMapInitial.put(Types.BOOLEAN, "BOOLEAN");
+        typeMapInitial.put(Types.DOUBLE, "DOUBLE");
+        typeMapInitial.put(Types.FLOAT, "DOUBLE");
+        typeMapInitial.put(Types.BIGINT, "LONG");
+        typeMapInitial.put(Types.DATE, "DATE");
+        typeMapInitial.put(Types.TIMESTAMP, "TIMESTAMP");
+        typeMapInitial.put(Types.TIME, "TIME");
+        typeMapInitial.put(Types.VARCHAR, "STRING");
+
+        TYPE_MAP = Collections.unmodifiableMap(typeMapInitial);
+    }
 }

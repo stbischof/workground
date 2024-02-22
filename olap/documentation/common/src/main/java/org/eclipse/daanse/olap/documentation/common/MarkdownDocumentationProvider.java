@@ -70,7 +70,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write("## Olap Context Details:");
         writer.write(ENTER);
         writeSchemas(writer, context);
-        writeDatabaseInfo(writer, context, dbName);
+        writeDatabaseInfo(writer, context);
         writer.flush();
         writer.close();
 
@@ -297,41 +297,46 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return "";
     }
 
-    private void writeDatabaseInfo(FileWriter writer, Context context, String dbName) {
+    private void writeDatabaseInfo(FileWriter writer, Context context) {
         try (Connection connection = context.getDataSource().getConnection()) {
             JdbcMetaDataServiceLiveImpl jdbcMetaDataService = new JdbcMetaDataServiceLiveImpl(connection);
-            List<String> tables = jdbcMetaDataService.getTables(dbName);
-            writeTables(writer, dbName, tables, jdbcMetaDataService);
+            List<String> tables = jdbcMetaDataService.getTables(null);
+            writeTables(writer, tables, jdbcMetaDataService);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeTables(final FileWriter writer, final String schemaName, final List<String> tables, final JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+    private void writeTables(final FileWriter writer, final List<String> tables, final JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
         try {
             if (tables != null && !tables.isEmpty()) {
                 writer.write("### Database :");
-                tables.forEach(t -> writeTable(writer, schemaName, t, jdbcMetaDataService));
+                tables.forEach(t -> writeTable(writer, t, jdbcMetaDataService));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeTable(FileWriter writer, String schemaName, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+    private void writeTable(FileWriter writer, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
         try {
-        List<Column> columnList = jdbcMetaDataService.getColumns(schemaName, name);
+        List<Column> columnList = jdbcMetaDataService.getColumns(null, name);
         String columns = new StringBuilder("|")
             .append(columnList.stream().map(c -> c.getName()).collect(Collectors.joining("|")))
             .append("|").toString();
         String line = new StringBuilder("|")
             .append(columnList.stream().map(c -> "---").collect(Collectors.joining("|")))
             .append("|").toString();
-        writer.write(STR. """
+        String types = new StringBuilder("|")
+                .append(columnList.stream().map(c -> TYPE_MAP.get(c.getType())).collect(Collectors.joining("|")))
+                .append("|").toString();
+
+            writer.write(STR. """
                 "\{name}":
 
                 \{columns}
                 \{line}
+                \{types}
 
                 """);
         } catch (IOException e) {

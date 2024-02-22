@@ -44,3 +44,9 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
+### Database :"Fact":
+
+|KEY|VALUE|VALUE_NUMERIC|
+|---|---|---|
+|STRING|INTEGER|null|
+
