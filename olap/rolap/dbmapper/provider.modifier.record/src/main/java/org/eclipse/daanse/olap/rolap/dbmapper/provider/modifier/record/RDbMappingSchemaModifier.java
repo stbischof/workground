@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -154,15 +155,15 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
                                        List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
                                        List<MappingNamedSet> namedSets, List<MappingRole> roles,
                                        List<MappingUserDefinedFunction> userDefinedFunctions,
-                                       MappingDocumentation documentation) {
+                                       Optional<MappingDocumentation> documentation) {
 		MappingSchema mappingSchemaNew = new SchemaR(name, description,annotations, measuresCaption, defaultRole,
 				parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
 		return mappingSchemaNew;
 	}
 
     @Override
-    protected DocumentationR new_Documentation(String documentation) {
-        return new DocumentationR(documentation);
+    protected Optional<MappingDocumentation> new_Documentation(String documentation) {
+        return Optional.of(new DocumentationR(documentation));
     }
 
     @Override

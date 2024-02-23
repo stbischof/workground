@@ -16,6 +16,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -126,7 +127,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             List<MappingNamedSet> namedSets = schemaNamedSets(mappingSchemaOriginal);
             List<MappingRole> roles = schemaRoles(mappingSchemaOriginal);
             List<MappingUserDefinedFunction> userDefinedFunctions = schemaUserDefinedFunctions(mappingSchemaOriginal);
-            MappingDocumentation documentation = schemaDocumentation(mappingSchemaOriginal);
+            Optional<MappingDocumentation> documentation = schemaDocumentation(mappingSchemaOriginal);
             return new_Schema(name, description, measuresCaption, defaultRole, annotations,
                 parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
         }
@@ -138,7 +139,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         String defaultRole, List<MappingAnnotation> annotations, List<MappingParameter> parameters,
         List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
         List<MappingNamedSet> namedSets, List<MappingRole> roles,
-        List<MappingUserDefinedFunction> userDefinedFunctions, MappingDocumentation documentation
+        List<MappingUserDefinedFunction> userDefinedFunctions, Optional<MappingDocumentation> documentation
     );
 
     protected String schemaDefaultRole(MappingSchema mappingSchemaOriginal) {
@@ -157,7 +158,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return mappingSchemaOriginal.name();
     }
 
-    protected MappingDocumentation schemaDocumentation(MappingSchema mappingSchemaOriginal) {
+    protected Optional<MappingDocumentation> schemaDocumentation(MappingSchema mappingSchemaOriginal) {
         if (mappingSchemaOriginal != null) {
             String documentation = documentationDocumentationValue(mappingSchemaOriginal.documentation());
             return new_Documentation(documentation);
@@ -165,11 +166,14 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return null;
     }
 
-    protected String documentationDocumentationValue(MappingDocumentation documentation) {
-        return documentation.documentation();
+    protected String documentationDocumentationValue(Optional<MappingDocumentation> documentation) {
+        if ( documentation.isPresent() ) {
+            return documentation.get().documentation();
+        }
+        return null;
     };
 
-    protected abstract MappingDocumentation new_Documentation(String documentation);
+    protected abstract Optional<MappingDocumentation> new_Documentation(String documentation);
 
 
     protected List<MappingAnnotation> schemaAnnotations(MappingSchema mappingSchemaOriginal) {

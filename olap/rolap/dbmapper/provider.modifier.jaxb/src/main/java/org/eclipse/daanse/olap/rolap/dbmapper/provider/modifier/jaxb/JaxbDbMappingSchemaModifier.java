@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.jaxb;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -154,7 +155,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingAnnotation> annotations, List<MappingParameter> parameters,
         List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
         List<MappingNamedSet> namedSets, List<MappingRole> roles,
-        List<MappingUserDefinedFunction> userDefinedFunctions, MappingDocumentation documentation
+        List<MappingUserDefinedFunction> userDefinedFunctions, Optional<MappingDocumentation> documentation
     ) {
         SchemaImpl schema = new SchemaImpl();
         schema.setName(name);
@@ -174,10 +175,10 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingDocumentation new_Documentation(String doc) {
+    protected Optional<MappingDocumentation> new_Documentation(String doc) {
         DocumentationImpl documentation = new DocumentationImpl();
         documentation.setDocumentation(doc);
-        return documentation;
+        return Optional.of(documentation);
     }
 
     @Override

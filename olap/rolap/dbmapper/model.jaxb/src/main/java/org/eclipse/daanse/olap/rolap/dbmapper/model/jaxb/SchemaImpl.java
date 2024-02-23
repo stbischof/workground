@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
@@ -188,12 +189,12 @@ public class SchemaImpl extends AbstractMainElement implements MappingSchema {
     }
 
     @Override
-    public MappingDocumentation documentation() {
-        return documentation;
+    public Optional<MappingDocumentation> documentation() {
+        return Optional.ofNullable(documentation);
     }
 
-    public void setDocumentation(MappingDocumentation documentation) {
-        this.documentation = documentation;
+    public void setDocumentation(Optional<MappingDocumentation> documentation) {
+        this.documentation = documentation.orElse(null);
     }
 
 }

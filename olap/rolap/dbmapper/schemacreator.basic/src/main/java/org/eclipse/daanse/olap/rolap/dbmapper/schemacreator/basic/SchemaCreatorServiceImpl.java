@@ -122,7 +122,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                 namedSets,
                 roles,
                 userDefinedFunctions,
-                null);
+                Optional.empty());
 
         } catch (SQLException e) {
             LOGGER.error("createSchema error");

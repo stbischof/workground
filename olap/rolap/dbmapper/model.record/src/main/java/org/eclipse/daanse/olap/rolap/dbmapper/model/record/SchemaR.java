@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
@@ -38,7 +39,7 @@ public record SchemaR(String name,
                       List<MappingNamedSet> namedSets,
                       List<MappingRole> roles,
                       List<MappingUserDefinedFunction> userDefinedFunctions,
-                      MappingDocumentation documentation)
+                      Optional<MappingDocumentation> documentation)
         implements MappingSchema {
 
 
@@ -55,7 +56,7 @@ public record SchemaR(String name,
             List<MappingNamedSet> namedSets,
             List<MappingRole> roles,
             List<MappingUserDefinedFunction> userDefinedFunctions,
-            MappingDocumentation documentation)
+            Optional<MappingDocumentation> documentation)
 {
 	this.name = name;
 	this.description = description;

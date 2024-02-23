@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.provider.sample.foodmart.record;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
@@ -2239,7 +2240,7 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
         List.of(),
         List.of(ROLE_1, ROLE_2, ROLE_3),
         List.of(),
-        null
+        Optional.empty()
        );
 
     @Override

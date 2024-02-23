@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A schema is a collection of cubes and virtual cubes. It can also contain
@@ -37,7 +38,7 @@ public interface MappingSchema {
 
     List<MappingRole> roles();
 
-    MappingDocumentation documentation();
+    Optional<MappingDocumentation> documentation();
 
     /**
      * @return @deprecated
