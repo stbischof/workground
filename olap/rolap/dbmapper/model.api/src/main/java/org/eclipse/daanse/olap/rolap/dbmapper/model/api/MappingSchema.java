@@ -37,6 +37,8 @@ public interface MappingSchema {
 
     List<MappingRole> roles();
 
+    MappingDocumentation documentation();
+
     /**
      * @return @deprecated
      */

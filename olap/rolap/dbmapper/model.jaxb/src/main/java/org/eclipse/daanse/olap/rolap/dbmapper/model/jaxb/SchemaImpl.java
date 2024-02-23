@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2022 Contributors to the Eclipse Foundation.
  *
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
@@ -40,11 +40,11 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "parameters", "dimensions", "cubes", "virtualCubes", "namedSets", "roles",
-    "userDefinedFunctions"})
+    "userDefinedFunctions", "documentation"})
 @XmlRootElement(name = "Schema")
 public class SchemaImpl extends AbstractMainElement implements MappingSchema {
 
-	
+
     @XmlElement(name = "Parameter", type = ParameterImpl.class)
     protected List<MappingParameter> parameters;
     @XmlElement(name = "Dimension", type = PrivateDimensionImpl.class)
@@ -57,6 +57,10 @@ public class SchemaImpl extends AbstractMainElement implements MappingSchema {
     protected List<MappingNamedSet> namedSets;
     @XmlElement(name = "Role", type = RoleImpl.class)
     protected List<MappingRole> roles;
+    @XmlElement(name = "Documentation", type = DocumentationImpl.class)
+    protected MappingDocumentation documentation;
+
+
     /**
      * @deprecated
      */
@@ -182,4 +186,14 @@ public class SchemaImpl extends AbstractMainElement implements MappingSchema {
     public void setDefaultRole(String defaultRole) {
         this.defaultRole = defaultRole;
     }
+
+    @Override
+    public MappingDocumentation documentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(MappingDocumentation documentation) {
+        this.documentation = documentation;
+    }
+
 }

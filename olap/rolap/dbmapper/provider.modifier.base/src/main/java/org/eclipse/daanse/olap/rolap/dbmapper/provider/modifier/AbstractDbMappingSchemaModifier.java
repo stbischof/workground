@@ -40,6 +40,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttribute;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
@@ -125,9 +126,9 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             List<MappingNamedSet> namedSets = schemaNamedSets(mappingSchemaOriginal);
             List<MappingRole> roles = schemaRoles(mappingSchemaOriginal);
             List<MappingUserDefinedFunction> userDefinedFunctions = schemaUserDefinedFunctions(mappingSchemaOriginal);
-
+            MappingDocumentation documentation = schemaDocumentation(mappingSchemaOriginal);
             return new_Schema(name, description, measuresCaption, defaultRole, annotations,
-                parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions);
+                parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
         }
         return null;
     }
@@ -137,7 +138,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         String defaultRole, List<MappingAnnotation> annotations, List<MappingParameter> parameters,
         List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
         List<MappingNamedSet> namedSets, List<MappingRole> roles,
-        List<MappingUserDefinedFunction> userDefinedFunctions
+        List<MappingUserDefinedFunction> userDefinedFunctions, MappingDocumentation documentation
     );
 
     protected String schemaDefaultRole(MappingSchema mappingSchemaOriginal) {
@@ -155,6 +156,21 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     protected String schemaName(MappingSchema mappingSchemaOriginal) {
         return mappingSchemaOriginal.name();
     }
+
+    protected MappingDocumentation schemaDocumentation(MappingSchema mappingSchemaOriginal) {
+        if (mappingSchemaOriginal != null) {
+            String documentation = documentationDocumentationValue(mappingSchemaOriginal.documentation());
+            return new_Documentation(documentation);
+        }
+        return null;
+    }
+
+    protected String documentationDocumentationValue(MappingDocumentation documentation) {
+        return documentation.documentation();
+    };
+
+    protected abstract MappingDocumentation new_Documentation(String documentation);
+
 
     protected List<MappingAnnotation> schemaAnnotations(MappingSchema mappingSchemaOriginal) {
         return annotations(mappingSchemaOriginal.annotations());
@@ -2305,7 +2321,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
                     source,
                     level,
                     usagePrefix,
-                    foreignKey                    
+                    foreignKey
                 );
             }
             if (cubeDimension instanceof MappingPrivateDimension privateDimension) {

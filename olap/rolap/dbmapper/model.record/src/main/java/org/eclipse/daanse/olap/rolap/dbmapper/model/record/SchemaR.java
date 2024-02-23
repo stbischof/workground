@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright (c) 0 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
@@ -36,9 +37,10 @@ public record SchemaR(String name,
                       List<MappingVirtualCube> virtualCubes,
                       List<MappingNamedSet> namedSets,
                       List<MappingRole> roles,
-                      List<MappingUserDefinedFunction> userDefinedFunctions)
+                      List<MappingUserDefinedFunction> userDefinedFunctions,
+                      MappingDocumentation documentation)
         implements MappingSchema {
-	
+
 
 
 	public  SchemaR(String name,
@@ -52,7 +54,8 @@ public record SchemaR(String name,
             List<MappingVirtualCube> virtualCubes,
             List<MappingNamedSet> namedSets,
             List<MappingRole> roles,
-            List<MappingUserDefinedFunction> userDefinedFunctions)
+            List<MappingUserDefinedFunction> userDefinedFunctions,
+            MappingDocumentation documentation)
 {
 	this.name = name;
 	this.description = description;
@@ -66,7 +69,7 @@ public record SchemaR(String name,
 	this.namedSets = namedSets == null ? List.of() : namedSets;
 	this.roles = roles == null ? List.of() : roles;
 	this.userDefinedFunctions = userDefinedFunctions == null ? List.of() : userDefinedFunctions;
-		
+	this.documentation = documentation;
 	}
 
 

@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 0 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License .0
+ * which is available at https://www.eclipse.org/legal/epl-.0/
+ *
+ * SPDX-License-Identifier: EPL-.0
+ *
+ * Contributors:
+ *   SmartCity Jena, Stefan Bischof - initial
+ *
+ */
 package org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.jaxb;
 
 import java.util.List;
@@ -22,6 +35,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionGrant;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingElementFormatter;
@@ -88,6 +102,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CubeImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CubeUsageImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DimensionGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DimensionUsageImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DocumentationImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DrillThroughActionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DrillThroughAttributeImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DrillThroughMeasureImpl;
@@ -139,7 +154,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingAnnotation> annotations, List<MappingParameter> parameters,
         List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
         List<MappingNamedSet> namedSets, List<MappingRole> roles,
-        List<MappingUserDefinedFunction> userDefinedFunctions
+        List<MappingUserDefinedFunction> userDefinedFunctions, MappingDocumentation documentation
     ) {
         SchemaImpl schema = new SchemaImpl();
         schema.setName(name);
@@ -154,7 +169,15 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         schema.setNamedSets(namedSets);
         schema.setRoles(roles);
         schema.setUserDefinedFunctions(userDefinedFunctions);
+        schema.setDocumentation(documentation);
         return schema;
+    }
+
+    @Override
+    protected MappingDocumentation new_Documentation(String doc) {
+        DocumentationImpl documentation = new DocumentationImpl();
+        documentation.setDocumentation(doc);
+        return documentation;
     }
 
     @Override

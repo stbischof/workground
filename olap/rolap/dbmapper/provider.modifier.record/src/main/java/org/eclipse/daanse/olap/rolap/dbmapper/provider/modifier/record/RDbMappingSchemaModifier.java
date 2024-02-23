@@ -35,6 +35,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionGrant;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingElementFormatter;
@@ -102,6 +103,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeUsageR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DimensionGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DimensionUsageR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DocumentationR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DrillThroughActionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DrillThroughAttributeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DrillThroughMeasureR;
@@ -148,14 +150,20 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
 
     @Override
 	protected MappingSchema new_Schema(String name, String description, String measuresCaption, String defaultRole,
-			List<MappingAnnotation> annotations, List<MappingParameter> parameters,
-			List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
-			List<MappingNamedSet> namedSets, List<MappingRole> roles,
-			List<MappingUserDefinedFunction> userDefinedFunctions) {
+                                       List<MappingAnnotation> annotations, List<MappingParameter> parameters,
+                                       List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
+                                       List<MappingNamedSet> namedSets, List<MappingRole> roles,
+                                       List<MappingUserDefinedFunction> userDefinedFunctions,
+                                       MappingDocumentation documentation) {
 		MappingSchema mappingSchemaNew = new SchemaR(name, description,annotations, measuresCaption, defaultRole,
-				parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions);
+				parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
 		return mappingSchemaNew;
 	}
+
+    @Override
+    protected DocumentationR new_Documentation(String documentation) {
+        return new DocumentationR(documentation);
+    }
 
     @Override
 	protected AnnotationR new_Annotation(String name, String content) {
@@ -172,7 +180,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
 	protected PrivateDimensionR new_PrivateDimension(String name, DimensionTypeEnum type, String caption,
                                                      String description, String foreignKey, List<MappingAnnotation> annotations,
                                                      List<MappingHierarchy> hierarchies, boolean visible, String usagePrefix) {
-		return new PrivateDimensionR(name,description,annotations,caption,visible, type,   foreignKey, 
+		return new PrivateDimensionR(name,description,annotations,caption,visible, type,   foreignKey,
 				hierarchies,  usagePrefix);
 	}
 

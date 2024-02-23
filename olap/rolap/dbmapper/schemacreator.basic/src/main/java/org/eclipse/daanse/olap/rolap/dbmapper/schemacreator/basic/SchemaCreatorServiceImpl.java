@@ -121,7 +121,8 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                 virtualCubes,
                 namedSets,
                 roles,
-                userDefinedFunctions);
+                userDefinedFunctions,
+                null);
 
         } catch (SQLException e) {
             LOGGER.error("createSchema error");
@@ -180,7 +181,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         		List.of(),
         		getDimensionCaption(fk),
         		true,
-        		getDimensionType(schemaName, 
+        		getDimensionType(schemaName,
         				fk.getPkTableName(),
         				fk.getPkColumnName(), jmds),
             null, //key is null for share dimension PkColumnName
