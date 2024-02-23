@@ -154,3 +154,11 @@ Levels: "Level1, Level2, Level3"
 |---|---|---|
 |INTEGER|STRING|INTEGER|
 
+## Validation result for schema Minimal_Single_Hierarchy_Hidden_Members
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Level3|
+|SCHEMA|Level: Type should be set for Level1|
+|SCHEMA|Level: Type should be set for Level2|
+|DATABASE|Table: Schema must be set|

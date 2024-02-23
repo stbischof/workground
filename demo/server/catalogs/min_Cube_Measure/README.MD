@@ -50,3 +50,11 @@
 |---|---|---|
 |STRING|INTEGER|null|
 
+## Validation result for schema Minimal_Cubes_With_Measures
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
+|SCHEMA|Cube with name CubeOneNumericMeasureDifferentDataTypes must contain Dimensions|
+|SCHEMA|Cube with name CubeTwoMeasuresPlusOneCalculatedMeasure must contain Dimensions|
+|SCHEMA|Cube with name CubeTwoMeasures must contain Dimensions|

@@ -7,7 +7,7 @@
     osgi.console=,\
     osgi.console.enable.builtin=true
     logback.configurationFile=${project.basedir}/logback.xml,\
-    
+
 -runpath: \
 	ch.qos.logback.classic,\
 	ch.qos.logback.core,\
@@ -38,7 +38,8 @@
 	bnd.identity;id='com.sun.xml.bind.jaxb-impl',\
 	bnd.identity;id='ch.qos.logback.classic',\
 	bnd.identity;id='org.eclipse.daanse.olap.documentation.common',\
-	bnd.identity;id='org.eclipse.daanse.common.jdbc.datasource.metatype.h2'
+	bnd.identity;id='org.eclipse.daanse.common.jdbc.datasource.metatype.h2',\
+	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api'
 
 
 

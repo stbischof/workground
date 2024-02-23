@@ -52,3 +52,11 @@ Levels: "Years, Quarters, Months"
 |---|---|---|---|---|---|---|
 |TIMESTAMP|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
 
+## Validation result for schema Minimal_Time_Dimension
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Years|
+|SCHEMA|Level: Type should be set for Months|
+|SCHEMA|Level: Type should be set for Quarters|
+|DATABASE|Table: Schema must be set|

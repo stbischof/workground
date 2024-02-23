@@ -66,3 +66,9 @@ Levels: "Level1"
 |---|---|
 |INTEGER|STRING|
 
+## Validation result for schema Minimal_Virtual_Cubes_With_1_Dimension
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Level1|
+|DATABASE|Table: Schema must be set|

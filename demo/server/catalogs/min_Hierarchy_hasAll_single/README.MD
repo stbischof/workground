@@ -44,3 +44,9 @@ Levels: "Level1"
 |---|---|
 |STRING|INTEGER|
 
+## Validation result for schema Minimal_1
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Level1|
+|DATABASE|Table: Schema must be set|

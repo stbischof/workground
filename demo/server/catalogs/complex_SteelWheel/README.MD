@@ -152,3 +152,24 @@ Levels: "Type"
 |---|---|---|---|---|---|---|---|
 |STRING|INTEGER|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
 
+## Validation result for schema SteelWheels
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Hierarchy: Table field must be empty in dimension with name Product|
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Years|
+|SCHEMA|Level: Type should be set for Product|
+|SCHEMA|Level: Type should be set for City|
+|SCHEMA|Level: Type should be set for State Province|
+|SCHEMA|Level: Type should be set for Territory|
+|SCHEMA|Level: Type should be set for Months|
+|SCHEMA|Level: Type should be set for Line|
+|SCHEMA|Level: Type should be set for Customer|
+|SCHEMA|Level: Type should be set for Vendor|
+|SCHEMA|Level: Type should be set for Country|
+|SCHEMA|Level: Type should be set for Type|
+|SCHEMA|Level: Type should be set for Quarters|
+|DATABASE|Table: Schema must be set|

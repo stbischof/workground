@@ -74,3 +74,10 @@ Levels: "D2H1L1"
 |---|---|---|
 |INTEGER|INTEGER|INTEGER|
 
+## Validation result for schema Minimal_Two_Dimensions
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for D2H1L1|
+|SCHEMA|Level: Type should be set for D1H1L1|
+|DATABASE|Table: Schema must be set|

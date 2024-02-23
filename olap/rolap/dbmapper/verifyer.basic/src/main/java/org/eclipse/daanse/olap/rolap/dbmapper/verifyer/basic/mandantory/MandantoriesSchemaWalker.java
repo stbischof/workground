@@ -237,7 +237,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             String theSchema = table.schema();
             if (isEmpty(theSchema) && isSchemaRequired()) {
                 results.add(
-                    new VerificationResultR(TABLE, SCHEMA_MUST_BE_SET, ERROR, Cause.DATABASE));
+                    new VerificationResultR(TABLE, SCHEMA_MUST_BE_SET, WARNING, Cause.DATABASE));
             }
         }
     }
@@ -900,7 +900,9 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             }
         }
         if (level.type() != null) {
-            results.add(new VerificationResultR(LEVEL, LEVEL_TYPE_MUST_BE_SET, WARNING, Cause.SCHEMA));
+            String msg = String.format(LEVEL_TYPE_MUST_BE_SET,
+                level.name() == null ? NOT_SET : level.name());
+            results.add(new VerificationResultR(LEVEL, msg, WARNING, Cause.SCHEMA));
         }
     }
 

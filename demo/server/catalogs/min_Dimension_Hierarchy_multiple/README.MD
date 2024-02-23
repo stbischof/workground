@@ -80,3 +80,12 @@ Levels: "H2_Level1, H2_Level2"
 |---|---|---|---|
 |INTEGER|STRING|INTEGER|INTEGER|
 
+## Validation result for schema Minimal_Multiple_Hierarchy
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for H1_Level2|
+|SCHEMA|Level: Type should be set for H1_Level1|
+|SCHEMA|Level: Type should be set for H2_Level1|
+|SCHEMA|Level: Type should be set for H2_Level2|
+|DATABASE|Table: Schema must be set|

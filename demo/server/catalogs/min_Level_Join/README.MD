@@ -60,3 +60,10 @@ Levels: "Level1, Level2"
 |---|---|---|
 |INTEGER|STRING|INTEGER|
 
+## Validation result for schema Minimal_Single_Hierarchy
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for Level1|
+|SCHEMA|Level: Type should be set for Level2|
+|DATABASE|Table: Schema must be set|

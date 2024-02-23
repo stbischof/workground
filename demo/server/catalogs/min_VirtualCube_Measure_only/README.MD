@@ -40,3 +40,10 @@
 |---|---|
 |STRING|INTEGER|
 
+## Validation result for schema Minimal_Virtual_Cubes_With_Measures
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Cube with name Cube1 must contain Dimensions|
+|SCHEMA|Cube with name Cube2 must contain Dimensions|
+|SCHEMA|VirtualCube with name VirtualCubeMeasureOnly must contain dimensions |

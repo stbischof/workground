@@ -20,3 +20,8 @@
 ##### Table: ""
 
 ##### Dimensions:
+## Validation result for schema Minimal_Cubes_With_Inline_Tables
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Cube with name CubeOneMeasureInlineTable must contain Dimensions|

@@ -166,3 +166,16 @@ Levels: "D3H3L1, D3H3L2, D3H3L3"
 |---|---|---|---|
 |STRING|STRING|STRING|STRING|
 
+## Validation result for schema ExpressiveNames
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Level: Type should be set for D2H1L1|
+|SCHEMA|Level: Type should be set for D3H3L3|
+|SCHEMA|Level: Type should be set for D3H3L2|
+|SCHEMA|Level: Type should be set for D2H2L2|
+|SCHEMA|Level: Type should be set for D3H3L1|
+|SCHEMA|Level: Type should be set for D2H2L1|
+|SCHEMA|Level: Type should be set for D1H1L1|
+|SCHEMA|Level: Type should be set for D3H1L1|
+|DATABASE|Table: Schema must be set|
