@@ -3,6 +3,11 @@
 ## Olap Context Details:
 ## Schemas:
 ### Schema ExpressiveNames : 
+
+    
+        Expressive names schema.
+    
+  
 ### Public Dimensions:
 
     Dimension1, Dimension2, Dimension3

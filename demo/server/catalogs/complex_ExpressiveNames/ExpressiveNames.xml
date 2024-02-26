@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Schema name="ExpressiveNames">
-
+  <Documentation>
+    <![CDATA[
+        Expressive names schema.
+    ]]>
+  </Documentation>
   <Dimension name="Dimension1">
     <Hierarchy hasAll="true" name="D1H1" primaryKey="D1H1L1" description = "Hierarchy 1 Dimension 1">
       <Table name="D1H1L1Table"/>
@@ -27,7 +31,7 @@
       <Level name="D3H1L1" column="D3H1L1" nameColumn="D3H1L1_NAME" ordinalColumn="D3H1L1_Ordinal" description = "Level 1 Hierarchy1 Dimension 3"/>
     </Hierarchy>
 
-<!-- 
+<!--
     <Hierarchy hasAll="true" name="D3H2" primaryKey="D3H2L2" description = "Hierarchy 2 Dimension 3">
       <Table name="D3H2L2Table"/>
       <Join leftKey="D3H2L1_id" rightKey="D3H2L1">

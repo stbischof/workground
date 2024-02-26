@@ -28,7 +28,7 @@ public class DocumentationImpl implements MappingDocumentation {
 
     @Override
     public String documentation() {
-        return documentation;
+        return documentation.replaceAll( "<!\\[CDATA\\[", "" ).replaceAll( "]]>", "" );
             //.trim().removePrefix("&lt![CDATA[").removeSuffix("]]&gt");
     }
 

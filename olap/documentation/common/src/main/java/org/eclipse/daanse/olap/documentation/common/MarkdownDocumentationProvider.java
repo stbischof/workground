@@ -176,6 +176,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             String schemaName = schema.name();
             writer.write(STR."### Schema \{schemaName} : ");
             writer.write(ENTER);
+            if (schema.documentation().isPresent() && schema.documentation().get().documentation() != null) {
+                writer.write(schema.documentation().get().documentation());
+                writer.write(ENTER);
+            }
             writer.write(STR. """
                 ### Public Dimensions:
 
