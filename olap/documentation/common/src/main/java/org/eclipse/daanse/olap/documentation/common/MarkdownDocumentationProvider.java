@@ -32,8 +32,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.VerificationResult;
-import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.mandantory.MandantoriesVerifyer;
+import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Verifyer;
+import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ServiceScope;
 
 import java.io.File;
@@ -43,9 +47,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -56,10 +62,12 @@ import static java.lang.StringTemplate.STR;
 @Component(service = ConntextDocumentationProvider.class, scope = ServiceScope.SINGLETON, immediate = true)
 public class MarkdownDocumentationProvider extends AbstractContextDocumentationProvider {
 
+    public static final String REF_NAME_VERIFIERS = "verifyer";
     public static final String EMPTY_STRING = "";
     private static String ENTER = System.lineSeparator();
     //TODO use injection
-    private MandantoriesVerifyer verifyer = new MandantoriesVerifyer();
+    //private MandantoriesVerifyer verifyer = new MandantoriesVerifyer();
+    private List<Verifyer> verifyers = new CopyOnWriteArrayList<>();
 
     @Override
     public void createDocumentation(Context context, Path path) throws Exception {
@@ -85,6 +93,16 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     }
 
+    @Reference(name = REF_NAME_VERIFIERS, cardinality = ReferenceCardinality.MULTIPLE, target =
+        UnresolvableNamespace.UNRESOLVABLE_FILTER, policy = ReferencePolicy.DYNAMIC)
+    public void bindVerifiers(Verifyer verifyer) {
+        verifyers.add(verifyer);
+    }
+
+    public void unbindVerifiers(Verifyer verifyer) {
+        verifyers.remove(verifyer);
+    }
+
     private void writeVerifyer(FileWriter writer, Context context) {
         context.getDatabaseMappingSchemaProviders().forEach(p -> {
             MappingSchema schema = p.get();
@@ -95,8 +113,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeSchemaVerifyer(FileWriter writer, MappingSchema schema, Context context) {
         try {
-            List<VerificationResult> verifyResult = verifyer.verify(schema, context.getDataSource());
-            if (verifyResult != null) {
+            List<VerificationResult> verifyResult = new ArrayList<>();
+            for (Verifyer verifyer : verifyers) {
+                verifyResult.addAll(verifyer.verify(schema, context.getDataSource()));
+            }
+            if (!verifyResult.isEmpty()) {
                 writer.write("## Validation result for schema " + schema.name());
                 writer.write(ENTER);
                 for (Level l : Level.values()) {
@@ -114,7 +135,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                             .sorted((r1, r2) -> r1.cause().compareTo(r2.cause()))
                             .forEach(r -> {
                                 writeVerifyResult(writer, r);
-                        });
+                            });
                     }
                 }
             }
@@ -140,12 +161,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private Map<String, VerificationResult> getVerificationResultMap(List<VerificationResult> verifyResult, Level l) {
         return verifyResult.stream().filter(r -> l.equals(r.level()))
-            .collect(Collectors.toMap(VerificationResult::description,  Function.identity(), (o1, o2) -> o1));
+            .collect(Collectors.toMap(VerificationResult::description, Function.identity(), (o1, o2) -> o1));
     }
 
     private void writeVerifyResult(FileWriter writer, VerificationResult r) {
         try {
-            writer.write("|" + r.cause().name()  + "|" + r.description() + "|");
+            writer.write("|" + r.cause().name() + "|" + r.description() + "|");
             writer.write(ENTER);
         } catch (IOException e) {
             e.printStackTrace();

@@ -25,6 +25,10 @@ public class DemoSetup {
 	public static final String PID_FILE_CAT_CONTEXT = "org.eclipse.daanse.olap.filecatalog.FileContextRepositoryConfigurator";
 	public static final String PID_FILE_CAT_DS = "org.eclipse.daanse.db.jdbc.dataloader.csvtoh2.FileContextRepositoryConfigurator";
 
+    public static final String PID_DATABASE_VER = "org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc.DatabaseVerifyer";
+    public static final String PID_DESCRIPTION_VER = "org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.description.DescriptionVerifyer";
+    public static final String PID_MANDATORIES_VER = "org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.mandantory.MandantoriesVerifyer";
+
 	public static final String PID_MS_SOAP = "org.eclipse.daanse.xmla.server.jakarta.jws.MsXmlAnalysisSoap";
 
 	public static final String PID_MS_SOAP_MSG_WS = "org.eclipse.daanse.xmla.server.jakarta.xml.ws.provider.soapmessage.XmlaWebserviceProvider";
@@ -37,7 +41,7 @@ public class DemoSetup {
 	public static final String PID_EXP_COMP_FAC = "org.eclipse.daanse.olap.calc.base.compiler.BaseExpressionCompilerFactory";
 
 	public static final String PID_CONTEXT_GROUP = "org.eclipse.daanse.olap.core.BasicContextGroup";
-	
+
 	@Reference
 	ConfigurationAdmin configurationAdmin;
 	private Configuration cXmlaEndpoint;
@@ -49,12 +53,18 @@ public class DemoSetup {
 
 	private Configuration cCG;
 
+    private Configuration dVC;
+
+    private Configuration descVC;
+
+    private Configuration mVC;
+
 	private Configuration cXmlaEndpoint2;
 
 	private Configuration cXmlaEndpoint3;
 
 	private Configuration cCtxs;
-	
+
 
 	@Activate
 	public void activate() throws IOException {
@@ -65,6 +75,8 @@ public class DemoSetup {
 		initXmlaService();
 
 		initContext();
+
+        initVerifiers();
 	}
 
 	private void initContext() throws IOException {
@@ -86,7 +98,7 @@ public class DemoSetup {
 		cDs.update(propsDS);
 
 
-		
+
 		Dictionary<String, Object> propsCtxs = new Hashtable<>();
 		propsCtxs.put(FileSystemWatcherWhiteboardConstants.FILESYSTEM_WATCHER_PATH, path);
 		cCtxs = configurationAdmin.getFactoryConfiguration(PID_FILE_CAT_CONTEXT, "1", "?");
@@ -98,7 +110,22 @@ public class DemoSetup {
 		cCG = configurationAdmin.getFactoryConfiguration(PID_CONTEXT_GROUP, "1", "?");
 		cCG.update(propsCG);
 
-	}
+    }
+
+    private void initVerifiers() throws IOException {
+        Dictionary<String, Object> propsDVC = new Hashtable<>();
+        dVC = configurationAdmin.getFactoryConfiguration(PID_DATABASE_VER, "1", "?");
+        dVC.update(propsDVC);
+
+        Dictionary<String, Object> propsDescVC = new Hashtable<>();
+        descVC = configurationAdmin.getFactoryConfiguration(PID_DESCRIPTION_VER, "1", "?");
+        descVC.update(propsDescVC);
+
+        Dictionary<String, Object> propsMVC = new Hashtable<>();
+        mVC = configurationAdmin.getFactoryConfiguration(PID_MANDATORIES_VER, "1", "?");
+        mVC.update(propsMVC);
+
+    }
 
 	private void initXmlaService() throws IOException {
 		Dictionary<String, Object> dict;
