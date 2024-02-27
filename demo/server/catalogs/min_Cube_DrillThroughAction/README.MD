@@ -56,30 +56,50 @@ Levels: "H2_Level1, H2_Level2"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-### Database :"Fact":
+### Cube "CubeMultipleHierarchy" diagram:
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+---
 
-"H1_L1":
+```mermaid
+erDiagram
+"cube:CubeMultipleHierarchy"{}
 
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
+"cube:CubeMultipleHierarchy" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+"cube:CubeMultipleHierarchy" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+int DIM_KEY
+int VALUE
+}
+H1_L1{
+int KEY
+string NAME
+}
+H2_L1{
+int KEY
+string NAME
+}
+HX_L2{
+int KEY
+string NAME
+int H1L1_KEY
+int H2L1_KEY
+}
 
-"H2_L1":
-
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
-
-"HX_L2":
-
-|KEY|NAME|H1L1_KEY|H2L1_KEY|
-|---|---|---|---|
-|INTEGER|STRING|INTEGER|INTEGER|
-
+"Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"
+"HX_L2" ||--o{ "H1_L1" : "H1L1_KEY-KEY"
+"Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"
+"HX_L2" ||--o{ "H2_L1" : "H2L1_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Multiple_Hierarchy
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

@@ -33,7 +33,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.VerificationResult;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Verifyer;
-import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -65,8 +64,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     public static final String REF_NAME_VERIFIERS = "verifyer";
     public static final String EMPTY_STRING = "";
     private static String ENTER = System.lineSeparator();
-    //TODO use injection
-    //private MandantoriesVerifyer verifyer = new MandantoriesVerifyer();
     private List<Verifyer> verifyers = new CopyOnWriteArrayList<>();
 
     @Override
@@ -86,7 +83,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write("## Olap Context Details:");
         writer.write(ENTER);
         writeSchemas(writer, context);
-        writeDatabaseInfo(writer, context);
+        List<String> tablesConnections = schemaTablesConnections(context);
+        writeDatabaseInfo(writer, context, tablesConnections);
         writeVerifyer(writer, context);
         writer.flush();
         writer.close();
@@ -100,6 +98,110 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     public void unbindVerifiers(Verifyer verifyer) {
         verifyers.remove(verifyer);
+    }
+
+    private List<String> schemaTablesConnections(Context context) {
+        List<String> result = new ArrayList<>();
+        context.getDatabaseMappingSchemaProviders().forEach(p -> {
+            MappingSchema schema = p.get();
+            result.addAll(schema.cubes().stream().flatMap(c -> cubeTablesConnections(schema, c).stream()).toList());
+        });
+        return result;
+    }
+
+    private List<String> cubeTablesConnections(MappingSchema schema, MappingCube c) {
+        List<String> result = new ArrayList<>();
+        Optional<String> optionalFactTable = getFactTableName(c.fact());
+        if (optionalFactTable.isPresent()) {
+            result.addAll(getFactTableConnections(c.fact()));
+            result.addAll(dimensionsTablesConnections(schema, c.dimensionUsageOrDimensions(), optionalFactTable.get()));
+        }
+
+        return result;
+    }
+
+    private List<String> cubeDimensionConnections(MappingSchema schema, MappingCube c) {
+        List<String> result = new ArrayList<>();
+        String cubeName = c.name();
+        if (cubeName != null) {
+            result.addAll(dimensionsConnections(schema, c.dimensionUsageOrDimensions(), cubeName));
+        }
+
+        return result;
+    }
+
+    private List<String> dimensionsConnections(MappingSchema schema, List<MappingCubeDimension> dimensionUsageOrDimensions, String cubeName) {
+        if (dimensionUsageOrDimensions != null ) {
+            return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionConnections(schema, d, cubeName).stream()).toList();
+        }
+        return List.of();
+    }
+
+    private List<String> dimensionConnections(MappingSchema schema, MappingCubeDimension d, String cubeName) {
+        List<String> result = new ArrayList<>();
+        if (d instanceof MappingDimensionUsage mdu) {
+            Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
+            if (optionalDimension.isPresent()) {
+                optionalDimension.get().hierarchies().forEach(h -> {
+                    result.add(connection("cube:" + cubeName, "dim:" + mdu.name(), mdu.foreignKey(), h.primaryKey()));
+                });
+            }
+        }
+        if (d instanceof MappingPrivateDimension mpd) {
+            mpd.hierarchies().forEach(h -> {
+                result.add(connection("cube:" + cubeName, "dim:" + mpd.name(), mpd.foreignKey(), h.primaryKey()));
+            });
+        }
+        return result;
+    }
+
+    private List<String> dimensionsTablesConnections(MappingSchema schema, List<MappingCubeDimension> dimensionUsageOrDimensions, String fact) {
+        if (dimensionUsageOrDimensions != null ) {
+            return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionTablesConnections(schema, d, fact).stream()).toList();
+        }
+        return List.of();
+    }
+
+    private List<String> dimensionTablesConnections(MappingSchema schema, MappingCubeDimension d, String fact) {
+        if (d instanceof MappingDimensionUsage mdu) {
+            Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
+            if (optionalDimension.isPresent()) {
+                return hierarchiesTablesConnections(schema, optionalDimension.get().hierarchies(), fact, d.foreignKey());
+            }
+        }
+        if (d instanceof MappingPrivateDimension mpd) {
+            return hierarchiesTablesConnections(schema, mpd.hierarchies(), fact, mpd.foreignKey());
+        }
+        return List.of();
+    }
+
+    private List<String> hierarchiesTablesConnections(MappingSchema schema, List<MappingHierarchy> hierarchies, String fact, String foreignKey) {
+        if (hierarchies != null) {
+            return hierarchies.stream().flatMap(h -> hierarchyTablesConnections(schema, h, fact, foreignKey).stream()).toList();
+        }
+        return List.of();
+    }
+
+    private List<String> hierarchyTablesConnections(MappingSchema schema, MappingHierarchy h, String fact, String foreignKey) {
+        List<String> result = new ArrayList<>();
+        String primaryKeyTable = h.primaryKeyTable();
+        if (primaryKeyTable == null) {
+            Optional<String> optionalTable = getFactTableName(h.relation());
+            if (optionalTable.isPresent()) {
+                primaryKeyTable = optionalTable.get();
+            }
+        }
+        if (primaryKeyTable != null) {
+            if (fact != null && !fact.equals(primaryKeyTable)) {
+                result.add(connection(fact, primaryKeyTable, foreignKey, h.primaryKey()));
+            }
+        }
+        result.addAll(getFactTableConnections(h.relation()));
+        return result;
+    }
+
+    private Optional<MappingPrivateDimension> getPrivateDimension(MappingSchema schema, String source) {
+        return schema.dimensions().stream().filter(d -> source.equals(d.name())).findFirst();
     }
 
     private void writeVerifyer(FileWriter writer, Context context) {
@@ -216,7 +318,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     \{cubes}
 
                 """);
-            writeList(writer, schema.cubes(), this::writeCube);
+            writeCubeList(writer, schema, schema.cubes());
             //write roles
             writeRoles(writer, schema.roles());
             //write database
@@ -224,6 +326,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeCubeList(FileWriter writer, MappingSchema schema, List<MappingCube> cubes) {
+         if (cubes != null && !cubes.isEmpty()) {
+                cubes.forEach(c ->  writeCube(writer, schema, c));
+         }
     }
 
     private void writeRoles(FileWriter writer, List<MappingRole> roles) {
@@ -250,7 +358,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     }
 
-    private void writeCube(FileWriter writer, MappingCube cube) {
+    private void writeCube(FileWriter writer, MappingSchema schema, MappingCube cube) {
         try {
             String description = cube.description() != null ? cube.description() : EMPTY_STRING;
             String name = cube.name();
@@ -265,7 +373,29 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
                 """);
             writeCubeDimensions(writer, cube.dimensionUsageOrDimensions());
+            List<String> connections = cubeDimensionConnections(schema, cube );
+            if (cube.name() != null) {
+                String tableName = "cube:" + cube.name();
+                String cubeName = cube.name();
+                writer.write(STR."""
+                    ### Cube \"\{cubeName}\" diagram:
 
+                    ---
+
+                    ```mermaid
+                    erDiagram
+                    \"\{tableName}\"{}
+
+                    """);
+                for (String c : connections) {
+                    writer.write(c);
+                    writer.write(ENTER);
+                }
+                writer.write(STR. """
+                ```
+                ---
+                """);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -375,6 +505,70 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
+    private Optional<String> getFactTableName(MappingRelationOrJoin relation) {
+        if (relation instanceof MappingTable mt) {
+            return Optional.of(mt.name());
+        }
+        if (relation instanceof MappingInlineTable it) {
+            return Optional.ofNullable(it.alias());
+        }
+        if (relation instanceof MappingView mv) {
+            return Optional.ofNullable(mv.alias());
+        }
+        if (relation instanceof MappingJoin mj) {
+            if (mj.relations() != null) {
+                if (mj.relations().size() > 0) {
+                    return getFactTableName(mj.relations().get(0));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private List<String> getFactTableConnections(MappingRelationOrJoin relation) {
+        if (relation instanceof MappingTable mt) {
+            return List.of();
+        }
+        if (relation instanceof MappingInlineTable it) {
+            return List.of();
+        }
+        if (relation instanceof MappingView mv) {
+            return List.of();
+        }
+        if (relation instanceof MappingJoin mj) {
+            if (mj.relations() != null && mj.relations().size() > 1) {
+                ArrayList<String> res = new ArrayList<>();
+                String t1 = getFirstTable(mj.relations().get(0));
+                String t2 = getFirstTable(mj.relations().get(1));
+                if (t1 != null && !t1.equals(t2)) {
+                    res.add(connection(t1, t2, mj.leftKey(), mj.rightKey()));
+                }
+                res.addAll(getFactTableConnections(mj.relations().get(1)));
+                return res;
+            }
+        }
+        return List.of();
+    }
+
+
+    private String connection(String t1, String t2, String key1, String key2) {
+        String k1 = key1 == null ? EMPTY_STRING : key1 + "-";
+        String k2 = key2 == null ? EMPTY_STRING : key2;
+        return "\"" + t1 + "\" ||--o{ \"" + t2 + "\" : \"" + k1 + k2 + "\"";
+    }
+
+    private String getFirstTable(MappingRelationOrJoin relation) {
+        if (relation instanceof MappingTable mt) {
+            return mt.name();
+        }
+        if (relation instanceof MappingJoin mj) {
+            if (mj.relations() != null && mj.relations().size() > 0) {
+                return getFirstTable(mj.relations().get(0));
+            }
+        }
+        return null;
+    }
+
     private String getTable(MappingRelationOrJoin relation) {
         if (relation instanceof MappingTable mt) {
             return mt.name();
@@ -398,11 +592,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return "";
     }
 
-    private void writeDatabaseInfo(FileWriter writer, Context context) {
+    private void writeDatabaseInfo(FileWriter writer, Context context, List<String> tablesConnections) {
         try (Connection connection = context.getDataSource().getConnection()) {
             JdbcMetaDataServiceLiveImpl jdbcMetaDataService = new JdbcMetaDataServiceLiveImpl(connection);
             List<String> tables = jdbcMetaDataService.getTables(null);
-            writeTables(writer, tables, jdbcMetaDataService);
+            writeTables(writer, tables, jdbcMetaDataService, tablesConnections);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -411,13 +605,55 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeTables(
         final FileWriter writer,
         final List<String> tables,
-        final JdbcMetaDataServiceLiveImpl jdbcMetaDataService
+        final JdbcMetaDataServiceLiveImpl jdbcMetaDataService,
+        final List<String> tablesConnections
     ) {
         try {
             if (tables != null && !tables.isEmpty()) {
                 writer.write("### Database :");
-                tables.forEach(t -> writeTable(writer, t, jdbcMetaDataService));
+                writer.write(ENTER);
+                writer.write(STR. """
+                ---
+                ```mermaid
+                ---
+                title: Diagram;
+                ---
+                erDiagram
+                """);
+                tables.forEach(t -> writeTablesDiagram(writer, t, jdbcMetaDataService));
+                writer.write(ENTER);
+                for (String c : tablesConnections) {
+                    writer.write(c);
+                    writer.write(ENTER);
+                }
+                writer.write(STR. """
+                ```
+                ---
+                """);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeTablesDiagram(FileWriter writer, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+        try {
+            List<Column> columnList = jdbcMetaDataService.getColumns(null, name);
+            if (columnList != null) {
+                writer.write(STR. """
+                \{name}{
+                """);
+                for (Column c : columnList) {
+                    String columnName = c.getName();
+                    String type = TYPE_MAP.get(c.getType());
+                    writer.write(STR. """
+                        \{type} \{columnName}
+                        """);
+                }
+                writer.write("}");
+                writer.write(ENTER);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

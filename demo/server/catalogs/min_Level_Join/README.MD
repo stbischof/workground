@@ -42,24 +42,42 @@ Levels: "Level1, Level2"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-### Database :"Fact":
+### Cube "Cube1" diagram:
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+---
 
-"Level_1":
+```mermaid
+erDiagram
+"cube:Cube1"{}
 
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
+"cube:Cube1" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+int DIM_KEY
+int VALUE
+}
+Level_1{
+int KEY
+string NAME
+}
+Level_2{
+int KEY
+string NAME
+int L1_KEY
+}
 
-"Level_2":
-
-|KEY|NAME|L1_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
+"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
+"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Single_Hierarchy
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

@@ -107,70 +107,99 @@ Levels: "D3H3L1, D3H3L2, D3H3L3"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-##### Dimension: "Dimension2 -> Dimension1":
+##### Dimension: "Dimension2 -> Dimension2":
 
 ##### Dimension: "Dimension3 -> Dimension3":
 
-### Database :"Cube1Fact":
+### Cube "Cube 1" diagram:
 
-|D1|D2|D3|M1|
-|---|---|---|---|
-|STRING|STRING|STRING|INTEGER|
+---
 
-"D1H1L1Table":
+```mermaid
+erDiagram
+"cube:Cube 1"{}
 
-|D1H1L1|D1H1L1_NAME|D1H1L1_Ordinal|
-|---|---|---|
-|STRING|STRING|STRING|
+"cube:Cube 1" ||--o{ "dim:Dimension1" : "D1-D1H1L1"
+"cube:Cube 1" ||--o{ "dim:Dimension2" : "D2-D2H1L1"
+"cube:Cube 1" ||--o{ "dim:Dimension2" : "D2-D2H2L2"
+"cube:Cube 1" ||--o{ "dim:Dimension3" : "D3-D3H1L1"
+"cube:Cube 1" ||--o{ "dim:Dimension3" : "D3-D3H3L3"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Cube1Fact{
+string D1
+string D2
+string D3
+int M1
+}
+D1H1L1Table{
+string D1H1L1
+string D1H1L1_NAME
+string D1H1L1_Ordinal
+}
+D2H1L1Table{
+string D2H1L1
+string D2H1L1_NAME
+string D2H1L1_Ordinal
+}
+D2H2L2Table{
+string D2H2L2
+string D2H2L1
+string D2H2L2_NAME
+string D2H2L1_NAME
+string D2H2L2_Ordinal
+string D2H2L1_Ordinal
+}
+D3H1L1Table{
+string D3H1L1
+string D3H1L1_NAME
+string D3H1L1_Ordinal
+}
+D3H2L1Table{
+string D3H2L1
+string D3H2L1_NAME
+string D3H2L1_Ordinal
+}
+D3H2L2Table{
+string D3H2L2
+string D3H2L1_id
+string D3H2L2_NAME
+string D3H2L2_Ordinal
+}
+D3H3L1Table{
+string D3H3L1
+string D3H3L1_NAME
+string D3H3L1_Ordinal
+}
+D3H3L2Table{
+string D3H3L2
+string D3H3L1_id
+string D3H3L2_NAME
+string D3H3L2_Ordinal
+}
+D3H3L3Table{
+string D3H3L3
+string D3H3L2_id
+string D3H3L3_NAME
+string D3H3L3_Ordinal
+}
 
-"D2H1L1Table":
-
-|D2H1L1|D2H1L1_NAME|D2H1L1_Ordinal|
-|---|---|---|
-|STRING|STRING|STRING|
-
-"D2H2L2Table":
-
-|D2H2L2|D2H2L1|D2H2L2_NAME|D2H2L1_NAME|D2H2L2_Ordinal|D2H2L1_Ordinal|
-|---|---|---|---|---|---|
-|STRING|STRING|STRING|STRING|STRING|STRING|
-
-"D3H1L1Table":
-
-|D3H1L1|D3H1L1_NAME|D3H1L1_Ordinal|
-|---|---|---|
-|STRING|STRING|STRING|
-
-"D3H2L1Table":
-
-|D3H2L1|D3H2L1_NAME|D3H2L1_Ordinal|
-|---|---|---|
-|STRING|STRING|STRING|
-
-"D3H2L2Table":
-
-|D3H2L2|D3H2L1_id|D3H2L2_NAME|D3H2L2_Ordinal|
-|---|---|---|---|
-|STRING|STRING|STRING|STRING|
-
-"D3H3L1Table":
-
-|D3H3L1|D3H3L1_NAME|D3H3L1_Ordinal|
-|---|---|---|
-|STRING|STRING|STRING|
-
-"D3H3L2Table":
-
-|D3H3L2|D3H3L1_id|D3H3L2_NAME|D3H3L2_Ordinal|
-|---|---|---|---|
-|STRING|STRING|STRING|STRING|
-
-"D3H3L3Table":
-
-|D3H3L3|D3H3L2_id|D3H3L3_NAME|D3H3L3_Ordinal|
-|---|---|---|---|
-|STRING|STRING|STRING|STRING|
-
+"Cube1Fact" ||--o{ "D1H1L1Table" : "D1-D1H1L1"
+"Cube1Fact" ||--o{ "D2H1L1Table" : "D2-D2H1L1"
+"Cube1Fact" ||--o{ "D2H2L2Table" : "D2-D2H2L2"
+"Cube1Fact" ||--o{ "D3H1L1Table" : "D3-D3H1L1"
+"Cube1Fact" ||--o{ "D3H3L3Table" : "D3-D3H3L3"
+"D3H3L3Table" ||--o{ "D3H3L2Table" : "D3H3L2_id-D3H3L2"
+"D3H3L2Table" ||--o{ "D3H3L1Table" : "D3H3L1_id-D3H3L1"
+```
+---
 ## Validation result for schema ExpressiveNames
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

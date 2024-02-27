@@ -56,24 +56,43 @@ Levels: "D2H1L1"
 
 ##### Dimension: "Dimension2 -> D2":
 
-### Database :"DIM_1":
+### Cube "CubeTwoDimensions" diagram:
 
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
+---
 
-"DIM_2":
+```mermaid
+erDiagram
+"cube:CubeTwoDimensions"{}
 
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
+"cube:CubeTwoDimensions" ||--o{ "dim:Dimension1" : "DIM1_KEY-KEY"
+"cube:CubeTwoDimensions" ||--o{ "dim:Dimension2" : "DIM2_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+DIM_1{
+int KEY
+string NAME
+}
+DIM_2{
+int KEY
+string NAME
+}
+Fact{
+int DIM1_KEY
+int DIM2_KEY
+int VALUE
+}
 
-"Fact":
-
-|DIM1_KEY|DIM2_KEY|VALUE|
-|---|---|---|
-|INTEGER|INTEGER|INTEGER|
-
+"Fact" ||--o{ "DIM_1" : "DIM1_KEY-KEY"
+"Fact" ||--o{ "DIM_2" : "DIM2_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Two_Dimensions
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

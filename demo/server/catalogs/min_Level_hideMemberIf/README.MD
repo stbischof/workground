@@ -86,6 +86,17 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "DimensionMembersHiddenIfParentsName -> DimensionMembersHiddenIfParentsName":
 
+### Cube "HiddenMembersIfParentName" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:HiddenMembersIfParentName"{}
+
+"cube:HiddenMembersIfParentName" ||--o{ "dim:DimensionMembersHiddenIfParentsName" : "DIM_KEY-KEY"
+```
+---
 ---
 #### Cube "HiddenMembersIfBlankName":
 
@@ -96,6 +107,17 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "DimensionMembersHiddenIfBlankName -> DimensionMembersHiddenIfBlankName":
 
+### Cube "HiddenMembersIfBlankName" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:HiddenMembersIfBlankName"{}
+
+"cube:HiddenMembersIfBlankName" ||--o{ "dim:DimensionMembersHiddenIfBlankName" : "DIM_KEY-KEY"
+```
+---
 ---
 #### Cube "HiddenMembersMultipleLevels":
 
@@ -106,54 +128,70 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "DimensionMembersHiddenMultipleLevels -> DimensionMembersHiddenMultipleLevels":
 
-### Database :"Fact":
+### Cube "HiddenMembersMultipleLevels" diagram:
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+---
 
-"Fact_Multiple":
+```mermaid
+erDiagram
+"cube:HiddenMembersMultipleLevels"{}
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+"cube:HiddenMembersMultipleLevels" ||--o{ "dim:DimensionMembersHiddenMultipleLevels" : "DIM_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+int DIM_KEY
+int VALUE
+}
+Fact_Multiple{
+int DIM_KEY
+int VALUE
+}
+Level_1{
+int KEY
+string NAME
+}
+Level_1_Multiple{
+int KEY
+string NAME
+}
+Level_2{
+int KEY
+string NAME
+int L1_KEY
+}
+Level_2_Multiple{
+int KEY
+string NAME
+int L1_KEY
+}
+Level_2_NULL{
+int KEY
+string NAME
+int L1_KEY
+}
+Level_3_Multiple{
+int KEY
+string NAME
+int L2_KEY
+}
 
-"Level_1":
-
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
-
-"Level_1_Multiple":
-
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
-
-"Level_2":
-
-|KEY|NAME|L1_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
-"Level_2_Multiple":
-
-|KEY|NAME|L1_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
-"Level_2_NULL":
-
-|KEY|NAME|L1_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
-"Level_3_Multiple":
-
-|KEY|NAME|L2_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
+"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
+"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
+"Fact" ||--o{ "Level_2_NULL" : "DIM_KEY-KEY"
+"Level_2_NULL" ||--o{ "Level_1" : "L1_KEY-KEY"
+"Fact_Multiple" ||--o{ "Level_3_Multiple" : "DIM_KEY-KEY"
+"Level_3_Multiple" ||--o{ "Level_2_Multiple" : "L2_KEY-KEY"
+"Level_2_Multiple" ||--o{ "Level_1_Multiple" : "L1_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Single_Hierarchy_Hidden_Members
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

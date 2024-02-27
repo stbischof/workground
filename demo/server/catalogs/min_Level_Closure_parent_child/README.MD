@@ -38,24 +38,42 @@ Levels: "Level"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-### Database :"Closure":
+### Cube "CubeParentChildClosure" diagram:
 
-|PARENT_KEY|CHILD_KEY|DIST|
-|---|---|---|
-|INTEGER|INTEGER|INTEGER|
+---
 
-"Fact":
+```mermaid
+erDiagram
+"cube:CubeParentChildClosure"{}
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+"cube:CubeParentChildClosure" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Closure{
+int PARENT_KEY
+int CHILD_KEY
+int DIST
+}
+Fact{
+int DIM_KEY
+int VALUE
+}
+Hierarchy{
+int KEY
+string NAME
+int PARENT_KEY
+}
 
-"Hierarchy":
-
-|KEY|NAME|PARENT_KEY|
-|---|---|---|
-|INTEGER|STRING|INTEGER|
-
+"Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Parent_Child_With_Closure
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

@@ -46,18 +46,38 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-### Database :"Fact":
+### Cube "CubeParentChild" diagram:
 
-|DIM_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+---
 
-"Hierarchy":
+```mermaid
+erDiagram
+"cube:CubeParentChild"{}
 
-|KEY|NAME|PARENT_L1|PARENT_L2|
-|---|---|---|---|
-|INTEGER|STRING|INTEGER|INTEGER|
+"cube:CubeParentChild" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+int DIM_KEY
+int VALUE
+}
+Hierarchy{
+int KEY
+string NAME
+int PARENT_L1
+int PARENT_L2
+}
 
+"Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Parent_Child_DifferentValueLevels
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

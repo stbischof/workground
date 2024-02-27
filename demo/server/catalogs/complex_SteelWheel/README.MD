@@ -128,30 +128,90 @@ Levels: "Type"
 
     column(s): STATUS
 
-### Database :"customer_w_ter":
+### Cube "SteelWheelsSales" diagram:
 
-|CUSTOMERNUMBER|CUSTOMERNAME|CONTACTLASTNAME|CONTACTFIRSTNAME|PHONE|ADDRESSLINE1|ADDRESSLINE2|CITY|STATE|POSTALCODE|COUNTRY|EMPLOYEENUMBER|CREDITLIMIT|TERRITORY|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|INTEGER|null|STRING|
+---
 
-"orderfact":
+```mermaid
+erDiagram
+"cube:SteelWheelsSales"{}
 
-|ORDERNUMBER|PRODUCTCODE|QUANTITYORDERED|PRICEEACH|ORDERLINENUMBER|TOTALPRICE|ORDERDATE|REQUIREDDATE|SHIPPEDDATE|STATUS|COMMENTS|CUSTOMERNUMBER|TIME_ID|QTR_ID|MONTH_ID|YEAR_ID|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|INTEGER|null|INTEGER|null|TIMESTAMP|TIMESTAMP|TIMESTAMP|STRING|STRING|INTEGER|STRING|INTEGER|INTEGER|INTEGER|
+"cube:SteelWheelsSales" ||--o{ "dim:Markets" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"cube:SteelWheelsSales" ||--o{ "dim:Customers" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"cube:SteelWheelsSales" ||--o{ "dim:Product" : "PRODUCTCODE-PRODUCTCODE"
+"cube:SteelWheelsSales" ||--o{ "dim:Time" : "TIME_ID-TIME_ID"
+"cube:SteelWheelsSales" ||--o{ "dim:Order Status" : "STATUS-STATUS"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+customer_w_ter{
+int CUSTOMERNUMBER
+string CUSTOMERNAME
+string CONTACTLASTNAME
+string CONTACTFIRSTNAME
+string PHONE
+string ADDRESSLINE1
+string ADDRESSLINE2
+string CITY
+string STATE
+string POSTALCODE
+string COUNTRY
+int EMPLOYEENUMBER
+null CREDITLIMIT
+string TERRITORY
+}
+orderfact{
+int ORDERNUMBER
+string PRODUCTCODE
+int QUANTITYORDERED
+null PRICEEACH
+int ORDERLINENUMBER
+null TOTALPRICE
+timestamp ORDERDATE
+timestamp REQUIREDDATE
+timestamp SHIPPEDDATE
+string STATUS
+string COMMENTS
+int CUSTOMERNUMBER
+string TIME_ID
+int QTR_ID
+int MONTH_ID
+int YEAR_ID
+}
+products{
+string PRODUCTCODE
+string PRODUCTNAME
+string PRODUCTLINE
+string PRODUCTSCALE
+string PRODUCTVENDOR
+string PRODUCTDESCRIPTION
+int QUANTITYINSTOCK
+null BUYPRICE
+null MSRP
+}
+time{
+string TIME_ID
+int MONTH_ID
+int QTR_ID
+int YEAR_ID
+string MONTH_NAME
+string MONTH_DESC
+string QTR_NAME
+string QTR_DESC
+}
 
-"products":
-
-|PRODUCTCODE|PRODUCTNAME|PRODUCTLINE|PRODUCTSCALE|PRODUCTVENDOR|PRODUCTDESCRIPTION|QUANTITYINSTOCK|BUYPRICE|MSRP|
-|---|---|---|---|---|---|---|---|---|
-|STRING|STRING|STRING|STRING|STRING|STRING|INTEGER|null|null|
-
-"time":
-
-|TIME_ID|MONTH_ID|QTR_ID|YEAR_ID|MONTH_NAME|MONTH_DESC|QTR_NAME|QTR_DESC|
-|---|---|---|---|---|---|---|---|
-|STRING|INTEGER|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
-
+"orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"orderfact" ||--o{ "products" : "PRODUCTCODE-PRODUCTCODE"
+"orderfact" ||--o{ "time" : "TIME_ID-TIME_ID"
+```
+---
 ## Validation result for schema SteelWheels
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |

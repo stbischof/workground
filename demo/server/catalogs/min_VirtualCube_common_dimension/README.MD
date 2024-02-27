@@ -38,6 +38,17 @@ Levels: "Level1"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+### Cube "Cube1" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Cube1"{}
+
+"cube:Cube1" ||--o{ "dim:Dimension1" : "DIM_1_KEY-KEY"
+```
+---
 ---
 #### Cube "Cube2":
 
@@ -48,24 +59,41 @@ Levels: "Level1"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
-### Database :"C1_Fact":
+### Cube "Cube2" diagram:
 
-|DIM_1_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+---
 
-"C2_Fact":
+```mermaid
+erDiagram
+"cube:Cube2"{}
 
-|DIM_1_KEY|VALUE|
-|---|---|
-|INTEGER|INTEGER|
+"cube:Cube2" ||--o{ "dim:Dimension1" : "DIM_1_KEY-KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+C1_Fact{
+int DIM_1_KEY
+int VALUE
+}
+C2_Fact{
+int DIM_1_KEY
+int VALUE
+}
+Dim_1{
+int KEY
+string NAME
+}
 
-"Dim_1":
-
-|KEY|NAME|
-|---|---|
-|INTEGER|STRING|
-
+"C1_Fact" ||--o{ "Dim_1" : "DIM_1_KEY-KEY"
+"C2_Fact" ||--o{ "Dim_1" : "DIM_1_KEY-KEY"
+```
+---
 ## Validation result for schema Minimal_Virtual_Cubes_With_1_Dimension
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

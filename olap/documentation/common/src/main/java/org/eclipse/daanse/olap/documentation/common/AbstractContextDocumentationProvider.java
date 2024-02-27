@@ -24,16 +24,16 @@ public abstract class AbstractContextDocumentationProvider implements ConntextDo
     protected static final Map<Integer, String> TYPE_MAP;
     static {
         Map<Integer, String> typeMapInitial = new HashMap<>();
-        typeMapInitial.put(Types.SMALLINT, "INTEGER");
-        typeMapInitial.put(Types.INTEGER, "INTEGER");
-        typeMapInitial.put(Types.BOOLEAN, "BOOLEAN");
-        typeMapInitial.put(Types.DOUBLE, "DOUBLE");
-        typeMapInitial.put(Types.FLOAT, "DOUBLE");
-        typeMapInitial.put(Types.BIGINT, "LONG");
-        typeMapInitial.put(Types.DATE, "DATE");
-        typeMapInitial.put(Types.TIMESTAMP, "TIMESTAMP");
-        typeMapInitial.put(Types.TIME, "TIME");
-        typeMapInitial.put(Types.VARCHAR, "STRING");
+        typeMapInitial.put(Types.SMALLINT, "int");
+        typeMapInitial.put(Types.INTEGER, "int");
+        typeMapInitial.put(Types.BOOLEAN, "boolean");
+        typeMapInitial.put(Types.DOUBLE, "double");
+        typeMapInitial.put(Types.FLOAT, "double");
+        typeMapInitial.put(Types.BIGINT, "long");
+        typeMapInitial.put(Types.DATE, "date");
+        typeMapInitial.put(Types.TIMESTAMP, "timestamp");
+        typeMapInitial.put(Types.TIME, "time");
+        typeMapInitial.put(Types.VARCHAR, "string");
 
         TYPE_MAP = Collections.unmodifiableMap(typeMapInitial);
     }

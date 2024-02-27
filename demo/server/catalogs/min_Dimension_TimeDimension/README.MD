@@ -46,12 +46,36 @@ Levels: "Years, Quarters, Months"
 ##### Dimensions:
 ##### Dimension: "Time -> Time":
 
-### Database :"Fact":
+### Cube "CubeTimeDimension" diagram:
 
-|DATE_KEY|VALUE|YEAR_ID|QTR_ID|QTR_NAME|MONTH_ID|MONTH_NAME|
-|---|---|---|---|---|---|---|
-|TIMESTAMP|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
+---
 
+```mermaid
+erDiagram
+"cube:CubeTimeDimension"{}
+
+"cube:CubeTimeDimension" ||--o{ "dim:Time" : "DATE_KEY-DATE_KEY"
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+timestamp DATE_KEY
+int VALUE
+int YEAR_ID
+string QTR_ID
+string QTR_NAME
+string MONTH_ID
+string MONTH_NAME
+}
+
+```
+---
 ## Validation result for schema Minimal_Time_Dimension
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |

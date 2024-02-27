@@ -20,6 +20,16 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
+### Cube "CubeOneMeasure" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:CubeOneMeasure"{}
+
+```
+---
 ---
 #### Cube "CubeTwoMeasures":
 
@@ -28,6 +38,16 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
+### Cube "CubeTwoMeasures" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:CubeTwoMeasures"{}
+
+```
+---
 ---
 #### Cube "CubeTwoMeasuresPlusOneCalculatedMeasure":
 
@@ -36,6 +56,16 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
+### Cube "CubeTwoMeasuresPlusOneCalculatedMeasure" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:CubeTwoMeasuresPlusOneCalculatedMeasure"{}
+
+```
+---
 ---
 #### Cube "CubeOneNumericMeasureDifferentDataTypes":
 
@@ -44,12 +74,31 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
-### Database :"Fact":
+### Cube "CubeOneNumericMeasureDifferentDataTypes" diagram:
 
-|KEY|VALUE|VALUE_NUMERIC|
-|---|---|---|
-|STRING|INTEGER|null|
+---
 
+```mermaid
+erDiagram
+"cube:CubeOneNumericMeasureDifferentDataTypes"{}
+
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+null VALUE_NUMERIC
+}
+
+```
+---
 ## Validation result for schema Minimal_Cubes_With_Measures
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |

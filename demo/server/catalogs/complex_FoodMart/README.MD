@@ -320,6 +320,29 @@ Levels: "Yearly Income"
 
     column(s): yearly_income
 
+### Cube "Sales" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Sales"{}
+
+"cube:Sales" ||--o{ "dim:Store" : "store_id-store_id"
+"cube:Sales" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
+"cube:Sales" ||--o{ "dim:Store Type" : "store_id-store_id"
+"cube:Sales" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales" ||--o{ "dim:Product" : "product_id-product_id"
+"cube:Sales" ||--o{ "dim:Promotion Media" : "promotion_id-promotion_id"
+"cube:Sales" ||--o{ "dim:Promotions" : "promotion_id-promotion_id"
+"cube:Sales" ||--o{ "dim:Customers" : "customer_id-customer_id"
+"cube:Sales" ||--o{ "dim:Education Level" : "customer_id-customer_id"
+"cube:Sales" ||--o{ "dim:Gender" : "customer_id-customer_id"
+"cube:Sales" ||--o{ "dim:Marital Status" : "customer_id-customer_id"
+"cube:Sales" ||--o{ "dim:Yearly Income" : "customer_id-customer_id"
+```
+---
 ---
 #### Cube "Warehouse":
 
@@ -340,6 +363,23 @@ Levels: "Yearly Income"
 
 ##### Dimension: "Warehouse -> Warehouse":
 
+### Cube "Warehouse" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Warehouse"{}
+
+"cube:Warehouse" ||--o{ "dim:Store" : "store_id-store_id"
+"cube:Warehouse" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
+"cube:Warehouse" ||--o{ "dim:Store Type" : "store_id-store_id"
+"cube:Warehouse" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Warehouse" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Warehouse" ||--o{ "dim:Product" : "product_id-product_id"
+"cube:Warehouse" ||--o{ "dim:Warehouse" : "warehouse_id-warehouse_id"
+```
+---
 ---
 #### Cube "Store":
 
@@ -382,6 +422,19 @@ Levels: "Has coffee bar"
 
     column(s): coffee_bar
 
+### Cube "Store" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Store"{}
+
+"cube:Store" ||--o{ "dim:Store Type" : ""
+"cube:Store" ||--o{ "dim:Store" : "store_id"
+"cube:Store" ||--o{ "dim:Has coffee bar" : ""
+```
+---
 ---
 #### Cube "HR":
 
@@ -526,6 +579,23 @@ Levels: "Employee Id"
 
     column(s): employee_id
 
+### Cube "HR" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:HR"{}
+
+"cube:HR" ||--o{ "dim:Time" : "pay_date-the_date"
+"cube:HR" ||--o{ "dim:Store" : "employee_id-employee_id"
+"cube:HR" ||--o{ "dim:Pay Type" : "employee_id-employee_id"
+"cube:HR" ||--o{ "dim:Store Type" : "employee_id-employee_id"
+"cube:HR" ||--o{ "dim:Position" : "employee_id-employee_id"
+"cube:HR" ||--o{ "dim:Department" : "department_id-department_id"
+"cube:HR" ||--o{ "dim:Employees" : "employee_id-employee_id"
+```
+---
 ---
 #### Cube "Sales Ragged":
 
@@ -718,6 +788,30 @@ Levels: "Yearly Income"
 
     column(s): yearly_income
 
+### Cube "Sales Ragged" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Sales Ragged"{}
+
+"cube:Sales Ragged" ||--o{ "dim:Store" : "store_id-store_id"
+"cube:Sales Ragged" ||--o{ "dim:Geography" : "store_id-store_id"
+"cube:Sales Ragged" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
+"cube:Sales Ragged" ||--o{ "dim:Store Type" : "store_id-store_id"
+"cube:Sales Ragged" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales Ragged" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales Ragged" ||--o{ "dim:Product" : "product_id-product_id"
+"cube:Sales Ragged" ||--o{ "dim:Promotion Media" : "promotion_id-promotion_id"
+"cube:Sales Ragged" ||--o{ "dim:Promotions" : "promotion_id-promotion_id"
+"cube:Sales Ragged" ||--o{ "dim:Customers" : "customer_id-customer_id"
+"cube:Sales Ragged" ||--o{ "dim:Education Level" : "customer_id-customer_id"
+"cube:Sales Ragged" ||--o{ "dim:Gender" : "customer_id-customer_id"
+"cube:Sales Ragged" ||--o{ "dim:Marital Status" : "customer_id-customer_id"
+"cube:Sales Ragged" ||--o{ "dim:Yearly Income" : "customer_id-customer_id"
+```
+---
 ---
 #### Cube "Sales 2":
 
@@ -746,240 +840,520 @@ Levels: "Gender"
 
     column(s): gender
 
+### Cube "Sales 2" diagram:
+
+---
+
+```mermaid
+erDiagram
+"cube:Sales 2"{}
+
+"cube:Sales 2" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales 2" ||--o{ "dim:Time" : "time_id-time_id"
+"cube:Sales 2" ||--o{ "dim:Product" : "product_id-product_id"
+"cube:Sales 2" ||--o{ "dim:Gender" : "customer_id-customer_id"
+```
+---
 ### Roles :##### Role: "California manager"
 
 ##### Role: "No HR Cube"
 
 ##### Role: "Administrator"
 
-### Database :"_position_":
-
-|position_id|position_title|pay_type|min_scale|max_scale|management_role|
-|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|null|null|STRING|
-
-"account":
-
-|account_id|account_parent|account_description|account_type|account_rollup|Custom_Members|
-|---|---|---|---|---|---|
-|INTEGER|INTEGER|STRING|STRING|STRING|STRING|
-
-"agg_c_10_sales_fact_1997":
-
-|month_of_year|quarter|the_year|store_sales|store_cost|unit_sales|customer_count|fact_count|
-|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|INTEGER|null|null|null|INTEGER|INTEGER|
-
-"agg_c_14_sales_fact_1997":
-
-|product_id|customer_id|store_id|promotion_id|month_of_year|quarter|the_year|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|STRING|INTEGER|null|null|null|INTEGER|
-
-"agg_c_special_sales_fact_1997":
-
-|product_id|promotion_id|customer_id|store_id|time_month|time_quarter|time_year|store_sales_sum|store_cost_sum|unit_sales_sum|fact_count|
-|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|STRING|INTEGER|null|null|null|INTEGER|
-
-"agg_g_ms_pcat_sales_fact_1997":
-
-|gender|marital_status|product_family|product_department|product_category|month_of_year|quarter|the_year|store_sales|store_cost|unit_sales|customer_count|fact_count|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|STRING|STRING|STRING|STRING|STRING|INTEGER|STRING|INTEGER|null|null|null|INTEGER|INTEGER|
-
-"agg_l_03_sales_fact_1997":
-
-|time_id|customer_id|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|
-|INTEGER|INTEGER|null|null|null|INTEGER|
-
-"agg_l_04_sales_fact_1997":
-
-|time_id|store_sales|store_cost|unit_sales|customer_count|fact_count|
-|---|---|---|---|---|---|
-|INTEGER|null|null|null|INTEGER|INTEGER|
-
-"agg_l_05_sales_fact_1997":
-
-|product_id|customer_id|promotion_id|store_id|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|null|null|null|INTEGER|
-
-"agg_lc_06_sales_fact_1997":
-
-|time_id|city|state_province|country|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|null|null|null|INTEGER|
-
-"agg_lc_100_sales_fact_1997":
-
-|product_id|customer_id|quarter|the_year|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|STRING|INTEGER|null|null|null|INTEGER|
-
-"agg_ll_01_sales_fact_1997":
-
-|product_id|time_id|customer_id|store_sales|store_cost|unit_sales|fact_count|
-|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|null|null|null|INTEGER|
-
-"agg_pl_01_sales_fact_1997":
-
-|product_id|time_id|customer_id|store_sales_sum|store_cost_sum|unit_sales_sum|fact_count|
-|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|null|null|null|INTEGER|
-
-"category":
-
-|category_id|category_parent|category_description|category_rollup|
-|---|---|---|---|
-|STRING|STRING|STRING|STRING|
-
-"currency":
-
-|currency_id|date|currency|conversion_ratio|
-|---|---|---|---|
-|INTEGER|DATE|STRING|null|
-
-"customer":
-
-|customer_id|account_num|lname|fname|mi|address1|address2|address3|address4|city|state_province|postal_code|country|customer_region_id|phone1|phone2|birthdate|marital_status|yearly_income|gender|total_children|num_children_at_home|education|date_accnt_opened|member_card|occupation|houseowner|num_cars_owned|fullname|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|INTEGER|STRING|STRING|DATE|STRING|STRING|STRING|INTEGER|INTEGER|STRING|DATE|STRING|STRING|STRING|INTEGER|STRING|
-
-"days":
-
-|day|week_day|
-|---|---|
-|INTEGER|STRING|
-
-"department":
-
-|department_id|department_description|
-|---|---|
-|INTEGER|STRING|
-
-"employee":
-
-|employee_id|full_name|first_name|last_name|position_id|position_title|store_id|department_id|birth_date|hire_date|end_date|salary|supervisor_id|education_level|marital_status|gender|management_role|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|INTEGER|STRING|INTEGER|INTEGER|DATE|STRING|STRING|null|INTEGER|STRING|STRING|STRING|STRING|
-
-"employee_closure":
-
-|employee_id|supervisor_id|distance|
-|---|---|---|
-|INTEGER|INTEGER|INTEGER|
-
-"expense_fact":
-
-|store_id|account_id|exp_date|time_id|category_id|currency_id|amount|
-|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|TIMESTAMP|INTEGER|STRING|INTEGER|null|
-
-"inventory_fact_1997":
-
-|product_id|time_id|warehouse_id|store_id|units_ordered|units_shipped|warehouse_sales|warehouse_cost|supply_time|store_invoice|
-|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|null|null|INTEGER|null|
-
-"inventory_fact_1998":
-
-|product_id|time_id|warehouse_id|store_id|units_ordered|units_shipped|warehouse_sales|warehouse_cost|supply_time|store_invoice|
-|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|null|null|INTEGER|null|
-
-"position":
-
-|position_id|position_title|pay_type|min_scale|max_scale|management_role|
-|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|null|null|STRING|
-
-"product":
-
-|product_class_id|product_id|brand_name|product_name|SKU|SRP|gross_weight|net_weight|recyclable_package|low_fat|units_per_case|cases_per_pallet|shelf_width|shelf_height|shelf_depth|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|STRING|STRING|STRING|null|null|null|BOOLEAN|BOOLEAN|INTEGER|INTEGER|null|null|null|
-
-"product_class":
-
-|product_class_id|product_subcategory|product_category|product_department|product_family|
-|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|STRING|
-
-"promotion":
-
-|promotion_id|promotion_district_id|promotion_name|media_type|cost|start_date|end_date|
-|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|STRING|STRING|null|TIMESTAMP|TIMESTAMP|
-
-"region":
-
-|region_id|sales_city|sales_state_province|sales_district|sales_region|sales_country|sales_district_id|
-|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|STRING|STRING|INTEGER|
-
-"reserve_employee":
-
-|employee_id|full_name|first_name|last_name|position_id|position_title|store_id|department_id|birth_date|hire_date|end_date|salary|supervisor_id|education_level|marital_status|gender|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|STRING|STRING|INTEGER|STRING|INTEGER|INTEGER|TIMESTAMP|TIMESTAMP|TIMESTAMP|null|INTEGER|STRING|STRING|STRING|
-
-"salary":
-
-|pay_date|employee_id|department_id|currency_id|salary_paid|overtime_paid|vacation_accrued|vacation_used|
-|---|---|---|---|---|---|---|---|
-|TIMESTAMP|INTEGER|INTEGER|INTEGER|null|null|null|null|
-
-"sales_fact_1997":
-
-|product_id|time_id|customer_id|promotion_id|store_id|store_sales|store_cost|unit_sales|
-|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|null|null|null|
-
-"sales_fact_1998":
-
-|product_id|time_id|customer_id|promotion_id|store_id|store_sales|store_cost|unit_sales|
-|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|null|null|null|
-
-"sales_fact_dec_1998":
-
-|product_id|time_id|customer_id|promotion_id|store_id|store_sales|store_cost|unit_sales|
-|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|INTEGER|INTEGER|null|null|null|
-
-"store":
-
-|store_id|store_type|region_id|store_name|store_number|store_street_address|store_city|store_state|store_postal_code|store_country|store_manager|store_phone|store_fax|first_opened_date|last_remodel_date|store_sqft|grocery_sqft|frozen_sqft|meat_sqft|coffee_bar|video_store|salad_bar|prepared_food|florist|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|INTEGER|STRING|INTEGER|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|TIMESTAMP|TIMESTAMP|INTEGER|INTEGER|INTEGER|INTEGER|BOOLEAN|BOOLEAN|BOOLEAN|BOOLEAN|BOOLEAN|
-
-"store_ragged":
-
-|store_id|store_type|region_id|store_name|store_number|store_street_address|store_city|store_state|store_postal_code|store_country|store_manager|store_phone|store_fax|first_opened_date|last_remodel_date|store_sqft|grocery_sqft|frozen_sqft|meat_sqft|coffee_bar|video_store|salad_bar|prepared_food|florist|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|STRING|INTEGER|STRING|INTEGER|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|TIMESTAMP|TIMESTAMP|INTEGER|INTEGER|INTEGER|INTEGER|BOOLEAN|BOOLEAN|BOOLEAN|BOOLEAN|BOOLEAN|
-
-"time_by_day":
-
-|time_id|the_date|the_day|the_month|the_year|day_of_month|week_of_year|month_of_year|quarter|fiscal_period|
-|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|TIMESTAMP|STRING|STRING|INTEGER|INTEGER|INTEGER|INTEGER|STRING|STRING|
-
-"warehouse":
-
-|warehouse_id|warehouse_class_id|stores_id|warehouse_name|wa_address1|wa_address2|wa_address3|wa_address4|warehouse_city|warehouse_state_province|warehouse_postal_code|warehouse_country|warehouse_owner_name|warehouse_phone|warehouse_fax|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|INTEGER|INTEGER|INTEGER|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|STRING|
-
-"warehouse_class":
-
-|warehouse_class_id|description|
-|---|---|
-|INTEGER|STRING|
-
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+account{
+int account_id
+int account_parent
+string account_description
+string account_type
+string account_rollup
+string Custom_Members
+}
+agg_c_10_sales_fact_1997{
+int month_of_year
+string quarter
+int the_year
+null store_sales
+null store_cost
+null unit_sales
+int customer_count
+int fact_count
+}
+agg_c_14_sales_fact_1997{
+int product_id
+int customer_id
+int store_id
+int promotion_id
+int month_of_year
+string quarter
+int the_year
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_c_special_sales_fact_1997{
+int product_id
+int promotion_id
+int customer_id
+int store_id
+int time_month
+string time_quarter
+int time_year
+null store_sales_sum
+null store_cost_sum
+null unit_sales_sum
+int fact_count
+}
+agg_g_ms_pcat_sales_fact_1997{
+string gender
+string marital_status
+string product_family
+string product_department
+string product_category
+int month_of_year
+string quarter
+int the_year
+null store_sales
+null store_cost
+null unit_sales
+int customer_count
+int fact_count
+}
+agg_l_03_sales_fact_1997{
+int time_id
+int customer_id
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_l_04_sales_fact_1997{
+int time_id
+null store_sales
+null store_cost
+null unit_sales
+int customer_count
+int fact_count
+}
+agg_l_05_sales_fact_1997{
+int product_id
+int customer_id
+int promotion_id
+int store_id
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_lc_06_sales_fact_1997{
+int time_id
+string city
+string state_province
+string country
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_lc_100_sales_fact_1997{
+int product_id
+int customer_id
+string quarter
+int the_year
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_ll_01_sales_fact_1997{
+int product_id
+int time_id
+int customer_id
+null store_sales
+null store_cost
+null unit_sales
+int fact_count
+}
+agg_pl_01_sales_fact_1997{
+int product_id
+int time_id
+int customer_id
+null store_sales_sum
+null store_cost_sum
+null unit_sales_sum
+int fact_count
+}
+category{
+string category_id
+string category_parent
+string category_description
+string category_rollup
+}
+currency{
+int currency_id
+date date
+string currency
+null conversion_ratio
+}
+customer{
+int customer_id
+string account_num
+string lname
+string fname
+string mi
+string address1
+string address2
+string address3
+string address4
+string city
+string state_province
+string postal_code
+string country
+int customer_region_id
+string phone1
+string phone2
+date birthdate
+string marital_status
+string yearly_income
+string gender
+int total_children
+int num_children_at_home
+string education
+date date_accnt_opened
+string member_card
+string occupation
+string houseowner
+int num_cars_owned
+string fullname
+}
+days{
+int day
+string week_day
+}
+department{
+int department_id
+string department_description
+}
+employee{
+int employee_id
+string full_name
+string first_name
+string last_name
+int position_id
+string position_title
+int store_id
+int department_id
+date birth_date
+string hire_date
+string end_date
+null salary
+int supervisor_id
+string education_level
+string marital_status
+string gender
+string management_role
+}
+employee_closure{
+int employee_id
+int supervisor_id
+int distance
+}
+expense_fact{
+int store_id
+int account_id
+timestamp exp_date
+int time_id
+string category_id
+int currency_id
+null amount
+}
+inventory_fact_1997{
+int product_id
+int time_id
+int warehouse_id
+int store_id
+int units_ordered
+int units_shipped
+null warehouse_sales
+null warehouse_cost
+int supply_time
+null store_invoice
+}
+inventory_fact_1998{
+int product_id
+int time_id
+int warehouse_id
+int store_id
+int units_ordered
+int units_shipped
+null warehouse_sales
+null warehouse_cost
+int supply_time
+null store_invoice
+}
+position{
+int position_id
+string position_title
+string pay_type
+null min_scale
+null max_scale
+string management_role
+}
+position_{
+int position_id
+string position_title
+string pay_type
+null min_scale
+null max_scale
+string management_role
+}
+product{
+int product_class_id
+int product_id
+string brand_name
+string product_name
+string SKU
+null SRP
+null gross_weight
+null net_weight
+boolean recyclable_package
+boolean low_fat
+int units_per_case
+int cases_per_pallet
+null shelf_width
+null shelf_height
+null shelf_depth
+}
+product_class{
+int product_class_id
+string product_subcategory
+string product_category
+string product_department
+string product_family
+}
+promotion{
+int promotion_id
+int promotion_district_id
+string promotion_name
+string media_type
+null cost
+timestamp start_date
+timestamp end_date
+}
+region{
+int region_id
+string sales_city
+string sales_state_province
+string sales_district
+string sales_region
+string sales_country
+int sales_district_id
+}
+reserve_employee{
+int employee_id
+string full_name
+string first_name
+string last_name
+int position_id
+string position_title
+int store_id
+int department_id
+timestamp birth_date
+timestamp hire_date
+timestamp end_date
+null salary
+int supervisor_id
+string education_level
+string marital_status
+string gender
+}
+salary{
+timestamp pay_date
+int employee_id
+int department_id
+int currency_id
+null salary_paid
+null overtime_paid
+null vacation_accrued
+null vacation_used
+}
+sales_fact_1997{
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
+null store_sales
+null store_cost
+null unit_sales
+}
+sales_fact_1998{
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
+null store_sales
+null store_cost
+null unit_sales
+}
+sales_fact_dec_1998{
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
+null store_sales
+null store_cost
+null unit_sales
+}
+store{
+int store_id
+string store_type
+int region_id
+string store_name
+int store_number
+string store_street_address
+string store_city
+string store_state
+string store_postal_code
+string store_country
+string store_manager
+string store_phone
+string store_fax
+timestamp first_opened_date
+timestamp last_remodel_date
+int store_sqft
+int grocery_sqft
+int frozen_sqft
+int meat_sqft
+boolean coffee_bar
+boolean video_store
+boolean salad_bar
+boolean prepared_food
+boolean florist
+}
+store_ragged{
+int store_id
+string store_type
+int region_id
+string store_name
+int store_number
+string store_street_address
+string store_city
+string store_state
+string store_postal_code
+string store_country
+string store_manager
+string store_phone
+string store_fax
+timestamp first_opened_date
+timestamp last_remodel_date
+int store_sqft
+int grocery_sqft
+int frozen_sqft
+int meat_sqft
+boolean coffee_bar
+boolean video_store
+boolean salad_bar
+boolean prepared_food
+boolean florist
+}
+time_by_day{
+int time_id
+timestamp the_date
+string the_day
+string the_month
+int the_year
+int day_of_month
+int week_of_year
+int month_of_year
+string quarter
+string fiscal_period
+}
+warehouse{
+int warehouse_id
+int warehouse_class_id
+int stores_id
+string warehouse_name
+string wa_address1
+string wa_address2
+string wa_address3
+string wa_address4
+string warehouse_city
+string warehouse_state_province
+string warehouse_postal_code
+string warehouse_country
+string warehouse_owner_name
+string warehouse_phone
+string warehouse_fax
+}
+warehouse_class{
+int warehouse_class_id
+string description
+}
+
+"sales_fact_1997" ||--o{ "store" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "store" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "store" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "product" : "product_id-product_id"
+"product" ||--o{ "product_class" : "product_class_id-product_class_id"
+"sales_fact_1997" ||--o{ "promotion" : "promotion_id-promotion_id"
+"sales_fact_1997" ||--o{ "promotion" : "promotion_id-promotion_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"inventory_fact_1997" ||--o{ "store" : "store_id-store_id"
+"inventory_fact_1997" ||--o{ "store" : "store_id-store_id"
+"inventory_fact_1997" ||--o{ "store" : "store_id-store_id"
+"inventory_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"inventory_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"inventory_fact_1997" ||--o{ "product" : "product_id-product_id"
+"product" ||--o{ "product_class" : "product_class_id-product_class_id"
+"inventory_fact_1997" ||--o{ "warehouse" : "warehouse_id-warehouse_id"
+"salary" ||--o{ "time_by_day" : "pay_date-the_date"
+"salary" ||--o{ "employee" : "employee_id-employee_id"
+"employee" ||--o{ "store" : "store_id-store_id"
+"salary" ||--o{ "employee" : "employee_id-employee_id"
+"employee" ||--o{ "position" : "position_id-position_id"
+"salary" ||--o{ "employee" : "employee_id-employee_id"
+"employee" ||--o{ "store" : "store_id-store_id"
+"salary" ||--o{ "employee" : "employee_id-employee_id"
+"salary" ||--o{ "department" : "department_id-department_id"
+"salary" ||--o{ "employee" : "employee_id-employee_id"
+"sales_fact_1997" ||--o{ "store_ragged" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "store_ragged" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "store" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "store" : "store_id-store_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "product" : "product_id-product_id"
+"product" ||--o{ "product_class" : "product_class_id-product_class_id"
+"sales_fact_1997" ||--o{ "promotion" : "promotion_id-promotion_id"
+"sales_fact_1997" ||--o{ "promotion" : "promotion_id-promotion_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "time_by_day" : "time_id-time_id"
+"sales_fact_1997" ||--o{ "product" : "product_id-product_id"
+"product" ||--o{ "product_class" : "product_class_id-product_class_id"
+"sales_fact_1997" ||--o{ "customer" : "customer_id-customer_id"
+```
+---
 ## Validation result for schema FoodMart
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
