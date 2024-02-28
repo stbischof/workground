@@ -116,14 +116,65 @@ Levels: "D3H3L1, D3H3L2, D3H3L3"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Cube 1"{}
-
-"cube:Cube 1" ||--o{ "dim:Dimension1" : "D1-D1H1L1"
-"cube:Cube 1" ||--o{ "dim:Dimension2" : "D2-D2H1L1"
-"cube:Cube 1" ||--o{ "dim:Dimension2" : "D2-D2H2L2"
-"cube:Cube 1" ||--o{ "dim:Dimension3" : "D3-D3H1L1"
-"cube:Cube 1" ||--o{ "dim:Dimension3" : "D3-D3H3L3"
+c0["Cube 1"]{
+M Measure1 ""D Dimension1 ""
+D Dimension2 ""
+D Dimension3 ""
+}
+d00[Dimension1] {
+H D1H1 "Hierarchy 1 Dimension 1"
+}
+h000[D1H1] {
+L D1H1L1 "Level 1 Dimension 1 Hierarchy1"
+}
+d01[Dimension2] {
+H D2H1 "Hierarchy 1 Dimension 2"
+H D2H2 "Hierarchy 2 Dimension 2"
+}
+h010[D2H1] {
+L D2H1L1 "Level 1 Hierarchy 1 Dimension 2"
+}
+h011[D2H2] {
+L D2H2L1 "Level 1 Hierarchy 2 Dimension 2"
+L D2H2L2 "Level 2 Hierarchy 2 Dimension 2"
+}
+d02[Dimension3] {
+H D3H1 "Hierarchy 1 Dimension 3"
+H D3H3 "Hierarchy 1 Dimension 3"
+}
+h020[D3H1] {
+L D3H1L1 "Level 1 Hierarchy1 Dimension 3"
+}
+h021[D3H3] {
+L D3H3L1 "Level 1 Hierarchy3 Dimension 3"
+L D3H3L2 "Level 2 Hierarchy3 Dimension 3"
+L D3H3L3 "Level 3 Hierarchy3 Dimension 3"
+}
+"c0" ||--|| "d00" : "D1-D1H1L1"
+"d00" ||--|| "h000" : "D1H1L1-D1H1L1"
+"c0" ||--|| "d01" : "D2-D2H1L1"
+"d01" ||--|| "h010" : "D2H1L1-D2H1L1"
+"c0" ||--|| "d01" : "D2-D2H2L2"
+"d01" ||--|| "h011" : "D2H2L2-D2H2L1"
+"d01" ||--|| "h011" : "D2H2L2-D2H2L2"
+"c0" ||--|| "d02" : "D3-D3H1L1"
+"d02" ||--|| "h020" : "D3H1L1-D3H1L1"
+"c0" ||--|| "d02" : "D3-D3H3L3"
+"d02" ||--|| "h021" : "D3H3L3-D3H3L1"
+"d02" ||--|| "h021" : "D3H3L3-D3H3L2"
+"d02" ||--|| "h021" : "D3H3L3-D3H3L3"
 ```
 ---
 ### Database :

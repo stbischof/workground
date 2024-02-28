@@ -325,22 +325,164 @@ Levels: "Yearly Income"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Sales"{}
-
-"cube:Sales" ||--o{ "dim:Store" : "store_id-store_id"
-"cube:Sales" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
-"cube:Sales" ||--o{ "dim:Store Type" : "store_id-store_id"
-"cube:Sales" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales" ||--o{ "dim:Product" : "product_id-product_id"
-"cube:Sales" ||--o{ "dim:Promotion Media" : "promotion_id-promotion_id"
-"cube:Sales" ||--o{ "dim:Promotions" : "promotion_id-promotion_id"
-"cube:Sales" ||--o{ "dim:Customers" : "customer_id-customer_id"
-"cube:Sales" ||--o{ "dim:Education Level" : "customer_id-customer_id"
-"cube:Sales" ||--o{ "dim:Gender" : "customer_id-customer_id"
-"cube:Sales" ||--o{ "dim:Marital Status" : "customer_id-customer_id"
-"cube:Sales" ||--o{ "dim:Yearly Income" : "customer_id-customer_id"
+c0["Sales"]{
+M Unit Sales ""M Store Cost ""M Store Sales ""M Sales Count ""M Customer Count ""M Promotion Sales ""D Store ""
+D Store Size in SQFT ""
+D Store Type ""
+D Time ""
+D Product ""
+D Promotion Media ""
+D Promotions ""
+D Customers ""
+D Education Level ""
+D Gender ""
+D Marital Status ""
+D Yearly Income ""
+}
+d00[Store] {
+H null ""
+}
+h000[null] {
+L Store Country ""
+L Store State ""
+L Store City ""
+L Store Name ""
+}
+d01[Store Size in SQFT] {
+H null ""
+}
+h010[null] {
+L Store Sqft ""
+}
+d02[Store Type] {
+H null ""
+}
+h020[null] {
+L Store Type ""
+}
+d03[Time] {
+H null ""
+H Weekly ""
+}
+h030[null] {
+L Year ""
+L Quarter ""
+L Month ""
+}
+h031[Weekly] {
+L Year ""
+L Week ""
+L Day ""
+}
+d04[Product] {
+H null ""
+}
+h040[null] {
+L Product Family ""
+L Product Department ""
+L Product Category ""
+L Product Subcategory ""
+L Brand Name ""
+L Product Name ""
+}
+d05[Promotion Media] {
+H null ""
+}
+h050[null] {
+L Media Type ""
+}
+d06[Promotions] {
+H null ""
+}
+h060[null] {
+L Promotion Name ""
+}
+d07[Customers] {
+H null ""
+}
+h070[null] {
+L Country ""
+L State Province ""
+L City ""
+L Name ""
+}
+d08[Education Level] {
+H null ""
+}
+h080[null] {
+L Education Level ""
+}
+d09[Gender] {
+H null ""
+}
+h090[null] {
+L Gender ""
+}
+d010[Marital Status] {
+H null ""
+}
+h0100[null] {
+L Marital Status ""
+}
+d011[Yearly Income] {
+H null ""
+}
+h0110[null] {
+L Yearly Income ""
+}
+"c0" ||--|| "d00" : "store_id-store_id"
+"d00" ||--|| "h000" : "store_id-store_country"
+"d00" ||--|| "h000" : "store_id-store_state"
+"d00" ||--|| "h000" : "store_id-store_city"
+"d00" ||--|| "h000" : "store_id-store_name"
+"c0" ||--|| "d01" : "store_id-store_id"
+"d01" ||--|| "h010" : "store_id-store_sqft"
+"c0" ||--|| "d02" : "store_id-store_id"
+"d02" ||--|| "h020" : "store_id-store_type"
+"c0" ||--|| "d03" : "time_id-time_id"
+"d03" ||--|| "h030" : "time_id-the_year"
+"d03" ||--|| "h030" : "time_id-quarter"
+"d03" ||--|| "h030" : "time_id-month_of_year"
+"c0" ||--|| "d03" : "time_id-time_id"
+"d03" ||--|| "h031" : "time_id-the_year"
+"d03" ||--|| "h031" : "time_id-week_of_year"
+"d03" ||--|| "h031" : "time_id-day_of_month"
+"c0" ||--|| "d04" : "product_id-product_id"
+"d04" ||--|| "h040" : "product_id-product_family"
+"d04" ||--|| "h040" : "product_id-product_department"
+"d04" ||--|| "h040" : "product_id-product_category"
+"d04" ||--|| "h040" : "product_id-product_subcategory"
+"d04" ||--|| "h040" : "product_id-brand_name"
+"d04" ||--|| "h040" : "product_id-product_name"
+"c0" ||--|| "d05" : "promotion_id-promotion_id"
+"d05" ||--|| "h050" : "promotion_id-media_type"
+"c0" ||--|| "d06" : "promotion_id-promotion_id"
+"d06" ||--|| "h060" : "promotion_id-promotion_name"
+"c0" ||--|| "d07" : "customer_id-customer_id"
+"d07" ||--|| "h070" : "customer_id-country"
+"d07" ||--|| "h070" : "customer_id-state_province"
+"d07" ||--|| "h070" : "customer_id-city"
+"d07" ||--|| "h070" : "customer_id-customer_id"
+"c0" ||--|| "d08" : "customer_id-customer_id"
+"d08" ||--|| "h080" : "customer_id-education"
+"c0" ||--|| "d09" : "customer_id-customer_id"
+"d09" ||--|| "h090" : "customer_id-gender"
+"c0" ||--|| "d010" : "customer_id-customer_id"
+"d010" ||--|| "h0100" : "customer_id-marital_status"
+"c0" ||--|| "d011" : "customer_id-customer_id"
+"d011" ||--|| "h0110" : "customer_id-yearly_income"
 ```
 ---
 ---
@@ -368,16 +510,110 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Warehouse"{}
-
-"cube:Warehouse" ||--o{ "dim:Store" : "store_id-store_id"
-"cube:Warehouse" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
-"cube:Warehouse" ||--o{ "dim:Store Type" : "store_id-store_id"
-"cube:Warehouse" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Warehouse" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Warehouse" ||--o{ "dim:Product" : "product_id-product_id"
-"cube:Warehouse" ||--o{ "dim:Warehouse" : "warehouse_id-warehouse_id"
+c1["Warehouse"]{
+M Store Invoice ""M Supply Time ""M Warehouse Cost ""M Warehouse Sales ""M Units Shipped ""M Units Ordered ""M Warehouse Profit ""D Store ""
+D Store Size in SQFT ""
+D Store Type ""
+D Time ""
+D Product ""
+D Warehouse ""
+}
+d10[Store] {
+H null ""
+}
+h100[null] {
+L Store Country ""
+L Store State ""
+L Store City ""
+L Store Name ""
+}
+d11[Store Size in SQFT] {
+H null ""
+}
+h110[null] {
+L Store Sqft ""
+}
+d12[Store Type] {
+H null ""
+}
+h120[null] {
+L Store Type ""
+}
+d13[Time] {
+H null ""
+H Weekly ""
+}
+h130[null] {
+L Year ""
+L Quarter ""
+L Month ""
+}
+h131[Weekly] {
+L Year ""
+L Week ""
+L Day ""
+}
+d14[Product] {
+H null ""
+}
+h140[null] {
+L Product Family ""
+L Product Department ""
+L Product Category ""
+L Product Subcategory ""
+L Brand Name ""
+L Product Name ""
+}
+d15[Warehouse] {
+H null ""
+}
+h150[null] {
+L Country ""
+L State Province ""
+L City ""
+L Warehouse Name ""
+}
+"c1" ||--|| "d10" : "store_id-store_id"
+"d10" ||--|| "h100" : "store_id-store_country"
+"d10" ||--|| "h100" : "store_id-store_state"
+"d10" ||--|| "h100" : "store_id-store_city"
+"d10" ||--|| "h100" : "store_id-store_name"
+"c1" ||--|| "d11" : "store_id-store_id"
+"d11" ||--|| "h110" : "store_id-store_sqft"
+"c1" ||--|| "d12" : "store_id-store_id"
+"d12" ||--|| "h120" : "store_id-store_type"
+"c1" ||--|| "d13" : "time_id-time_id"
+"d13" ||--|| "h130" : "time_id-the_year"
+"d13" ||--|| "h130" : "time_id-quarter"
+"d13" ||--|| "h130" : "time_id-month_of_year"
+"c1" ||--|| "d13" : "time_id-time_id"
+"d13" ||--|| "h131" : "time_id-the_year"
+"d13" ||--|| "h131" : "time_id-week_of_year"
+"d13" ||--|| "h131" : "time_id-day_of_month"
+"c1" ||--|| "d14" : "product_id-product_id"
+"d14" ||--|| "h140" : "product_id-product_family"
+"d14" ||--|| "h140" : "product_id-product_department"
+"d14" ||--|| "h140" : "product_id-product_category"
+"d14" ||--|| "h140" : "product_id-product_subcategory"
+"d14" ||--|| "h140" : "product_id-brand_name"
+"d14" ||--|| "h140" : "product_id-product_name"
+"c1" ||--|| "d15" : "warehouse_id-warehouse_id"
+"d15" ||--|| "h150" : "warehouse_id-warehouse_country"
+"d15" ||--|| "h150" : "warehouse_id-warehouse_state_province"
+"d15" ||--|| "h150" : "warehouse_id-warehouse_city"
+"d15" ||--|| "h150" : "warehouse_id-warehouse_name"
 ```
 ---
 ---
@@ -427,12 +663,53 @@ Levels: "Has coffee bar"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Store"{}
-
-"cube:Store" ||--o{ "dim:Store Type" : ""
-"cube:Store" ||--o{ "dim:Store" : "store_id"
-"cube:Store" ||--o{ "dim:Has coffee bar" : ""
+c2["Store"]{
+M Store Sqft ""M Grocery Sqft ""D Store Type ""
+D Store ""
+D Has coffee bar ""
+}
+d20[Store Type] {
+H null ""
+}
+h200[null] {
+L Store Type ""
+}
+d21[Store] {
+H null ""
+}
+h210[null] {
+L Store Country ""
+L Store State ""
+L Store City ""
+L Store Name ""
+}
+d22[Has coffee bar] {
+H null ""
+}
+h220[null] {
+L Has coffee bar ""
+}
+"c2" ||--|| "d20" : ""
+"d20" ||--|| "h200" : "store_type"
+"c2" ||--|| "d21" : "store_id"
+"d21" ||--|| "h210" : "store_id-store_country"
+"d21" ||--|| "h210" : "store_id-store_state"
+"d21" ||--|| "h210" : "store_id-store_city"
+"d21" ||--|| "h210" : "store_id-store_name"
+"c2" ||--|| "d22" : ""
+"d22" ||--|| "h220" : "coffee_bar"
 ```
 ---
 ---
@@ -584,16 +861,95 @@ Levels: "Employee Id"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:HR"{}
-
-"cube:HR" ||--o{ "dim:Time" : "pay_date-the_date"
-"cube:HR" ||--o{ "dim:Store" : "employee_id-employee_id"
-"cube:HR" ||--o{ "dim:Pay Type" : "employee_id-employee_id"
-"cube:HR" ||--o{ "dim:Store Type" : "employee_id-employee_id"
-"cube:HR" ||--o{ "dim:Position" : "employee_id-employee_id"
-"cube:HR" ||--o{ "dim:Department" : "department_id-department_id"
-"cube:HR" ||--o{ "dim:Employees" : "employee_id-employee_id"
+c3["HR"]{
+M Org Salary ""M Count ""M Number of Employees ""D Time ""
+D Store ""
+D Pay Type ""
+D Store Type ""
+D Position ""
+D Department ""
+D Employees ""
+}
+d30[Time] {
+H null ""
+}
+h300[null] {
+L Year ""
+L Quarter ""
+L Month ""
+}
+d31[Store] {
+H null ""
+}
+h310[null] {
+L Store Country ""
+L Store State ""
+L Store City ""
+L Store Name ""
+}
+d32[Pay Type] {
+H null ""
+}
+h320[null] {
+L Pay Type ""
+}
+d33[Store Type] {
+H null ""
+}
+h330[null] {
+L Store Type ""
+}
+d34[Position] {
+H null ""
+}
+h340[null] {
+L Management Role ""
+L Position Title ""
+}
+d35[Department] {
+H null ""
+}
+h350[null] {
+L Department Description ""
+}
+d36[Employees] {
+H null ""
+}
+h360[null] {
+L Employee Id ""
+}
+"c3" ||--|| "d30" : "pay_date-the_date"
+"d30" ||--|| "h300" : "the_date-the_year"
+"d30" ||--|| "h300" : "the_date-quarter"
+"d30" ||--|| "h300" : "the_date-month_of_year"
+"c3" ||--|| "d31" : "employee_id-employee_id"
+"d31" ||--|| "h310" : "employee_id-store_country"
+"d31" ||--|| "h310" : "employee_id-store_state"
+"d31" ||--|| "h310" : "employee_id-store_city"
+"d31" ||--|| "h310" : "employee_id-store_name"
+"c3" ||--|| "d32" : "employee_id-employee_id"
+"d32" ||--|| "h320" : "employee_id-pay_type"
+"c3" ||--|| "d33" : "employee_id-employee_id"
+"d33" ||--|| "h330" : "employee_id-store_type"
+"c3" ||--|| "d34" : "employee_id-employee_id"
+"d34" ||--|| "h340" : "employee_id-management_role"
+"d34" ||--|| "h340" : "employee_id-position_title"
+"c3" ||--|| "d35" : "department_id-department_id"
+"d35" ||--|| "h350" : "department_id-department_id"
+"c3" ||--|| "d36" : "employee_id-employee_id"
+"d36" ||--|| "h360" : "employee_id-employee_id"
 ```
 ---
 ---
@@ -793,23 +1149,177 @@ Levels: "Yearly Income"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Sales Ragged"{}
-
-"cube:Sales Ragged" ||--o{ "dim:Store" : "store_id-store_id"
-"cube:Sales Ragged" ||--o{ "dim:Geography" : "store_id-store_id"
-"cube:Sales Ragged" ||--o{ "dim:Store Size in SQFT" : "store_id-store_id"
-"cube:Sales Ragged" ||--o{ "dim:Store Type" : "store_id-store_id"
-"cube:Sales Ragged" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales Ragged" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales Ragged" ||--o{ "dim:Product" : "product_id-product_id"
-"cube:Sales Ragged" ||--o{ "dim:Promotion Media" : "promotion_id-promotion_id"
-"cube:Sales Ragged" ||--o{ "dim:Promotions" : "promotion_id-promotion_id"
-"cube:Sales Ragged" ||--o{ "dim:Customers" : "customer_id-customer_id"
-"cube:Sales Ragged" ||--o{ "dim:Education Level" : "customer_id-customer_id"
-"cube:Sales Ragged" ||--o{ "dim:Gender" : "customer_id-customer_id"
-"cube:Sales Ragged" ||--o{ "dim:Marital Status" : "customer_id-customer_id"
-"cube:Sales Ragged" ||--o{ "dim:Yearly Income" : "customer_id-customer_id"
+c4["Sales Ragged"]{
+M Unit Sales ""M Store Cost ""M Store Sales ""M Sales Count ""M Customer Count ""D Store ""
+D Geography ""
+D Store Size in SQFT ""
+D Store Type ""
+D Time ""
+D Product ""
+D Promotion Media ""
+D Promotions ""
+D Customers ""
+D Education Level ""
+D Gender ""
+D Marital Status ""
+D Yearly Income ""
+}
+d40[Store] {
+H null ""
+}
+h400[null] {
+L Store Country ""
+L Store State ""
+L Store City ""
+L Store Name ""
+}
+d41[Geography] {
+H null ""
+}
+h410[null] {
+L Country ""
+L State ""
+L City ""
+}
+d42[Store Size in SQFT] {
+H null ""
+}
+h420[null] {
+L Store Sqft ""
+}
+d43[Store Type] {
+H null ""
+}
+h430[null] {
+L Store Type ""
+}
+d44[Time] {
+H null ""
+H Weekly ""
+}
+h440[null] {
+L Year ""
+L Quarter ""
+L Month ""
+}
+h441[Weekly] {
+L Year ""
+L Week ""
+L Day ""
+}
+d45[Product] {
+H null ""
+}
+h450[null] {
+L Product Family ""
+L Product Department ""
+L Product Category ""
+L Product Subcategory ""
+L Brand Name ""
+L Product Name ""
+}
+d46[Promotion Media] {
+H null ""
+}
+h460[null] {
+L Media Type ""
+}
+d47[Promotions] {
+H null ""
+}
+h470[null] {
+L Promotion Name ""
+}
+d48[Customers] {
+H null ""
+}
+h480[null] {
+L Country ""
+L State Province ""
+L City ""
+L Name ""
+}
+d49[Education Level] {
+H null ""
+}
+h490[null] {
+L Education Level ""
+}
+d410[Gender] {
+H null ""
+}
+h4100[null] {
+L Gender ""
+}
+d411[Marital Status] {
+H null ""
+}
+h4110[null] {
+L Marital Status ""
+}
+d412[Yearly Income] {
+H null ""
+}
+h4120[null] {
+L Yearly Income ""
+}
+"c4" ||--|| "d40" : "store_id-store_id"
+"d40" ||--|| "h400" : "store_id-store_country"
+"d40" ||--|| "h400" : "store_id-store_state"
+"d40" ||--|| "h400" : "store_id-store_city"
+"d40" ||--|| "h400" : "store_id-store_name"
+"c4" ||--|| "d41" : "store_id-store_id"
+"d41" ||--|| "h410" : "store_id-store_country"
+"d41" ||--|| "h410" : "store_id-store_state"
+"d41" ||--|| "h410" : "store_id-store_city"
+"c4" ||--|| "d42" : "store_id-store_id"
+"d42" ||--|| "h420" : "store_id-store_sqft"
+"c4" ||--|| "d43" : "store_id-store_id"
+"d43" ||--|| "h430" : "store_id-store_type"
+"c4" ||--|| "d44" : "time_id-time_id"
+"d44" ||--|| "h440" : "time_id-the_year"
+"d44" ||--|| "h440" : "time_id-quarter"
+"d44" ||--|| "h440" : "time_id-month_of_year"
+"c4" ||--|| "d44" : "time_id-time_id"
+"d44" ||--|| "h441" : "time_id-the_year"
+"d44" ||--|| "h441" : "time_id-week_of_year"
+"d44" ||--|| "h441" : "time_id-day_of_month"
+"c4" ||--|| "d45" : "product_id-product_id"
+"d45" ||--|| "h450" : "product_id-product_family"
+"d45" ||--|| "h450" : "product_id-product_department"
+"d45" ||--|| "h450" : "product_id-product_category"
+"d45" ||--|| "h450" : "product_id-product_subcategory"
+"d45" ||--|| "h450" : "product_id-brand_name"
+"d45" ||--|| "h450" : "product_id-product_name"
+"c4" ||--|| "d46" : "promotion_id-promotion_id"
+"d46" ||--|| "h460" : "promotion_id-media_type"
+"c4" ||--|| "d47" : "promotion_id-promotion_id"
+"d47" ||--|| "h470" : "promotion_id-promotion_name"
+"c4" ||--|| "d48" : "customer_id-customer_id"
+"d48" ||--|| "h480" : "customer_id-country"
+"d48" ||--|| "h480" : "customer_id-state_province"
+"d48" ||--|| "h480" : "customer_id-city"
+"d48" ||--|| "h480" : "customer_id-"
+"c4" ||--|| "d49" : "customer_id-customer_id"
+"d49" ||--|| "h490" : "customer_id-education"
+"c4" ||--|| "d410" : "customer_id-customer_id"
+"d410" ||--|| "h4100" : "customer_id-gender"
+"c4" ||--|| "d411" : "customer_id-customer_id"
+"d411" ||--|| "h4110" : "customer_id-marital_status"
+"c4" ||--|| "d412" : "customer_id-customer_id"
+"d412" ||--|| "h4120" : "customer_id-yearly_income"
 ```
 ---
 ---
@@ -845,13 +1355,71 @@ Levels: "Gender"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Sales 2"{}
-
-"cube:Sales 2" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales 2" ||--o{ "dim:Time" : "time_id-time_id"
-"cube:Sales 2" ||--o{ "dim:Product" : "product_id-product_id"
-"cube:Sales 2" ||--o{ "dim:Gender" : "customer_id-customer_id"
+c5["Sales 2"]{
+M Sales Count ""M Unit Sales ""M Store Sales ""M Store Cost ""M Customer Count ""D Time ""
+D Product ""
+D Gender ""
+}
+d50[Time] {
+H null ""
+H Weekly ""
+}
+h500[null] {
+L Year ""
+L Quarter ""
+L Month ""
+}
+h501[Weekly] {
+L Year ""
+L Week ""
+L Day ""
+}
+d51[Product] {
+H null ""
+}
+h510[null] {
+L Product Family ""
+L Product Department ""
+L Product Category ""
+L Product Subcategory ""
+L Brand Name ""
+L Product Name ""
+}
+d52[Gender] {
+H null ""
+}
+h520[null] {
+L Gender ""
+}
+"c5" ||--|| "d50" : "time_id-time_id"
+"d50" ||--|| "h500" : "time_id-the_year"
+"d50" ||--|| "h500" : "time_id-quarter"
+"d50" ||--|| "h500" : "time_id-month_of_year"
+"c5" ||--|| "d50" : "time_id-time_id"
+"d50" ||--|| "h501" : "time_id-the_year"
+"d50" ||--|| "h501" : "time_id-week_of_year"
+"d50" ||--|| "h501" : "time_id-day_of_month"
+"c5" ||--|| "d51" : "product_id-product_id"
+"d51" ||--|| "h510" : "product_id-product_family"
+"d51" ||--|| "h510" : "product_id-product_department"
+"d51" ||--|| "h510" : "product_id-product_category"
+"d51" ||--|| "h510" : "product_id-product_subcategory"
+"d51" ||--|| "h510" : "product_id-brand_name"
+"d51" ||--|| "h510" : "product_id-product_name"
+"c5" ||--|| "d52" : "customer_id-customer_id"
+"d52" ||--|| "h520" : "customer_id-gender"
 ```
 ---
 ### Roles :##### Role: "California manager"

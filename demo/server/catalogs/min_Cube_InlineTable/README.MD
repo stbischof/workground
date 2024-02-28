@@ -25,9 +25,20 @@
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeOneMeasureInlineTable"{}
-
+c0["CubeOneMeasureInlineTable"]{
+M Measure-Sum ""}
 ```
 ---
 ## Validation result for schema Minimal_Cubes_With_Inline_Tables

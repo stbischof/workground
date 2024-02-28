@@ -43,10 +43,29 @@ Levels: "Level"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeParentChildOneTopMember"{}
-
-"cube:CubeParentChildOneTopMember" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+c0["CubeParentChildOneTopMember"]{
+M Measure1 ""D Dimension1 ""
+}
+d00[Dimension1] {
+H Hierarchy1 ""
+}
+h000[Hierarchy1] {
+L Level ""
+}
+"c0" ||--|| "d00" : "DIM_KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
 ### Database :

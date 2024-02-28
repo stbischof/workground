@@ -133,14 +133,79 @@ Levels: "Type"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:SteelWheelsSales"{}
-
-"cube:SteelWheelsSales" ||--o{ "dim:Markets" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
-"cube:SteelWheelsSales" ||--o{ "dim:Customers" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
-"cube:SteelWheelsSales" ||--o{ "dim:Product" : "PRODUCTCODE-PRODUCTCODE"
-"cube:SteelWheelsSales" ||--o{ "dim:Time" : "TIME_ID-TIME_ID"
-"cube:SteelWheelsSales" ||--o{ "dim:Order Status" : "STATUS-STATUS"
+c0["SteelWheelsSales"]{
+M Quantity ""M Sales ""D Markets ""
+D Customers ""
+D Product ""
+D Time ""
+D Order Status ""
+}
+d00[Markets] {
+H null ""
+}
+h000[null] {
+L Territory ""
+L Country ""
+L State Province ""
+L City ""
+}
+d01[Customers] {
+H null ""
+}
+h010[null] {
+L Customer ""
+}
+d02[Product] {
+H  ""
+}
+h020[] {
+L Line ""
+L Vendor ""
+L Product ""
+}
+d03[Time] {
+H null ""
+}
+h030[null] {
+L Years ""
+L Quarters ""
+L Months ""
+}
+d04[Order Status] {
+H null ""
+}
+h040[null] {
+L Type ""
+}
+"c0" ||--|| "d00" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"d00" ||--|| "h000" : "CUSTOMERNUMBER-TERRITORY"
+"d00" ||--|| "h000" : "CUSTOMERNUMBER-COUNTRY"
+"d00" ||--|| "h000" : "CUSTOMERNUMBER-STATE"
+"d00" ||--|| "h000" : "CUSTOMERNUMBER-CITY"
+"c0" ||--|| "d01" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"d01" ||--|| "h010" : "CUSTOMERNUMBER-CUSTOMERNAME"
+"c0" ||--|| "d02" : "PRODUCTCODE-PRODUCTCODE"
+"d02" ||--|| "h020" : "PRODUCTCODE-PRODUCTLINE"
+"d02" ||--|| "h020" : "PRODUCTCODE-PRODUCTVENDOR"
+"d02" ||--|| "h020" : "PRODUCTCODE-PRODUCTNAME"
+"c0" ||--|| "d03" : "TIME_ID-TIME_ID"
+"d03" ||--|| "h030" : "TIME_ID-YEAR_ID"
+"d03" ||--|| "h030" : "TIME_ID-QTR_NAME"
+"d03" ||--|| "h030" : "TIME_ID-MONTH_NAME"
+"c0" ||--|| "d04" : "STATUS-STATUS"
+"d04" ||--|| "h040" : "STATUS-STATUS"
 ```
 ---
 ### Database :

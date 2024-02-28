@@ -61,11 +61,39 @@ Levels: "H2_Level1, H2_Level2"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeMultipleHierarchy"{}
-
-"cube:CubeMultipleHierarchy" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
-"cube:CubeMultipleHierarchy" ||--o{ "dim:Dimension1" : "DIM_KEY-KEY"
+c0["CubeMultipleHierarchy"]{
+M Measure1 ""D Dimension1 ""
+}
+d00[Dimension1] {
+H Hierarchy1 ""
+H Hierarchy2 ""
+}
+h000[Hierarchy1] {
+L H1_Level1 ""
+L H1_Level2 ""
+}
+h001[Hierarchy2] {
+L H2_Level1 ""
+L H2_Level2 ""
+}
+"c0" ||--|| "d00" : "DIM_KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d00" : "DIM_KEY-KEY"
+"d00" ||--|| "h001" : "KEY-KEY"
+"d00" ||--|| "h001" : "KEY-KEY"
 ```
 ---
 ### Database :

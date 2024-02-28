@@ -53,11 +53,35 @@ Levels: "Level2"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Cube1"{}
-
-"cube:Cube1" ||--o{ "dim:Dimension1" : "KEY-KEY"
-"cube:Cube1" ||--o{ "dim:Dimension1" : "KEY-KEY"
+c0["Cube1"]{
+M Measure1 ""D Dimension1 ""
+}
+d00[Dimension1] {
+H HierarchyWithHasAll ""
+H HierarchyWithoutHasAll ""
+}
+h000[HierarchyWithHasAll] {
+L Level1 ""
+}
+h001[HierarchyWithoutHasAll] {
+L Level2 ""
+}
+"c0" ||--|| "d00" : "KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d00" : "KEY-KEY"
+"d00" ||--|| "h001" : "KEY-KEY"
 ```
 ---
 ### Database :

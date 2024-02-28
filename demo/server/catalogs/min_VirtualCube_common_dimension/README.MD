@@ -43,10 +43,29 @@ Levels: "Level1"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Cube1"{}
-
-"cube:Cube1" ||--o{ "dim:Dimension1" : "DIM_1_KEY-KEY"
+c0["Cube1"]{
+M C1-Measure-Sum ""D Dimension1 ""
+}
+d00[Dimension1] {
+H Hierarchy1 ""
+}
+h000[Hierarchy1] {
+L Level1 ""
+}
+"c0" ||--|| "d00" : "DIM_1_KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
 ---
@@ -64,10 +83,29 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:Cube2"{}
-
-"cube:Cube2" ||--o{ "dim:Dimension1" : "DIM_1_KEY-KEY"
+c1["Cube2"]{
+M C2-Measure-Sum ""D Dimension1 ""
+}
+d10[Dimension1] {
+H Hierarchy1 ""
+}
+h100[Hierarchy1] {
+L Level1 ""
+}
+"c1" ||--|| "d10" : "DIM_1_KEY-KEY"
+"d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
 ### Database :

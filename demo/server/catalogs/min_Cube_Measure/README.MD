@@ -25,9 +25,20 @@
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeOneMeasure"{}
-
+c0["CubeOneMeasure"]{
+M Measure-Sum ""}
 ```
 ---
 ---
@@ -43,9 +54,20 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeTwoMeasures"{}
-
+c1["CubeTwoMeasures"]{
+M Measure1-Sum ""M Measure2-Count ""}
 ```
 ---
 ---
@@ -61,9 +83,20 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeTwoMeasuresPlusOneCalculatedMeasure"{}
-
+c2["CubeTwoMeasuresPlusOneCalculatedMeasure"]{
+M Measure1-Sum ""M Measure2-Count ""}
 ```
 ---
 ---
@@ -79,9 +112,20 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeOneNumericMeasureDifferentDataTypes"{}
-
+c3["CubeOneNumericMeasureDifferentDataTypes"]{
+M Measure1-Integer ""M Measure2-Numeric ""}
 ```
 ---
 ### Database :

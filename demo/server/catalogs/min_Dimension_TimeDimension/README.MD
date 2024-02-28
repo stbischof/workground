@@ -51,10 +51,33 @@ Levels: "Years, Quarters, Months"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeTimeDimension"{}
-
-"cube:CubeTimeDimension" ||--o{ "dim:Time" : "DATE_KEY-DATE_KEY"
+c0["CubeTimeDimension"]{
+M Measure-Sum ""D Time ""
+}
+d00[Time] {
+H null ""
+}
+h000[null] {
+L Years ""
+L Quarters ""
+L Months ""
+}
+"c0" ||--|| "d00" : "DATE_KEY-DATE_KEY"
+"d00" ||--|| "h000" : "DATE_KEY-YEAR_ID"
+"d00" ||--|| "h000" : "DATE_KEY-QTR_NAME"
+"d00" ||--|| "h000" : "DATE_KEY-MONTH_NAME"
 ```
 ---
 ### Database :

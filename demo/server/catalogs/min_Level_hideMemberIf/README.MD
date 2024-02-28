@@ -91,10 +91,31 @@ Levels: "Level1, Level2, Level3"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:HiddenMembersIfParentName"{}
-
-"cube:HiddenMembersIfParentName" ||--o{ "dim:DimensionMembersHiddenIfParentsName" : "DIM_KEY-KEY"
+c0["HiddenMembersIfParentName"]{
+M Measure1 ""D DimensionMembersHiddenIfParentsName ""
+}
+d00[DimensionMembersHiddenIfParentsName] {
+H Hierarchy1 ""
+}
+h000[Hierarchy1] {
+L Level1 ""
+L Level2 ""
+}
+"c0" ||--|| "d00" : "DIM_KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
 ---
@@ -112,10 +133,31 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:HiddenMembersIfBlankName"{}
-
-"cube:HiddenMembersIfBlankName" ||--o{ "dim:DimensionMembersHiddenIfBlankName" : "DIM_KEY-KEY"
+c1["HiddenMembersIfBlankName"]{
+M Measure1 ""D DimensionMembersHiddenIfBlankName ""
+}
+d10[DimensionMembersHiddenIfBlankName] {
+H Hierarchy1 ""
+}
+h100[Hierarchy1] {
+L Level1 ""
+L Level2 ""
+}
+"c1" ||--|| "d10" : "DIM_KEY-KEY"
+"d10" ||--|| "h100" : "KEY-KEY"
+"d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
 ---
@@ -133,10 +175,33 @@ erDiagram
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:HiddenMembersMultipleLevels"{}
-
-"cube:HiddenMembersMultipleLevels" ||--o{ "dim:DimensionMembersHiddenMultipleLevels" : "DIM_KEY-KEY"
+c2["HiddenMembersMultipleLevels"]{
+M Measure1 ""D DimensionMembersHiddenMultipleLevels ""
+}
+d20[DimensionMembersHiddenMultipleLevels] {
+H Hierarchy1 ""
+}
+h200[Hierarchy1] {
+L Level1 ""
+L Level2 ""
+L Level3 ""
+}
+"c2" ||--|| "d20" : "DIM_KEY-KEY"
+"d20" ||--|| "h200" : "KEY-KEY"
+"d20" ||--|| "h200" : "KEY-KEY"
+"d20" ||--|| "h200" : "KEY-KEY"
 ```
 ---
 ### Database :

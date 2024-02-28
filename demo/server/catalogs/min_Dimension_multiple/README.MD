@@ -61,11 +61,38 @@ Levels: "D2H1L1"
 ---
 
 ```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
 erDiagram
-"cube:CubeTwoDimensions"{}
-
-"cube:CubeTwoDimensions" ||--o{ "dim:Dimension1" : "DIM1_KEY-KEY"
-"cube:CubeTwoDimensions" ||--o{ "dim:Dimension2" : "DIM2_KEY-KEY"
+c0["CubeTwoDimensions"]{
+M Measure1 ""D Dimension1 ""
+D Dimension2 ""
+}
+d00[D1] {
+H D1H1 ""
+}
+h000[D1H1] {
+L D1H1L1 ""
+}
+d01[D2] {
+H D2H1 ""
+}
+h010[D2H1] {
+L D2H1L1 ""
+}
+"c0" ||--|| "d00" : "DIM1_KEY-KEY"
+"d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d01" : "DIM2_KEY-KEY"
+"d01" ||--|| "h010" : "KEY-KEY"
 ```
 ---
 ### Database :

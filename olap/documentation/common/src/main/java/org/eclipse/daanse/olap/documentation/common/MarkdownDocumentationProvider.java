@@ -24,6 +24,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
@@ -120,43 +121,68 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return result;
     }
 
-    private List<String> cubeDimensionConnections(MappingSchema schema, MappingCube c) {
+    private List<String> cubeDimensionConnections(MappingSchema schema, MappingCube c, int cubeIndex) {
         List<String> result = new ArrayList<>();
-        String cubeName = c.name();
+        String cubeName = STR."c\{cubeIndex}";
         if (cubeName != null) {
-            result.addAll(dimensionsConnections(schema, c.dimensionUsageOrDimensions(), cubeName));
+            result.addAll(dimensionsConnections(schema, c.dimensionUsageOrDimensions(), cubeName, cubeIndex));
         }
 
         return result;
     }
 
-    private List<String> dimensionsConnections(MappingSchema schema, List<MappingCubeDimension> dimensionUsageOrDimensions, String cubeName) {
-        if (dimensionUsageOrDimensions != null ) {
-            return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionConnections(schema, d, cubeName).stream()).toList();
+    private List<String> dimensionsConnections(
+        MappingSchema schema,
+        List<MappingCubeDimension> dimensionUsageOrDimensions,
+        String cubeName,
+        int cubeIndex
+    ) {
+        List<String> result = new ArrayList<>();
+        if (dimensionUsageOrDimensions != null) {
+            int i = 0;
+            for (MappingCubeDimension d : dimensionUsageOrDimensions) {
+                result.addAll(dimensionConnections(schema, d, cubeName, cubeIndex, i));
+                i++;
+            }
         }
-        return List.of();
+        return result;
     }
 
-    private List<String> dimensionConnections(MappingSchema schema, MappingCubeDimension d, String cubeName) {
+    private List<String> dimensionConnections(MappingSchema schema, MappingCubeDimension d, String cubeName, int cubeIndex, int dimensionIndex) {
         List<String> result = new ArrayList<>();
         if (d instanceof MappingDimensionUsage mdu) {
             Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
             if (optionalDimension.isPresent()) {
-                optionalDimension.get().hierarchies().forEach(h -> {
-                    result.add(connection("cube:" + cubeName, "dim:" + mdu.name(), mdu.foreignKey(), h.primaryKey()));
-                });
+                result.addAll(hierarchyConnections(cubeName, optionalDimension.get(), mdu.foreignKey(), cubeIndex, dimensionIndex));
             }
         }
         if (d instanceof MappingPrivateDimension mpd) {
-            mpd.hierarchies().forEach(h -> {
-                result.add(connection("cube:" + cubeName, "dim:" + mpd.name(), mpd.foreignKey(), h.primaryKey()));
-            });
+            result.addAll(hierarchyConnections(cubeName, mpd, mpd.foreignKey(), cubeIndex, dimensionIndex));
         }
         return result;
     }
 
-    private List<String> dimensionsTablesConnections(MappingSchema schema, List<MappingCubeDimension> dimensionUsageOrDimensions, String fact) {
-        if (dimensionUsageOrDimensions != null ) {
+    private List<String> hierarchyConnections(String cubeName, MappingPrivateDimension d, String foreignKey, int cubeIndex, int dimensionIndex) {
+        List<MappingHierarchy> hList = d.hierarchies();
+        List<String> result = new ArrayList<>();
+        int i = 0;
+        String dName = STR."d\{cubeIndex}\{dimensionIndex}";
+        for (MappingHierarchy h : hList) {
+            result.add(connection1(cubeName, dName, foreignKey, h.primaryKey()));
+            for (MappingLevel l : h.levels()) {
+                result.add(connection1(dName, STR."h\{cubeIndex}\{dimensionIndex}\{i}", h.primaryKey(), l.column()));
+            }
+            i++;
+        }
+        return result;
+    }
+
+    private List<String> dimensionsTablesConnections(
+        MappingSchema schema,
+        List<MappingCubeDimension> dimensionUsageOrDimensions,
+        String fact
+    ) {
+        if (dimensionUsageOrDimensions != null) {
             return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionTablesConnections(schema, d, fact).stream()).toList();
         }
         return List.of();
@@ -166,7 +192,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         if (d instanceof MappingDimensionUsage mdu) {
             Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
             if (optionalDimension.isPresent()) {
-                return hierarchiesTablesConnections(schema, optionalDimension.get().hierarchies(), fact, d.foreignKey());
+                return hierarchiesTablesConnections(schema, optionalDimension.get().hierarchies(), fact,
+                    d.foreignKey());
             }
         }
         if (d instanceof MappingPrivateDimension mpd) {
@@ -175,14 +202,24 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return List.of();
     }
 
-    private List<String> hierarchiesTablesConnections(MappingSchema schema, List<MappingHierarchy> hierarchies, String fact, String foreignKey) {
+    private List<String> hierarchiesTablesConnections(
+        MappingSchema schema,
+        List<MappingHierarchy> hierarchies,
+        String fact,
+        String foreignKey
+    ) {
         if (hierarchies != null) {
             return hierarchies.stream().flatMap(h -> hierarchyTablesConnections(schema, h, fact, foreignKey).stream()).toList();
         }
         return List.of();
     }
 
-    private List<String> hierarchyTablesConnections(MappingSchema schema, MappingHierarchy h, String fact, String foreignKey) {
+    private List<String> hierarchyTablesConnections(
+        MappingSchema schema,
+        MappingHierarchy h,
+        String fact,
+        String foreignKey
+    ) {
         List<String> result = new ArrayList<>();
         String primaryKeyTable = h.primaryKeyTable();
         if (primaryKeyTable == null) {
@@ -329,9 +366,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private void writeCubeList(FileWriter writer, MappingSchema schema, List<MappingCube> cubes) {
-         if (cubes != null && !cubes.isEmpty()) {
-                cubes.forEach(c ->  writeCube(writer, schema, c));
-         }
+        if (cubes != null && !cubes.isEmpty()) {
+            int i = 0;
+            for (MappingCube c : cubes) {
+                writeCube(writer, schema, c, i);
+                i++;
+            }
+        }
     }
 
     private void writeRoles(FileWriter writer, List<MappingRole> roles) {
@@ -358,7 +399,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     }
 
-    private void writeCube(FileWriter writer, MappingSchema schema, MappingCube cube) {
+    private void writeCube(FileWriter writer, MappingSchema schema, MappingCube cube, int index) {
         try {
             String description = cube.description() != null ? cube.description() : EMPTY_STRING;
             String name = cube.name();
@@ -373,28 +414,105 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
                 """);
             writeCubeDimensions(writer, cube.dimensionUsageOrDimensions());
-            List<String> connections = cubeDimensionConnections(schema, cube );
+            writeCubeDiagram(writer, schema, cube, index);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeCubeDiagram(FileWriter writer, MappingSchema schema, MappingCube cube, int index) {
+        try {
+            List<String> connections = cubeDimensionConnections(schema, cube, index);
             if (cube.name() != null) {
-                String tableName = "cube:" + cube.name();
+                String tableName = STR. "c\{index}[\"\{cube.name()}\"]";
                 String cubeName = cube.name();
-                writer.write(STR."""
+                writer.write(STR. """
                     ### Cube \"\{cubeName}\" diagram:
 
                     ---
 
                     ```mermaid
+                    %%{init: {
+                    "theme": "default",
+                    "themeCSS": [
+                        ".er.entityBox {stroke: black;}",
+                        ".er.attributeBoxEven {stroke: black;}",
+                        ".er.attributeBoxOdd {stroke: black;}",
+                        "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+                        "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+                        "[id^=entity-h] .er.entityBox { fill: pink;} "
+                    ]
+                    }}%%
                     erDiagram
-                    \"\{tableName}\"{}
-
+                    \{tableName}{
                     """);
+                for (MappingMeasure m : cube.measures()) {
+                    String description = m.description() == null ? EMPTY_STRING : m.description();
+                    writer.write(STR."M \{m.name()} \"\{description}\"");
+                }
+                for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) {
+                    String description = d.description() == null ? EMPTY_STRING : d.description();
+                    writer.write(STR."D \{d.name()} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                writer.write("}");
+                writer.write(ENTER);
+
+                writeDimensionPartDiagram(writer, schema, cube, index);
+
                 for (String c : connections) {
                     writer.write(c);
                     writer.write(ENTER);
                 }
                 writer.write(STR. """
-                ```
-                ---
-                """);
+                    ```
+                    ---
+                    """);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeDimensionPartDiagram(FileWriter writer, MappingSchema schema, MappingCube cube, int cubeIndex) {
+        int i = 0;
+        for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) {
+            if (d instanceof MappingDimensionUsage du) {
+                Optional<MappingPrivateDimension> oPrivateDimension = getPrivateDimension(schema, du.source());
+                if (oPrivateDimension.isPresent()) {
+                    writeDimensionPartDiagram(writer, oPrivateDimension.get(), cubeIndex, i);
+                }
+            }
+            if (d instanceof MappingPrivateDimension pd) {
+                writeDimensionPartDiagram(writer, pd, cubeIndex, i);
+            }
+            i++;
+        }
+    }
+
+    private void writeDimensionPartDiagram(FileWriter writer, MappingPrivateDimension pd, int cubeIndex, int dimensionIndex) {
+        try {
+            writer.write(STR."d\{cubeIndex}\{dimensionIndex}[\{pd.name()}] {");
+            writer.write(ENTER);
+            for (MappingHierarchy h : pd.hierarchies()) {
+                String description = h.description() == null ? EMPTY_STRING : h.description();
+                writer.write(STR."H \{h.name()} \"\{description}\"");
+                writer.write(ENTER);
+            }
+            writer.write("}");
+            writer.write(ENTER);
+            int hIndex = 0;
+            for (MappingHierarchy h : pd.hierarchies()) {
+                writer.write(STR."h\{cubeIndex}\{dimensionIndex}\{hIndex}[\{h.name()}] {");
+                writer.write(ENTER);
+                for (MappingLevel l : h.levels()) {
+                    String description = l.description() == null ? EMPTY_STRING : l.description();
+                    writer.write(STR."L \{l.name()} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                writer.write("}");
+                writer.write(ENTER);
+                hIndex++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -550,11 +668,16 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return List.of();
     }
 
-
     private String connection(String t1, String t2, String key1, String key2) {
         String k1 = key1 == null ? EMPTY_STRING : key1 + "-";
         String k2 = key2 == null ? EMPTY_STRING : key2;
         return "\"" + t1 + "\" ||--o{ \"" + t2 + "\" : \"" + k1 + k2 + "\"";
+    }
+
+    private String connection1(String t1, String t2, String key1, String key2) {
+        String k1 = key1 == null ? EMPTY_STRING : key1 + "-";
+        String k2 = key2 == null ? EMPTY_STRING : key2;
+        return "\"" + t1 + "\" ||--|| \"" + t2 + "\" : \"" + k1 + k2 + "\"";
     }
 
     private String getFirstTable(MappingRelationOrJoin relation) {
@@ -613,13 +736,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 writer.write("### Database :");
                 writer.write(ENTER);
                 writer.write(STR. """
-                ---
-                ```mermaid
-                ---
-                title: Diagram;
-                ---
-                erDiagram
-                """);
+                    ---
+                    ```mermaid
+                    ---
+                    title: Diagram;
+                    ---
+                    erDiagram
+                    """);
                 tables.forEach(t -> writeTablesDiagram(writer, t, jdbcMetaDataService));
                 writer.write(ENTER);
                 for (String c : tablesConnections) {
@@ -627,9 +750,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(ENTER);
                 }
                 writer.write(STR. """
-                ```
-                ---
-                """);
+                    ```
+                    ---
+                    """);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -641,8 +764,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             List<Column> columnList = jdbcMetaDataService.getColumns(null, name);
             if (columnList != null) {
                 writer.write(STR. """
-                \{name}{
-                """);
+                    \{name}{
+                    """);
                 for (Column c : columnList) {
                     String columnName = c.getName();
                     String type = TYPE_MAP.get(c.getType());
