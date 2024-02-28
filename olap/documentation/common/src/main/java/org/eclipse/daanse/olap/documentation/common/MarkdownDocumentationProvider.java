@@ -26,6 +26,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -64,6 +65,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     public static final String REF_NAME_VERIFIERS = "verifyer";
     public static final String EMPTY_STRING = "";
+    double MAX_ROW = 10000.00;
+    double MAX_LEVEL = 20.00;
+
     private static String ENTER = System.lineSeparator();
     private List<Verifyer> verifyers = new CopyOnWriteArrayList<>();
 
@@ -84,6 +88,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write("## Olap Context Details:");
         writer.write(ENTER);
         writeSchemas(writer, context);
+        writeCubeMatrixDiagram(writer, context);
         List<String> tablesConnections = schemaTablesConnections(context);
         writeDatabaseInfo(writer, context, tablesConnections);
         writeVerifyer(writer, context);
@@ -92,7 +97,116 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     }
 
-    @Reference(name = REF_NAME_VERIFIERS, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    private void writeCubeMatrixDiagram(FileWriter writer, Context context) {
+        context.getDatabaseMappingSchemaProviders().forEach(p -> {
+            writeCubeMatrixDiagram(writer, context, p.get());
+        });
+    }
+
+    private void writeCubeMatrixDiagram(FileWriter writer, Context context, MappingSchema schema) {
+        try {
+            String schemaName = schema.name();
+            writer.write(STR. """
+                ### Cube Matrix for \{schemaName}:
+                ```mermaid
+                quadrantChart
+                title Cube Matrix
+                x-axis small level number --> high level number
+                y-axis Low row count --> High row count
+                quadrant-1 Complex
+                quadrant-2 Deep
+                quadrant-3 Simple
+                quadrant-4 Wide
+                """);
+            writer.write(ENTER);
+            for (MappingCube c : schema.cubes()) {
+                String cubeName = c.name();
+                double x = getLevelsCount(schema, c) / MAX_LEVEL;
+                double y = getFactCount(context, c) / MAX_ROW;
+                x = x > 1 ? 1 : x;
+                y = y > 1 ? 1 : y;
+                y = y < 0 ? (-1)*y : y;
+                String sx = String.format("%,.4f", x);
+                String sy = String.format("%,.4f", y);
+                writer.write(STR. """
+                    Cube \{cubeName}: [\{sx}, \{sy}]
+                    """);
+            }
+            writer.write("```");
+            writer.write(ENTER);
+            writer.write("---");
+            writer.write(ENTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private long getFactCount(Context context, MappingCube c) {
+        long result = 0l;
+        try {
+            MappingRelation relation = c.fact();
+            if (relation instanceof MappingTable mt) {
+                return context.getStatisticsProvider().getTableCardinality(
+                    context.getConnection().getDataSource().getConnection().getCatalog(),
+                    context.getConnection().getDataSource().getConnection().getSchema(), mt.name());
+            }
+            if (relation instanceof MappingInlineTable it) {
+                result = it.rows() == null ? 0l : it.rows().size();
+            }
+            if (relation instanceof MappingView mv) {
+                //TODO
+                return 0l;
+            }
+            if (relation instanceof MappingJoin mj) {
+                Optional<String> tableName = getFactTableName(mj);
+                if (tableName.isPresent()) {
+                    return context.getStatisticsProvider().getTableCardinality(
+                        context.getConnection().getDataSource().getConnection().getCatalog(),
+                        context.getConnection().getDataSource().getConnection().getSchema(), tableName.get());
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return result;
+    }
+
+    private int getLevelsCount(MappingSchema schema, MappingCube c) {
+        int res = 0;
+        for (MappingCubeDimension d : c.dimensionUsageOrDimensions()) {
+            res = res + getLevelsCount1(schema, d);
+        }
+        ;
+        return res;
+    }
+
+    private int getLevelsCount1(MappingSchema schema, MappingCubeDimension d) {
+        int res = 0;
+        if (d instanceof MappingDimensionUsage mdu) {
+            Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
+            if (optionalDimension.isPresent() && optionalDimension.get().hierarchies() != null) {
+                for (MappingHierarchy h : optionalDimension.get().hierarchies()) {
+                    if (h.levels() != null) {
+                        res = res + h.levels().size();
+                    }
+                }
+            }
+        }
+        if (d instanceof MappingPrivateDimension mpd) {
+            if (mpd.hierarchies() != null) {
+                for (MappingHierarchy h : mpd.hierarchies()) {
+                    if (h.levels() != null) {
+                        res = res + h.levels().size();
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Reference(name = REF_NAME_VERIFIERS, cardinality = ReferenceCardinality.MULTIPLE, policy =
+        ReferencePolicy.DYNAMIC)
     public void bindVerifiers(Verifyer verifyer) {
         verifyers.add(verifyer);
     }
@@ -115,7 +229,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         Optional<String> optionalFactTable = getFactTableName(c.fact());
         if (optionalFactTable.isPresent()) {
             result.addAll(getFactTableConnections(c.fact()));
-            result.addAll(dimensionsTablesConnections(schema, c.dimensionUsageOrDimensions(), optionalFactTable.get()));
+            result.addAll(dimensionsTablesConnections(schema, c.dimensionUsageOrDimensions(),
+                optionalFactTable.get()));
         }
 
         return result;
@@ -123,7 +238,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private List<String> cubeDimensionConnections(MappingSchema schema, MappingCube c, int cubeIndex) {
         List<String> result = new ArrayList<>();
-        String cubeName = STR."c\{cubeIndex}";
+        String cubeName = STR. "c\{cubeIndex}";
         if (cubeName != null) {
             result.addAll(dimensionsConnections(schema, c.dimensionUsageOrDimensions(), cubeName, cubeIndex));
         }
@@ -148,12 +263,19 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return result;
     }
 
-    private List<String> dimensionConnections(MappingSchema schema, MappingCubeDimension d, String cubeName, int cubeIndex, int dimensionIndex) {
+    private List<String> dimensionConnections(
+        MappingSchema schema,
+        MappingCubeDimension d,
+        String cubeName,
+        int cubeIndex,
+        int dimensionIndex
+    ) {
         List<String> result = new ArrayList<>();
         if (d instanceof MappingDimensionUsage mdu) {
             Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
             if (optionalDimension.isPresent()) {
-                result.addAll(hierarchyConnections(cubeName, optionalDimension.get(), mdu.foreignKey(), cubeIndex, dimensionIndex));
+                result.addAll(hierarchyConnections(cubeName, optionalDimension.get(), mdu.foreignKey(), cubeIndex,
+                    dimensionIndex));
             }
         }
         if (d instanceof MappingPrivateDimension mpd) {
@@ -162,15 +284,22 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return result;
     }
 
-    private List<String> hierarchyConnections(String cubeName, MappingPrivateDimension d, String foreignKey, int cubeIndex, int dimensionIndex) {
+    private List<String> hierarchyConnections(
+        String cubeName,
+        MappingPrivateDimension d,
+        String foreignKey,
+        int cubeIndex,
+        int dimensionIndex
+    ) {
         List<MappingHierarchy> hList = d.hierarchies();
         List<String> result = new ArrayList<>();
         int i = 0;
-        String dName = STR."d\{cubeIndex}\{dimensionIndex}";
+        String dName = STR. "d\{cubeIndex}\{dimensionIndex}";
         for (MappingHierarchy h : hList) {
             result.add(connection1(cubeName, dName, foreignKey, h.primaryKey()));
             for (MappingLevel l : h.levels()) {
-                result.add(connection1(dName, STR."h\{cubeIndex}\{dimensionIndex}\{i}", h.primaryKey(), l.column()));
+                result.add(connection1(dName, STR."h\{cubeIndex}\{dimensionIndex}\{i}", h.primaryKey(),
+                    l.column()));
             }
             i++;
         }
@@ -297,7 +426,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private Map<String, VerificationResult> getVerificationResultMap(List<VerificationResult> verifyResult, Level l) {
+    private Map<String, VerificationResult> getVerificationResultMap
+        (List<VerificationResult> verifyResult, Level l) {
         return verifyResult.stream().filter(r -> l.equals(r.level()))
             .collect(Collectors.toMap(VerificationResult::description, Function.identity(), (o1, o2) -> o1));
     }
@@ -490,7 +620,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private void writeDimensionPartDiagram(FileWriter writer, MappingPrivateDimension pd, int cubeIndex, int dimensionIndex) {
+    private void writeDimensionPartDiagram(
+        FileWriter writer,
+        MappingPrivateDimension pd,
+        int cubeIndex,
+        int dimensionIndex
+    ) {
         try {
             writer.write(STR."d\{cubeIndex}\{dimensionIndex}[\{pd.name()}] {");
             writer.write(ENTER);

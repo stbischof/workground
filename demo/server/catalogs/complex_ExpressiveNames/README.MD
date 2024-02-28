@@ -177,6 +177,20 @@ L D3H3L3 "Level 3 Hierarchy3 Dimension 3"
 "d02" ||--|| "h021" : "D3H3L3-D3H3L3"
 ```
 ---
+### Cube Matrix for ExpressiveNames:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube Cube 1: [0.4000, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid

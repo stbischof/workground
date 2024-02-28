@@ -204,6 +204,22 @@ L Level3 ""
 "d20" ||--|| "h200" : "KEY-KEY"
 ```
 ---
+### Cube Matrix for Minimal_Single_Hierarchy_Hidden_Members:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube HiddenMembersIfParentName: [0.1000, 0.0001]
+Cube HiddenMembersIfBlankName: [0.1000, 0.0001]
+Cube HiddenMembersMultipleLevels: [0.1500, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid

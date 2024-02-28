@@ -108,6 +108,21 @@ L Level1 ""
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
+### Cube Matrix for Minimal_Virtual_Cubes_With_1_Dimension:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube Cube1: [0.0500, 0.0001]
+Cube Cube2: [0.0500, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid

@@ -41,6 +41,20 @@ c0["CubeOneMeasureInlineTable"]{
 M Measure-Sum ""}
 ```
 ---
+### Cube Matrix for Minimal_Cubes_With_Inline_Tables:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube CubeOneMeasureInlineTable: [0.0000, 0.0001]
+```
+---
 ## Validation result for schema Minimal_Cubes_With_Inline_Tables
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |

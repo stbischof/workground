@@ -80,6 +80,20 @@ L Months ""
 "d00" ||--|| "h000" : "DATE_KEY-MONTH_NAME"
 ```
 ---
+### Cube Matrix for Minimal_Time_Dimension:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube CubeTimeDimension: [0.1500, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid

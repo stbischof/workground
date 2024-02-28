@@ -208,6 +208,20 @@ L Type ""
 "d04" ||--|| "h040" : "STATUS-STATUS"
 ```
 ---
+### Cube Matrix for SteelWheels:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube SteelWheelsSales: [0.6000, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid

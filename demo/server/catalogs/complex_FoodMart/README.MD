@@ -1428,6 +1428,25 @@ L Gender ""
 
 ##### Role: "Administrator"
 
+### Cube Matrix for FoodMart:
+```mermaid
+quadrantChart
+title Cube Matrix
+x-axis small level number --> high level number
+y-axis Low row count --> High row count
+quadrant-1 Complex
+quadrant-2 Deep
+quadrant-3 Simple
+quadrant-4 Wide
+
+Cube Sales: [1.0000, 0.0001]
+Cube Warehouse: [1.0000, 0.0001]
+Cube Store: [0.3000, 0.0001]
+Cube HR: [0.6500, 0.0001]
+Cube Sales Ragged: [1.0000, 0.0001]
+Cube Sales 2: [0.6500, 0.0001]
+```
+---
 ### Database :
 ---
 ```mermaid
