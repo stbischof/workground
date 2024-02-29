@@ -49,16 +49,16 @@ public class Constants {
 			public static final String CATALOG_NAME = "CATALOG_NAME";
 			public static final QName QN_CATALOG_NAME = new QName(ROWSET.NS_URN, CATALOG_NAME, ROWSET.PREFIX);
 
-			
+
 			public static final String SCHEMA_NAME = "SCHEMA_NAME";
 			public static final QName QN_SCHEMA_NAME = new QName(ROWSET.NS_URN, SCHEMA_NAME, ROWSET.PREFIX);
 
-			
+
 			public static final String CUBE_NAME = "CUBE_NAME";
 			public static final QName QN_CUBE_NAME = new QName(ROWSET.NS_URN, CUBE_NAME, ROWSET.PREFIX);
 
-			
-			
+
+
 		}
 
 	}
@@ -204,6 +204,7 @@ public class Constants {
 	public static final String PERSPECTIVE_ID = "PerspectiveID";
 	public static final String PARTITION_ID = "PartitionID";
 	public static final String DATABASE_ID = "DatabaseID";
+    public static final String OBJECT_TYPE = "ObjectType";
 	public static final String COLUMN_OLAP_TYPE = "COLUMN_OLAP_TYPE";
 	public static final String COLUMN_NAME = "COLUMN_NAME";
 	public static final String BEST_MATCH = "BEST_MATCH";
@@ -224,16 +225,20 @@ public class Constants {
 	public static final String PROPERTY_VISIBILITY = "PROPERTY_VISIBILITY";
 	public static final String PROPERTY_ORIGIN = "PROPERTY_ORIGIN";
 	public static final String PROPERTY_TYPE = "PROPERTY_TYPE";
+    public static final String PROPERTY_CONTENT_TYPE = "PROPERTY_CONTENT_TYPE";
 	public static final String PROPERTY_NAME2 = "PROPERTY_NAME";
 	public static final String MEMBER_UNIQUE_NAME = "MEMBER_UNIQUE_NAME";
 	public static final String SCOPE = "SCOPE";
+    public static final String SET_CAPTION = "SET_CAPTION";
 	public static final String SET_NAME = "SET_NAME";
 	public static final String KPI_NAME = "KPI_NAME";
+    public static final String CUBE_TYPE = "CUBE_TYPE";
 	public static final String BASE_CUBE_NAME = "BASE_CUBE_NAME";
 	public static final String DIMENSION_NAME = "DIMENSION_NAME";
 	public static final String LIBRARY_NAME = "LIBRARY_NAME";
 	public static final String INTERFACE_NAME = "INTERFACE_NAME";
 	public static final String ORIGIN = "ORIGIN";
+    public static final String FUNCTION_NAME = "FUNCTION_NAME";
 	public static final String PROPERTY_NAME = "PropertyName";
 	public static final String NAME = "Name";
 	public static final String ID = "ID";

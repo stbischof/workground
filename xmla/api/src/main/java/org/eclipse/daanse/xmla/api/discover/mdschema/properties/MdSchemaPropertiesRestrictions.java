@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.daanse.xmla.api.annotation.Restriction;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.PropertyContentTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
@@ -35,6 +36,7 @@ public interface MdSchemaPropertiesRestrictions {
     String RESTRICTIONS_LEVEL_UNIQUE_NAME = "LEVEL_UNIQUE_NAME";
     String RESTRICTIONS_MEMBER_UNIQUE_NAME = "MEMBER_UNIQUE_NAME";
     String RESTRICTIONS_PROPERTY_TYPE = "PROPERTY_TYPE";
+    String RESTRICTIONS_PROPERTY_CONTENT_TYPE = "PROPERTY_CONTENT_TYPE";
     String RESTRICTIONS_PROPERTY_NAME = "PROPERTY_NAME";
     String RESTRICTIONS_PROPERTY_ORIGIN = "PROPERTY_ORIGIN";
     String RESTRICTIONS_CUBE_SOURCE = "CUBE_SOURCE";
@@ -84,6 +86,12 @@ public interface MdSchemaPropertiesRestrictions {
     Optional<String> memberUniqueName();
 
     /**
+     * @return The name of the property.
+     */
+    @Restriction(name = RESTRICTIONS_PROPERTY_NAME, type = XSD_STRING, order = 7)
+    Optional<String> propertyName();
+
+    /**
      * @return A bitmask that specifies the
      * type of the property, as
      * follows:
@@ -97,15 +105,12 @@ public interface MdSchemaPropertiesRestrictions {
      * which contains a binary
      * large object (BLOB).
      */
-    @Restriction(name = RESTRICTIONS_PROPERTY_TYPE, type = XSD_SHORT, order = 7)
+    @Restriction(name = RESTRICTIONS_PROPERTY_TYPE, type = XSD_SHORT, order = 8)
     Optional<PropertyTypeEnum> propertyType();
 
-    /**
-     * @return The name of the property.
-     */
-    @Restriction(name = RESTRICTIONS_PROPERTY_NAME, type = XSD_STRING, order = 8)
-    Optional<String> propertyName();
-
+    @Restriction(name = RESTRICTIONS_PROPERTY_CONTENT_TYPE, type = XSD_SHORT, order = 9)
+    //absent in specification
+    Optional<PropertyContentTypeEnum> propertyContentType();
     /**
      * @return A bitmask that specifies the
      * type of hierarchy to which the
@@ -123,7 +128,7 @@ public interface MdSchemaPropertiesRestrictions {
      * is on an attribute hierarchy
      * that is not enabled.
      */
-    @Restriction(name = RESTRICTIONS_PROPERTY_ORIGIN, type = XSD_INTEGER, order = 9)
+    @Restriction(name = RESTRICTIONS_PROPERTY_ORIGIN, type = XSD_INTEGER, order = 10)
     Optional<PropertyOriginEnum> propertyOrigin();
 
     /**
@@ -132,7 +137,7 @@ public interface MdSchemaPropertiesRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 10)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 11)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
@@ -141,6 +146,6 @@ public interface MdSchemaPropertiesRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_PROPERTY_VISIBILITY, type = XSD_INTEGER, order = 11)
+    @Restriction(name = RESTRICTIONS_PROPERTY_VISIBILITY, type = XSD_INTEGER, order = 12)
     Optional<VisibilityEnum> propertyVisibility();
 }

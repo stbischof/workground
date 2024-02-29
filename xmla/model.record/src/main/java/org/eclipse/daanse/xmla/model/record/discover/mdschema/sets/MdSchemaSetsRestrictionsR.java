@@ -25,6 +25,7 @@ public record MdSchemaSetsRestrictionsR(
     Optional<String> cubeName,
     Optional<String> setName,
     Optional<ScopeEnum> scope,
+    Optional<String> setCaption,
     Optional<CubeSourceEnum> cubeSource,
     Optional<String> hierarchyUniqueName) implements MdSchemaSetsRestrictions {
 }

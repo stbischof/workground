@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import mondrian.rolap.RolapCube;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
+import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -566,43 +567,46 @@ public class Utils {
         Optional<String> oTableName,
         Optional<String> oTableType
     ) {
-        return getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oTableSchema)
-            .stream().filter(dmsp -> dmsp != null && dmsp.get() != null)
-            .map(dmsp -> getDbSchemaTablesResponseRow(context.getName(), dmsp.get(), oTableName, oTableType))
-            .flatMap(Collection::stream).toList();
+        List<Schema> schemas = context.getConnection().getSchemas();
+        if (schemas != null) {
+            return getSchemasWithFilter(schemas, oTableSchema).stream()
+                .map(s -> getDbSchemaTablesResponseRow(context.getName(), s, oTableName, oTableType))
+                .flatMap(Collection::stream).toList();
+        }
+        return List.of();
     }
 
     private static List<DbSchemaTablesResponseRow> getDbSchemaTablesResponseRow(
         String catalogName,
-        MappingSchema schema,
+        Schema schema,
         Optional<String> oTableName,
         Optional<String> oTableType
     ) {
-        return Utils.getMappingCubeWithFilter(schema.cubes(), oTableName).stream()
-            .map(c -> getDbSchemaTablesResponseRow(catalogName, schema.name(), c, oTableType, schema.dimensions()))
+        List<Cube> cubes = schema.getCubes() == null ? List.of() : Arrays.asList(schema.getCubes());
+        return Utils.getCubesWithFilter(cubes, oTableName).stream()
+            .map(c -> getDbSchemaTablesResponseRow(catalogName, schema.getName(), c, oTableType))
             .flatMap(Collection::stream).toList();
     }
 
     private static List<DbSchemaTablesResponseRow> getDbSchemaTablesResponseRow(
         String catalogName,
         String schemaName,
-        MappingCube cube,
-        Optional<String> oTableType,
-        List<MappingPrivateDimension> dimensions
+        Cube cube,
+        Optional<String> oTableType
     ) {
         List<DbSchemaTablesResponseRow> result = new ArrayList<>();
         if (cube != null) {
-            String desc = cube.description();
+            String desc = cube.getDescription();
             if (desc == null) {
                 desc =
                     new StringBuilder(catalogName).append(" - ")
-                        .append(cube.name()).append(" Cube").toString();
+                        .append(cube.getName()).append(" Cube").toString();
             }
             if (isTableType(oTableType, "TABLE")) {
                 result.add(new DbSchemaTablesResponseRowR(
                     Optional.of(catalogName),
                     Optional.of(schemaName),
-                    Optional.of(cube.name()),
+                    Optional.of(cube.getName()),
                     Optional.of("TABLE"),
                     Optional.empty(),
                     Optional.of(desc),
@@ -612,29 +616,14 @@ public class Utils {
                 ));
             }
             if (isTableType(oTableType, "SYSTEM TABLE")) {
-                for (MappingCubeDimension dimension : cube.dimensionUsageOrDimensions()) {
-                    if (dimension instanceof MappingPrivateDimension mappingPrivateDimension) {
-                        populateDimensionForDbSchemaTables(
-                            catalogName,
-                            schemaName,
-                            cube,
-                            mappingPrivateDimension,
-                            result
-                        );
-                    }
-                    if (dimension instanceof MappingDimensionUsage mappingDimensionUsage) {
-                        Optional<MappingPrivateDimension> od =
-                            dimensions.stream().filter(d -> d.name().equals(mappingDimensionUsage.source())).findFirst();
-                        if (od.isPresent()) {
-                            populateDimensionForDbSchemaTables(
-                                catalogName,
-                                schemaName,
-                                cube,
-                                od.get(),
-                                result
-                            );
-                        }
-                    }
+                for (Dimension dimension : cube.getDimensions()) {
+                    populateDimensionForDbSchemaTables(
+                        catalogName,
+                        schemaName,
+                        cube,
+                        dimension,
+                        result
+                    );
                 }
             }
         }
@@ -645,18 +634,18 @@ public class Utils {
     private static void populateDimensionForDbSchemaTables(
         String catalogName,
         String schemaName,
-        MappingCube cube,
-        MappingPrivateDimension dimension,
+        Cube cube,
+        Dimension dimension,
         List<DbSchemaTablesResponseRow> result
     ) {
         if (dimension != null) {
-            for (MappingHierarchy hierarchy
-                : dimension.hierarchies()) {
+            for (Hierarchy hierarchy
+                : dimension.getHierarchies()) {
                 populateHierarchyForDbSchemaTables(
                     catalogName,
                     schemaName,
                     cube,
-                    dimension.name(),
+                    dimension.getName(),
                     hierarchy,
                     result);
             }
@@ -666,21 +655,21 @@ public class Utils {
     private static void populateHierarchyForDbSchemaTables(
         String catalogName,
         String schemaName,
-        MappingCube cube,
+        Cube cube,
         String dimensionName,
-        MappingHierarchy hierarchy,
+        Hierarchy hierarchy,
         List<DbSchemaTablesResponseRow> result
     ) {
-        if (hierarchy.levels() != null) {
-            result.addAll(hierarchy.levels().stream().map(l -> {
-                String cubeName = cube.name();
-                String hierarchyName = getHierarchyName(hierarchy.name(), dimensionName);
-                String levelName = l.name();
+        if (hierarchy.getLevels() != null) {
+            result.addAll(Arrays.stream(hierarchy.getLevels()).map(l -> {
+                String cubeName = cube.getName();
+                String hierarchyName = getHierarchyName(hierarchy.getName(), dimensionName);
+                String levelName = l.getName();
 
                 String tableName =
                     cubeName + ':' + hierarchyName + ':' + levelName;
 
-                String desc = l.description();
+                String desc = l.getDescription();
                 if (desc == null) {
                     desc =
                         new StringBuilder(schemaName).append(" - ")
@@ -1365,7 +1354,8 @@ public class Utils {
         // Added by TWI to returned cached row numbers
 
         //int n = getExtra(connection).getLevelCardinality(lastLevel);
-        int n = lastLevel == null ? 0 : lastLevel.getCardinality();
+        SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
+        int n = lastLevel == null ? 0 : schemaReader.getLevelCardinality(lastLevel, true, true);
         int dimensionCardinality = n + 1;
         boolean isVirtual = false;
         // SQL Server always returns false
@@ -1375,11 +1365,11 @@ public class Utils {
         // Are these the levels with uniqueMembers == true?
         // How are they mapped to specific column numbers?
         //but was 0
-        DimensionUniqueSettingEnum dimensionUniqueSetting = DimensionUniqueSettingEnum.MEMBER_KEY;
+        DimensionUniqueSettingEnum dimensionUniqueSetting = DimensionUniqueSettingEnum.NONE;
 
         if (deep.isPresent() && deep.get()) {
             //TODO add MdSchemaHierarchiesResponse to response
-            getMdSchemaHierarchiesResponseRow(catalogName,
+            getMdSchemaHierarchiesResponseRow(cube, catalogName,
                 schemaName,
                 cubeName,
                 dimension,
@@ -1808,6 +1798,7 @@ public class Utils {
         List<Cube> cubes = s.getCubes() == null ? List.of() : Arrays.asList(s.getCubes());
         return getCubesWithFilter(cubes, oCubeName).stream()
             .map(c -> getMdSchemaHierarchiesResponseRow(
+                c,
                 catalogName,
                 s.getName(),
                 c,
@@ -1821,6 +1812,7 @@ public class Utils {
     }
 
     private static List<MdSchemaHierarchiesResponseRow> getMdSchemaHierarchiesResponseRow(
+        Cube cube,
         String catalogName,
         String schemaName,
         Cube c,
@@ -1837,6 +1829,7 @@ public class Utils {
         for (Dimension dimension : dimensions) {
             if (!oDimensionUniqueName.isPresent() || oDimensionUniqueName.get().equals(dimension.getUniqueName())) {
                 result.addAll(getMdSchemaHierarchiesResponseRow(
+                    cube,
                     catalogName,
                     schemaName,
                     c.getName(),
@@ -1854,6 +1847,7 @@ public class Utils {
     }
 
     private static List<MdSchemaHierarchiesResponseRow> getMdSchemaHierarchiesResponseRow(
+        Cube cube,
         String catalogName,
         String schemaName,
         String cubeName,
@@ -1871,6 +1865,7 @@ public class Utils {
         return getHierarchiesWithFilterByName(getHierarchiesWithFilterByUniqueName(hierarchies, oHierarchyName),
 oHierarchyName)
             .stream().map(h -> getMdSchemaHierarchiesResponseRow(
+                cube,
                 catalogName,
                 schemaName,
                 cubeName,
@@ -1884,6 +1879,7 @@ oHierarchyName)
     }
 
     private static MdSchemaHierarchiesResponseRow getMdSchemaHierarchiesResponseRow(
+        Cube cube,
         String catalogName,
         String schemaName,
         String cubeName,
@@ -1946,7 +1942,7 @@ oHierarchyName)
             Optional.empty(),
             Optional.ofNullable(hierarchy.getCaption()),
             Optional.ofNullable(getDimensionType(dimension.getDimensionType())),
-            Optional.of(getHierarchyCardinality(hierarchy)),
+            Optional.of(getHierarchyCardinality(cube, hierarchy)),
             Optional.ofNullable(hierarchy.getDefaultMember() == null ? null :
                 hierarchy.getDefaultMember().getUniqueName()),
             Optional.ofNullable((hierarchy.hasAll() && hierarchy.getRootMembers() != null && hierarchy.getRootMembers().size() > 0) ? hierarchy.getRootMembers().get(0).getUniqueName() : null),
@@ -1955,7 +1951,7 @@ oHierarchyName)
             Optional.of(false),
             Optional.of(false),
             // NOTE that SQL Server returns '0' not '1'.
-            Optional.of(DimensionUniqueSettingEnum.MEMBER_KEY),
+            Optional.of(DimensionUniqueSettingEnum.NONE),
             Optional.empty(),
             Optional.ofNullable(dimension.isVisible()),
             Optional.of(ordinal),
@@ -1971,11 +1967,12 @@ oHierarchyName)
 
     }
 
-    private static int getHierarchyCardinality(Hierarchy hierarchy) {
+    private static int getHierarchyCardinality(Cube cube, Hierarchy hierarchy) {
         int cardinality = 0;
         if (hierarchy.getLevels() != null) {
+            SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
             for (Level level : hierarchy.getLevels()) {
-                cardinality += level.getCardinality();
+                cardinality += schemaReader.getLevelCardinality(level, true, true);
             }
         }
         return cardinality;

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.daanse.xmla.api.annotation.Restriction;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_INTEGER;
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_STRING;
@@ -26,6 +27,7 @@ public interface MdSchemaCubesRestrictions {
     String RESTRICTIONS_CATALOG_NAME = "CATALOG_NAME";
     String RESTRICTIONS_SCHEMA_NAME = "SCHEMA_NAME";
     String RESTRICTIONS_CUBE_NAME = "CUBE_NAME";
+    String RESTRICTIONS_CUBE_TYPE = "CUBE_TYPE";
     String RESTRICTIONS_BASE_CUBE_NAME = "BASE_CUBE_NAME";
     String RESTRICTIONS_CUBE_SOURCE = "CUBE_SOURCE";
 
@@ -47,11 +49,14 @@ public interface MdSchemaCubesRestrictions {
     @Restriction(name = RESTRICTIONS_CUBE_NAME, type = XSD_STRING, order = 2)
     Optional<String> cubeName();
 
+    @Restriction(name = RESTRICTIONS_CUBE_TYPE, type = XSD_STRING, order = 3)
+    Optional<CubeTypeEnum> cubeType();
+
     /**
      * @return The name of the source cube if this cube is
      * a perspective cube.
      */
-    @Restriction(name = RESTRICTIONS_BASE_CUBE_NAME, type = XSD_STRING, order = 3)
+    @Restriction(name = RESTRICTIONS_BASE_CUBE_NAME, type = XSD_STRING, order = 4)
     Optional<String> baseCubeName();
 
     /**
@@ -59,6 +64,6 @@ public interface MdSchemaCubesRestrictions {
      * 0x01-Cube
      * 0x02-Dimension
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 4)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 5)
     Optional<CubeSourceEnum> cubeSource();
 }

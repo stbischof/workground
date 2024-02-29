@@ -23,6 +23,9 @@ import java.util.stream.Stream;
 @XmlEnum
 public enum DimensionUniqueSettingEnum {
 
+    @XmlEnumValue("0x00000000")
+    NONE(0x00000000),
+
     @XmlEnumValue("0x00000001")
     MEMBER_KEY(0x00000001),
 

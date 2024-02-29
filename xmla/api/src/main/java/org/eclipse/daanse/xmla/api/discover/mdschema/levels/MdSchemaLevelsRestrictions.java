@@ -17,9 +17,11 @@ import java.util.Optional;
 
 import org.eclipse.daanse.xmla.api.annotation.Restriction;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.LevelOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
 
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_INTEGER;
+import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_SHORT;
 import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_STRING;
 
 public interface MdSchemaLevelsRestrictions {
@@ -31,6 +33,7 @@ public interface MdSchemaLevelsRestrictions {
     String RESTRICTIONS_HIERARCHY_UNIQUE_NAME = "HIERARCHY_UNIQUE_NAME";
     String RESTRICTIONS_LEVEL_NAME = "LEVEL_NAME";
     String RESTRICTIONS_LEVEL_UNIQUE_NAME = "LEVEL_UNIQUE_NAME";
+    String RESTRICTIONS_LEVEL_ORIGIN = "LEVEL_ORIGIN";
     String RESTRICTIONS_CUBE_SOURCE = "CUBE_SOURCE";
     String RESTRICTIONS_LEVEL_VISIBILITY = "LEVEL_VISIBILITY";
 
@@ -79,13 +82,16 @@ public interface MdSchemaLevelsRestrictions {
     @Restriction(name = RESTRICTIONS_LEVEL_UNIQUE_NAME, type = XSD_STRING, order = 6)
     Optional<String> levelUniqueName();
 
+    @Restriction(name = RESTRICTIONS_LEVEL_ORIGIN, type = XSD_SHORT, order = 7)
+    Optional<LevelOriginEnum> levelOrigin();
+
     /**
      * @return A bitmask with one of these valid values:
      * 0x01 - Cube
      * 0x02 - Dimension<218>
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 7)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 8)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
@@ -94,7 +100,7 @@ public interface MdSchemaLevelsRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_LEVEL_VISIBILITY, type = XSD_INTEGER, order = 8)
+    @Restriction(name = RESTRICTIONS_LEVEL_VISIBILITY, type = XSD_INTEGER, order = 9)
     Optional<VisibilityEnum> levelVisibility();
 
 }

@@ -67,6 +67,6 @@ public interface MdSchemaMeasureGroupDimensionsRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER, order = 5)
+    //@Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER, order = 5)
     Optional<VisibilityEnum> dimensionVisibility();
 }

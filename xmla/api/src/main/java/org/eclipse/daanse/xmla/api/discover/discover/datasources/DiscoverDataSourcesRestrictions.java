@@ -45,19 +45,20 @@ public interface DiscoverDataSourcesRestrictions {
     /**
      * @return The unique path of the data source.
      */
+    @Restriction(name = RESTRICTIONS_URL, type = XSD_STRING, order = 2)
     Optional<String> url();
 
     /**
      * @return A string that contains any additional information required to
      * connect to the data source.
      */
-    @Restriction(name = RESTRICTIONS_DATA_SOURCE_INFO, type = XSD_STRING, order = 2)
+    //@Restriction(name = RESTRICTIONS_DATA_SOURCE_INFO, type = XSD_STRING, order = 3)
     Optional<String> dataSourceInfo();
 
     /**
      * @return The name of the provider for the data source.
      */
-    @Restriction(name = RESTRICTIONS_PROVIDER_NAME, type = XSD_STRING, order = 3)
+    @Restriction(name = RESTRICTIONS_PROVIDER_NAME, type = XSD_STRING, order = 4)
     String providerName();
 
     /**
@@ -68,7 +69,7 @@ public interface DiscoverDataSourcesRestrictions {
      * DMP: data mining provider (implements the OLE for DB
      * for Data Mining specification).
      */
-    @Restriction(name = RESTRICTIONS_PROVIDER_TYPE, type = XSD_STRING, order = 4)
+    @Restriction(name = RESTRICTIONS_PROVIDER_TYPE, type = XSD_STRING, order = 5)
     Optional<ProviderTypeEnum> providerType();
 
     /**
@@ -82,6 +83,6 @@ public interface DiscoverDataSourcesRestrictions {
      * Integrated: The data source uses the underlying
      * security to determine authorization.
      */
-    @Restriction(name = RESTRICTIONS_AUTHENTICATION_MODE, type = XSD_STRING, order = 5)
+    @Restriction(name = RESTRICTIONS_AUTHENTICATION_MODE, type = XSD_STRING, order = 6)
     Optional<AuthenticationModeEnum> authenticationMode();
 }

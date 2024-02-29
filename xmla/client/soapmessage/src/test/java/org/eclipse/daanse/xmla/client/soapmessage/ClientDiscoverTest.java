@@ -554,6 +554,7 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.DATA_SOURCE_INFO, "FoodMart");
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverXmlMetaDataRestrictionsR restrictions = new DiscoverXmlMetaDataRestrictionsR(
+            Optional.of("ObjectType"),
             Optional.of("DatabaseId"),
             Optional.of("DimensionId"),
             Optional.of("CubeId"),
@@ -1207,6 +1208,7 @@ class ClientDiscoverTest {
             "CatalogName",
             Optional.of("SchemaName"),
             Optional.of("CubeName"),
+            Optional.of(CubeTypeEnum.CUBE),
             Optional.of("BaseCubeName"),
             Optional.of(CubeSourceEnum.CUBE)
         );
@@ -1368,6 +1370,7 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.DATA_SOURCE_INFO, "FoodMart");
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         MdSchemaFunctionsRestrictionsR restrictions = new MdSchemaFunctionsRestrictionsR(
+            Optional.of("FunctionName"),
             Optional.of(OriginEnum.MSOLAP),
             Optional.of(InterfaceNameEnum.FILTER),
             Optional.of("LibraryName")
@@ -1629,6 +1632,7 @@ class ClientDiscoverTest {
             Optional.of("HierarchyUniqueName"),
             Optional.of("LevelName"),
             Optional.of("LevelUniqueName"),
+            Optional.of(LevelOriginEnum.NONE),
             Optional.of(CubeSourceEnum.CUBE),
             Optional.of(VisibilityEnum.VISIBLE)
         );
@@ -2062,8 +2066,9 @@ class ClientDiscoverTest {
             Optional.of("HierarchyUniqueName"),
             Optional.of("LevelUniqueName"),
             Optional.of("MemberUniqueName"),
-            Optional.of(PropertyTypeEnum.PROPERTY_MEMBER),
             Optional.of("PropertyName"),
+            Optional.of(PropertyTypeEnum.PROPERTY_MEMBER),
+            Optional.of(PropertyContentTypeEnum.REGULAR),
             Optional.of(PropertyOriginEnum.USER_DEFINED),
             Optional.of(CubeSourceEnum.CUBE),
             Optional.of(VisibilityEnum.VISIBLE)
@@ -2165,6 +2170,7 @@ class ClientDiscoverTest {
             Optional.of("CubeName"),
             Optional.of("SetName"),
             Optional.of(ScopeEnum.GLOBAL),
+            Optional.of("SetCaption"),
             Optional.of(CubeSourceEnum.CUBE),
             Optional.of("HierarchyUniqueName")
         );

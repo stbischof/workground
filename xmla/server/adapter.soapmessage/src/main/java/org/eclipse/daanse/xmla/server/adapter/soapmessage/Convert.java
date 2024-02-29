@@ -30,12 +30,14 @@ import org.eclipse.daanse.xmla.api.common.enums.AuthenticationModeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.MemberTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ObjectExpansionEnum;
 import org.eclipse.daanse.xmla.api.common.enums.OriginEnum;
+import org.eclipse.daanse.xmla.api.common.enums.PropertyContentTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ProviderTypeEnum;
@@ -154,6 +156,7 @@ public class Convert {
     public static MdSchemaFunctionsRestrictionsR discoverMdSchemaFunctionsRestrictions(SOAPElement restriction) {
         Map<String, String> m = getMapValuesByTag(restriction, RESTRICTION_LIST);
         return new MdSchemaFunctionsRestrictionsR(
+            Optional.ofNullable(m.get(FUNCTION_NAME)),
             Optional.ofNullable(OriginEnum.fromValue(m.get(ORIGIN))),
             Optional.ofNullable(InterfaceNameEnum.fromValue(m.get(INTERFACE_NAME))),
             Optional.ofNullable(m.get(LIBRARY_NAME))
@@ -179,6 +182,7 @@ public class Convert {
         return new MdSchemaCubesRestrictionsR(m.get(Constants.ROWSET.ROW_PROPERTY.CATALOG_NAME),
             Optional.ofNullable(m.get(Constants.ROWSET.ROW_PROPERTY.SCHEMA_NAME)),
             Optional.ofNullable(m.get(Constants.ROWSET.ROW_PROPERTY.CUBE_NAME)),
+            Optional.ofNullable(CubeTypeEnum.fromValue(m.get(CUBE_TYPE))),
             Optional.ofNullable(m.get(BASE_CUBE_NAME)),
             Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE))));
     }
@@ -210,6 +214,7 @@ public class Convert {
             Optional.ofNullable(m.get(Constants.ROWSET.ROW_PROPERTY.CUBE_NAME)),
             Optional.ofNullable(m.get(SET_NAME)),
             Optional.ofNullable(ScopeEnum.fromValue(m.get(SCOPE))),
+            Optional.ofNullable(m.get(SET_CAPTION)),
             Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE))),
             Optional.ofNullable(m.get(HIERARCHY_UNIQUE_NAME))
         );
@@ -225,8 +230,9 @@ public class Convert {
             Optional.ofNullable(m.get(HIERARCHY_UNIQUE_NAME)),
             Optional.ofNullable(m.get(LEVEL_UNIQUE_NAME)),
             Optional.ofNullable(m.get(MEMBER_UNIQUE_NAME)),
-            Optional.ofNullable(PropertyTypeEnum.fromValue(m.get(PROPERTY_TYPE))),
             Optional.ofNullable(m.get(PROPERTY_NAME2)),
+            Optional.ofNullable(PropertyTypeEnum.fromValue(m.get(PROPERTY_TYPE))),
+            Optional.ofNullable(PropertyContentTypeEnum.fromValue(m.get(PROPERTY_CONTENT_TYPE))),
             Optional.ofNullable(PropertyOriginEnum.fromValue(m.get(PROPERTY_ORIGIN))),
             Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE))),
             Optional.ofNullable(VisibilityEnum.fromValue(m.get(PROPERTY_VISIBILITY)))
@@ -290,6 +296,7 @@ public class Convert {
             Optional.ofNullable(m.get(HIERARCHY_UNIQUE_NAME)),
             Optional.ofNullable(m.get(LEVEL_NAME)),
             Optional.ofNullable(m.get(LEVEL_UNIQUE_NAME)),
+            Optional.empty(),
             Optional.empty(),
             // how to handle cubesource?
 //            Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE))),
@@ -364,6 +371,7 @@ public class Convert {
     public static DiscoverXmlMetaDataRestrictionsR discoverDiscoverXmlMetaDataRestrictions(SOAPElement restriction) {
         Map<String, String> m = getMapValuesByTag(restriction, RESTRICTION_LIST);
         return new DiscoverXmlMetaDataRestrictionsR(
+            Optional.ofNullable(m.get(OBJECT_TYPE)),
             Optional.ofNullable(m.get(DATABASE_ID)),
             Optional.ofNullable(m.get(DIMENSION_ID)),
             Optional.ofNullable(m.get(CUBE_ID)),

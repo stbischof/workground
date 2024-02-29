@@ -28,6 +28,7 @@ public interface MdSchemaSetsRestrictions {
     String RESTRICTIONS_CUBE_NAME = "CUBE_NAME";
     String RESTRICTIONS_SET_NAME = "SET_NAME";
     String RESTRICTIONS_SCOPE = "SCOPE";
+    String RESTRICTIONS_SET_CAPTION = "SET_CAPTION";
     String RESTRICTIONS_CUBE_SOURCE = "CUBE_SOURCE";
     String RESTRICTIONS_HIERARCHY_UNIQUE_NAME = "HIERARCHY_UNIQUE_NAME";
 
@@ -67,18 +68,21 @@ public interface MdSchemaSetsRestrictions {
     @Restriction(name = RESTRICTIONS_SCOPE, type = "xsd:int", order = 4)
     Optional<ScopeEnum> scope();
 
+    @Restriction(name = RESTRICTIONS_SET_CAPTION, type = XSD_STRING, order = 5)
+    Optional<String> setCaption();
+
     /**
      * A bitmask with one of the following valid values:
      * 0x01 - Cube
      * 0x02 - Dimension<233>
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 5)
+    //@Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 6)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
      * The unique name of the hierarchy that contains the set.
      */
-    @Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING, order = 6)
+    //@Restriction(name = RESTRICTIONS_HIERARCHY_UNIQUE_NAME, type = XSD_STRING, order = 7)
     Optional<String> hierarchyUniqueName();
 }

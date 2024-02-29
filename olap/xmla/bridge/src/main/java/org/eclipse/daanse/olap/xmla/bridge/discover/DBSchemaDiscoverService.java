@@ -345,6 +345,11 @@ public class DBSchemaDiscoverService {
         Optional<String> oTableSchema = request.restrictions().tableSchema();
         Optional<String> oTableName = request.restrictions().tableName();
         Optional<String> oTableType = request.restrictions().tableType();
+
+        if (oTableCatalog.isEmpty()) {
+            oTableCatalog = request.properties().catalog();
+        }
+
         if (oTableCatalog.isPresent()) {
             Optional<Context> oContext = oTableCatalog.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {

@@ -19,8 +19,9 @@ import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
 import org.eclipse.daanse.xmla.api.common.enums.OriginEnum;
 import org.eclipse.daanse.xmla.api.discover.mdschema.functions.MdSchemaFunctionsRestrictions;
 
-public record MdSchemaFunctionsRestrictionsR(Optional<OriginEnum> origin,
-                                                     Optional<InterfaceNameEnum> interfaceName,
-                                                     Optional<String> libraryName) implements MdSchemaFunctionsRestrictions {
+public record MdSchemaFunctionsRestrictionsR(Optional<String> functionName,
+                                             Optional<OriginEnum> origin,
+                                             Optional<InterfaceNameEnum> interfaceName,
+                                             Optional<String> libraryName) implements MdSchemaFunctionsRestrictions {
 
 }

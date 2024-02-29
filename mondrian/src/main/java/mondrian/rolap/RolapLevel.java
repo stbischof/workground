@@ -519,7 +519,7 @@ public class RolapLevel extends LevelBase {
     @Override
     public int getCardinality() {
         //TODO
-        return cardinality;
+        return getApproxRowCount();
     }
 
     @Override

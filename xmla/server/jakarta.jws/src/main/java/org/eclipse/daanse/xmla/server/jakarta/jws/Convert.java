@@ -28,12 +28,15 @@ import org.eclipse.daanse.xmla.api.common.enums.AuthenticationModeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.LevelOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.MemberTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ObjectExpansionEnum;
 import org.eclipse.daanse.xmla.api.common.enums.OriginEnum;
+import org.eclipse.daanse.xmla.api.common.enums.PropertyContentTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ProviderTypeEnum;
@@ -760,9 +763,11 @@ public class Convert {
         String cubeName = map.get(MdSchemaCubesRestrictions.RESTRICTIONS_CUBE_NAME);
         String baseCubeName = map.get(MdSchemaCubesRestrictions.RESTRICTIONS_BASE_CUBE_NAME);
         String cubeSource = map.get(MdSchemaCubesRestrictions.RESTRICTIONS_CUBE_SOURCE);
+        String cubeType = map.get(MdSchemaCubesRestrictions.RESTRICTIONS_CUBE_TYPE);
 
         return new MdSchemaCubesRestrictionsR(catalogName, Optional.ofNullable(schemaName), Optional.ofNullable(cubeName),
-                Optional.ofNullable(baseCubeName), Optional.ofNullable(CubeSourceEnum.fromValue(cubeSource)));
+            Optional.ofNullable(CubeTypeEnum.fromValue(cubeType)), Optional.ofNullable(baseCubeName),
+            Optional.ofNullable(CubeSourceEnum.fromValue(cubeSource)));
     }
 
     public static DiscoverResponse toDiscoverMdSchemaCubes(List<MdSchemaCubesResponseRow> responseApi)
@@ -918,12 +923,14 @@ public class Convert {
     private static MdSchemaFunctionsRestrictionsR discoverMdSchemaFunctionsRestrictions(Discover requestWs) {
         Map<String, String> map = restrictionsMap(requestWs);
 
+        String functionName = map.get(MdSchemaFunctionsRestrictions.RESTRICTIONS_FUNCTION_NAME);
         String origin = map.get(MdSchemaFunctionsRestrictions.RESTRICTIONS_ORIGIN);
         String interfaceName = map.get(MdSchemaFunctionsRestrictions.RESTRICTIONS_INTERFACE_NAME);
         String libraryName = map.get(MdSchemaFunctionsRestrictions.RESTRICTIONS_LIBRARY_NAME);
 
-        return new MdSchemaFunctionsRestrictionsR(Optional.ofNullable(OriginEnum.fromValue(origin)),
-                Optional.ofNullable(InterfaceNameEnum.fromValue(interfaceName)), Optional.ofNullable(libraryName));
+        return new MdSchemaFunctionsRestrictionsR(Optional.ofNullable(functionName),
+            Optional.ofNullable(OriginEnum.fromValue(origin)),
+            Optional.ofNullable(InterfaceNameEnum.fromValue(interfaceName)), Optional.ofNullable(libraryName));
     }
 
     public static DiscoverResponse toDiscoverMdSchemaFunctions(List<MdSchemaFunctionsResponseRow> responseApi) throws JAXBException, IOException {
@@ -1212,9 +1219,10 @@ public class Convert {
         String dataSourceViewId = map.get(DiscoverXmlMetaDataRestrictions.RESTRICTIONS_DATA_SOURCE_VIEW_ID);
         String dataSourcePermissionId = map.get(DiscoverXmlMetaDataRestrictions.RESTRICTIONS_DATA_SOURCE_PERMISSION_ID);
         String objectExpansion = map.get(DiscoverXmlMetaDataRestrictions.RESTRICTIONS_OBJECT_EXPANSION);
-
+        String objectType = map.get(DiscoverXmlMetaDataRestrictions.RESTRICTIONS_OBJECT_TYPE);
 
         return new DiscoverXmlMetaDataRestrictionsR(
+            Optional.ofNullable(objectType),
             Optional.ofNullable(databaseId),
             Optional.ofNullable(dimensionId),
             Optional.ofNullable(cubeId),
@@ -1483,7 +1491,7 @@ public class Convert {
         String levelUniqueName = map.get(MdSchemaLevelsRestrictions.RESTRICTIONS_LEVEL_UNIQUE_NAME);
         String cubeSource = map.get(MdSchemaLevelsRestrictions.RESTRICTIONS_CUBE_SOURCE);
         String levelVisibility = map.get(MdSchemaLevelsRestrictions.RESTRICTIONS_LEVEL_VISIBILITY);
-
+        LevelOriginEnum levelOrigin = LevelOriginEnum.fromValue(map.get(MdSchemaLevelsRestrictions.RESTRICTIONS_LEVEL_ORIGIN));
         return new MdSchemaLevelsRestrictionsR(
             Optional.ofNullable(catalogName),
             Optional.ofNullable(schemaName),
@@ -1492,6 +1500,7 @@ public class Convert {
             Optional.ofNullable(hierarchyUniqueName),
             Optional.ofNullable(levelName),
             Optional.ofNullable(levelUniqueName),
+            Optional.ofNullable(levelOrigin),
             Optional.ofNullable(CubeSourceEnum.fromValue(cubeSource)),
             Optional.ofNullable(VisibilityEnum.fromValue(levelVisibility)));
     }
@@ -1866,6 +1875,7 @@ public class Convert {
         String propertyOrigin = map.get(MdSchemaPropertiesRestrictions.RESTRICTIONS_PROPERTY_ORIGIN);
         String cubeSource = map.get(MdSchemaPropertiesRestrictions.RESTRICTIONS_CUBE_SOURCE);
         String propertyVisibility = map.get(MdSchemaPropertiesRestrictions.RESTRICTIONS_PROPERTY_VISIBILITY);
+        String propertyContentType = map.get(MdSchemaPropertiesRestrictions.RESTRICTIONS_PROPERTY_CONTENT_TYPE);
 
         return new MdSchemaPropertiesRestrictionsR(
             Optional.ofNullable(catalogName),
@@ -1875,8 +1885,9 @@ public class Convert {
             Optional.ofNullable(hierarchyUniqueName),
             Optional.ofNullable(levelUniqueName),
             Optional.ofNullable(memberUniqueName),
-            Optional.ofNullable(PropertyTypeEnum.fromValue(propertyType)),
             Optional.ofNullable(propertyName),
+            Optional.ofNullable(PropertyTypeEnum.fromValue(propertyType)),
+            Optional.ofNullable(PropertyContentTypeEnum.fromValue(propertyContentType)),
             Optional.ofNullable(PropertyOriginEnum.fromValue(propertyOrigin)),
             Optional.ofNullable(CubeSourceEnum.fromValue(cubeSource)),
             Optional.ofNullable(VisibilityEnum.fromValue(propertyVisibility)));
@@ -1972,6 +1983,7 @@ public class Convert {
         String scope = map.get(MdSchemaSetsRestrictions.RESTRICTIONS_SCOPE);
         String cubeSource = map.get(MdSchemaSetsRestrictions.RESTRICTIONS_CUBE_SOURCE);
         String hierarchyUniqueName = map.get(MdSchemaSetsRestrictions.RESTRICTIONS_HIERARCHY_UNIQUE_NAME);
+        String setCaption = map.get(MdSchemaSetsRestrictions.RESTRICTIONS_SET_CAPTION);
 
         return new MdSchemaSetsRestrictionsR(
             Optional.ofNullable(catalogName),
@@ -1979,6 +1991,7 @@ public class Convert {
             Optional.ofNullable(cubeName),
             Optional.ofNullable(setName),
             Optional.ofNullable(ScopeEnum.fromValue(scope)),
+            Optional.ofNullable(setCaption),
             Optional.ofNullable(CubeSourceEnum.fromValue(cubeSource)),
             Optional.ofNullable(hierarchyUniqueName));
     }

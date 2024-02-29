@@ -24,9 +24,13 @@ import static org.eclipse.daanse.xmla.api.common.properties.XsdType.XSD_STRING;
 
 public interface MdSchemaFunctionsRestrictions {
 
+    String RESTRICTIONS_FUNCTION_NAME = "FUNCTION_NAME";
     String RESTRICTIONS_ORIGIN = "ORIGIN";
     String RESTRICTIONS_INTERFACE_NAME = "INTERFACE_NAME";
     String RESTRICTIONS_LIBRARY_NAME = "LIBRARY_NAME";
+
+    @Restriction(name = RESTRICTIONS_FUNCTION_NAME, type = XSD_STRING, order = 0)
+    Optional<String> functionName();
 
     /**
      * @return The possible values are as follows:
@@ -35,7 +39,7 @@ public interface MdSchemaFunctionsRestrictions {
      * (0x3) RELATIONAL
      * (0x4) SCALAR
      */
-    @Restriction(name = RESTRICTIONS_ORIGIN, type = XSD_INTEGER, order = 0)
+    @Restriction(name = RESTRICTIONS_ORIGIN, type = XSD_INTEGER, order = 1)
     Optional<OriginEnum> origin();
 
     /**

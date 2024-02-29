@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 public enum DimensionUniqueSettingEnum {
 
+    NONE(0x00000000),
     MEMBER_KEY(0x00000001),
     MEMBER_NAME(0x00000002);
 

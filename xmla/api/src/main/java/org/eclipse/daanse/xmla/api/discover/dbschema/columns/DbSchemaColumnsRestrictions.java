@@ -60,6 +60,7 @@ public interface DbSchemaColumnsRestrictions {
      * SCHEMA indicates that the object is a
      * column in a schema rowset table.
      */
-    @Restriction(name = RESTRICTIONS_COLUMN_OLAP_TYPE, type = XsdType.XSD_STRING, order = 4)
+    //@Restriction(name = RESTRICTIONS_COLUMN_OLAP_TYPE, type = XsdType.XSD_STRING, order = 4)
+    //absent in old mondrian
     Optional<ColumnOlapTypeEnum> columnOlapType();
 }

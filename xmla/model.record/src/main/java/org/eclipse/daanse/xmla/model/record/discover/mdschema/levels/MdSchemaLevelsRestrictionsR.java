@@ -16,6 +16,7 @@ package org.eclipse.daanse.xmla.model.record.discover.mdschema.levels;
 import java.util.Optional;
 
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
+import org.eclipse.daanse.xmla.api.common.enums.LevelOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.VisibilityEnum;
 import org.eclipse.daanse.xmla.api.discover.mdschema.levels.MdSchemaLevelsRestrictions;
 
@@ -27,6 +28,7 @@ public record MdSchemaLevelsRestrictionsR(
     Optional<String> hierarchyUniqueName,
     Optional<String> levelName,
     Optional<String> levelUniqueName,
+    Optional<LevelOriginEnum> levelOrigin,
     Optional<CubeSourceEnum> cubeSource,
     Optional<VisibilityEnum> levelVisibility) implements MdSchemaLevelsRestrictions {
 }

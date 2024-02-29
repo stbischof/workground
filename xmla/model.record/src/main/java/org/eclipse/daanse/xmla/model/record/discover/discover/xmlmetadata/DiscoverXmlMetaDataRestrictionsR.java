@@ -19,6 +19,7 @@ import org.eclipse.daanse.xmla.api.common.enums.ObjectExpansionEnum;
 import org.eclipse.daanse.xmla.api.discover.discover.xmlmetadata.DiscoverXmlMetaDataRestrictions;
 
 public record DiscoverXmlMetaDataRestrictionsR(
+    Optional<String> objectType,
     Optional<String> databaseId,
     Optional<String> dimensionId,
     Optional<String> cubeId,

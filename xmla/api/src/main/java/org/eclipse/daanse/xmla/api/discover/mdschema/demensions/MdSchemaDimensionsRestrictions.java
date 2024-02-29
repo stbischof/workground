@@ -68,7 +68,7 @@ public interface MdSchemaDimensionsRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 5)
+    //@Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 5)
     Optional<CubeSourceEnum> cubeSource();
 
     /**
@@ -77,6 +77,6 @@ public interface MdSchemaDimensionsRestrictions {
      * 0x02 - Not Visible
      * The default restriction is a value of 1.
      */
-    @Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER, order = 6)
+    //@Restriction(name = RESTRICTIONS_DIMENSION_VISIBILITY, type = XSD_INTEGER, order = 6)
     Optional<VisibilityEnum> dimensionVisibility();
 }

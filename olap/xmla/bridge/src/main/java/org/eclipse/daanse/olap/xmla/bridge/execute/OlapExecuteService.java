@@ -434,7 +434,7 @@ public class OlapExecuteService implements ExecuteService {
                 break;
             case OperationNames.MDSCHEMA_FUNCTIONS:
                 MdSchemaFunctionsRestrictionsR mdSchemaFunctionsRestrictions =
-                    new MdSchemaFunctionsRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty());
+                    new MdSchemaFunctionsRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
                 MdSchemaFunctionsRequest mdSchemaFunctionsRequest =
                     new MdSchemaFunctionsRequestR((PropertiesR) statementRequest.properties(),
                         mdSchemaFunctionsRestrictions);
@@ -454,7 +454,7 @@ public class OlapExecuteService implements ExecuteService {
             case OperationNames.MDSCHEMA_CUBES:
                 MdSchemaCubesRestrictionsR mdSchemaCubesRestrictions =
                     new MdSchemaCubesRestrictionsR(null, Optional.empty(), Optional.empty(), Optional.empty(),
-                        Optional.empty());
+                        Optional.empty(), Optional.empty());
                 MdSchemaCubesRequest mdSchemaCubesRequest =
                     new MdSchemaCubesRequestR((PropertiesR) statementRequest.properties(),
                         mdSchemaCubesRestrictions);
@@ -484,7 +484,7 @@ public class OlapExecuteService implements ExecuteService {
             case OperationNames.MDSCHEMA_LEVELS:
                 MdSchemaLevelsRestrictionsR mdSchemaLevelsRestrictions =
                     new MdSchemaLevelsRestrictionsR(Optional.empty(), Optional.empty(), null, Optional.empty(),
-                        Optional.empty(), Optional.empty(), null, null, Optional.empty());
+                        Optional.empty(), Optional.empty(), null, Optional.empty(), null, Optional.empty());
                 MdSchemaLevelsRequest mdSchemaLevelsRequest =
                     new MdSchemaLevelsRequestR((PropertiesR) statementRequest.properties(),
                         mdSchemaLevelsRestrictions);
@@ -526,7 +526,7 @@ public class OlapExecuteService implements ExecuteService {
                 MdSchemaPropertiesRestrictionsR mdSchemaPropertiesRestrictions =
                     new MdSchemaPropertiesRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                        Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+                        Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
                 MdSchemaPropertiesRequest mdSchemaPropertiesRequest =
                     new MdSchemaPropertiesRequestR((PropertiesR) statementRequest.properties(),
                         mdSchemaPropertiesRestrictions);
@@ -535,7 +535,7 @@ public class OlapExecuteService implements ExecuteService {
                 break;
             case OperationNames.MDSCHEMA_SETS:
                 MdSchemaSetsRestrictionsR mdSchemaSetsRestrictions =
-                    new MdSchemaSetsRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(),
+                    new MdSchemaSetsRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
                 MdSchemaSetsRequest mdSchemaSetsRequest =
                     new MdSchemaSetsRequestR((PropertiesR) statementRequest.properties(),
@@ -620,7 +620,7 @@ public class OlapExecuteService implements ExecuteService {
                 break;
             case OperationNames.DISCOVER_XML_METADATA:
                 DiscoverXmlMetaDataRestrictionsR discoverXmlMetaDataRestrictions =
-                    new DiscoverXmlMetaDataRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(),
+                    new DiscoverXmlMetaDataRestrictionsR(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                         Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
