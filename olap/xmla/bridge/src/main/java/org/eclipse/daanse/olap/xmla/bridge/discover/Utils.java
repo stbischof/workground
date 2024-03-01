@@ -1284,7 +1284,9 @@ public class Utils {
         return getCubesWithFilter(cubes, oCubeName).stream().
             map(c -> getMdSchemaDimensionsResponseRow(catalogName, schema.getName(), c, oDimensionName,
                 oDimensionUniqueName, cubeSource, oDimensionVisibility, deep)).
-            flatMap(Collection::stream).toList();
+            flatMap(Collection::stream)
+            .sorted(Comparator.comparing(r -> r.dimensionUniqueName().orElse("")))
+            .toList();
     }
 
     private static List<MdSchemaDimensionsResponseRow> getMdSchemaDimensionsResponseRow(
@@ -1473,7 +1475,7 @@ public class Utils {
         List<Dimension> dimensions = cube.getDimensions() == null ? List.of() : Arrays.asList(cube.getDimensions());
         return getDimensionsWithFilterByUniqueName(dimensions, oDimensionUniqueName)
             .stream()
-            .map(d -> getMdSchemaLevelsResponseRow(catalogName, schemaName, cube.getName(), d, oHierarchyUniqueName,
+            .map(d -> getMdSchemaLevelsResponseRow(cube, catalogName, schemaName, cube.getName(), d, oHierarchyUniqueName,
                 oLevelName, oLevelUniqueName,
                 oLevelVisibility))
             .flatMap(Collection::stream).toList();
@@ -1500,6 +1502,7 @@ public class Utils {
     }
 
     private static List<MdSchemaLevelsResponseRow> getMdSchemaLevelsResponseRow(
+        Cube cube,
         String catalogName,
         String schemaName,
         String cubeName,
@@ -1513,6 +1516,7 @@ public class Utils {
             Arrays.asList(dimension.getHierarchies());
         return getHierarchiesWithFilterByUniqueName(hierarchies, oHierarchyUniqueName)
             .stream().map(h -> getMdSchemaLevelsResponseRow(
+                cube,
                 catalogName,
                 schemaName,
                 cubeName,
@@ -1534,6 +1538,7 @@ public class Utils {
     }
 
     private static List<MdSchemaLevelsResponseRow> getMdSchemaLevelsResponseRow(
+        Cube cube,
         String catalogName,
         String schemaName,
         String cubeName,
@@ -1566,7 +1571,8 @@ public class Utils {
                 // According to microsoft this is:
                 //   "The number of members in the level."
                 //int levelCardinality = extra.getLevelCardinality(level); //TODO
-                int levelCardinality = 1; //TODO
+                SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
+                int levelCardinality = schemaReader.getLevelCardinality(level, true, true);
 
                 return (MdSchemaLevelsResponseRow) new MdSchemaLevelsResponseRowR(
                     Optional.ofNullable(catalogName),
@@ -1808,7 +1814,9 @@ public class Utils {
                 oHierarchyVisibility,
                 oHierarchyOrigin,
                 deep
-            )).flatMap(Collection::stream).toList();
+            )).flatMap(Collection::stream)
+            .sorted(Comparator.comparing(r -> r.hierarchyUniqueName().orElse("")))
+            .toList();
     }
 
     private static List<MdSchemaHierarchiesResponseRow> getMdSchemaHierarchiesResponseRow(
@@ -1922,7 +1930,7 @@ oHierarchyName)
         //TODO ParentChild
         if (deep.isPresent() && deep.get()) {
             //TODO add MdSchemaLevelsResponse to response
-            getMdSchemaLevelsResponseRow(catalogName,
+            getMdSchemaLevelsResponseRow(cube, catalogName,
                 schemaName,
                 cubeName,
                 dimension.getUniqueName(),
@@ -1932,6 +1940,10 @@ oHierarchyName)
                 Optional.empty()
             );
         }
+
+        SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
+        final List<Member> levelMembers = schemaReader.getLevelMembers(
+                    hierarchy.getLevels()[0], true);
         return new MdSchemaHierarchiesResponseRowR(
             Optional.ofNullable(catalogName),
             Optional.ofNullable(schemaName),
@@ -1945,7 +1957,7 @@ oHierarchyName)
             Optional.of(getHierarchyCardinality(cube, hierarchy)),
             Optional.ofNullable(hierarchy.getDefaultMember() == null ? null :
                 hierarchy.getDefaultMember().getUniqueName()),
-            Optional.ofNullable((hierarchy.hasAll() && hierarchy.getRootMembers() != null && hierarchy.getRootMembers().size() > 0) ? hierarchy.getRootMembers().get(0).getUniqueName() : null),
+            Optional.ofNullable((hierarchy.hasAll() && levelMembers != null && levelMembers.size() > 0) ? levelMembers.get(0).getUniqueName() : null),
             Optional.ofNullable(desc),
             Optional.of(StructureEnum.HIERARCHY_FULLY_BALANCED),
             Optional.of(false),

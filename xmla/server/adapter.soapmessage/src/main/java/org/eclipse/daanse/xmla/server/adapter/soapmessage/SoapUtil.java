@@ -718,6 +718,8 @@ public class SoapUtil {
         r.hierarchyOrigin()
                 .ifPresent(v -> addChildElement(row, "HIERARCHY_ORIGIN", prefix, String.valueOf(v.getValue())));
         r.hierarchyDisplayFolder().ifPresent(v -> addChildElement(row, "HIERARCHY_DISPLAY_FOLDER", prefix, v));
+        //r.hierarchyIsVisible().ifPresent(v -> addChildElement(row, "HIERARCHY_VISIBILITY", prefix, v == true ? "1" : "0"));
+        //addChildElement(row, "PARENT_CHILD", prefix, "false");
         r.instanceSelection()
                 .ifPresent(v -> addChildElement(row, "INSTANCE_SELECTION", prefix, String.valueOf(v.getValue())));
         r.groupingBehavior()
@@ -2464,7 +2466,7 @@ public class SoapUtil {
         SOAPElement r = addChildElement(st, "restriction", "xsd");
         r.setAttribute("base", "xsd:string");
         SOAPElement p = addChildElement(r, "pattern", "xsd");
-        p.setAttribute("value", "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}");
+        p.setAttribute("value", "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
         return schema;
     }
 
