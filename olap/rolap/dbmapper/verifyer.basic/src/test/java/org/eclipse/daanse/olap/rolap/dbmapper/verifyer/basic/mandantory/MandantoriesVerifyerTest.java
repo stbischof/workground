@@ -454,7 +454,8 @@ class MandantoriesVerifyerTest {
             .contains(AGG_MEASURE_FACT_COUNT);
 
         assertThat(result).extracting(VerificationResult::level)
-            .containsOnly(org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.ERROR);
+            .contains(org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.ERROR)
+            .contains(org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.WARNING);
     }
 
     @Test

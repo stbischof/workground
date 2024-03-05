@@ -20,7 +20,6 @@
   <artifactId>org.eclipse.daanse.db.jdbc</artifactId>
   <packaging>pom</packaging>
   <modules>
-      <module>metadata</module>
       <module>util</module>
       <module>dataloader</module>
       <module>ecoregen</module>

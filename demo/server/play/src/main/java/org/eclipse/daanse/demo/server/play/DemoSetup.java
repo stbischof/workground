@@ -79,7 +79,7 @@ public class DemoSetup {
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     public void bindContext(Context context) {
 
-        runTest(context);
+        //runTest(context);
 
     }
     

@@ -98,7 +98,6 @@
 	org.eclipse.daanse.db.dialect.db.h2;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.resolver.basic;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.jdbc.dataloader.csvtoh2;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.db.jdbc.metadata;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.statistics.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.statistics.metadata;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.demo.server.play;version='[0.0.1,0.0.2)',\

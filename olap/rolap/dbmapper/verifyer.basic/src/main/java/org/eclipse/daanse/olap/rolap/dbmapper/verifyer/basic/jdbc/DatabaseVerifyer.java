@@ -13,8 +13,7 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataService;
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataServiceFactory;
+import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
@@ -31,6 +30,7 @@ import org.osgi.util.converter.Converters;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class DatabaseVerifyer implements Verifyer {
     public static final Converter CONVERTER = Converters.standardConverter();
 
     @Reference
-    JdbcMetaDataServiceFactory jmdsf;
+    DatabaseService databaseService;
 
     private DatabaseVerifierConfig config;
 
@@ -63,9 +63,8 @@ public class DatabaseVerifyer implements Verifyer {
         List<VerificationResult> results = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            JdbcMetaDataService jmds = jmdsf.create(connection);
-
-            JDBCSchemaWalker walker = new JDBCSchemaWalker(config, jmds);
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            JDBCSchemaWalker walker = new JDBCSchemaWalker(config, databaseService, databaseMetaData);
             return walker.checkSchema(schema);
 
         } catch (SQLException e) {

@@ -13,7 +13,14 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataService;
+import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.common.jdbc.db.api.sql.ColumnDefinition;
+import org.eclipse.daanse.common.jdbc.db.api.sql.ColumnReference;
+import org.eclipse.daanse.common.jdbc.db.api.sql.SchemaReference;
+import org.eclipse.daanse.common.jdbc.db.api.sql.TableReference;
+import org.eclipse.daanse.common.jdbc.db.record.sql.element.ColumnReferenceR;
+import org.eclipse.daanse.common.jdbc.db.record.sql.element.SchemaReferenceR;
+import org.eclipse.daanse.common.jdbc.db.record.sql.element.TableReferenceR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
@@ -27,7 +34,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.AbstractSchemaWalke
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaExplorer;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.VerificationResultR;
 
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause.DATABASE;
@@ -71,12 +80,14 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 
 public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
-    private JdbcMetaDataService jmds;
+    private DatabaseService databaseService;
     private DatabaseVerifierConfig config;
+    private DatabaseMetaData databaseMetaData;
 
-    public JDBCSchemaWalker(DatabaseVerifierConfig config, JdbcMetaDataService jmds) {
+    public JDBCSchemaWalker(DatabaseVerifierConfig config, DatabaseService databaseService, DatabaseMetaData databaseMetaData) {
         this.config = config;
-        this.jmds = jmds;
+        this.databaseService = databaseService;
+        this.databaseMetaData = databaseMetaData;
     }
 
     @Override
@@ -86,8 +97,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         if (cube.fact() instanceof MappingTable table) {
             String schemaName = table.schema();
             String factTable = table.name();
+            TableReference tableReference = getTableReference(schemaName, factTable);
             try {
-                if (!jmds.doesTableExist(schemaName, factTable)) {
+                if (!databaseService.tableExists(databaseMetaData, tableReference)) {
                     String msg = String.format(CUBE_MUST_CONTAIN_MEASURES, orNotSet(cube.name()));
                     results.add(new VerificationResultR(CUBE, msg,
                         ERROR, DATABASE));
@@ -113,8 +125,10 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             // Database validity check, if database connection is
             // successful
             String column = measure.column();
+            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             try {
-                if (jmds.doesColumnExist(factTable.schema(), factTable.name(), column)) {
+                if (databaseService.columnExists(databaseMetaData, columnReference)) {
                     // Check for aggregator type only if column
                     // exists in table.
 
@@ -139,8 +153,11 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             cube.fact() instanceof MappingTable factTable) {
 
             String foreignKey = (cubeDimension).foreignKey();
+            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), foreignKey);
+
             try {
-                if (!jmds.doesColumnExist(factTable.schema(), factTable.name(), foreignKey)) {
+                if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                     String msg = String.format(CUBE_DIMENSION_FOREIGN_KEY_S_DOES_NOT_EXIST_IN_FACT_TABLE,
                         foreignKey);
                     results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, DATABASE));
@@ -173,9 +190,10 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             pkTable = table.name();
             schema = table.schema();
         }
-
         try {
-            if (pkTable != null && !jmds.doesColumnExist(schema, pkTable, hierarchy.primaryKey())) {
+            TableReference tableReference = getTableReference(schema, pkTable);
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), hierarchy.primaryKey());
+            if (pkTable != null && !databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE,
                     isEmpty(hierarchy.primaryKey()
                         .trim()) ? "' '" : hierarchy.primaryKey(),
@@ -219,7 +237,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             }
         } else {
             try {
-                if (!jmds.doesColumnExist(null, table, column)) {
+                TableReference tableReference = getTableReference(null, table);
+                ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+                if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                     String msg = String.format(COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S, column, table);
                     results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
                 }
@@ -237,7 +257,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         super.checkTable(table);
         String tableName = table.name();
         try {
-            if (!jmds.doesTableExist(null, tableName)) {
+            TableReference tableReference = getTableReference(null, tableName);
+            if (!databaseService.tableExists(databaseMetaData, tableReference)) {
                 String msg = String.format(TABLE_S_DOES_NOT_EXIST_IN_DATABASE, tableName);
                 results.add(new VerificationResultR(TABLE, msg, ERROR, DATABASE));
             }
@@ -248,7 +269,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
         String theSchema = table.schema();
         try {
-            if (!isEmpty(theSchema) && !jmds.doesSchemaExist(theSchema)) {
+            List<SchemaReference> schemaList = databaseService.getSchemas(databaseMetaData);
+            if (!isEmpty(theSchema) &&  !schemaList.stream().filter(sr -> theSchema.equals(sr.name())).findFirst().isPresent()) {
                 String msg = String.format(SCHEMA_S_DOES_NOT_EXIST, theSchema);
                 results.add(new VerificationResultR(TABLE, msg, ERROR, DATABASE));
             }
@@ -305,7 +327,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkPropertyHierarchyRelationTable(MappingTable parentTable, String column) {
         try {
-            if (!jmds.doesColumnExist(parentTable.schema(), parentTable.name(), column)) {
+            TableReference tableReference = getTableReference(parentTable.schema(), parentTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE,
                     parentTable.name());
                 results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
@@ -323,7 +347,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         // hierarchy table not specified
         final MappingTable factTable = (MappingTable) cube.fact();
         try {
-            if (!jmds.doesColumnExist(factTable.schema(), factTable.name(), column)) {
+            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(
                     DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE,
                     column);
@@ -339,9 +365,12 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     private void checkMeasureColumnDataType(MappingMeasure measure, MappingTable factTable) {
         // Check if aggregator selected is valid on
         // the data type of the column selected.
-        Optional<Integer> oColType = Optional.empty();
+        Optional<ColumnDefinition> optionalColumnDefinition = Optional.empty();
         try {
-            oColType = jmds.getColumnDataType(factTable.schema(), factTable.name(), measure.column());
+            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
+            List<ColumnDefinition> columnDefinitionList = databaseService.getColumnDefinitions(databaseMetaData, columnReference);
+            optionalColumnDefinition  = columnDefinitionList.stream().filter(c -> columnReference.name().equals(c.column().name())).findFirst();
         } catch (SQLException e) {
 
             String msg = String.format(COULD_NOT_QUERY_COLUMN_DATA_TYPE_ON_SCHEMA_TABLE_COLUMN,
@@ -358,8 +387,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             // be numeric
             agIndex = 0;
         }
-        if (oColType.isPresent()) {
-            int colType = oColType.get();
+        if (optionalColumnDefinition.isPresent() && optionalColumnDefinition.get().columnType() != null) {
+            int colType = optionalColumnDefinition.get().columnType().dataType();
             if (!(agIndex == -1 || (colType >= 2 && colType <= 8) || colType == -5 || colType == -6)) {
                 String msg = String.format(AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN,
                     measure.aggregator(), measure.column());
@@ -387,7 +416,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnWithHierarchyRelationTable(MappingTable parentTable, String column, String fieldName, MappingHierarchy parentHierarchy) {
         try {
-            if (!jmds.doesColumnExist(parentTable.schema(), parentTable.name(), column)) {
+            TableReference tableReference = getTableReference(parentTable.schema(), parentTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE,
                     isEmpty(column.trim()) ? "' '" : column, fieldName,
                     parentTable.name());
@@ -403,8 +434,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnWithCubeFctTable(String column, String fieldName, MappingCube cube) {
         try {
-            if (!jmds.doesColumnExist(((MappingTable) cube.fact()).schema(), ((MappingTable) cube.fact()).name(),
-                column)) {
+            TableReference tableReference = getTableReference(((MappingTable) cube.fact()).schema(), ((MappingTable) cube.fact()).name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg =
                     String.format(DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE1, column);
                 results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
@@ -428,7 +460,9 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             checkJoin(join);
         }
         try {
-            if (!jmds.doesColumnExist(schema, table, column)) {
+            TableReference tableReference = getTableReference(schema, table);
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(COLUMN_S_DEFINED_IN_FIELD_S_DOES_NOT_EXIST_IN_TABLE_S2,
                     isEmpty(column.trim()) ? "' '" : column, fieldName, table);
                 results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
@@ -441,4 +475,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         }
     }
 
+    private TableReference getTableReference(String schemaName, String tableName) {
+        return new TableReferenceR(Optional.ofNullable(schemaName != null ? new SchemaReferenceR(schemaName) : null),
+            tableName);
+    }
 }

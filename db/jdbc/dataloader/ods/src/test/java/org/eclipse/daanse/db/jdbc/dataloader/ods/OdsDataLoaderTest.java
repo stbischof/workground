@@ -3,8 +3,6 @@ package org.eclipse.daanse.db.jdbc.dataloader.ods;
 import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataService;
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataServiceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +48,7 @@ class OdsDataLoaderTest {
 
     @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     Path path;
- 
+
     @InjectBundleContext
     BundleContext bc;
     DialectResolver dialectResolver = mock(DialectResolver.class);
@@ -76,7 +74,7 @@ class OdsDataLoaderTest {
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(connection.createStatement()).thenReturn(preparedStatement);
         when(connection.getSchema()).thenReturn("testSchema");
-        when(preparedStatement.getConnection()).thenReturn(connection);       
+        when(preparedStatement.getConnection()).thenReturn(connection);
         bc.registerService(DialectResolver.class, dialectResolver, dictionaryOf("dr", "2"));
         bc.registerService(DataSource.class, dataSource, dictionaryOf("ds", "1"));
 
@@ -125,8 +123,8 @@ class OdsDataLoaderTest {
         copy("ods/schema1/test.ods");
         Thread.sleep(2000);
 
-        verify(connection, (times(1))).prepareStatement(stringCaptor.capture());
-        verify(preparedStatement, (times(4))).executeUpdate();
+        verify(connection, (times(2))).prepareStatement(stringCaptor.capture());
+        verify(preparedStatement, (times(8))).executeUpdate();
     }
 
     private void setupOdsDataLoadServiceImpl(String encoding, Boolean clearTableBeforeLoad, String stringPath)

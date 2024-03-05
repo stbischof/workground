@@ -13,7 +13,7 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.basic;
 
-import org.eclipse.daanse.db.jdbc.metadata.api.JdbcMetaDataServiceFactory;
+import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.api.SchemaCreatorService;
 import org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.api.SchemaCreatorServiceFactory;
 import org.osgi.service.component.annotations.Component;
@@ -26,11 +26,11 @@ import javax.sql.DataSource;
 public class SchemaCreatorServiceFactoryImpl implements SchemaCreatorServiceFactory {
 
     @Reference
-    JdbcMetaDataServiceFactory jmdsf;
+    DatabaseService databaseService;
 
     @Override
     public SchemaCreatorService create(DataSource dataSource) {
-        return new SchemaCreatorServiceImpl(dataSource, jmdsf);
+        return new SchemaCreatorServiceImpl(dataSource, databaseService);
     }
 
 }

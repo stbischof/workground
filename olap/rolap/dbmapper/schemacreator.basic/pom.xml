@@ -43,9 +43,15 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.db.jdbc.metadata</artifactId>
-      <version>${revision}</version>
-      <scope>compile</scope>
+      <artifactId>org.eclipse.daanse.common.jdbc.db.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.common.jdbc.db.record</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.common.jdbc.db.core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>

@@ -13,8 +13,12 @@
  */
 package org.eclipse.daanse.olap.documentation.common;
 
-import org.eclipse.daanse.db.jdbc.metadata.impl.Column;
-import org.eclipse.daanse.db.jdbc.metadata.impl.JdbcMetaDataServiceLiveImpl;
+import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.common.jdbc.db.api.meta.TableDefinition;
+import org.eclipse.daanse.common.jdbc.db.api.sql.ColumnDefinition;
+import org.eclipse.daanse.common.jdbc.db.api.sql.SchemaReference;
+import org.eclipse.daanse.common.jdbc.db.api.sql.TableReference;
+import org.eclipse.daanse.common.jdbc.db.record.sql.element.SchemaReferenceR;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.documentation.api.ConntextDocumentationProvider;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
@@ -47,6 +51,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +75,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private static String ENTER = System.lineSeparator();
     private List<Verifyer> verifyers = new CopyOnWriteArrayList<>();
+
+    @Reference
+    DatabaseService databaseService;
 
     @Override
     public void createDocumentation(Context context, Path path) throws Exception {
@@ -852,9 +860,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeDatabaseInfo(FileWriter writer, Context context, List<String> tablesConnections) {
         try (Connection connection = context.getDataSource().getConnection()) {
-            JdbcMetaDataServiceLiveImpl jdbcMetaDataService = new JdbcMetaDataServiceLiveImpl(connection);
-            List<String> tables = jdbcMetaDataService.getTables(null);
-            writeTables(writer, tables, jdbcMetaDataService, tablesConnections);
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            SchemaReference schemaReference = new SchemaReferenceR(connection.getSchema());
+            List<TableDefinition> tables = databaseService.getTableDefinitions(databaseMetaData, schemaReference);
+            writeTables(writer, tables, databaseMetaData, tablesConnections);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -862,8 +871,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeTables(
         final FileWriter writer,
-        final List<String> tables,
-        final JdbcMetaDataServiceLiveImpl jdbcMetaDataService,
+        final List<TableDefinition> tables,
+        final DatabaseMetaData jdbcMetaDataService,
         final List<String> tablesConnections
     ) {
         try {
@@ -878,7 +887,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     ---
                     erDiagram
                     """);
-                tables.forEach(t -> writeTablesDiagram(writer, t, jdbcMetaDataService));
+                tables.forEach(t -> writeTablesDiagram(writer, t.table(), jdbcMetaDataService));
                 writer.write(ENTER);
                 for (String c : tablesConnections) {
                     writer.write(c);
@@ -894,16 +903,17 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private void writeTablesDiagram(FileWriter writer, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
+    private void writeTablesDiagram(FileWriter writer, TableReference tableReference, DatabaseMetaData databaseMetaData) {
         try {
-            List<Column> columnList = jdbcMetaDataService.getColumns(null, name);
+            List<ColumnDefinition> columnList = databaseService.getColumnDefinitions(databaseMetaData, tableReference);
+            String name = tableReference.name();
             if (columnList != null) {
                 writer.write(STR. """
                     \{name}{
                     """);
-                for (Column c : columnList) {
-                    String columnName = c.getName();
-                    String type = TYPE_MAP.get(c.getType());
+                for (ColumnDefinition c : columnList) {
+                    String columnName = c.column().name();
+                    String type = TYPE_MAP.get(c.columnType().dataType());
                     writer.write(STR. """
                         \{type} \{columnName}
                         """);
@@ -912,37 +922,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 writer.write(ENTER);
             }
 
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
-
-    private void writeTable(FileWriter writer, String name, JdbcMetaDataServiceLiveImpl jdbcMetaDataService) {
-        try {
-            List<Column> columnList = jdbcMetaDataService.getColumns(null, name);
-            String columns = new StringBuilder("|")
-                .append(columnList.stream().map(c -> c.getName()).collect(Collectors.joining("|")))
-                .append("|").toString();
-            String line = new StringBuilder("|")
-                .append(columnList.stream().map(c -> "---").collect(Collectors.joining("|")))
-                .append("|").toString();
-            String types = new StringBuilder("|")
-                .append(columnList.stream().map(c -> TYPE_MAP.get(c.getType())).collect(Collectors.joining("|")))
-                .append("|").toString();
-
-            writer.write(STR. """
-                "\{name}":
-
-                \{columns}
-                \{line}
-                \{types}
-
-                """);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 
     /*
