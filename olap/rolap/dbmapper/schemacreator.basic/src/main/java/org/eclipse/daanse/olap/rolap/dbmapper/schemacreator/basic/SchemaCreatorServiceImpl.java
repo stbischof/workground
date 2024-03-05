@@ -217,7 +217,8 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     ) {
         List<ColumnDefinition> list = getColumnDefinitions(databaseMetaData, columnReference);
         if (list != null) {
-            Optional<ColumnDefinition> oColumnDefinition = list.stream().findFirst();
+            Optional<ColumnDefinition> oColumnDefinition = list.stream()
+            		.filter(cd -> columnReference.name().equals(cd.column().name())).findFirst();
             if (oColumnDefinition.isPresent() && oColumnDefinition.get().columnType() != null) {
                 return Optional.of(oColumnDefinition.get().columnType().dataType());
             }
@@ -334,7 +335,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         if (relation instanceof MappingTable table) {
             String tableName = columnReference.table().get().name();
             String columnName = columnReference.name();
-            String schemaName = columnReference.table().get().schema().get().name();
+            String schemaName = columnReference.table().get().schema().isPresent() ? columnReference.table().get().schema().get().name() : null;
             MappingLevel l = new LevelR(
                 getLevelName(tableName),
                 getLevelDescription(table.name()),
@@ -565,7 +566,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         DatabaseMetaData databaseMetaData
     ) {
         String tableName = tableReference.name();
-        String schemaName = tableReference.schema().get().name();
+        String schemaName = tableReference.schema().isPresent() ? tableReference.schema().get().name() : null ;
         String name = getCubName(tableName);
         String caption = getCubCaption(tableName);
         String description = getCubDescription(tableName);

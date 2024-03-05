@@ -42,8 +42,8 @@ public class DatabaseVerifyer implements Verifyer {
 
     public static final Converter CONVERTER = Converters.standardConverter();
 
-    @Reference
-    DatabaseService databaseService;
+    @Reference()
+    private DatabaseService databaseService;
 
     private DatabaseVerifierConfig config;
 

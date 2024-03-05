@@ -137,8 +137,10 @@ class DatabaseVerifyerTest {
     void testMeasure2() throws Exception {
         when(metaData.getColumns(any(), any(), any(), any())).thenReturn(rs);
         when(metaData.getTables(any(), any(), any(), any())).thenReturn(rs);
-        when(rs.next()).thenReturn(true);
+        when(rs.next()).thenReturn(true).thenReturn(true)
+        .thenReturn(false);
         when(rs.getInt("DATA_TYPE")).thenReturn(1);
+        when(rs.getString("COLUMN_NAME")).thenReturn("column");
         when(schema.cubes()).thenAnswer(setupDummyListAnswer(cube));
         when(cube.fact()).thenReturn(table);
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
@@ -148,7 +150,7 @@ class DatabaseVerifyerTest {
         when(table.schema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
-            .hasSize(1);
+            .hasSize(3);
 
         assertThat(result)
             .extracting(VerificationResult::description)
