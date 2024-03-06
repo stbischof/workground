@@ -370,7 +370,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
             List<ColumnDefinition> columnDefinitionList = databaseService.getColumnDefinitions(databaseMetaData, columnReference);
-            optionalColumnDefinition  = columnDefinitionList.stream().filter(c -> columnReference.name().equals(c.column().name())).findFirst();
+            optionalColumnDefinition  = columnDefinitionList.stream().findFirst();
         } catch (SQLException e) {
 
             String msg = String.format(COULD_NOT_QUERY_COLUMN_DATA_TYPE_ON_SCHEMA_TABLE_COLUMN,
