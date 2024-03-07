@@ -2229,7 +2229,7 @@ oHierarchyName)
         List<mondrian.olap.Property> properties = level.getProperties() == null ? List.of() :
          Arrays.asList(level.getProperties());
         return getPropertiesWithFilterByUniqueName(properties, oPropertyName)
-            .stream().filter(p -> p != null)
+            .stream().filter(p -> p != null && !p.isInternal())
             .map(p -> getMdSchemaPropertiesResponseRow(catalogName, schemaName, cube, level, p))
             .toList();
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema name="ExpressiveNames1">
+  <Documentation>
+    <![CDATA[
+        Expressive names schema.
+    ]]>
+  </Documentation>
+  <Dimension name="Dimension2">
+    <Hierarchy hasAll="true" name="D2H1" primaryKey="D2H1L1" description = "Hierarchy 1 Dimension 2">
+      <Table name="D2H1L1Table"/>
+      <Level name="D2H1L1" column="D2H1L1" nameColumn="D2H1L1_NAME" ordinalColumn="D2H1L1_Ordinal" description = "Level 1 Hierarchy 1 Dimension 2"/>
+    </Hierarchy>
+
+    <Hierarchy hasAll="true" name="D2H2" primaryKey="D2H2L2" description = "Hierarchy 2 Dimension 2">
+      <Table name="D2H2L2Table"/>
+      <Level name="D2H2L1" column="D2H2L1" nameColumn="D2H2L1_NAME" ordinalColumn="D2H2L1_Ordinal" type="Integer" table="D2H2L2Table" description = "Level 1 Hierarchy 2 Dimension 2"/>
+      <Level name="D2H2L2" column="D2H2L2" nameColumn="D2H2L2_NAME" ordinalColumn="D2H2L2_Ordinal" type="Integer" table="D2H2L2Table" description = "Level 2 Hierarchy 2 Dimension 2"/>
+    </Hierarchy>
+  </Dimension>
+
+  <Dimension name="Dimension1">
+    <Hierarchy hasAll="true" name="D1H1" primaryKey="D1H1L1" description = "Hierarchy 1 Dimension 1">
+      <Table name="D1H1L1Table"/>
+      <Level name="D1H1L1" column="D1H1L1" nameColumn="D1H1L1_NAME" ordinalColumn="D1H1L1_Ordinal" description = "Level 1 Dimension 1 Hierarchy1"/>
+    </Hierarchy>
+  </Dimension>
+
+
+  <Cube name="Cube 1" description = "Test Cube">
+    <Table name="Cube1Fact"/>
+
+    <DimensionUsage name="Dimension1" source="Dimension1" foreignKey="D1"/>
+    <DimensionUsage name="Dimension2" source="Dimension2" foreignKey="D2"/>
+    <Measure aggregator="sum" name="Measure1" column="M1"/>
+ </Cube>
+
+</Schema>
+
