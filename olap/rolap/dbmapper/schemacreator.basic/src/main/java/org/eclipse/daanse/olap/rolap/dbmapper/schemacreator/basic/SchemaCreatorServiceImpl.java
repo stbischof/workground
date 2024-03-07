@@ -220,7 +220,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             Optional<ColumnDefinition> oColumnDefinition = list.stream()
             		.filter(cd -> columnReference.name().equals(cd.column().name())).findFirst();
             if (oColumnDefinition.isPresent() && oColumnDefinition.get().columnType() != null) {
-                return Optional.of(oColumnDefinition.get().columnType().dataType());
+                return Optional.of(oColumnDefinition.get().columnType().dataType().getVendorTypeNumber());
             }
         }
         return Optional.empty();
@@ -234,7 +234,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         if (list != null) {
             Optional<ColumnDefinition> oColumnDefinition = list.stream().findFirst();
             if (oColumnDefinition.isPresent() && oColumnDefinition.get().columnType() != null) {
-                return Optional.of(oColumnDefinition.get().columnType().dataType());
+                return Optional.of(oColumnDefinition.get().columnType().dataType().getVendorTypeNumber());
             }
         }
         return Optional.empty();
@@ -613,7 +613,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         List<ImportedKey> foreignKeyList = getImportedKeys(databaseMetaData, getTableReference(schemaName, tableName));
         if (columns != null && !columns.isEmpty()) {
             for (ColumnDefinition column : columns) {
-                if (isNumericType(column.columnType().dataType())
+                if (isNumericType(column.columnType().dataType().getVendorTypeNumber())
                     && (foreignKeyList == null ||
                     foreignKeyList.stream().noneMatch(fk -> fk.foreignKeyColumn().name().equals(column.column().name())))) {
                     //<Measure name="Unit Sales" column="unit_sales" aggregator="sum" formatString="Standard"/>
@@ -624,7 +624,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                         "Standard",
                         true,
                         column.column().name(),
-                        getMeasureDataType(column.columnType().dataType()),
+                        getMeasureDataType(column.columnType().dataType().getVendorTypeNumber()),
                         null,
                         "sum",
                         column.column().name(),
@@ -713,7 +713,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         if (columns != null && !columns.isEmpty()) {
             Map<String, Integer> hierarchyNamesMap = new HashMap<>();
             for (ColumnDefinition column : columns) {
-                if (!isNumericType(column.columnType().dataType())
+                if (!isNumericType(column.columnType().dataType().getVendorTypeNumber())
                     && (foreignKeyList == null ||
                     foreignKeyList.stream().noneMatch(fk -> fk.foreignKeyColumn().name().equals(column.column().name())))) {
                     ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference),
