@@ -92,11 +92,6 @@ public class FunUtil extends Util {
 
   public static final NullMember NullMember = new NullMember();
 
-  /**
-   * Special value which indicates that a {@code double} computation has returned the MDX null value. See {@link
-   * DoubleCalc}.
-   */
-  public static final Double DOUBLE_NULL = Double.valueOf(0.000000012345);
 
   /**
    * Special value which indicates that a {@code double} computation has returned the MDX EMPTY value. See {@link

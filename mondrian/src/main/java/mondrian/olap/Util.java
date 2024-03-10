@@ -119,6 +119,7 @@ import org.eclipse.daanse.olap.api.query.component.QueryAxis;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.calc.api.DoubleCalc;
 import org.eclipse.daanse.olap.calc.api.profile.CalculationProfile;
 import org.eclipse.daanse.olap.calc.api.profile.ProfilingCalc;
 import org.eclipse.daanse.olap.calc.base.profile.SimpleCalculationProfileWriter;
@@ -163,6 +164,12 @@ public class Util {
     public static final String NL = System.getProperty("line.separator");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+
+    /**
+     * Special value which indicates that a {@code double} computation has returned the MDX null value. See {@link
+     * DoubleCalc}.
+     */
+    public static final Double DOUBLE_NULL = Double.valueOf(0.000000012345);
 
     /**
      * Placeholder which indicates a value NULL.
