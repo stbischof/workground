@@ -32,7 +32,7 @@ public class CellSetImpl extends ExecutionImpl implements CellSet {
     private final Query query;
 
     public CellSetImpl(StatementImpl statement) {
-        super(statement, 10000);
+        super(statement, 0);
         this.statement = statement;
         query = statement.getQuery();
         this.closed = false;

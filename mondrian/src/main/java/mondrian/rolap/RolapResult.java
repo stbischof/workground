@@ -1115,10 +1115,8 @@ public Cell getCell( int[] pos ) {
                 .append(count).append(" iterations").toString() );
           }
         } else {
-          return;
-          //TODO
-          //throw Util.newInternal( new StringBuilder("Query required more than ").append(count)
-          //    .append(" iterations").toString() );
+          throw Util.newInternal( new StringBuilder("Query required more than ").append(count)
+              .append(" iterations").toString() );
         }
       }
 
