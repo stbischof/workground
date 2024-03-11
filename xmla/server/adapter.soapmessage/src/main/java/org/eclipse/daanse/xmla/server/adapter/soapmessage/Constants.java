@@ -230,6 +230,7 @@ public class Constants {
 	public static final String MEMBER_UNIQUE_NAME = "MEMBER_UNIQUE_NAME";
 	public static final String SCOPE = "SCOPE";
     public static final String SET_CAPTION = "SET_CAPTION";
+    public static final String SET_DISPLAY_FOLDER = "SET_DISPLAY_FOLDER";
 	public static final String SET_NAME = "SET_NAME";
 	public static final String KPI_NAME = "KPI_NAME";
     public static final String CUBE_TYPE = "CUBE_TYPE";

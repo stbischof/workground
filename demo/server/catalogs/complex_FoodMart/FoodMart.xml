@@ -100,6 +100,55 @@ WHERE "product"."product_class_id" = "product_class"."product_class_id"
       <Level name="Product Name" table="product" column="product_name"
           uniqueMembers="true"/>
     </Hierarchy>
+
+    <Hierarchy hasAll="true" name="Product Family" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Product Family" table="product_class" column="product_family"
+      uniqueMembers="true"/>
+    </Hierarchy>
+    <Hierarchy hasAll="true" name="Product Department" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Product Department" table="product_class" column="product_department"
+      uniqueMembers="false"/>
+    </Hierarchy>
+    <Hierarchy hasAll="true" name="Product Category" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Product Category" table="product_class" column="product_category"
+      uniqueMembers="false"/>
+    </Hierarchy>
+    <Hierarchy hasAll="true" name="Product Subcategory" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Product Subcategory" table="product_class" column="product_subcategory"
+      uniqueMembers="false"/>
+    </Hierarchy>
+    <Hierarchy hasAll="true" name="Brand Name" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Brand Name" table="product" column="brand_name" uniqueMembers="false"/>
+    </Hierarchy>
+    <Hierarchy hasAll="true" name="Product Name" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
+      <Join leftKey="product_class_id" rightKey="product_class_id">
+        <Table name="product"/>
+        <Table name="product_class"/>
+      </Join>
+      <Level name="Product Name" table="product" column="product_name"
+      uniqueMembers="true"/>
+    </Hierarchy>
+
   </Dimension>
 
   <Dimension name="Warehouse">

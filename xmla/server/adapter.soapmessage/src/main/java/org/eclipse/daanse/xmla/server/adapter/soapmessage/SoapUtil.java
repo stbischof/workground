@@ -26,6 +26,9 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MEASU
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_PRECISION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_SCALE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SCOPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_DISPLAY_FOLDER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_CATALOG;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_SCHEMA;
@@ -192,7 +195,7 @@ public class SoapUtil {
     }
 
     public static void toMdSchemaSets(List<MdSchemaSetsResponseRow> rows, SOAPBody body) throws SOAPException {
-        SOAPElement root = addDiscoverPropertiesRoot(body);
+        SOAPElement root = addMdSchemaSetsRoot(body);
 
         for (MdSchemaSetsResponseRow mdSchemaSetsResponseRow : rows) {
             addMdSchemaSetsResponseRow(root, mdSchemaSetsResponseRow);
@@ -917,16 +920,13 @@ public class SoapUtil {
         r.catalogName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CATALOG_NAME, v));
         r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
         r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-
-        r.setName().ifPresent(v -> addChildElement(row, "SET_NAME", prefix, v));
+        r.setName().ifPresent(v -> addChildElement(row, SET_NAME, prefix, v));
         r.scope().ifPresent(v -> addChildElement(row, SCOPE, prefix, String.valueOf(v.getValue())));
         r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
         r.expression().ifPresent(v -> addChildElement(row, EXPRESSION_UC, prefix, v));
         r.dimension().ifPresent(v -> addChildElement(row, "DIMENSIONS", prefix, v));
-        r.setCaption().ifPresent(v -> addChildElement(row, "SET_CAPTION", prefix, v));
-        r.setDisplayFolder().ifPresent(v -> addChildElement(row, "SET_DISPLAY_FOLDER", prefix, v));
-        r.setEvaluationContext()
-                .ifPresent(v -> addChildElement(row, "SET_EVALUATION_CONTEXT", prefix, String.valueOf(v.getValue())));
+        r.setCaption().ifPresent(v -> addChildElement(row, SET_CAPTION, prefix, v));
+        r.setDisplayFolder().ifPresent(v -> addChildElement(row, SET_DISPLAY_FOLDER, prefix, v));
     }
 
     private static void addMdSchemaKpisResponseRow(SOAPElement root, MdSchemaKpisResponseRow r) throws SOAPException {
@@ -2187,6 +2187,28 @@ public class SoapUtil {
         addElement(s, "LEVEL_ORIGIN", "xsd:unsignedShort", "0");
         addElement(s, "CUBE_SOURCE", "xsd:unsignedShort", "0");
         addElement(s, "LEVEL_VISIBILITY", "xsd:unsignedShort", "0");
+        return seRoot;
+    }
+
+    private static SOAPElement addMdSchemaSetsRoot(SOAPBody body) throws SOAPException {
+        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
+        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
+        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement schema = fillRoot(seRoot);
+
+        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
+        ct.setAttribute("name", "row");
+        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        addElement(s, "CATALOG_NAME", "xsd:string", "0");
+        addElement(s, "SCHEMA_NAME", "xsd:string", "0");
+        addElement(s, "CUBE_NAME", "xsd:string", null);
+        addElement(s, "SET_NAME", "xsd:string", null);
+        addElement(s, "SCOPE", "xsd:int", null);
+        addElement(s, "DESCRIPTION", "xsd:string", "0");
+        addElement(s, "EXPRESSION", "xsd:string", "0");
+        addElement(s, "DIMENSIONS", "xsd:string", "0");
+        addElement(s, "SET_CAPTION", "xsd:string", "0");
+        addElement(s, "SET_DISPLAY_FOLDER", "xsd:string", "0");
         return seRoot;
     }
 

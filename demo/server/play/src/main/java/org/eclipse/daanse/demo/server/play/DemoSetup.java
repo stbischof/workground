@@ -82,13 +82,13 @@ public class DemoSetup {
         //runTest(context);
 
     }
-    
+
     public void unbindContext(Context context) {
 
 
     }
-	
-	
+
+
 	@Activate
 	public void activate() throws IOException {
 
@@ -100,7 +100,7 @@ public class DemoSetup {
 		initContext();
 
         initVerifiers();
-        
+
 	}
 
 	private void runTest(Context context) {
@@ -113,21 +113,21 @@ public class DemoSetup {
 
         if (queryComponent instanceof Query query) {
             Statement statement = context.getConnection().createStatement();
-            CellSet cellSet = statement.executeQuery(query);    
+            CellSet cellSet = statement.executeQuery(query);
 
             System.out.println(cellSet);
-            
+
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter= new PrintWriter(stringWriter);
             new RectangularCellSetFormatter(true).format(cellSet, printWriter);
 
-            
+
             System.out.println(stringWriter);
             System.err.println(stringWriter);
 
             System.out.println("...");
         }
-        
+
     }
 
     private void initContext() throws IOException {
@@ -135,7 +135,7 @@ public class DemoSetup {
 
 //		String PATH_TO_OBSERVE = "./catalogs";
 
-		String PATH_TO_OBSERVE = "./../../../../../catalogs";
+		String PATH_TO_OBSERVE = "./../../../../../activeCatalogs";
 
 		String path = Paths.get(PATH_TO_OBSERVE).toAbsolutePath().normalize().toString();
 
