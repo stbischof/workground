@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.CacheControl.MemberEditCommand;
@@ -108,7 +109,7 @@ class MemberCacheControlTest {
     private void prepareTestContext(Context context) {
         final RolapConnection conn = (RolapConnection) context.getConnection();
         final Statement statement = conn.getInternalStatement();
-        final ExecutionImpl execution = new ExecutionImpl(statement, 0);
+        final ExecutionImpl execution = new ExecutionImpl(statement, Optional.empty());
         //locus = new Locus(execution, getName(), null);
         locus = new LocusImpl(execution, "MemberCacheControlTest", null);
         LocusImpl.push(locus);

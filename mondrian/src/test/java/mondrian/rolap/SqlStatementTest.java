@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.monitor.EventBus;
@@ -56,7 +57,7 @@ class SqlStatementTest {
     statMock = mock(StatementImpl.class);
     when(statMock.getMondrianConnection()).thenReturn(rolapConnection);
 
-    execution = new ExecutionImpl(statMock, 0);
+    execution = new ExecutionImpl(statMock, Optional.empty());
     execution = spy(execution);
     doThrow(new QueryCanceledException())
             .when(execution).checkCancelOrTimeout();

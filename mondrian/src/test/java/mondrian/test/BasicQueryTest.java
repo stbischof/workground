@@ -37,11 +37,13 @@ import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 import static org.opencube.junit5.TestUtil.withSchema;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -4501,7 +4503,7 @@ public class BasicQueryTest {
     // use the logger to block and trigger cancelation at the right time
     Logger sqlLog = RolapUtil.SQL_LOGGER;
     //propSaver.set( sqlLog, org.apache.logging.log4j.Level.DEBUG );
-    final ExecutionImpl exec = new ExecutionImpl( stmt, 50000 );
+    final ExecutionImpl exec = new ExecutionImpl( stmt, Optional.of(Duration.ofMillis(50000)) );
     final CountDownLatch okToGo = new CountDownLatch( 1 );
     AtomicLong rows = new AtomicLong();
     //Appender canceler = new SqlCancelingAppender( component, triggerSql, exec, okToGo, rows );
@@ -5521,7 +5523,7 @@ public class BasicQueryTest {
         long rowCount =
             statisticsProvider.getTableCardinality( context, null, null,
                 "customer", new ExecutionImpl( ( (RolapSchema) connection.getSchema() )
-                    .getInternalConnection().getInternalStatement(), 0 ) );
+                    .getInternalConnection().getInternalStatement(), Optional.empty() ) );
         if ( statisticsProvider instanceof SqlStatisticsProviderNew ) {
           assertTrue(rowCount > 10000 && rowCount < 15000, "Row count estimate: " + rowCount + " (actual 10281)");
         }
@@ -5529,7 +5531,7 @@ public class BasicQueryTest {
         long valueCount =
             statisticsProvider.getColumnCardinality(context, null, null,
                 "customer", "gender", new ExecutionImpl( ( (RolapSchema) connection.getSchema() )
-                    .getInternalConnection().getInternalStatement(), 0 ) );
+                    .getInternalConnection().getInternalStatement(), Optional.empty() ) );
         assertTrue(statisticsProvider instanceof SqlStatisticsProviderNew ? valueCount == -1 : valueCount == 2, "Value count estimate: " + valueCount + " (actual 2)");
       }
     } finally {

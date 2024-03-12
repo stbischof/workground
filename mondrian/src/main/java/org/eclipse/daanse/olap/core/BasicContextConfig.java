@@ -16,6 +16,8 @@
 */
 package org.eclipse.daanse.olap.core;
 
+import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -77,6 +79,8 @@ public interface BasicContextConfig {
     double SPARSE_SEGMENT_DENSITY_THRESHOLD = 0.5;
     int MEMORY_MONITOR_THRESHOLD = 90;
     boolean GENERATE_FORMATTED_SQL = false;
+    long EXECUTE_DURATION = 0;
+    String EXECUTE_DURATION_UNIT = "MILLISECONDS";
 
     @AttributeDefinition(name = "%name.name", description = "%name.description", required = false)
     default String name() {
@@ -343,4 +347,29 @@ public interface BasicContextConfig {
     //<p> If enable, then data cache will be created for every session.</p>
     @AttributeDefinition(name = "%enableSessionCaching.name", description = "%enableSessionCaching.description", type = AttributeType.BOOLEAN)
     default Boolean enableSessionCaching() { return ENABLE_SESSION_CACHING; }
+
+    @AttributeDefinition(name = "%executeDuration.name", description = "%executeDuration.description", type = AttributeType.LONG)
+    default long executeDuration() {
+         return EXECUTE_DURATION;
+    }
+
+    @AttributeDefinition(name = "%executeDurationUnit.name", description = "%executeDurationUnit.description")
+    default String executeDurationUnit() {
+        return EXECUTE_DURATION_UNIT;
+    }
+
+    default Optional<Duration> executeDurationValue() {
+        if (executeDuration() > 0) {
+            String unit = executeDurationUnit().toLowerCase();
+            switch (unit) {
+                case "milliseconds":
+                    return Optional.of(Duration.ofMillis(executeDuration()));
+                case "seconds":
+                    return Optional.of(Duration.ofSeconds(executeDuration()));
+                default:
+                    return Optional.of(Duration.ofMillis(executeDuration()));
+            }
+        }
+        return Optional.empty();
+    }
 }

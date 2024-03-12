@@ -10,11 +10,14 @@
 */
 package mondrian.server;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.daanse.olap.api.Connection;
@@ -81,9 +84,8 @@ public class ExecutionImpl implements Execution{
    */
   private String outOfMemoryMsg;
 
-  private long startTimeMillis;
-  private long timeoutTimeMillis;
-  private long timeoutIntervalMillis;
+  private LocalDateTime startTime;
+  private Optional<Duration> duration;
   private final QueryTimingImpl queryTiming = new QueryTimingImpl();
   private int phase;
   private int cellCacheHitCount;
@@ -97,12 +99,12 @@ public class ExecutionImpl implements Execution{
    */
   private final long id;
 
-  public static final ExecutionImpl NONE = new ExecutionImpl( null, 0 );
+  public static final ExecutionImpl NONE = new ExecutionImpl( null, Optional.empty() );
 
 
   private final Execution parent;
 
-  public ExecutionImpl( Statement statement, long timeoutIntervalMillis ) {
+  public ExecutionImpl(Statement statement, Optional<Duration> duration ) {
     Execution parentExec = null;
     if ( !LocusImpl.isEmpty() ) {
       parentExec = LocusImpl.peek().getExecution();
@@ -110,7 +112,7 @@ public class ExecutionImpl implements Execution{
     this.parent = parentExec;
     this.id = SEQ.getAndIncrement();
     this.statement = (StatementImpl) statement;
-    this.timeoutIntervalMillis = timeoutIntervalMillis;
+    this.duration = duration;
   }
 
 
@@ -121,8 +123,7 @@ public class ExecutionImpl implements Execution{
    */
   public void start() {
     assert this.state == State.FRESH;
-    this.startTimeMillis = System.currentTimeMillis();
-    this.timeoutTimeMillis = timeoutIntervalMillis > 0 ? this.startTimeMillis + timeoutIntervalMillis : 0L;
+    this.startTime = LocalDateTime.now();
     this.state = State.RUNNING;
     this.queryTiming.init( this.statement.getProfileHandler() != null );
     fireExecutionStartEvent();
@@ -217,7 +218,7 @@ public class ExecutionImpl implements Execution{
         throw new QueryCanceledException();
       case RUNNING:
       case TIMEOUT:
-        if ( timeoutTimeMillis > 0 ) {
+        if ( duration.isPresent() ) {
           long currTime = System.currentTimeMillis();
 //          if ( currTime > timeoutTimeMillis ) {
 //            this.state = State.TIMEOUT;
@@ -257,7 +258,7 @@ public class ExecutionImpl implements Execution{
     }
     synchronized ( stateLock ) {
       if ( state == State.CANCELED || state == State.ERROR || state == State.TIMEOUT || ( state == State.RUNNING
-          && timeoutTimeMillis > 0 && System.currentTimeMillis() > timeoutTimeMillis ) ) {
+          && duration.isPresent() && Duration.between(LocalDateTime.now(), startTime).compareTo(duration.get()) > 0 ) ) {
         return true;
       }
       return false;
@@ -364,8 +365,8 @@ public class ExecutionImpl implements Execution{
     } );
   }
 
-  public final long getStartTime() {
-    return startTimeMillis;
+  public final LocalDateTime getStartTime() {
+    return startTime;
   }
 
   public Statement getMondrianStatement() {
@@ -380,8 +381,8 @@ public class ExecutionImpl implements Execution{
     return id;
   }
 
-  public final long getElapsedMillis() {
-    return System.currentTimeMillis() - startTimeMillis;
+  public final Duration getElapsedMillis() {
+    return Duration.between(LocalDateTime.now(), startTime);
   }
 
   /**
@@ -414,7 +415,7 @@ public class ExecutionImpl implements Execution{
 					new MdxStatementEventCommon(
 							new ConnectionEventCommon(
 									new ServertEventCommon(
-					new EventCommon(Instant.ofEpochMilli( this.startTimeMillis)), context.getName()), connection.getId()),
+					new EventCommon(Instant.ofEpochMilli( Duration.between(LocalDateTime.now(), this.startTime).toMillis())), context.getName()), connection.getId()),
 					this.statement.getId()), this.id),
 			phase, state, cellCacheHitCount, cellCacheMissCount, cellCachePendingCount, expCacheHitCount,
 			expCacheMissCount);
@@ -432,7 +433,7 @@ public class ExecutionImpl implements Execution{
 	ExecutionStartEvent executionStartEvent = new ExecutionStartEvent(new ExecutionEventCommon(
 
 			new MdxStatementEventCommon(new ConnectionEventCommon(
-					new ServertEventCommon(new EventCommon(Instant.ofEpochMilli( this.startTimeMillis)), context.getName()), connection.getId()),
+					new ServertEventCommon(new EventCommon(Instant.ofEpochMilli( Duration.between(LocalDateTime.now(), this.startTime).toMillis())), context.getName()), connection.getId()),
 					statement.getId()),
 			id), getMdx());
 	context.getMonitor().accept(executionStartEvent);

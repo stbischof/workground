@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -583,7 +584,7 @@ public Object getCacheKey() {
     private Execution getExecution(Context context) {
         if (LocusImpl.isEmpty()) {
             final Statement statement = context.getConnection().getInternalStatement();
-            return new ExecutionImpl(statement, 0);
+            return new ExecutionImpl(statement, context.getConfig().executeDurationValue());
         } else {
             return LocusImpl.peek().getExecution();
         }

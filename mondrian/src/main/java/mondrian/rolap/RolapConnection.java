@@ -30,11 +30,13 @@
 package mondrian.rolap;
 
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -143,7 +145,7 @@ public class RolapConnection extends ConnectionBase {
       Statement bootstrapStatement = createInternalStatement( false, this);
       final Locus locus =
         new LocusImpl(
-          new ExecutionImpl( bootstrapStatement, 0 ),
+          new ExecutionImpl( bootstrapStatement, context.getConfig().executeDurationValue() ),
           null,
           "Initializing connection" );
       LocusImpl.push( locus );
@@ -283,7 +285,7 @@ public CacheControl getCacheControl( PrintWriter pw ) {
 public Result execute( Query query ) {
     final Statement statement = query.getStatement();
     ExecutionImpl execution =
-      new ExecutionImpl( statement, statement.getQueryTimeoutMillis() );
+      new ExecutionImpl( statement, Optional.of(Duration.ofMillis(statement.getQueryTimeoutMillis())) );
     return execute( execution );
   }
 
@@ -404,9 +406,9 @@ public Result execute( Query query ) {
     } finally {
       mm.removeListener( listener );
       if ( RolapUtil.MDX_LOGGER.isDebugEnabled() ) {
-        final long elapsed = execution.getElapsedMillis();
+        final Duration elapsed = execution.getElapsedMillis();
         RolapUtil.MDX_LOGGER.debug(
-          new StringBuilder().append(currId).append(": exec: ").append(elapsed).append(" ms").toString() );
+          new StringBuilder().append(currId).append(": exec: ").append(elapsed.toMillis()).append(" ms").toString() );
       }
     }
   }
@@ -441,7 +443,7 @@ public QueryComponent parseStatement(String query ) {
     Statement statement = createInternalStatement( false ,this);
     final Locus locus =
       new LocusImpl(
-        new ExecutionImpl( statement, 0 ),
+        new ExecutionImpl( statement, statement.getConnection().getContext().getConfig().executeDurationValue() ),
         "Parse/validate MDX statement",
         null );
     LocusImpl.push( locus );

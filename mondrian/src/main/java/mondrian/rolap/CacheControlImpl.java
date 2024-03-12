@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -835,7 +836,7 @@ public class CacheControlImpl implements CacheControl {
                 if (connection == null) {
                     throw new IllegalArgumentException("Connection required");
                 }
-                execution = new ExecutionImpl(connection.getInternalStatement(), 0);
+                execution = new ExecutionImpl(connection.getInternalStatement(), connection.getContext().getConfig().executeDurationValue());
             }
             final Locus locus = new LocusImpl(
                 execution,

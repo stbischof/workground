@@ -21,12 +21,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.Duration;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -78,7 +80,7 @@ class SegmentLoaderTest extends BatchTestCase {
             ((Connection) connection)
                 .getContext().getAggregationManager().cacheMgr;
         statement = ((Connection) connection).getInternalStatement();
-        execution = new ExecutionImpl(statement, 1000);
+        execution = new ExecutionImpl(statement, Optional.of(Duration.ofMillis(1000)));
         locus = new LocusImpl(execution, null, null);
         cacheMgr = execution.getMondrianStatement().getMondrianConnection()
             .getContext().getAggregationManager().cacheMgr;

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -38,7 +39,7 @@ import mondrian.server.LocusImpl;
 class SegmentCacheManagerTest {
 
   @Mock private Context context;
-  private Locus locus = new LocusImpl( new ExecutionImpl( null, 0 ), "component", "message" );
+  private Locus locus = new LocusImpl( new ExecutionImpl( null, Optional.empty() ), "component", "message" );
   private ExecutorService executor = Executors.newFixedThreadPool( 15 );
 
   @BeforeEach

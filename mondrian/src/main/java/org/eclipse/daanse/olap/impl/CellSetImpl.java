@@ -2,6 +2,7 @@ package org.eclipse.daanse.olap.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.SubtotalVisibility;
@@ -32,7 +33,7 @@ public class CellSetImpl extends ExecutionImpl implements CellSet {
     private final Query query;
 
     public CellSetImpl(StatementImpl statement) {
-        super(statement, 0);
+        super(statement, statement.context.getConfig().executeDurationValue());
         this.statement = statement;
         query = statement.getQuery();
         this.closed = false;

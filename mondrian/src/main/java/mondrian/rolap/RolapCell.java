@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
@@ -235,7 +236,7 @@ public class RolapCell implements Cell {
                 connection.getContext(),
                 sql,
                 new LocusImpl(
-                    new ExecutionImpl(connection.getInternalStatement(), 0),
+                    new ExecutionImpl(connection.getInternalStatement(), connection.getContext().getConfig().executeDurationValue()),
                     "RolapCell.getDrillThroughCount",
                     "Error while counting drill-through"));
         try {
@@ -545,7 +546,7 @@ public class RolapCell implements Cell {
         // essential.
         final Statement statement =
             result.getExecution().getMondrianStatement();
-        final ExecutionImpl execution = new ExecutionImpl(statement, 0);
+        final ExecutionImpl execution = new ExecutionImpl(statement, statement.getConnection().getContext().getConfig().executeDurationValue());
 
         final Connection connection = statement.getMondrianConnection();
         int resultSetType = ResultSet.TYPE_SCROLL_INSENSITIVE;

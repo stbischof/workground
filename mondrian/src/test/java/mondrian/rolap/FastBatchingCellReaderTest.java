@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.eclipse.daanse.db.dialect.api.Datatype;
@@ -100,7 +101,7 @@ class FastBatchingCellReaderTest extends BatchTestCase{
     connection = context.getConnection();
     connection.getCacheControl( null ).flushSchemaCache();
     final Statement statement = ((Connection) connection).getInternalStatement();
-    e = new ExecutionImpl( statement, 0 );
+    e = new ExecutionImpl( statement, Optional.empty() );
     aggMgr = e.getMondrianStatement().getMondrianConnection().getContext().getAggregationManager();
     locus = new LocusImpl( e, "FastBatchingCellReaderTest", null );
     LocusImpl.push( locus );

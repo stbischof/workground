@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
@@ -124,7 +125,8 @@ public class RolapUtil {
         final SchemaReader schemaReader)
     {
         final Statement statement = connection.getInternalStatement();
-        final ExecutionImpl execution = new ExecutionImpl(statement, 0);
+        final ExecutionImpl execution = new ExecutionImpl(statement,
+            connection.getContext().getConfig().executeDurationValue());
         final Locus locus =
             new LocusImpl(
                 execution,
@@ -584,7 +586,8 @@ public class RolapUtil {
     public static Evaluator createEvaluator(
         Statement statement)
     {
-        ExecutionImpl dummyExecution = new ExecutionImpl(statement, 0);
+        ExecutionImpl dummyExecution = new ExecutionImpl(statement,
+            statement.getConnection().getContext().getConfig().executeDurationValue());
         final RolapResult result = new RolapResult(dummyExecution, false);
         return result.getRootEvaluator();
     }

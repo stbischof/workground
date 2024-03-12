@@ -17,6 +17,8 @@ import org.eclipse.daanse.olap.api.Statement;
 import mondrian.rolap.RolapConnection;
 import mondrian.util.ArrayStack;
 
+import java.util.Optional;
+
 //TODO: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ScopedValue.html
 //TODO: https://openjdk.org/jeps/462
 /**
@@ -78,7 +80,8 @@ public class LocusImpl implements Locus {
         Action<T> action)
     {
         final Statement statement = connection.getInternalStatement();
-        final ExecutionImpl execution = new ExecutionImpl(statement, 0);
+        final ExecutionImpl execution = new ExecutionImpl(statement,
+            connection.getContext().getConfig().executeDurationValue());
         return execute(execution, component, action);
     }
 

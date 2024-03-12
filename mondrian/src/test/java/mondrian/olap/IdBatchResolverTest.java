@@ -18,11 +18,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -457,7 +459,7 @@ class IdBatchResolverTest  {
 
         query = conn.parseQuery(mdx);
         LocusImpl.push(new LocusImpl(new ExecutionImpl(
-            query.getStatement(), Integer.MAX_VALUE),
+            query.getStatement(), Optional.of(Duration.ofMillis(Integer.MAX_VALUE))),
             "batchResolveTest", "batchResolveTest"));
 
         return new IdBatchResolver(query);

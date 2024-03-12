@@ -40,6 +40,8 @@ import mondrian.olap.fun.CrossJoinTest;
 import mondrian.server.ExecutionImpl;
 import mondrian.server.LocusImpl;
 
+import java.util.Optional;
+
 class CancellationTest {
 
     @BeforeEach
@@ -70,7 +72,7 @@ class CancellationTest {
         for (Position pos : result.getAxes()[0].getPositions()) {
             list.add(pos);
         }
-        ExecutionImpl exec = spy(new ExecutionImpl(eval.getQuery().getStatement(), 0));
+        ExecutionImpl exec = spy(new ExecutionImpl(eval.getQuery().getStatement(), Optional.empty()));
         eval.getQuery().getStatement().start(exec);
         crossJoinFunDef.nonEmptyList(eval, list, null);
         // checkCancelOrTimeout should be called once
@@ -106,7 +108,7 @@ class CancellationTest {
         }
 
         ExecutionImpl execution =
-            spy(new ExecutionImpl(genders.getQuery().getStatement(), 0));
+            spy(new ExecutionImpl(genders.getQuery().getStatement(), Optional.empty()));
         TupleList mutableCrossJoinResult =
             mutableCrossJoin(productMembers, genderMembers, execution);
 

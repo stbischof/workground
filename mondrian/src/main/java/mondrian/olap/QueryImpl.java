@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import mondrian.olap.exceptions.MdxAxisShowSubtotalsNotSupportedException;
@@ -957,7 +958,7 @@ public class QueryImpl extends AbstractQueryPart implements Query {
         }
         final Object value2 =
         LocusImpl.execute(
-            new ExecutionImpl(statement, 0),
+            new ExecutionImpl(statement, getConnection().getContext().getConfig().executeDurationValue()),
             "Query.quickParse",
             new LocusImpl.Action<Object>() {
                 @Override

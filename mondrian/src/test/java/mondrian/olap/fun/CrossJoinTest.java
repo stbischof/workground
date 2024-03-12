@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
@@ -191,7 +192,7 @@ public class CrossJoinTest {
 
     // Test execution to track cancellation/timeout calls
     ExecutionImpl execution =
-      spy( new ExecutionImpl( genders.getQuery().getStatement(), 0 ) );
+      spy( new ExecutionImpl( genders.getQuery().getStatement(), Optional.empty() ) );
     // check no execution of checkCancelOrTimeout has been yet
     verify( execution, times( 0 ) ).checkCancelOrTimeout();
     Integer crossJoinIterCalc =

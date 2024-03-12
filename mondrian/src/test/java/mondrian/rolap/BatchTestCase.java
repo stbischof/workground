@@ -20,6 +20,8 @@ import static org.opencube.junit5.TestUtil.withSchema;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -322,7 +324,7 @@ public class BatchTestCase{
             final ExecutionImpl execution =
                 new ExecutionImpl(
                     ((Connection) connection).getInternalStatement(),
-                    1000);
+                    Optional.of(Duration.ofMillis(1000)));
             final AggregationManager aggMgr =
                 execution.getMondrianStatement()
                     .getMondrianConnection()

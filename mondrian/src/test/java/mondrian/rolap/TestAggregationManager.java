@@ -25,6 +25,7 @@ import static org.opencube.junit5.TestUtil.withSchema;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
@@ -112,7 +113,7 @@ class TestAggregationManager extends BatchTestCase {
         final Statement statement =
             ((Connection) context.getConnection())
                 .getInternalStatement();
-        execution = new ExecutionImpl(statement, 0);
+        execution = new ExecutionImpl(statement, Optional.empty());
         aggMgr =
             execution.getMondrianStatement()
                 .getMondrianConnection()

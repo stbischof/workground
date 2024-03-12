@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
@@ -414,7 +415,7 @@ class SqlConstraintUtilsTest {
         final RolapHierarchy slicerHierarchy =
             ((RolapCube)query.getCube()).getTimeHierarchy(null);
 
-        final ExecutionImpl execution = new ExecutionImpl(query.getStatement(), 0L);
+        final ExecutionImpl execution = new ExecutionImpl(query.getStatement(), Optional.empty());
         final RolapEvaluatorRoot rolapEvaluatorRoot =
             new RolapEvaluatorRoot(execution);
         final RolapEvaluator rolapEvaluator =
@@ -636,7 +637,7 @@ class SqlConstraintUtilsTest {
       final RolapHierarchy slicerHierarchy =
           ((RolapCube)query.getCube()).getTimeHierarchy(null);
 
-      final ExecutionImpl execution = new ExecutionImpl(query.getStatement(), 0L);
+      final ExecutionImpl execution = new ExecutionImpl(query.getStatement(), Optional.empty());
       final RolapEvaluatorRoot rolapEvaluatorRoot =
           new RolapEvaluatorRoot(execution);
       final RolapEvaluator rolapEvaluator =

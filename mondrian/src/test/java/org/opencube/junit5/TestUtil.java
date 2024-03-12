@@ -32,6 +32,7 @@ import java.lang.reflect.Proxy;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -919,7 +920,7 @@ public class TestUtil {
 	    Query query = connection.parseQuery( queryString );
 	    Statement statement = query.getStatement();
 	    assertThat(statement).isNotNull();
-	    final Result result = statement.getMondrianConnection().execute(new ExecutionImpl(statement, statement.getQueryTimeoutMillis()));
+	    final Result result = statement.getMondrianConnection().execute(new ExecutionImpl(statement, Optional.of(Duration.ofMillis(statement.getQueryTimeoutMillis()))));
 	    return result;
 	  }
 
@@ -929,7 +930,7 @@ public class TestUtil {
 		Statement statement = query.getStatement();
 		assertThat(statement).isNotNull();
 
-		Result result = statement.getMondrianConnection().execute(new ExecutionImpl(statement, timeoutIntervalMillis));
+		Result result = statement.getMondrianConnection().execute(new ExecutionImpl(statement, Optional.of(Duration.ofMillis(timeoutIntervalMillis))));
 		return result;
 	}
 

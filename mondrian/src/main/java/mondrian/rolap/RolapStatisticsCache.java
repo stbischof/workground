@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -82,7 +83,7 @@ public class RolapStatisticsCache {
                 new ExecutionImpl(
                     star.getSchema().getInternalConnection()
                         .getInternalStatement(),
-                    0);
+                    star.getSchema().getInternalConnection().getContext().getConfig().executeDurationValue());
             for (SqlStatisticsProviderNew statisticsProvider : statisticsProviders) {
                 rowCount = statisticsProvider.getTableCardinality(
                     star.getContext(),
@@ -115,7 +116,7 @@ public class RolapStatisticsCache {
                 new ExecutionImpl(
                     star.getSchema().getInternalConnection()
                         .getInternalStatement(),
-                    0);
+                    star.getSchema().getInternalConnection().getContext().getConfig().executeDurationValue());
             for (SqlStatisticsProviderNew statisticsProvider : statisticsProviders) {
                 rowCount = statisticsProvider.getQueryCardinality( star.getContext(), sql, execution);
                 if (rowCount >= 0) {
@@ -174,7 +175,7 @@ public class RolapStatisticsCache {
                 new ExecutionImpl(
                     star.getSchema().getInternalConnection()
                         .getInternalStatement(),
-                    0);
+                    star.getSchema().getInternalConnection().getContext().getConfig().executeDurationValue());
             for (SqlStatisticsProviderNew statisticsProvider : statisticsProviders) {
                 rowCount = statisticsProvider.getColumnCardinality(
                     star.getContext(),

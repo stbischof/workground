@@ -7,13 +7,13 @@
  * Copyright (C) 2001-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * For more information please visit the Project: Hitachi Vantara - Mondrian
- * 
+ *
  * ---- All changes after Fork in 2023 ------------------------
- * 
+ *
  * Project: Eclipse daanse
- * 
+ *
  * Copyright (c) 2024 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -27,6 +27,8 @@
  *   Stefan Bischof (bipolis.org) - initial
  */
 package org.eclipse.daanse.olap.api;
+
+import java.time.Duration;
 
 public interface Execution {
 
@@ -42,7 +44,7 @@ public interface Execution {
 
 	boolean isCancelOrTimeout();
 
-	long getElapsedMillis();
+	Duration getElapsedMillis();
 
 	void tracePhase(int hitCount, int missCount, int pendingCount);
 

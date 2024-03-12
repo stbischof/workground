@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
@@ -1556,7 +1557,7 @@ public class AggStar {
                         new ExecutionImpl(
                             star.getSchema().getInternalConnection()
                                 .getInternalStatement(),
-                            0),
+                            star.getSchema().getInternalConnection().getContext().getConfig().executeDurationValue()),
                         "AggStar.FactTable.makeNumberOfRows",
                         "Counting rows in aggregate table"));
             try {
