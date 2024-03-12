@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-04-03_Cube_Measure_MeasureDatatypes
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Cube_With_Measures_Of_Different_Datatypes : 
 
 		
@@ -22,10 +20,6 @@
 		In this example cube both measurements are generated from the "VALUE_NUMERIC" column of the "Fact" table, but one is provided with an Intger and the other one with a Numeric datatype.
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -38,7 +32,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeOneNumericMeasureDifferentDataTypes" diagram:
 
 ---
@@ -57,7 +50,9 @@
 }}%%
 erDiagram
 c0["CubeOneNumericMeasureDifferentDataTypes"]{
-M Measure1-Integer ""M Measure1-Numeric ""}
+M Measure1-Integer ""
+M Measure1-Numeric ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Cube_With_Measures_Of_Different_Datatypes:
@@ -74,10 +69,22 @@ quadrant-4 Wide
 Cube CubeOneNumericMeasureDifferentDataTypes: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+null VALUE
+}
+
+```
+---
 ## Validation result for schema Minimal_Cube_With_Measures_Of_Different_Datatypes
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeOneNumericMeasureDifferentDataTypes must contain Dimensions|
-|DATABASE|Cube with name CubeOneNumericMeasureDifferentDataTypes must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

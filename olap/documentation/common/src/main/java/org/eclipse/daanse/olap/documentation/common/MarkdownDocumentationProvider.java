@@ -93,8 +93,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write(ENTER);
         writer.write("### CatalogName : " + dbName);
         writer.write(ENTER);
-        writer.write("## Olap Context Details:");
-        writer.write(ENTER);
         writeSchemas(writer, context);
         writeCubeMatrixDiagram(writer, context);
         List<String> tablesConnections = schemaTablesConnections(context);
@@ -128,14 +126,14 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 """);
             writer.write(ENTER);
             for (MappingCube c : schema.cubes()) {
-                String cubeName = c.name();
+                String cubeName = prepare(c.name());
                 double x = getLevelsCount(schema, c) / MAX_LEVEL;
                 double y = getFactCount(context, c) / MAX_ROW;
                 x = x > 1 ? 1 : x;
                 y = y > 1 ? 1 : y;
                 y = y < 0 ? (-1)*y : y;
-                String sx = String.format("%,.4f", x);
-                String sy = String.format("%,.4f", y);
+                String sx = quadrantChartFormat(x);
+                String sy = quadrantChartFormat(y);
                 writer.write(STR. """
                     Cube \{cubeName}: [\{sx}, \{sy}]
                     """);
@@ -147,6 +145,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String quadrantChartFormat(double x) {
+        return  x < 1 ? String.format("%,.4f", x) : "1";
     }
 
     private long getFactCount(Context context, MappingCube c) {
@@ -459,7 +461,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private void writeSchemas(FileWriter writer, Context context) throws IOException {
-        writer.write("## Schemas:\n");
         context.getDatabaseMappingSchemaProviders().forEach(p -> {
             MappingSchema schema = p.get();
             writeSchema(writer, schema);
@@ -468,8 +469,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeSchema(FileWriter writer, MappingSchema schema) {
         try {
-            String dimensions = schema.dimensions().stream().map(d -> d.name())
-                .collect(Collectors.joining(", "));
             String schemaName = schema.name();
             writer.write(STR."### Schema \{schemaName} : ");
             writer.write(ENTER);
@@ -477,13 +476,17 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 writer.write(schema.documentation().get().documentation());
                 writer.write(ENTER);
             }
-            writer.write(STR. """
-                ### Public Dimensions:
+            if (!schema.dimensions().isEmpty()) {
+                String dimensions = schema.dimensions().stream().map(d -> d.name())
+                    .collect(Collectors.joining(", "));
+                writer.write(STR. """
+                    ### Public Dimensions:
 
-                    \{dimensions}
+                        \{dimensions}
 
-                """);
-            writeList(writer, schema.dimensions(), this::writePublicDimension);
+                    """);
+                writeList(writer, schema.dimensions(), this::writePublicDimension);
+            }
             String cubes = schema.cubes().stream().map(c -> c.name())
                 .collect(Collectors.joining(", "));
             writer.write(STR. """
@@ -586,11 +589,14 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     """);
                 for (MappingMeasure m : cube.measures()) {
                     String description = m.description() == null ? EMPTY_STRING : m.description();
-                    writer.write(STR."M \{m.name()} \"\{description}\"");
+                    String measureName = prepare(m.name());
+                    writer.write(STR."M \{measureName} \"\{description}\"");
+                    writer.write(ENTER);
                 }
                 for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) {
                     String description = d.description() == null ? EMPTY_STRING : d.description();
-                    writer.write(STR."D \{d.name()} \"\{description}\"");
+                    String dimensionName =  prepare(d.name());
+                    writer.write(STR."D \{dimensionName} \"\{description}\"");
                     writer.write(ENTER);
                 }
                 writer.write("}");
@@ -610,6 +616,20 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String prepare(String name) {
+        if (name != null && !name.isEmpty()) {
+            return name
+                .replace("ü", "ue")
+                .replace("ö", "oe")
+                .replace("ä", "ae")
+                .replace(" ", "_")
+                .replace(":", "_")
+                .replace("(", "_")
+                .replace(")", "_");
+        }
+        return "_";
     }
 
     private void writeDimensionPartDiagram(FileWriter writer, MappingSchema schema, MappingCube cube, int cubeIndex) {
@@ -635,22 +655,25 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         int dimensionIndex
     ) {
         try {
-            writer.write(STR."d\{cubeIndex}\{dimensionIndex}[\{pd.name()}] {");
+            writer.write(STR."d\{cubeIndex}\{dimensionIndex}[\"\{pd.name()}\"] {");
             writer.write(ENTER);
             for (MappingHierarchy h : pd.hierarchies()) {
                 String description = h.description() == null ? EMPTY_STRING : h.description();
-                writer.write(STR."H \{h.name()} \"\{description}\"");
+                String hierarchyName = prepare(h.name());
+                writer.write(STR."H \{hierarchyName} \"\{description}\"");
                 writer.write(ENTER);
             }
             writer.write("}");
             writer.write(ENTER);
             int hIndex = 0;
             for (MappingHierarchy h : pd.hierarchies()) {
-                writer.write(STR."h\{cubeIndex}\{dimensionIndex}\{hIndex}[\{h.name()}] {");
+                String hierarchyName = prepare(h.name());
+                writer.write(STR."h\{cubeIndex}\{dimensionIndex}\{hIndex}[\"\{hierarchyName}\"] {");
                 writer.write(ENTER);
                 for (MappingLevel l : h.levels()) {
                     String description = l.description() == null ? EMPTY_STRING : l.description();
-                    writer.write(STR."L \{l.name()} \"\{description}\"");
+                    String levelNmae = prepare(l.name());
+                    writer.write(STR."L \{levelNmae} \"\{description}\"");
                     writer.write(ENTER);
                 }
                 writer.write("}");
@@ -664,9 +687,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeCubeDimensions(FileWriter writer, List<MappingCubeDimension> dimensionUsageOrDimensions) {
         try {
-            writer.write("##### Dimensions:");
-            writer.write(ENTER);
-            writeList(writer, dimensionUsageOrDimensions, this::writeCubeDimension);
+            if (!dimensionUsageOrDimensions.isEmpty()) {
+                writer.write("##### Dimensions:");
+                writer.write(ENTER);
+                writeList(writer, dimensionUsageOrDimensions, this::writeCubeDimension);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -913,7 +938,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     """);
                 for (ColumnDefinition c : columnList) {
                     String columnName = c.column().name();
-                    String type = TYPE_MAP.get(c.columnType().dataType());
+                    String type = TYPE_MAP.get(c.columnType().dataType().getVendorTypeNumber());
                     writer.write(STR. """
                         \{type} \{columnName}
                         """);

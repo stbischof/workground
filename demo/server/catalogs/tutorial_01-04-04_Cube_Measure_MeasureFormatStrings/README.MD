@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-04-04_Cube_Measure_MeasureFormatStrings
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Cube_With_Measures_Of_Different_Datatypes : 
 
 		
@@ -12,10 +10,6 @@
 		In this sample cube the three measures derive from the same table column in the database, but have different expressions in the format String attribute.
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -28,7 +22,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeOneNumericMeasureDifferentFormatStrings" diagram:
 
 ---
@@ -47,7 +40,10 @@
 }}%%
 erDiagram
 c0["CubeOneNumericMeasureDifferentFormatStrings"]{
-M Measure1 ""M Measure2 ""M Measure3 ""}
+M Measure1 ""
+M Measure2 ""
+M Measure3 ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Cube_With_Measures_Of_Different_Datatypes:
@@ -64,10 +60,22 @@ quadrant-4 Wide
 Cube CubeOneNumericMeasureDifferentFormatStrings: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+null VALUE
+}
+
+```
+---
 ## Validation result for schema Minimal_Cube_With_Measures_Of_Different_Datatypes
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeOneNumericMeasureDifferentFormatStrings must contain Dimensions|
-|DATABASE|Cube with name CubeOneNumericMeasureDifferentFormatStrings must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Dimension_multiple
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Two_Dimensions : 
 ### Public Dimensions:
 
@@ -74,19 +72,20 @@ Levels: "D2H1L1"
 }}%%
 erDiagram
 c0["CubeTwoDimensions"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 D Dimension2 ""
 }
-d00[D1] {
+d00["D1"] {
 H D1H1 ""
 }
-h000[D1H1] {
+h000["D1H1"] {
 L D1H1L1 ""
 }
-d01[D2] {
+d01["D2"] {
 H D2H1 ""
 }
-h010[D2H1] {
+h010["D2H1"] {
 L D2H1L1 ""
 }
 "c0" ||--|| "d00" : "DIM1_KEY-KEY"
@@ -117,17 +116,17 @@ title: Diagram;
 ---
 erDiagram
 DIM_1{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 DIM_2{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 Fact{
-null DIM1_KEY
-null DIM2_KEY
-null VALUE
+int DIM1_KEY
+int DIM2_KEY
+int VALUE
 }
 
 "Fact" ||--o{ "DIM_1" : "DIM1_KEY-KEY"

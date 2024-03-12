@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Dimension_TimeDimension
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Time_Dimension : 
 ### Public Dimensions:
 
@@ -64,12 +62,13 @@ Levels: "Years, Quarters, Months"
 }}%%
 erDiagram
 c0["CubeTimeDimension"]{
-M Measure-Sum ""D Time ""
+M Measure-Sum ""
+D Time ""
 }
-d00[Time] {
-H null ""
+d00["Time"] {
+H _ ""
 }
-h000[null] {
+h000["_"] {
 L Years ""
 L Quarters ""
 L Months ""
@@ -102,13 +101,13 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null DATE_KEY
-null VALUE
-null YEAR_ID
-null QTR_ID
-null QTR_NAME
-null MONTH_ID
-null MONTH_NAME
+timestamp DATE_KEY
+int VALUE
+int YEAR_ID
+string QTR_ID
+string QTR_NAME
+string MONTH_ID
+string MONTH_NAME
 }
 
 ```

@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-00_Cube
-## Olap Context Details:
-## Schemas:
 ### Schema 01_Minimal_Cube_With_One_Measure : 
 
 		
@@ -17,10 +15,6 @@
 		The measurement in this example cube is named "Measure-Sum" (name attribute). It corresponds to the "VALUE" column (column attribute) in the database table "Fact" and is aggregated by summation (aggregator attribute).
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -33,7 +27,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeOneMeasure" diagram:
 
 ---
@@ -52,7 +45,8 @@
 }}%%
 erDiagram
 c0["CubeOneMeasure"]{
-M Measure-Sum ""}
+M Measure-Sum ""
+}
 ```
 ---
 ### Cube Matrix for 01_Minimal_Cube_With_One_Measure:
@@ -69,10 +63,22 @@ quadrant-4 Wide
 Cube CubeOneMeasure: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+}
+
+```
+---
 ## Validation result for schema 01_Minimal_Cube_With_One_Measure
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
-|DATABASE|Cube with name CubeOneMeasure must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

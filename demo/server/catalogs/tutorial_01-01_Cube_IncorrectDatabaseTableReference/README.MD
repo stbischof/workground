@@ -1,17 +1,11 @@
 # Documentation
 ### CatalogName : tutorial_01-01_Cube_IncorrectDatabaseTableReference
-## Olap Context Details:
-## Schemas:
 ### Schema 01-01_Minimal_Cube_With_One_Measure_And_Incorrect_Table_Reference : 
 
 	
     	This schema shows a minimal cube with an incorrect fact table reference.
 		In this example the table "Fakt", which is referred to as the database fact table in the <Table> tag, does not exist in the database.
 	
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -24,7 +18,6 @@
 
 ##### Table: "Fakt"
 
-##### Dimensions:
 ### Cube "CubeOneMeasure" diagram:
 
 ---
@@ -43,7 +36,8 @@
 }}%%
 erDiagram
 c0["CubeOneMeasure"]{
-M Measure-Sum ""}
+M Measure-Sum ""
+}
 ```
 ---
 ### Cube Matrix for 01-01_Minimal_Cube_With_One_Measure_And_Incorrect_Table_Reference:
@@ -58,6 +52,20 @@ quadrant-3 Simple
 quadrant-4 Wide
 
 Cube CubeOneMeasure: [0.0000, 0.0000]
+```
+---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+}
+
 ```
 ---
 ## Validation result for schema 01-01_Minimal_Cube_With_One_Measure_And_Incorrect_Table_Reference

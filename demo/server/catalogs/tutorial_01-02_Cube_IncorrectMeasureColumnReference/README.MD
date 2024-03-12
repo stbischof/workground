@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-02_Cube_IncorrectMeasureColumnReference
-## Olap Context Details:
-## Schemas:
 ### Schema 01-02_Minimal_Cube_With_One_Measure_And_Incorrect_Measure_Column_Reference : 
 
 	
@@ -9,10 +7,6 @@
 		
 		In this example the column "PRICE", which is referred to as the measurement column in the <Measure> tag, does not exist in the database table "Fact".	
 	
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -25,7 +19,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeOneMeasure" diagram:
 
 ---
@@ -44,7 +37,8 @@
 }}%%
 erDiagram
 c0["CubeOneMeasure"]{
-M Measure-Sum ""}
+M Measure-Sum ""
+}
 ```
 ---
 ### Cube Matrix for 01-02_Minimal_Cube_With_One_Measure_And_Incorrect_Measure_Column_Reference:
@@ -61,10 +55,23 @@ quadrant-4 Wide
 Cube CubeOneMeasure: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+null VALUE_NUMERIC
+}
+
+```
+---
 ## Validation result for schema 01-02_Minimal_Cube_With_One_Measure_And_Incorrect_Measure_Column_Reference
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
-|DATABASE|Cube with name CubeOneMeasure must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

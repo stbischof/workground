@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : complex_SchoolsTestData_German
-## Olap Context Details:
-## Schemas:
 ### Schema Schulwesen : 
 ### Public Dimensions:
 
@@ -270,33 +268,35 @@ Levels: "Förderbedarf, Art der Förderung"
 }}%%
 erDiagram
 c0["Schulen in Jena (Institutionen)"]{
-M Anzahl Schulen ""M Anzahl Klassen ""D Schulen ""
+M Anzahl_Schulen ""
+M Anzahl_Klassen ""
+D Schulen ""
 D Schuljahr ""
 }
-d00[Schulen] {
-H Schulen nach Ganztagsangebot ""
-H Schulen nach Trägerschaft ""
-H Schulen nach Art ""
+d00["Schulen"] {
+H Schulen_nach_Ganztagsangebot ""
+H Schulen_nach_Traegerschaft ""
+H Schulen_nach_Art ""
 }
-h000[Schulen nach Ganztagsangebot] {
-L Art des Ganztagsangebots ""
+h000["Schulen_nach_Ganztagsangebot"] {
+L Art_des_Ganztagsangebots ""
 L Schule ""
 }
-h001[Schulen nach Trägerschaft] {
-L Schulträger-Kategorie ""
-L Schulträger-Art ""
-L Schulträger ""
+h001["Schulen_nach_Traegerschaft"] {
+L Schultraeger-Kategorie ""
+L Schultraeger-Art ""
+L Schultraeger ""
 L Schule ""
 }
-h002[Schulen nach Art] {
+h002["Schulen_nach_Art"] {
 L Schulkategorie ""
 L Schulart ""
 L Schule ""
 }
-d01[Schuljahre] {
+d01["Schuljahre"] {
 H Schuljahre ""
 }
-h010[Schuljahre] {
+h010["Schuljahre"] {
 L Schuljahr ""
 }
 "c0" ||--|| "d00" : "schule_id-id"
@@ -351,54 +351,55 @@ L Schuljahr ""
 }}%%
 erDiagram
 c1["Pädagogisches Personal an Jenaer Schulen"]{
-M Anzahl Personen ""D Schulen ""
+M Anzahl_Personen ""
+D Schulen ""
 D Schuljahr ""
 D Altersgruppe ""
 D Geschlecht ""
 D Berufsgruppe ""
 }
-d10[Schulen] {
-H Schulen nach Ganztagsangebot ""
-H Schulen nach Trägerschaft ""
-H Schulen nach Art ""
+d10["Schulen"] {
+H Schulen_nach_Ganztagsangebot ""
+H Schulen_nach_Traegerschaft ""
+H Schulen_nach_Art ""
 }
-h100[Schulen nach Ganztagsangebot] {
-L Art des Ganztagsangebots ""
+h100["Schulen_nach_Ganztagsangebot"] {
+L Art_des_Ganztagsangebots ""
 L Schule ""
 }
-h101[Schulen nach Trägerschaft] {
-L Schulträger-Kategorie ""
-L Schulträger-Art ""
-L Schulträger ""
+h101["Schulen_nach_Traegerschaft"] {
+L Schultraeger-Kategorie ""
+L Schultraeger-Art ""
+L Schultraeger ""
 L Schule ""
 }
-h102[Schulen nach Art] {
+h102["Schulen_nach_Art"] {
 L Schulkategorie ""
 L Schulart ""
 L Schule ""
 }
-d11[Schuljahre] {
+d11["Schuljahre"] {
 H Schuljahre ""
 }
-h110[Schuljahre] {
+h110["Schuljahre"] {
 L Schuljahr ""
 }
-d12[Altersgruppen Personal] {
+d12["Altersgruppen Personal"] {
 H Altersgruppen ""
 }
-h120[Altersgruppen] {
+h120["Altersgruppen"] {
 L Altersgruppe ""
 }
-d13[Geschlecht] {
+d13["Geschlecht"] {
 H Geschlecht ""
 }
-h130[Geschlecht] {
+h130["Geschlecht"] {
 L Geschlecht ""
 }
-d14[Berufsgruppen Personal] {
+d14["Berufsgruppen Personal"] {
 H Berufsgruppen ""
 }
-h140[Berufsgruppen] {
+h140["Berufsgruppen"] {
 L Berufsgruppe ""
 }
 "c1" ||--|| "d10" : "schule_id-id"
@@ -467,7 +468,8 @@ L Berufsgruppe ""
 }}%%
 erDiagram
 c2["Schüler:innen an Jenaer Schulen"]{
-M Anzahl Schüler:innen ""D Schulen ""
+M Anzahl_Schueler_innen ""
+D Schulen ""
 D Schuljahr ""
 D Geschlecht ""
 D Wohnlandkreis ""
@@ -475,77 +477,77 @@ D Einschulung ""
 D Schulabschluss ""
 D Klassenwiederholung ""
 D Migrationshintergrund ""
-D Sonderpädagogische Förderung ""
+D Sonderpaedagogische_Foerderung ""
 }
-d20[Schulen] {
-H Schulen nach Ganztagsangebot ""
-H Schulen nach Trägerschaft ""
-H Schulen nach Art ""
+d20["Schulen"] {
+H Schulen_nach_Ganztagsangebot ""
+H Schulen_nach_Traegerschaft ""
+H Schulen_nach_Art ""
 }
-h200[Schulen nach Ganztagsangebot] {
-L Art des Ganztagsangebots ""
+h200["Schulen_nach_Ganztagsangebot"] {
+L Art_des_Ganztagsangebots ""
 L Schule ""
 }
-h201[Schulen nach Trägerschaft] {
-L Schulträger-Kategorie ""
-L Schulträger-Art ""
-L Schulträger ""
+h201["Schulen_nach_Traegerschaft"] {
+L Schultraeger-Kategorie ""
+L Schultraeger-Art ""
+L Schultraeger ""
 L Schule ""
 }
-h202[Schulen nach Art] {
+h202["Schulen_nach_Art"] {
 L Schulkategorie ""
 L Schulart ""
 L Schule ""
 }
-d21[Schuljahre] {
+d21["Schuljahre"] {
 H Schuljahre ""
 }
-h210[Schuljahre] {
+h210["Schuljahre"] {
 L Schuljahr ""
 }
-d22[Geschlecht] {
+d22["Geschlecht"] {
 H Geschlecht ""
 }
-h220[Geschlecht] {
+h220["Geschlecht"] {
 L Geschlecht ""
 }
-d23[Wohnlandkreis] {
+d23["Wohnlandkreis"] {
 H Wohnlandkreis ""
 }
-h230[Wohnlandkreis] {
+h230["Wohnlandkreis"] {
 L Bundesland ""
 L Wohnlandkreis ""
 }
-d24[Einschulungen] {
+d24["Einschulungen"] {
 H Einschulung ""
 }
-h240[Einschulung] {
+h240["Einschulung"] {
 L Einschulung ""
 }
-d25[Schulabschluss] {
-H Schulabschlüsse ""
+d25["Schulabschluss"] {
+H Schulabschluesse ""
 }
-h250[Schulabschlüsse] {
-L Schulabschlüsse ""
+h250["Schulabschluesse"] {
+L Schulabschluesse ""
 }
-d26[Klassenwiederholung] {
+d26["Klassenwiederholung"] {
 H Klassenwiederholung ""
 }
-h260[Klassenwiederholung] {
+h260["Klassenwiederholung"] {
 L Klassenwiederholung ""
 }
-d27[Migrationshintergrund] {
+d27["Migrationshintergrund"] {
 H Migrationshintergrund ""
 }
-h270[Migrationshintergrund] {
+h270["Migrationshintergrund"] {
 L Migrationshintergrund ""
 }
-d28[Inklusion] {
-H Sonderpädagogische Förderung ""
+d28["Inklusion"] {
+H Sonderpaedagogische_Foerderung ""
 }
-h280[Sonderpädagogische Förderung] {
-L Förderbedarf ""
-L Art der Förderung ""
+h280["Sonderpaedagogische_Foerderung"] {
+L Foerderbedarf ""
+L Art_der_Foerderung ""
 }
 "c2" ||--|| "d20" : "schule_id-id"
 "d20" ||--|| "h200" : "id-id"
@@ -590,9 +592,9 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Schulen in Jena (Institutionen): [0.5000, 0.0000]
-Cube Pädagogisches Personal an Jenaer Schulen: [0.6500, 0.0000]
-Cube Schüler:innen an Jenaer Schulen: [0.9500, 0.0000]
+Cube Schulen_in_Jena__Institutionen_: [0.5000, 0.0000]
+Cube Paedagogisches_Personal_an_Jenaer_Schulen: [0.6500, 0.0000]
+Cube Schueler_innen_an_Jenaer_Schulen: [0.9500, 0.0000]
 ```
 ---
 ### Database :
@@ -603,30 +605,30 @@ title: Diagram;
 ---
 erDiagram
 fact_personal{
-null schule_id
-null schul_jahr_id
-null alters_gruppe_id
-null geschlecht_id
-null personal_art_id
-null anzahl_personen
+int schule_id
+int schul_jahr_id
+int alters_gruppe_id
+int geschlecht_id
+int personal_art_id
+int anzahl_personen
 }
 fact_schueler{
-null schule_id
-null schul_jahr_id
-null geschlecht_id
-null wohn_lk_id
-null einschulung_id
-null schul_abschluss_id
-null klassen_wdh
-null migrations_hg_id
-null foerder_art_id
-null anzahl_schueler
+int schule_id
+int schul_jahr_id
+int geschlecht_id
+int wohn_lk_id
+int einschulung_id
+int schul_abschluss_id
+int klassen_wdh
+int migrations_hg_id
+int foerder_art_id
+int anzahl_schueler
 }
 fact_schulen{
-null schule_id
-null schul_jahr_id
-null anzahl_schulen
-null anzahl_klassen
+int schule_id
+int schul_jahr_id
+int anzahl_schulen
+int anzahl_klassen
 }
 
 "fact_schulen" ||--o{ "schule" : "schule_id-id"

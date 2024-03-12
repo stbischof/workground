@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-04-05_Cube_Measure_CalculatedMeasure
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure : 
 
 		
@@ -12,10 +10,6 @@
 		
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -28,7 +22,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeTwoMeasuresPlusOneCalculatedMeasure" diagram:
 
 ---
@@ -47,7 +40,9 @@
 }}%%
 erDiagram
 c0["CubeTwoMeasuresPlusOneCalculatedMeasure"]{
-M Measure1-Sum ""M Measure2-Count ""}
+M Measure1-Sum ""
+M Measure2-Count ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure:
@@ -64,10 +59,23 @@ quadrant-4 Wide
 Cube CubeTwoMeasuresPlusOneCalculatedMeasure: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+null VALUE_NUMERIC
+}
+
+```
+---
 ## Validation result for schema Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeTwoMeasuresPlusOneCalculatedMeasure must contain Dimensions|
-|DATABASE|Cube with name CubeTwoMeasuresPlusOneCalculatedMeasure must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

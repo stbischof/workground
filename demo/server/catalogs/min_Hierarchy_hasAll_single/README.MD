@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Hierarchy_hasAll_single
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_1 : 
 ### Public Dimensions:
 
@@ -56,12 +54,13 @@ Levels: "Level1"
 }}%%
 erDiagram
 c0["Cube1"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H HierarchyWithHasAll ""
 }
-h000[HierarchyWithHasAll] {
+h000["HierarchyWithHasAll"] {
 L Level1 ""
 }
 "c0" ||--|| "d00" : "KEY-KEY"
@@ -90,8 +89,8 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null KEY
-null VALUE
+string KEY
+int VALUE
 }
 
 ```

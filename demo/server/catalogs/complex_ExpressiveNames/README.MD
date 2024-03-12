@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : complex_ExpressiveNames
-## Olap Context Details:
-## Schemas:
 ### Schema ExpressiveNames : 
 
     
@@ -129,35 +127,36 @@ Levels: "D3H3L1, D3H3L2, D3H3L3"
 }}%%
 erDiagram
 c0["Cube 1"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 D Dimension2 ""
 D Dimension3 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H D1H1 "Hierarchy 1 Dimension 1"
 }
-h000[D1H1] {
+h000["D1H1"] {
 L D1H1L1 "Level 1 Dimension 1 Hierarchy1"
 }
-d01[Dimension2] {
+d01["Dimension2"] {
 H D2H1 "Hierarchy 1 Dimension 2"
 H D2H2 "Hierarchy 2 Dimension 2"
 }
-h010[D2H1] {
+h010["D2H1"] {
 L D2H1L1 "Level 1 Hierarchy 1 Dimension 2"
 }
-h011[D2H2] {
+h011["D2H2"] {
 L D2H2L1 "Level 1 Hierarchy 2 Dimension 2"
 L D2H2L2 "Level 2 Hierarchy 2 Dimension 2"
 }
-d02[Dimension3] {
+d02["Dimension3"] {
 H D3H1 "Hierarchy 1 Dimension 3"
 H D3H3 "Hierarchy 1 Dimension 3"
 }
-h020[D3H1] {
+h020["D3H1"] {
 L D3H1L1 "Level 1 Hierarchy1 Dimension 3"
 }
-h021[D3H3] {
+h021["D3H3"] {
 L D3H3L1 "Level 1 Hierarchy3 Dimension 3"
 L D3H3L2 "Level 2 Hierarchy3 Dimension 3"
 L D3H3L3 "Level 3 Hierarchy3 Dimension 3"
@@ -188,7 +187,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube 1: [0.4000, 0.0000]
+Cube Cube_1: [0.4000, 0.0000]
 ```
 ---
 ### Database :
@@ -199,61 +198,61 @@ title: Diagram;
 ---
 erDiagram
 Cube1Fact{
-null D1
-null D2
-null D3
-null M1
+string D1
+string D2
+string D3
+int M1
 }
 D1H1L1Table{
-null D1H1L1
-null D1H1L1_NAME
-null D1H1L1_Ordinal
+string D1H1L1
+string D1H1L1_NAME
+string D1H1L1_Ordinal
 }
 D2H1L1Table{
-null D2H1L1
-null D2H1L1_NAME
-null D2H1L1_Ordinal
+string D2H1L1
+string D2H1L1_NAME
+string D2H1L1_Ordinal
 }
 D2H2L2Table{
-null D2H2L2
-null D2H2L1
-null D2H2L2_NAME
-null D2H2L1_NAME
-null D2H2L2_Ordinal
-null D2H2L1_Ordinal
+string D2H2L2
+string D2H2L1
+string D2H2L2_NAME
+string D2H2L1_NAME
+string D2H2L2_Ordinal
+string D2H2L1_Ordinal
 }
 D3H1L1Table{
-null D3H1L1
-null D3H1L1_NAME
-null D3H1L1_Ordinal
+string D3H1L1
+string D3H1L1_NAME
+string D3H1L1_Ordinal
 }
 D3H2L1Table{
-null D3H2L1
-null D3H2L1_NAME
-null D3H2L1_Ordinal
+string D3H2L1
+string D3H2L1_NAME
+string D3H2L1_Ordinal
 }
 D3H2L2Table{
-null D3H2L2
-null D3H2L1_id
-null D3H2L2_NAME
-null D3H2L2_Ordinal
+string D3H2L2
+string D3H2L1_id
+string D3H2L2_NAME
+string D3H2L2_Ordinal
 }
 D3H3L1Table{
-null D3H3L1
-null D3H3L1_NAME
-null D3H3L1_Ordinal
+string D3H3L1
+string D3H3L1_NAME
+string D3H3L1_Ordinal
 }
 D3H3L2Table{
-null D3H3L2
-null D3H3L1_id
-null D3H3L2_NAME
-null D3H3L2_Ordinal
+string D3H3L2
+string D3H3L1_id
+string D3H3L2_NAME
+string D3H3L2_Ordinal
 }
 D3H3L3Table{
-null D3H3L3
-null D3H3L2_id
-null D3H3L3_NAME
-null D3H3L3_Ordinal
+string D3H3L3
+string D3H3L2_id
+string D3H3L3_NAME
+string D3H3L3_Ordinal
 }
 
 "Cube1Fact" ||--o{ "D1H1L1Table" : "D1-D1H1L1"

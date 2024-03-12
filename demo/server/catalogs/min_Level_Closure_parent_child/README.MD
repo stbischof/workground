@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Level_Closure_parent_child
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Parent_Child_With_Closure : 
 ### Public Dimensions:
 
@@ -56,12 +54,13 @@ Levels: "Level"
 }}%%
 erDiagram
 c0["CubeParentChildClosure"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H Hierarchy1 ""
 }
-h000[Hierarchy1] {
+h000["Hierarchy1"] {
 L Level ""
 }
 "c0" ||--|| "d00" : "DIM_KEY-KEY"
@@ -90,18 +89,18 @@ title: Diagram;
 ---
 erDiagram
 Closure{
-null PARENT_KEY
-null CHILD_KEY
-null DIST
+int PARENT_KEY
+int CHILD_KEY
+int DIST
 }
 Fact{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 Hierarchy{
-null KEY
-null NAME
-null PARENT_KEY
+int KEY
+string NAME
+int PARENT_KEY
 }
 
 "Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"

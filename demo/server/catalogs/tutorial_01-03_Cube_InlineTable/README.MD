@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-03_Cube_InlineTable
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Cube_With_Inline_Tables : 
 
 	
@@ -20,10 +18,6 @@
 		The table has one row which holds the text "A" in the "KEY" column and the value 100.5 in the "VALUE" column (<Row> & <Value> within <Rows>)
 		As the inline table is the only dataset the cube refers to, no external database is needed.	
 	
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -36,7 +30,6 @@
 
 ##### Table: ""
 
-##### Dimensions:
 ### Cube "CubeOneMeasureInlineTable" diagram:
 
 ---
@@ -55,7 +48,8 @@
 }}%%
 erDiagram
 c0["CubeOneMeasureInlineTable"]{
-M Measure-Sum ""}
+M Measure-Sum ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Cube_With_Inline_Tables:

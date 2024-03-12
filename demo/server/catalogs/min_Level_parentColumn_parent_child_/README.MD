@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Level_parentColumn_parent_child_
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Parent_Child_Hierarchy : 
 ### Public Dimensions:
 
@@ -56,12 +54,13 @@ Levels: "Level"
 }}%%
 erDiagram
 c0["CubeParentChildOneTopMember"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H Hierarchy1 ""
 }
-h000[Hierarchy1] {
+h000["Hierarchy1"] {
 L Level ""
 }
 "c0" ||--|| "d00" : "DIM_KEY-KEY"
@@ -90,13 +89,13 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 Hier_One_Top_Member{
-null KEY
-null NAME
-null PARENT_KEY
+int KEY
+string NAME
+int PARENT_KEY
 }
 
 "Fact" ||--o{ "Hier_One_Top_Member" : "DIM_KEY-KEY"

@@ -1,12 +1,6 @@
 # Documentation
 ### CatalogName : complex_SteelWheel
-## Olap Context Details:
-## Schemas:
 ### Schema SteelWheels : 
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -146,47 +140,49 @@ Levels: "Type"
 }}%%
 erDiagram
 c0["SteelWheelsSales"]{
-M Quantity ""M Sales ""D Markets ""
+M Quantity ""
+M Sales ""
+D Markets ""
 D Customers ""
 D Product ""
 D Time ""
-D Order Status ""
+D Order_Status ""
 }
-d00[Markets] {
-H null ""
+d00["Markets"] {
+H _ ""
 }
-h000[null] {
+h000["_"] {
 L Territory ""
 L Country ""
-L State Province ""
+L State_Province ""
 L City ""
 }
-d01[Customers] {
-H null ""
+d01["Customers"] {
+H _ ""
 }
-h010[null] {
+h010["_"] {
 L Customer ""
 }
-d02[Product] {
-H  ""
+d02["Product"] {
+H _ ""
 }
-h020[] {
+h020["_"] {
 L Line ""
 L Vendor ""
 L Product ""
 }
-d03[Time] {
-H null ""
+d03["Time"] {
+H _ ""
 }
-h030[null] {
+h030["_"] {
 L Years ""
 L Quarters ""
 L Months ""
 }
-d04[Order Status] {
-H null ""
+d04["Order Status"] {
+H _ ""
 }
-h040[null] {
+h040["_"] {
 L Type ""
 }
 "c0" ||--|| "d00" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
@@ -230,59 +226,59 @@ title: Diagram;
 ---
 erDiagram
 customer_w_ter{
-null CUSTOMERNUMBER
-null CUSTOMERNAME
-null CONTACTLASTNAME
-null CONTACTFIRSTNAME
-null PHONE
-null ADDRESSLINE1
-null ADDRESSLINE2
-null CITY
-null STATE
-null POSTALCODE
-null COUNTRY
-null EMPLOYEENUMBER
+int CUSTOMERNUMBER
+string CUSTOMERNAME
+string CONTACTLASTNAME
+string CONTACTFIRSTNAME
+string PHONE
+string ADDRESSLINE1
+string ADDRESSLINE2
+string CITY
+string STATE
+string POSTALCODE
+string COUNTRY
+int EMPLOYEENUMBER
 null CREDITLIMIT
-null TERRITORY
+string TERRITORY
 }
 orderfact{
-null ORDERNUMBER
-null PRODUCTCODE
-null QUANTITYORDERED
+int ORDERNUMBER
+string PRODUCTCODE
+int QUANTITYORDERED
 null PRICEEACH
-null ORDERLINENUMBER
+int ORDERLINENUMBER
 null TOTALPRICE
-null ORDERDATE
-null REQUIREDDATE
-null SHIPPEDDATE
-null STATUS
-null COMMENTS
-null CUSTOMERNUMBER
-null TIME_ID
-null QTR_ID
-null MONTH_ID
-null YEAR_ID
+timestamp ORDERDATE
+timestamp REQUIREDDATE
+timestamp SHIPPEDDATE
+string STATUS
+string COMMENTS
+int CUSTOMERNUMBER
+string TIME_ID
+int QTR_ID
+int MONTH_ID
+int YEAR_ID
 }
 products{
-null PRODUCTCODE
-null PRODUCTNAME
-null PRODUCTLINE
-null PRODUCTSCALE
-null PRODUCTVENDOR
-null PRODUCTDESCRIPTION
-null QUANTITYINSTOCK
+string PRODUCTCODE
+string PRODUCTNAME
+string PRODUCTLINE
+string PRODUCTSCALE
+string PRODUCTVENDOR
+string PRODUCTDESCRIPTION
+int QUANTITYINSTOCK
 null BUYPRICE
 null MSRP
 }
 time{
-null TIME_ID
-null MONTH_ID
-null QTR_ID
-null YEAR_ID
-null MONTH_NAME
-null MONTH_DESC
-null QTR_NAME
-null QTR_DESC
+string TIME_ID
+int MONTH_ID
+int QTR_ID
+int YEAR_ID
+string MONTH_NAME
+string MONTH_DESC
+string QTR_NAME
+string QTR_DESC
 }
 
 "orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"

@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-04_Cube_Measure_MultipleMeasures
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Cubes_With_Measures : 
 
 		
@@ -14,10 +12,6 @@
 		This sample cube contains the two measures "Measure 1", which traces back to the table column "VALUE1", and Measure2", which is derived from the table column "VALUE2".
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -30,7 +24,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeTwoMeasures" diagram:
 
 ---
@@ -49,7 +42,9 @@
 }}%%
 erDiagram
 c0["CubeTwoMeasures"]{
-M Measure1 ""M Measure2 ""}
+M Measure1 ""
+M Measure2 ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Cubes_With_Measures:
@@ -66,10 +61,23 @@ quadrant-4 Wide
 Cube CubeTwoMeasures: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE1
+int VALUE2
+}
+
+```
+---
 ## Validation result for schema Minimal_Cubes_With_Measures
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeTwoMeasures must contain Dimensions|
-|DATABASE|Cube with name CubeTwoMeasures must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

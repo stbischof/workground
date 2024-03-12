@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Level_Join
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Single_Hierarchy : 
 ### Public Dimensions:
 
@@ -60,12 +58,13 @@ Levels: "Level1, Level2"
 }}%%
 erDiagram
 c0["Cube1"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H Hierarchy1 ""
 }
-h000[Hierarchy1] {
+h000["Hierarchy1"] {
 L Level1 ""
 L Level2 ""
 }
@@ -96,17 +95,17 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 Level_1{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 Level_2{
-null KEY
-null NAME
-null L1_KEY
+int KEY
+string NAME
+int L1_KEY
 }
 
 "Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"

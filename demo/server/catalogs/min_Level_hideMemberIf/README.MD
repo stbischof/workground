@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Level_hideMemberIf
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Single_Hierarchy_Hidden_Members : 
 ### Public Dimensions:
 
@@ -104,12 +102,13 @@ Levels: "Level1, Level2, Level3"
 }}%%
 erDiagram
 c0["HiddenMembersIfParentName"]{
-M Measure1 ""D DimensionMembersHiddenIfParentsName ""
+M Measure1 ""
+D DimensionMembersHiddenIfParentsName ""
 }
-d00[DimensionMembersHiddenIfParentsName] {
+d00["DimensionMembersHiddenIfParentsName"] {
 H Hierarchy1 ""
 }
-h000[Hierarchy1] {
+h000["Hierarchy1"] {
 L Level1 ""
 L Level2 ""
 }
@@ -146,12 +145,13 @@ L Level2 ""
 }}%%
 erDiagram
 c1["HiddenMembersIfBlankName"]{
-M Measure1 ""D DimensionMembersHiddenIfBlankName ""
+M Measure1 ""
+D DimensionMembersHiddenIfBlankName ""
 }
-d10[DimensionMembersHiddenIfBlankName] {
+d10["DimensionMembersHiddenIfBlankName"] {
 H Hierarchy1 ""
 }
-h100[Hierarchy1] {
+h100["Hierarchy1"] {
 L Level1 ""
 L Level2 ""
 }
@@ -188,12 +188,13 @@ L Level2 ""
 }}%%
 erDiagram
 c2["HiddenMembersMultipleLevels"]{
-M Measure1 ""D DimensionMembersHiddenMultipleLevels ""
+M Measure1 ""
+D DimensionMembersHiddenMultipleLevels ""
 }
-d20[DimensionMembersHiddenMultipleLevels] {
+d20["DimensionMembersHiddenMultipleLevels"] {
 H Hierarchy1 ""
 }
-h200[Hierarchy1] {
+h200["Hierarchy1"] {
 L Level1 ""
 L Level2 ""
 L Level3 ""
@@ -228,40 +229,40 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 Fact_Multiple{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 Level_1{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 Level_1_Multiple{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 Level_2{
-null KEY
-null NAME
-null L1_KEY
+int KEY
+string NAME
+int L1_KEY
 }
 Level_2_Multiple{
-null KEY
-null NAME
-null L1_KEY
+int KEY
+string NAME
+int L1_KEY
 }
 Level_2_NULL{
-null KEY
-null NAME
-null L1_KEY
+int KEY
+string NAME
+int L1_KEY
 }
 Level_3_Multiple{
-null KEY
-null NAME
-null L2_KEY
+int KEY
+string NAME
+int L2_KEY
 }
 
 "Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"

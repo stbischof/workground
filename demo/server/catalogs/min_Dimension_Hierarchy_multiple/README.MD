@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : min_Dimension_Hierarchy_multiple
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Multiple_Hierarchy : 
 ### Public Dimensions:
 
@@ -74,17 +72,18 @@ Levels: "H2_Level1, H2_Level2"
 }}%%
 erDiagram
 c0["CubeMultipleHierarchy"]{
-M Measure1 ""D Dimension1 ""
+M Measure1 ""
+D Dimension1 ""
 }
-d00[Dimension1] {
+d00["Dimension1"] {
 H Hierarchy1 ""
 H Hierarchy2 ""
 }
-h000[Hierarchy1] {
+h000["Hierarchy1"] {
 L H1_Level1 ""
 L H1_Level2 ""
 }
-h001[Hierarchy2] {
+h001["Hierarchy2"] {
 L H2_Level1 ""
 L H2_Level2 ""
 }
@@ -118,22 +117,22 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-null DIM_KEY
-null VALUE
+int DIM_KEY
+int VALUE
 }
 H1_L1{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 H2_L1{
-null KEY
-null NAME
+int KEY
+string NAME
 }
 HX_L2{
-null KEY
-null NAME
-null H1L1_KEY
-null H2L1_KEY
+int KEY
+string NAME
+int H1L1_KEY
+int H2L1_KEY
 }
 
 "Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"

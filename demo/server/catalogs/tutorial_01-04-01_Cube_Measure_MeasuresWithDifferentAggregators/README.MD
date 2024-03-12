@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : tutorial_01-04-01_Cube_Measure_MeasuresWithDifferentAggregators
-## Olap Context Details:
-## Schemas:
 ### Schema 01-03_Minimal_Cube_With_One_Measure_And_Different_Aggregators : 
 
 		
@@ -18,10 +16,6 @@
 		In this example cube every measure traces back to the "VALUE" column of the "Fact" database table, but uses another aggregator. 
 		
   
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -34,7 +28,6 @@
 
 ##### Table: "Fact"
 
-##### Dimensions:
 ### Cube "CubeDifferentAggregators" diagram:
 
 ---
@@ -53,7 +46,13 @@
 }}%%
 erDiagram
 c0["CubeDifferentAggregators"]{
-M Measure1-Sum ""M Measure1-Count ""M Measure1-Ming ""M Measure1-Maxg ""M Measure1-Avg ""M Measure1-DistCount ""}
+M Measure1-Sum ""
+M Measure1-Count ""
+M Measure1-Ming ""
+M Measure1-Maxg ""
+M Measure1-Avg ""
+M Measure1-DistCount ""
+}
 ```
 ---
 ### Cube Matrix for 01-03_Minimal_Cube_With_One_Measure_And_Different_Aggregators:
@@ -70,10 +69,22 @@ quadrant-4 Wide
 Cube CubeDifferentAggregators: [0.0000, 0.0000]
 ```
 ---
+### Database :
+---
+```mermaid
+---
+title: Diagram;
+---
+erDiagram
+Fact{
+string KEY
+int VALUE
+}
+
+```
+---
 ## Validation result for schema 01-03_Minimal_Cube_With_One_Measure_And_Different_Aggregators
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeDifferentAggregators must contain Dimensions|
-|DATABASE|Cube with name CubeDifferentAggregators must contain measures|
-|DATABASE|Fact table Fact does not exist in database .|

@@ -1,12 +1,6 @@
 # Documentation
 ### CatalogName : min_VirtualCube_Measure_only
-## Olap Context Details:
-## Schemas:
 ### Schema Minimal_Virtual_Cubes_With_Measures : 
-### Public Dimensions:
-
-    
-
 ---
 ### Cubes :
 
@@ -19,7 +13,6 @@
 
 ##### Table: "C1_Fact"
 
-##### Dimensions:
 ### Cube "Cube1" diagram:
 
 ---
@@ -38,7 +31,8 @@
 }}%%
 erDiagram
 c0["Cube1"]{
-M C1-Measure-Sum ""}
+M C1-Measure-Sum ""
+}
 ```
 ---
 ---
@@ -48,7 +42,6 @@ M C1-Measure-Sum ""}
 
 ##### Table: "C2_Fact"
 
-##### Dimensions:
 ### Cube "Cube2" diagram:
 
 ---
@@ -67,7 +60,8 @@ M C1-Measure-Sum ""}
 }}%%
 erDiagram
 c1["Cube2"]{
-M C2-Measure-Sum ""}
+M C2-Measure-Sum ""
+}
 ```
 ---
 ### Cube Matrix for Minimal_Virtual_Cubes_With_Measures:
@@ -93,12 +87,12 @@ title: Diagram;
 ---
 erDiagram
 C1_Fact{
-null KEY
-null VALUE
+string KEY
+int VALUE
 }
 C2_Fact{
-null KEY
-null VALUE
+string KEY
+int VALUE
 }
 
 ```

@@ -1,7 +1,5 @@
 # Documentation
 ### CatalogName : complex_FoodMart
-## Olap Context Details:
-## Schemas:
 ### Schema FoodMart : 
 ### Public Dimensions:
 
@@ -338,109 +336,115 @@ Levels: "Yearly Income"
 }}%%
 erDiagram
 c0["Sales"]{
-M Unit Sales ""M Store Cost ""M Store Sales ""M Sales Count ""M Customer Count ""M Promotion Sales ""D Store ""
-D Store Size in SQFT ""
-D Store Type ""
+M Unit_Sales ""
+M Store_Cost ""
+M Store_Sales ""
+M Sales_Count ""
+M Customer_Count ""
+M Promotion_Sales ""
+D Store ""
+D Store_Size_in_SQFT ""
+D Store_Type ""
 D Time ""
 D Product ""
-D Promotion Media ""
+D Promotion_Media ""
 D Promotions ""
 D Customers ""
-D Education Level ""
+D Education_Level ""
 D Gender ""
-D Marital Status ""
-D Yearly Income ""
+D Marital_Status ""
+D Yearly_Income ""
 }
-d00[Store] {
-H null ""
+d00["Store"] {
+H _ ""
 }
-h000[null] {
-L Store Country ""
-L Store State ""
-L Store City ""
-L Store Name ""
+h000["_"] {
+L Store_Country ""
+L Store_State ""
+L Store_City ""
+L Store_Name ""
 }
-d01[Store Size in SQFT] {
-H null ""
+d01["Store Size in SQFT"] {
+H _ ""
 }
-h010[null] {
-L Store Sqft ""
+h010["_"] {
+L Store_Sqft ""
 }
-d02[Store Type] {
-H null ""
+d02["Store Type"] {
+H _ ""
 }
-h020[null] {
-L Store Type ""
+h020["_"] {
+L Store_Type ""
 }
-d03[Time] {
-H null ""
+d03["Time"] {
+H _ ""
 H Weekly ""
 }
-h030[null] {
+h030["_"] {
 L Year ""
 L Quarter ""
 L Month ""
 }
-h031[Weekly] {
+h031["Weekly"] {
 L Year ""
 L Week ""
 L Day ""
 }
-d04[Product] {
-H null ""
+d04["Product"] {
+H _ ""
 }
-h040[null] {
-L Product Family ""
-L Product Department ""
-L Product Category ""
-L Product Subcategory ""
-L Brand Name ""
-L Product Name ""
+h040["_"] {
+L Product_Family ""
+L Product_Department ""
+L Product_Category ""
+L Product_Subcategory ""
+L Brand_Name ""
+L Product_Name ""
 }
-d05[Promotion Media] {
-H null ""
+d05["Promotion Media"] {
+H _ ""
 }
-h050[null] {
-L Media Type ""
+h050["_"] {
+L Media_Type ""
 }
-d06[Promotions] {
-H null ""
+d06["Promotions"] {
+H _ ""
 }
-h060[null] {
-L Promotion Name ""
+h060["_"] {
+L Promotion_Name ""
 }
-d07[Customers] {
-H null ""
+d07["Customers"] {
+H _ ""
 }
-h070[null] {
+h070["_"] {
 L Country ""
-L State Province ""
+L State_Province ""
 L City ""
 L Name ""
 }
-d08[Education Level] {
-H null ""
+d08["Education Level"] {
+H _ ""
 }
-h080[null] {
-L Education Level ""
+h080["_"] {
+L Education_Level ""
 }
-d09[Gender] {
-H null ""
+d09["Gender"] {
+H _ ""
 }
-h090[null] {
+h090["_"] {
 L Gender ""
 }
-d010[Marital Status] {
-H null ""
+d010["Marital Status"] {
+H _ ""
 }
-h0100[null] {
-L Marital Status ""
+h0100["_"] {
+L Marital_Status ""
 }
-d011[Yearly Income] {
-H null ""
+d011["Yearly Income"] {
+H _ ""
 }
-h0110[null] {
-L Yearly Income ""
+h0110["_"] {
+L Yearly_Income ""
 }
 "c0" ||--|| "d00" : "store_id-store_id"
 "d00" ||--|| "h000" : "store_id-store_country"
@@ -523,67 +527,74 @@ L Yearly Income ""
 }}%%
 erDiagram
 c1["Warehouse"]{
-M Store Invoice ""M Supply Time ""M Warehouse Cost ""M Warehouse Sales ""M Units Shipped ""M Units Ordered ""M Warehouse Profit ""D Store ""
-D Store Size in SQFT ""
-D Store Type ""
+M Store_Invoice ""
+M Supply_Time ""
+M Warehouse_Cost ""
+M Warehouse_Sales ""
+M Units_Shipped ""
+M Units_Ordered ""
+M Warehouse_Profit ""
+D Store ""
+D Store_Size_in_SQFT ""
+D Store_Type ""
 D Time ""
 D Product ""
 D Warehouse ""
 }
-d10[Store] {
-H null ""
+d10["Store"] {
+H _ ""
 }
-h100[null] {
-L Store Country ""
-L Store State ""
-L Store City ""
-L Store Name ""
+h100["_"] {
+L Store_Country ""
+L Store_State ""
+L Store_City ""
+L Store_Name ""
 }
-d11[Store Size in SQFT] {
-H null ""
+d11["Store Size in SQFT"] {
+H _ ""
 }
-h110[null] {
-L Store Sqft ""
+h110["_"] {
+L Store_Sqft ""
 }
-d12[Store Type] {
-H null ""
+d12["Store Type"] {
+H _ ""
 }
-h120[null] {
-L Store Type ""
+h120["_"] {
+L Store_Type ""
 }
-d13[Time] {
-H null ""
+d13["Time"] {
+H _ ""
 H Weekly ""
 }
-h130[null] {
+h130["_"] {
 L Year ""
 L Quarter ""
 L Month ""
 }
-h131[Weekly] {
+h131["Weekly"] {
 L Year ""
 L Week ""
 L Day ""
 }
-d14[Product] {
-H null ""
+d14["Product"] {
+H _ ""
 }
-h140[null] {
-L Product Family ""
-L Product Department ""
-L Product Category ""
-L Product Subcategory ""
-L Brand Name ""
-L Product Name ""
+h140["_"] {
+L Product_Family ""
+L Product_Department ""
+L Product_Category ""
+L Product_Subcategory ""
+L Brand_Name ""
+L Product_Name ""
 }
-d15[Warehouse] {
-H null ""
+d15["Warehouse"] {
+H _ ""
 }
-h150[null] {
+h150["_"] {
 L Country ""
-L State Province ""
+L State_Province ""
 L City ""
-L Warehouse Name ""
+L Warehouse_Name ""
 }
 "c1" ||--|| "d10" : "store_id-store_id"
 "d10" ||--|| "h100" : "store_id-store_country"
@@ -676,30 +687,32 @@ Levels: "Has coffee bar"
 }}%%
 erDiagram
 c2["Store"]{
-M Store Sqft ""M Grocery Sqft ""D Store Type ""
+M Store_Sqft ""
+M Grocery_Sqft ""
+D Store_Type ""
 D Store ""
-D Has coffee bar ""
+D Has_coffee_bar ""
 }
-d20[Store Type] {
-H null ""
+d20["Store Type"] {
+H _ ""
 }
-h200[null] {
-L Store Type ""
+h200["_"] {
+L Store_Type ""
 }
-d21[Store] {
-H null ""
+d21["Store"] {
+H _ ""
 }
-h210[null] {
-L Store Country ""
-L Store State ""
-L Store City ""
-L Store Name ""
+h210["_"] {
+L Store_Country ""
+L Store_State ""
+L Store_City ""
+L Store_Name ""
 }
-d22[Has coffee bar] {
-H null ""
+d22["Has coffee bar"] {
+H _ ""
 }
-h220[null] {
-L Has coffee bar ""
+h220["_"] {
+L Has_coffee_bar ""
 }
 "c2" ||--|| "d20" : ""
 "d20" ||--|| "h200" : "store_type"
@@ -874,61 +887,64 @@ Levels: "Employee Id"
 }}%%
 erDiagram
 c3["HR"]{
-M Org Salary ""M Count ""M Number of Employees ""D Time ""
+M Org_Salary ""
+M Count ""
+M Number_of_Employees ""
+D Time ""
 D Store ""
-D Pay Type ""
-D Store Type ""
+D Pay_Type ""
+D Store_Type ""
 D Position ""
 D Department ""
 D Employees ""
 }
-d30[Time] {
-H null ""
+d30["Time"] {
+H _ ""
 }
-h300[null] {
+h300["_"] {
 L Year ""
 L Quarter ""
 L Month ""
 }
-d31[Store] {
-H null ""
+d31["Store"] {
+H _ ""
 }
-h310[null] {
-L Store Country ""
-L Store State ""
-L Store City ""
-L Store Name ""
+h310["_"] {
+L Store_Country ""
+L Store_State ""
+L Store_City ""
+L Store_Name ""
 }
-d32[Pay Type] {
-H null ""
+d32["Pay Type"] {
+H _ ""
 }
-h320[null] {
-L Pay Type ""
+h320["_"] {
+L Pay_Type ""
 }
-d33[Store Type] {
-H null ""
+d33["Store Type"] {
+H _ ""
 }
-h330[null] {
-L Store Type ""
+h330["_"] {
+L Store_Type ""
 }
-d34[Position] {
-H null ""
+d34["Position"] {
+H _ ""
 }
-h340[null] {
-L Management Role ""
-L Position Title ""
+h340["_"] {
+L Management_Role ""
+L Position_Title ""
 }
-d35[Department] {
-H null ""
+d35["Department"] {
+H _ ""
 }
-h350[null] {
-L Department Description ""
+h350["_"] {
+L Department_Description ""
 }
-d36[Employees] {
-H null ""
+d36["Employees"] {
+H _ ""
 }
-h360[null] {
-L Employee Id ""
+h360["_"] {
+L Employee_Id ""
 }
 "c3" ||--|| "d30" : "pay_date-the_date"
 "d30" ||--|| "h300" : "the_date-the_year"
@@ -1162,118 +1178,123 @@ Levels: "Yearly Income"
 }}%%
 erDiagram
 c4["Sales Ragged"]{
-M Unit Sales ""M Store Cost ""M Store Sales ""M Sales Count ""M Customer Count ""D Store ""
+M Unit_Sales ""
+M Store_Cost ""
+M Store_Sales ""
+M Sales_Count ""
+M Customer_Count ""
+D Store ""
 D Geography ""
-D Store Size in SQFT ""
-D Store Type ""
+D Store_Size_in_SQFT ""
+D Store_Type ""
 D Time ""
 D Product ""
-D Promotion Media ""
+D Promotion_Media ""
 D Promotions ""
 D Customers ""
-D Education Level ""
+D Education_Level ""
 D Gender ""
-D Marital Status ""
-D Yearly Income ""
+D Marital_Status ""
+D Yearly_Income ""
 }
-d40[Store] {
-H null ""
+d40["Store"] {
+H _ ""
 }
-h400[null] {
-L Store Country ""
-L Store State ""
-L Store City ""
-L Store Name ""
+h400["_"] {
+L Store_Country ""
+L Store_State ""
+L Store_City ""
+L Store_Name ""
 }
-d41[Geography] {
-H null ""
+d41["Geography"] {
+H _ ""
 }
-h410[null] {
+h410["_"] {
 L Country ""
 L State ""
 L City ""
 }
-d42[Store Size in SQFT] {
-H null ""
+d42["Store Size in SQFT"] {
+H _ ""
 }
-h420[null] {
-L Store Sqft ""
+h420["_"] {
+L Store_Sqft ""
 }
-d43[Store Type] {
-H null ""
+d43["Store Type"] {
+H _ ""
 }
-h430[null] {
-L Store Type ""
+h430["_"] {
+L Store_Type ""
 }
-d44[Time] {
-H null ""
+d44["Time"] {
+H _ ""
 H Weekly ""
 }
-h440[null] {
+h440["_"] {
 L Year ""
 L Quarter ""
 L Month ""
 }
-h441[Weekly] {
+h441["Weekly"] {
 L Year ""
 L Week ""
 L Day ""
 }
-d45[Product] {
-H null ""
+d45["Product"] {
+H _ ""
 }
-h450[null] {
-L Product Family ""
-L Product Department ""
-L Product Category ""
-L Product Subcategory ""
-L Brand Name ""
-L Product Name ""
+h450["_"] {
+L Product_Family ""
+L Product_Department ""
+L Product_Category ""
+L Product_Subcategory ""
+L Brand_Name ""
+L Product_Name ""
 }
-d46[Promotion Media] {
-H null ""
+d46["Promotion Media"] {
+H _ ""
 }
-h460[null] {
-L Media Type ""
+h460["_"] {
+L Media_Type ""
 }
-d47[Promotions] {
-H null ""
+d47["Promotions"] {
+H _ ""
 }
-h470[null] {
-L Promotion Name ""
+h470["_"] {
+L Promotion_Name ""
 }
-d48[Customers] {
-H null ""
+d48["Customers"] {
+H _ ""
 }
-h480[null] {
+h480["_"] {
 L Country ""
-L State Province ""
+L State_Province ""
 L City ""
 L Name ""
 }
-d49[Education Level] {
-H null ""
+d49["Education Level"] {
+H _ ""
 }
-h490[null] {
-L Education Level ""
+h490["_"] {
+L Education_Level ""
 }
-d410[Gender] {
-H null ""
+d410["Gender"] {
+H _ ""
 }
-h4100[null] {
+h4100["_"] {
 L Gender ""
 }
-d411[Marital Status] {
-H null ""
+d411["Marital Status"] {
+H _ ""
 }
-h4110[null] {
-L Marital Status ""
+h4110["_"] {
+L Marital_Status ""
 }
-d412[Yearly Income] {
-H null ""
+d412["Yearly Income"] {
+H _ ""
 }
-h4120[null] {
-L Yearly Income ""
+h4120["_"] {
+L Yearly_Income ""
 }
 "c4" ||--|| "d40" : "store_id-store_id"
 "d40" ||--|| "h400" : "store_id-store_country"
@@ -1368,39 +1389,44 @@ Levels: "Gender"
 }}%%
 erDiagram
 c5["Sales 2"]{
-M Sales Count ""M Unit Sales ""M Store Sales ""M Store Cost ""M Customer Count ""D Time ""
+M Sales_Count ""
+M Unit_Sales ""
+M Store_Sales ""
+M Store_Cost ""
+M Customer_Count ""
+D Time ""
 D Product ""
 D Gender ""
 }
-d50[Time] {
-H null ""
+d50["Time"] {
+H _ ""
 H Weekly ""
 }
-h500[null] {
+h500["_"] {
 L Year ""
 L Quarter ""
 L Month ""
 }
-h501[Weekly] {
+h501["Weekly"] {
 L Year ""
 L Week ""
 L Day ""
 }
-d51[Product] {
-H null ""
+d51["Product"] {
+H _ ""
 }
-h510[null] {
-L Product Family ""
-L Product Department ""
-L Product Category ""
-L Product Subcategory ""
-L Brand Name ""
-L Product Name ""
+h510["_"] {
+L Product_Family ""
+L Product_Department ""
+L Product_Category ""
+L Product_Subcategory ""
+L Brand_Name ""
+L Product_Name ""
 }
-d52[Gender] {
-H null ""
+d52["Gender"] {
+H _ ""
 }
-h520[null] {
+h520["_"] {
 L Gender ""
 }
 "c5" ||--|| "d50" : "time_id-time_id"
@@ -1439,12 +1465,12 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Sales: [1.0000, 0.0000]
-Cube Warehouse: [1.0000, 0.0000]
+Cube Sales: [1, 0.0000]
+Cube Warehouse: [1, 0.0000]
 Cube Store: [0.3000, 0.0000]
 Cube HR: [0.6500, 0.0000]
-Cube Sales Ragged: [1.0000, 0.0000]
-Cube Sales 2: [0.6500, 0.0000]
+Cube Sales_Ragged: [1, 0.0000]
+Cube Sales_2: [0.6500, 0.0000]
 ```
 ---
 ### Database :
@@ -1455,428 +1481,428 @@ title: Diagram;
 ---
 erDiagram
 account{
-null account_id
-null account_parent
-null account_description
-null account_type
-null account_rollup
-null Custom_Members
+int account_id
+int account_parent
+string account_description
+string account_type
+string account_rollup
+string Custom_Members
 }
 agg_c_10_sales_fact_1997{
-null month_of_year
-null quarter
-null the_year
+int month_of_year
+string quarter
+int the_year
 null store_sales
 null store_cost
 null unit_sales
-null customer_count
-null fact_count
+int customer_count
+int fact_count
 }
 agg_c_14_sales_fact_1997{
-null product_id
-null customer_id
-null store_id
-null promotion_id
-null month_of_year
-null quarter
-null the_year
+int product_id
+int customer_id
+int store_id
+int promotion_id
+int month_of_year
+string quarter
+int the_year
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_c_special_sales_fact_1997{
-null product_id
-null promotion_id
-null customer_id
-null store_id
-null time_month
-null time_quarter
-null time_year
+int product_id
+int promotion_id
+int customer_id
+int store_id
+int time_month
+string time_quarter
+int time_year
 null store_sales_sum
 null store_cost_sum
 null unit_sales_sum
-null fact_count
+int fact_count
 }
 agg_g_ms_pcat_sales_fact_1997{
-null gender
-null marital_status
-null product_family
-null product_department
-null product_category
-null month_of_year
-null quarter
-null the_year
+string gender
+string marital_status
+string product_family
+string product_department
+string product_category
+int month_of_year
+string quarter
+int the_year
 null store_sales
 null store_cost
 null unit_sales
-null customer_count
-null fact_count
+int customer_count
+int fact_count
 }
 agg_l_03_sales_fact_1997{
-null time_id
-null customer_id
+int time_id
+int customer_id
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_l_04_sales_fact_1997{
-null time_id
+int time_id
 null store_sales
 null store_cost
 null unit_sales
-null customer_count
-null fact_count
+int customer_count
+int fact_count
 }
 agg_l_05_sales_fact_1997{
-null product_id
-null customer_id
-null promotion_id
-null store_id
+int product_id
+int customer_id
+int promotion_id
+int store_id
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_lc_06_sales_fact_1997{
-null time_id
-null city
-null state_province
-null country
+int time_id
+string city
+string state_province
+string country
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_lc_100_sales_fact_1997{
-null product_id
-null customer_id
-null quarter
-null the_year
+int product_id
+int customer_id
+string quarter
+int the_year
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_ll_01_sales_fact_1997{
-null product_id
-null time_id
-null customer_id
+int product_id
+int time_id
+int customer_id
 null store_sales
 null store_cost
 null unit_sales
-null fact_count
+int fact_count
 }
 agg_pl_01_sales_fact_1997{
-null product_id
-null time_id
-null customer_id
+int product_id
+int time_id
+int customer_id
 null store_sales_sum
 null store_cost_sum
 null unit_sales_sum
-null fact_count
+int fact_count
 }
 category{
-null category_id
-null category_parent
-null category_description
-null category_rollup
+string category_id
+string category_parent
+string category_description
+string category_rollup
 }
 currency{
-null currency_id
-null date
-null currency
+int currency_id
+date date
+string currency
 null conversion_ratio
 }
 customer{
-null customer_id
-null account_num
-null lname
-null fname
-null mi
-null address1
-null address2
-null address3
-null address4
-null city
-null state_province
-null postal_code
-null country
-null customer_region_id
-null phone1
-null phone2
-null birthdate
-null marital_status
-null yearly_income
-null gender
-null total_children
-null num_children_at_home
-null education
-null date_accnt_opened
-null member_card
-null occupation
-null houseowner
-null num_cars_owned
-null fullname
+int customer_id
+long account_num
+string lname
+string fname
+string mi
+string address1
+string address2
+string address3
+string address4
+string city
+string state_province
+string postal_code
+string country
+int customer_region_id
+string phone1
+string phone2
+date birthdate
+string marital_status
+string yearly_income
+string gender
+int total_children
+int num_children_at_home
+string education
+date date_accnt_opened
+string member_card
+string occupation
+string houseowner
+int num_cars_owned
+string fullname
 }
 days{
-null day
-null week_day
+int day
+string week_day
 }
 department{
-null department_id
-null department_description
+int department_id
+string department_description
 }
 employee{
-null employee_id
-null full_name
-null first_name
-null last_name
-null position_id
-null position_title
-null store_id
-null department_id
-null birth_date
-null hire_date
-null end_date
+int employee_id
+string full_name
+string first_name
+string last_name
+int position_id
+string position_title
+int store_id
+int department_id
+date birth_date
+timestamp hire_date
+timestamp end_date
 null salary
-null supervisor_id
-null education_level
-null marital_status
-null gender
-null management_role
+int supervisor_id
+string education_level
+string marital_status
+string gender
+string management_role
 }
 employee_closure{
-null employee_id
-null supervisor_id
-null distance
+int employee_id
+int supervisor_id
+int distance
 }
 expense_fact{
-null store_id
-null account_id
-null exp_date
-null time_id
-null category_id
-null currency_id
+int store_id
+int account_id
+timestamp exp_date
+int time_id
+string category_id
+int currency_id
 null amount
 }
 inventory_fact_1997{
-null product_id
-null time_id
-null warehouse_id
-null store_id
-null units_ordered
-null units_shipped
+int product_id
+int time_id
+int warehouse_id
+int store_id
+int units_ordered
+int units_shipped
 null warehouse_sales
 null warehouse_cost
-null supply_time
+int supply_time
 null store_invoice
 }
 inventory_fact_1998{
-null product_id
-null time_id
-null warehouse_id
-null store_id
-null units_ordered
-null units_shipped
+int product_id
+int time_id
+int warehouse_id
+int store_id
+int units_ordered
+int units_shipped
 null warehouse_sales
 null warehouse_cost
-null supply_time
+int supply_time
 null store_invoice
 }
 position{
-null position_id
-null position_title
-null pay_type
+int position_id
+string position_title
+string pay_type
 null min_scale
 null max_scale
-null management_role
+string management_role
 }
 product{
-null product_class_id
-null product_id
-null brand_name
-null product_name
-null SKU
+int product_class_id
+int product_id
+string brand_name
+string product_name
+long SKU
 null SRP
 null gross_weight
 null net_weight
-null recyclable_package
-null low_fat
-null units_per_case
-null cases_per_pallet
+int recyclable_package
+int low_fat
+int units_per_case
+int cases_per_pallet
 null shelf_width
 null shelf_height
 null shelf_depth
 }
 product_class{
-null product_class_id
-null product_subcategory
-null product_category
-null product_department
-null product_family
+int product_class_id
+string product_subcategory
+string product_category
+string product_department
+string product_family
 }
 promotion{
-null promotion_id
-null promotion_district_id
-null promotion_name
-null media_type
+int promotion_id
+int promotion_district_id
+string promotion_name
+string media_type
 null cost
-null start_date
-null end_date
+timestamp start_date
+timestamp end_date
 }
 region{
-null region_id
-null sales_city
-null sales_state_province
-null sales_district
-null sales_region
-null sales_country
-null sales_district_id
+int region_id
+string sales_city
+string sales_state_province
+string sales_district
+string sales_region
+string sales_country
+int sales_district_id
 }
 reserve_employee{
-null employee_id
-null full_name
-null first_name
-null last_name
-null position_id
-null position_title
-null store_id
-null department_id
-null birth_date
-null hire_date
-null end_date
+int employee_id
+string full_name
+string first_name
+string last_name
+int position_id
+string position_title
+int store_id
+int department_id
+timestamp birth_date
+timestamp hire_date
+timestamp end_date
 null salary
-null supervisor_id
-null education_level
-null marital_status
-null gender
+int supervisor_id
+string education_level
+string marital_status
+string gender
 }
 salary{
-null pay_date
-null employee_id
-null department_id
-null currency_id
+timestamp pay_date
+int employee_id
+int department_id
+int currency_id
 null salary_paid
 null overtime_paid
 null vacation_accrued
 null vacation_used
 }
 sales_fact_1997{
-null product_id
-null time_id
-null customer_id
-null promotion_id
-null store_id
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
 null store_sales
 null store_cost
 null unit_sales
 }
 sales_fact_1998{
-null product_id
-null time_id
-null customer_id
-null promotion_id
-null store_id
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
 null store_sales
 null store_cost
 null unit_sales
 }
 sales_fact_dec_1998{
-null product_id
-null time_id
-null customer_id
-null promotion_id
-null store_id
+int product_id
+int time_id
+int customer_id
+int promotion_id
+int store_id
 null store_sales
 null store_cost
 null unit_sales
 }
 store{
-null store_id
-null store_type
-null region_id
-null store_name
-null store_number
-null store_street_address
-null store_city
-null store_state
-null store_postal_code
-null store_country
-null store_manager
-null store_phone
-null store_fax
-null first_opened_date
-null last_remodel_date
-null store_sqft
-null grocery_sqft
-null frozen_sqft
-null meat_sqft
-null coffee_bar
-null video_store
-null salad_bar
-null prepared_food
-null florist
+int store_id
+string store_type
+int region_id
+string store_name
+int store_number
+string store_street_address
+string store_city
+string store_state
+string store_postal_code
+string store_country
+string store_manager
+string store_phone
+string store_fax
+timestamp first_opened_date
+timestamp last_remodel_date
+int store_sqft
+int grocery_sqft
+int frozen_sqft
+int meat_sqft
+int coffee_bar
+int video_store
+int salad_bar
+int prepared_food
+int florist
 }
 store_ragged{
-null store_id
-null store_type
-null region_id
-null store_name
-null store_number
-null store_street_address
-null store_city
-null store_state
-null store_postal_code
-null store_country
-null store_manager
-null store_phone
-null store_fax
-null first_opened_date
-null last_remodel_date
-null store_sqft
-null grocery_sqft
-null frozen_sqft
-null meat_sqft
-null coffee_bar
-null video_store
-null salad_bar
-null prepared_food
-null florist
+int store_id
+string store_type
+int region_id
+string store_name
+int store_number
+string store_street_address
+string store_city
+string store_state
+string store_postal_code
+string store_country
+string store_manager
+string store_phone
+string store_fax
+timestamp first_opened_date
+timestamp last_remodel_date
+int store_sqft
+int grocery_sqft
+int frozen_sqft
+int meat_sqft
+int coffee_bar
+int video_store
+int salad_bar
+int prepared_food
+int florist
 }
 time_by_day{
-null time_id
-null the_date
-null the_day
-null the_month
-null the_year
-null day_of_month
-null week_of_year
-null month_of_year
-null quarter
-null fiscal_period
+int time_id
+timestamp the_date
+string the_day
+string the_month
+int the_year
+int day_of_month
+int week_of_year
+int month_of_year
+string quarter
+string fiscal_period
 }
 warehouse{
-null warehouse_id
-null warehouse_class_id
-null stores_id
-null warehouse_name
-null wa_address1
-null wa_address2
-null wa_address3
-null wa_address4
-null warehouse_city
-null warehouse_state_province
-null warehouse_postal_code
-null warehouse_country
-null warehouse_owner_name
-null warehouse_phone
-null warehouse_fax
+int warehouse_id
+int warehouse_class_id
+int stores_id
+string warehouse_name
+string wa_address1
+string wa_address2
+string wa_address3
+string wa_address4
+string warehouse_city
+string warehouse_state_province
+string warehouse_postal_code
+string warehouse_country
+string warehouse_owner_name
+string warehouse_phone
+string warehouse_fax
 }
 warehouse_class{
-null warehouse_class_id
-null description
+int warehouse_class_id
+string description
 }
 
 "sales_fact_1997" ||--o{ "store" : "store_id-store_id"
