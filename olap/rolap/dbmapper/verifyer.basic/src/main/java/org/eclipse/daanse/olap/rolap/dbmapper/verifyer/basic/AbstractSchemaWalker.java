@@ -151,11 +151,16 @@ public abstract class AbstractSchemaWalker {
     @SuppressWarnings("java:S1172")
     protected void checkMeasure(MappingMeasure measure, MappingCube cube) {
         if (measure != null) {
+            checkMeasureColumn(measure, cube);
             checkAnnotationList(measure.annotations());
             checkCalculatedMemberPropertyList(measure.calculatedMemberProperties());
             checkExpressionView(measure.measureExpression());
             checkElementFormatter(measure.cellFormatter());
         }
+    }
+
+    protected void checkMeasureColumn(MappingMeasure measure, MappingCube cube) {
+        //empty
     }
 
     protected void checkCalculatedMemberProperty(MappingCalculatedMemberProperty calculatedMemberProperty) {

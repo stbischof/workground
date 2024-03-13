@@ -216,6 +216,10 @@ public class SchemaWalkerMessages {
         "Column {0} does not exist in Dimension table";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN =
         "Could not lookup existance of Column %s defined in field %s in ";
+    public static final String MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE =
+        "Measure %s column %s doesn't exist in table %s of cube with name %s";
+    public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_IN_TABLE =
+        "Could not lookup existance of Column %s in table %s";
     public static final String PARENT_TABLE_NAME = "parentTable.name";
     public static final String COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S = "Column %s does not exist in Level table %s";
     public static final String TABLE_S_DOES_NOT_EXIST_IN_DATABASE = "Table %s does not exist in database";

@@ -75,3 +75,4 @@ null VALUE_NUMERIC
 |Type|   |
 |----|---|
 |SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
+|DATABASE|Measure Measure-Sum column PRICE doesn't exist in table Fact of cube with name CubeOneMeasure|

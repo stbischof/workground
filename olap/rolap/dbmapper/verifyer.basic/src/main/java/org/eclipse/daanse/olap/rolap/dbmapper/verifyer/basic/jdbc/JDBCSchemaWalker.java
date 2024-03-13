@@ -28,6 +28,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.AbstractSchemaWalker;
@@ -52,6 +53,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_CHECK_EXISTANCE_OF_SCHEMA_S;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_EVALUEATE_DOES_COLUMN_EXIST_SCHEMA_TABLE_COLUMN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE_24;
@@ -69,6 +71,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.HIERARCHY_PRIMARY_KEY;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.LEVEL;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.MEASURE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PARENT_TABLE_NAME;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PRIMARY_KEY;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PROPERTY;
@@ -308,6 +311,34 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             } else {
                 checkColumnIfLevelTableNotEmpty(table, column, fieldName, parentHierarchy);
             }
+        }
+    }
+
+    protected void checkMeasureColumn(MappingMeasure measure, MappingCube cube) {
+        super.checkMeasureColumn(measure, cube);
+        if (measure != null && !isEmpty(measure.column())) {
+            final MappingRelation relation = cube.fact();
+            if (relation instanceof MappingTable mappingTable) {
+                checkMeasureColumnInMappingTable(measure, cube, mappingTable);
+            }
+        }
+    }
+
+    private void checkMeasureColumnInMappingTable(MappingMeasure measure, MappingCube cube, MappingTable mappingTable) {
+        try {
+            TableReference tableReference = getTableReference(mappingTable.schema(), mappingTable.name());
+            ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
+            if (!databaseService.columnExists(databaseMetaData, columnReference)) {
+                String msg = String.format(
+                    MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE,
+                    measure.name(), measure.column(), mappingTable.name(), cube.name());
+                results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
+            }
+        } catch (SQLException e) {
+            String msg = String.format(
+                COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_IN_TABLE,
+                measure.column(), mappingTable.name());
+            results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
         }
     }
 
