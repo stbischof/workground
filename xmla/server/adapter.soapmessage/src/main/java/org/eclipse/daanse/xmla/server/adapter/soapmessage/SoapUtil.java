@@ -1229,7 +1229,7 @@ public class SoapUtil {
             String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement el = addChildElement(e, "Cell", prefix);
             addCellTypeValue(el, it.value());
-            addCellInfoItemListName(el, it.any());
+            addCellInfoItemList(el, it.any());
             setAttribute(el, "CellOrdinal", String.valueOf(it.cellOrdinal()));
         }
     }

@@ -573,10 +573,9 @@ public class Convertor {
                 }
                 val = new ValueR(valueString, ItemTypeEnum.fromValue(valueType), List.of());
             } else {
-            	//TODO
-                //any.add(new CellInfoItemR(cellPropertyMap.get(propertyName).getAlias(),
-                //    value.toString(),
-                //    Optional.empty()));
+                any.add(new CellInfoItemR(cellPropertyMap.get(propertyName).getAlias(),
+                    value.toString(),
+                    Optional.empty()));
             }
         }
         cellList.add(new CellTypeR(val, any, ordinal));
