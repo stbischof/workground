@@ -32,7 +32,12 @@
 	bnd.identity;id='org.eclipse.daanse.repackage.rhino.engine',\
 	bnd.identity;id='org.eclipse.daanse.db.dialect.db.mysql',\
 	bnd.identity;id='org.apache.aries.spifly.dynamic.framework.extension',\
-	bnd.identity;id='org.eclipse.daanse.db.dialect.db.h2'
+	bnd.identity;id='org.eclipse.daanse.db.dialect.db.h2',\
+	bnd.identity;id='org.eclipse.daanse.common.jdbc.loader.csv',\
+	bnd.identity;id='org.eclipse.daanse.common.jdbc.db.api',\
+	bnd.identity;id='org.eclipse.daanse.common.io.fs.watcher.api',\
+	bnd.identity;id='org.eclipse.daanse.common.io.fs.watcher.watchservice'
+
 
 # -runbundles is calculated by the bnd-resolver-maven-plugin
 
@@ -64,6 +69,11 @@
 	org.apache.logging.log4j.api;version='[2.22.1,2.22.2)',\
 	org.apache.servicemix.bundles.xerces;version='[2.12.2,2.12.3)',\
 	org.apache.servicemix.bundles.xmlresolver;version='[1.2.0,1.2.1)',\
+	org.eclipse.daanse.common.io.fs.watcher.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.common.io.fs.watcher.watchservice;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.common.jdbc.db.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.common.jdbc.db.record;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.common.jdbc.loader.csv;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.db.common;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.db.h2;version='[0.0.1,0.0.2)',\
@@ -90,6 +100,7 @@
 	org.mockito.mockito-core;version='[4.9.0,4.9.1)',\
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	org.osgi.test.assertj.framework;version='[1.3.0,1.3.1)',\
 	org.osgi.test.common;version='[1.3.0,1.3.1)',\
@@ -105,7 +116,7 @@
     tempIgnoreStrageTests=true#,\
 
 -runproperties.tester: \
-    tester.names='mondrian.test.TestExcel'
+    tester.names='org.eclipse.daanse.common.jdbc.loader.csv.impl.CsvDataLoaderTest'
     #mondrian.olap.fun.VisualTotalsTest,\
     #mondrian.rolap.agg.DrillThroughQuerySpecTest,\
     #mondrian.test.I18nTest,\
