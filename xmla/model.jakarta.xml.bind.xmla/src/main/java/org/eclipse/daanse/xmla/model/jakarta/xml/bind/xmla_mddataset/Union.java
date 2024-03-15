@@ -26,7 +26,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {"setType"})
+@XmlType(name = "Union", propOrder = {"setType"})
 public class Union {
 
     @XmlElements({@XmlElement(name = "Members", type = MembersType.class),
