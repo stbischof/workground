@@ -53,13 +53,138 @@ public class Constants {
 			public static final String SCHEMA_NAME = "SCHEMA_NAME";
 			public static final QName QN_SCHEMA_NAME = new QName(ROWSET.NS_URN, SCHEMA_NAME, ROWSET.PREFIX);
 
+            public static final String SCHEMA_NAME_LC = "SchemaName";
+            public static final QName QN_SCHEMA_NAME_LC = new QName(ROWSET.NS_URN, SCHEMA_NAME_LC, ROWSET.PREFIX);
 
 			public static final String CUBE_NAME = "CUBE_NAME";
 			public static final QName QN_CUBE_NAME = new QName(ROWSET.NS_URN, CUBE_NAME, ROWSET.PREFIX);
 
+            public static final String ACTION_NAME = "ACTION_NAME";
+            public static final QName QN_ACTION_NAME = new QName(ROWSET.NS_URN, ACTION_NAME, ROWSET.PREFIX);
 
+            public static final String ACTION_TYPE = "ACTION_TYPE";
+            public static final QName QN_ACTION_TYPE = new QName(ROWSET.NS_URN, ACTION_TYPE, ROWSET.PREFIX);
 
-		}
+            public static final String COORDINATE = "COORDINATE";
+            public static final QName QN_COORDINATE = new QName(ROWSET.NS_URN, COORDINATE, ROWSET.PREFIX);
+
+            public static final String COORDINATE_TYPE = "COORDINATE_TYPE";
+            public static final QName QN_COORDINATE_TYPE = new QName(ROWSET.NS_URN, COORDINATE_TYPE, ROWSET.PREFIX);
+
+            public static final String ACTION_CAPTION = "ACTION_CAPTION";
+            public static final QName QN_ACTION_CAPTION = new QName(ROWSET.NS_URN, ACTION_CAPTION, ROWSET.PREFIX);
+
+            public static final String DESCRIPTION = "DESCRIPTION";
+            public static final QName QN_DESCRIPTION = new QName(ROWSET.NS_URN, DESCRIPTION, ROWSET.PREFIX);
+
+            public static final String DESCRIPTION_LC = "Description";
+            public static final QName QN_DESCRIPTION_LC = new QName(ROWSET.NS_URN, DESCRIPTION_LC, ROWSET.PREFIX);
+
+            public static final String CONTENT = "CONTENT";
+            public static final QName QN_CONTENT = new QName(ROWSET.NS_URN, CONTENT, ROWSET.PREFIX);
+
+            public static final String APPLICATION = "APPLICATION";
+            public static final QName QN_APPLICATION = new QName(ROWSET.NS_URN, APPLICATION, ROWSET.PREFIX);
+
+            public static final String INVOCATION = "INVOCATION";
+            public static final QName QN_INVOCATION = new QName(ROWSET.NS_URN, INVOCATION, ROWSET.PREFIX);
+
+            public static final String ENUM_NAME = "EnumName";
+            public static final QName QN_ENUM_NAME = new QName(ROWSET.NS_URN, ENUM_NAME, ROWSET.PREFIX);
+
+            public static final String ENUM_DESCRIPTION = "EnumDescription";
+            public static final QName QN_ENUM_DESCRIPTION = new QName(ROWSET.NS_URN, ENUM_DESCRIPTION, ROWSET.PREFIX);
+
+            public static final String ENUM_TYPE = "EnumType";
+            public static final QName QN_ENUM_TYPE = new QName(ROWSET.NS_URN, ENUM_TYPE, ROWSET.PREFIX);
+
+            public static final String ELEMENT_NAME = "ElementName";
+            public static final QName QN_ELEMENT_NAME = new QName(ROWSET.NS_URN, ELEMENT_NAME, ROWSET.PREFIX);
+
+            public static final String ELEMENT_DESCRIPTION = "ElementDescription";
+            public static final QName QN_ELEMENT_DESCRIPTION = new QName(ROWSET.NS_URN, ELEMENT_DESCRIPTION, ROWSET.PREFIX);
+
+            public static final String ELEMENT_VALUE = "ElementValue";
+            public static final QName QN_ELEMENT_VALUE = new QName(ROWSET.NS_URN, ELEMENT_VALUE, ROWSET.PREFIX);
+
+            public static final String SCHEMA_GUID = "SchemaGuid";
+            public static final QName QN_SCHEMA_GUID = new QName(ROWSET.NS_URN, SCHEMA_GUID, ROWSET.PREFIX);
+
+            public static final String RESTRICTIONS_MASK = "RestrictionsMask";
+            public static final QName QN_RESTRICTIONS_MASK = new QName(ROWSET.NS_URN, RESTRICTIONS_MASK, ROWSET.PREFIX);
+
+            public static final String ROLES = "ROLES";
+            public static final QName QN_ROLES = new QName(ROWSET.NS_URN, ROLES, ROWSET.PREFIX);
+
+            public static final String DATE_MODIFIED = "DATE_MODIFIED";
+            public static final QName QN_DATE_MODIFIED = new QName(ROWSET.NS_URN, DATE_MODIFIED, ROWSET.PREFIX);
+
+            public static final String COMPATIBILITY_LEVEL = "COMPATIBILITY_LEVEL";
+            public static final QName QN_COMPATIBILITY_LEVEL = new QName(ROWSET.NS_URN, COMPATIBILITY_LEVEL, ROWSET.PREFIX);
+
+            public static final String TYPE = "TYPE";
+            public static final QName QN_TYPE = new QName(ROWSET.NS_URN, TYPE, ROWSET.PREFIX);
+
+            public static final String VERSION = "VERSION";
+            public static final QName QN_VERSION = new QName(ROWSET.NS_URN, VERSION, ROWSET.PREFIX);
+
+            public static final String DATABASE_ID = "DATABASE_ID";
+            public static final QName QN_DATABASE_ID = new QName(ROWSET.NS_URN, DATABASE_ID, ROWSET.PREFIX);
+
+            public static final String DATE_QUERIED = "DATE_QUERIED";
+            public static final QName QN_DATE_QUERIED = new QName(ROWSET.NS_URN, DATE_QUERIED, ROWSET.PREFIX);
+
+            public static final String CURRENTLY_USED = "CURRENTLY_USED";
+            public static final QName QN_CURRENTLY_USED = new QName(ROWSET.NS_URN, CURRENTLY_USED, ROWSET.PREFIX);
+
+            public static final String POPULARITY = "POPULARITY";
+            public static final QName QN_POPULARITY = new QName(ROWSET.NS_URN, POPULARITY, ROWSET.PREFIX);
+
+            public static final String WEIGHTEDPOPULARITY = "WEIGHTEDPOPULARITY";
+            public static final QName QN_WEIGHTEDPOPULARITY = new QName(ROWSET.NS_URN, WEIGHTEDPOPULARITY, ROWSET.PREFIX);
+
+            public static final String CLIENTCACHEREFRESHPOLICY = "CLIENTCACHEREFRESHPOLICY";
+            public static final QName QN_CLIENTCACHEREFRESHPOLICY = new QName(ROWSET.NS_URN, CLIENTCACHEREFRESHPOLICY, ROWSET.PREFIX);
+
+            public static final String DATA_SOURCE_NAME = "DataSourceName";
+            public static final QName QN_DATA_SOURCE_NAME = new QName(ROWSET.NS_URN, DATA_SOURCE_NAME, ROWSET.PREFIX);
+
+            public static final String DATA_SOURCE_DESCRIPTION = "DataSourceDescription";
+            public static final QName QN_DATA_SOURCE_DESCRIPTION = new QName(ROWSET.NS_URN, DATA_SOURCE_DESCRIPTION, ROWSET.PREFIX);
+
+            public static final String URL = "URL";
+            public static final QName QN_URL = new QName(ROWSET.NS_URN, URL, ROWSET.PREFIX);
+
+            public static final String DATA_SOURCE_INFO = "DataSourceInfo";
+            public static final QName QN_DATA_SOURCE_INFO = new QName(ROWSET.NS_URN, DATA_SOURCE_INFO, ROWSET.PREFIX);
+
+            public static final String PROVIDER_NAME = "ProviderName";
+            public static final QName QN_PROVIDER_NAME = new QName(ROWSET.NS_URN, PROVIDER_NAME, ROWSET.PREFIX);
+
+            public static final String PROVIDER_TYPE = "ProviderType";
+            public static final QName QN_PROVIDER_TYPE = new QName(ROWSET.NS_URN, PROVIDER_TYPE, ROWSET.PREFIX);
+
+            public static final String AUTHENTICATION_MODE = "AuthenticationMode";
+            public static final QName QN_AUTHENTICATION_MODE = new QName(ROWSET.NS_URN, AUTHENTICATION_MODE, ROWSET.PREFIX);
+
+            public static final String META_DATA = "MetaData";
+            public static final QName QN_META_DATA = new QName(ROWSET.NS_URN, META_DATA, ROWSET.PREFIX);
+
+            public static final String SCHEMA_OWNER = "SCHEMA_OWNER";
+            public static final QName QN_SCHEMA_OWNER = new QName(ROWSET.NS_URN, SCHEMA_OWNER, ROWSET.PREFIX);
+
+            public static final String TABLE_CATALOG = "TABLE_CATALOG";
+            public static final QName QN_TABLE_CATALOG = new QName(ROWSET.NS_URN, TABLE_CATALOG, ROWSET.PREFIX);
+
+            public static final String TABLE_SCHEMA = "TABLE_SCHEMA";
+            public static final QName QN_TABLE_SCHEMA = new QName(ROWSET.NS_URN, TABLE_SCHEMA, ROWSET.PREFIX);
+
+            public static final String TABLE_NAME = "TABLE_NAME";
+            public static final QName QN_TABLE_NAME = new QName(ROWSET.NS_URN, TABLE_NAME, ROWSET.PREFIX);
+
+            public static final String TABLE_TYPE = "TABLE_TYPE";
+            public static final QName QN_TABLE_TYPE = new QName(ROWSET.NS_URN, TABLE_TYPE, ROWSET.PREFIX);
+        }
 
 	}
 	/////

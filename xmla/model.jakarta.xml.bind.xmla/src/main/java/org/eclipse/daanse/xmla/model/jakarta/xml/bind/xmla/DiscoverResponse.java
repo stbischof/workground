@@ -24,7 +24,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "DiscoverResponse")
 public class DiscoverResponse {
 
-    @XmlElement(name = "return", required = true, namespace = "")
+    @XmlElement(name = "return", required = true, namespace = "urn:schemas-microsoft-com:xml-analysis")
     protected Return returnValue;
 
     public Return getReturn() {

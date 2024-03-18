@@ -32,11 +32,11 @@ import jakarta.xml.bind.annotation.XmlType;
 public class Rowset implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @XmlElement(name = "schema", required = false, namespace = "http://www.w3.org/2001/XMLSchema")
+    @XmlElement(name = "schema", namespace = "http://www.w3.org/2001/XMLSchema")
     protected Schema schema;
 
 
-
+    @XmlElement(name = "row")
     protected List<Row> row;
     @XmlElement(name = "Exception")
     protected Exception exception;
