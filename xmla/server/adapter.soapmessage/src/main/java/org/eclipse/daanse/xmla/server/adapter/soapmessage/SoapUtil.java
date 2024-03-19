@@ -14,64 +14,246 @@
 package org.eclipse.daanse.xmla.server.adapter.soapmessage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DATA_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DESCRIPTION;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DESCRIPTION_UC;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DIMENSION_IS_VISIBLE;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DIMENSION_UNIQUE_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.EXPRESSION_UC;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.HIERARCHY_UNIQUE_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.LEVEL_UNIQUE_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MEASUREGROUP_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_PRECISION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_SCALE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.DESCRIPTION_LC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ALL_MEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ANNOTATIONS;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_APPLICATION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_AUTHENTICATION_MODE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_AUTO_UNIQUE_VALUE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BASE_CUBE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BEST_MATCH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BOOKMARKS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BOOKMARK_DATA_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BOOKMARK_INFORMATION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BOOKMARK_MAXIMUM_LENGTH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_BOOKMARK_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CARDINALITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CASE_SENSITIVE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CATALOG_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHARACTER_MAXIMUM_LENGTH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHARACTER_OCTET_LENGTH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHARACTER_SET_CATALOG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHARACTER_SET_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHARACTER_SET_SCHEMA;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CHILDREN_CARDINALITY;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CLIENTCACHEREFRESHPOLICY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLLATION_CATALOG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLLATION_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLLATION_SCHEMA;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_DEFAULT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_FLAG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_HAS_DEFAULT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_OLAP_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_PROPID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COLUMN_SIZE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_COMPATIBILITY_LEVEL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CREATED_ON;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CREATE_PARAMS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUBE_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUBE_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUBE_SOURCE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUBE_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CURRENTLY_USED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_CUSTOM_ROLLUP_SETTINGS;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATABASE_ID;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATA_SOURCE_DESCRIPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATA_SOURCE_INFO;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATA_SOURCE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATA_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATA_UPDATED_BY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATETIME_PRECISION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATE_CREATED;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATE_MODIFIED;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DATE_QUERIED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DEFAULT_FORMAT_STRING;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DEFAULT_HIERARCHY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DEFAULT_MEMBER;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DESCRIPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DESCRIPTION_LC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSIONS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_CARDINALITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_GRANULARITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_IS_FACT_DIMENSION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_IS_SHARED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_IS_VISIBLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_MASTER_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_MASTER_UNIQUE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_ORDINAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_UNIQUE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_UNIQUE_SETTINGS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIRECTQUERY_PUSHABLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DLL_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DOMAIN_CATALOG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DOMAIN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DOMAIN_SCHEMA;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ELEMENT_DESCRIPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ELEMENT_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ELEMENT_VALUE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ENUM_DESCRIPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ENUM_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ENUM_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_EXPRESSION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_FIXED_PREC_SCALE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_FUNCTION_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_GROUPING_BEHAVIOR;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HELP_CONTEXT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HELP_FILE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_CARDINALITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_DISPLAY_FOLDER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_IS_VISIBLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_ORDINAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_ORIGIN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_HIERARCHY_UNIQUE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_INSTANCE_SELECTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_INTERFACE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_INVOCATION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_DATAMEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_DRILLTHROUGH_ENABLED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_FIXEDLENGTH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_LINKABLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_LONG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_NULLABLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_PLACEHOLDERMEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_READWRITE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_REQUIRED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_SQL_ENABLED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_VIRTUAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_IS_WRITE_ENABLED;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KEYWORD;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_CURRENT_TIME_MEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_DESCRIPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_DISPLAY_FOLDER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_GOAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_PARENT_KPI_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_STATUS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_STATUS_GRAPHIC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_TREND;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_TREND_GRAPHIC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_VALUE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_KPI_WEIGHT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LAST_SCHEMA_UPDATE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVELS_LIST;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_CARDINALITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_IS_VISIBLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_NUMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_ORIGIN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_UNIQUE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LEVEL_UNIQUE_SETTINGS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LIBRARY_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_INVALID_CHARS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_INVALID_STARTING_CHARS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_MAX_LENGTH;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_NAME_ENUM_VALUE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_PREFIX;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_SUFFIX;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LITERAL_VALUE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_LOCAL_TYPE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MAXIMUM_SCALE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASUREGROUP_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASUREGROUP_CARDINALITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASUREGROUP_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_AGGREGATOR;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_DISPLAY_FOLDER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_GROUP_DIMENSION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_IS_VISIBLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_NAME_SQL_COLUMN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_UNIQUE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_UNITS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_UNQUALIFIED_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_VISIBILITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_DISP_INFO;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_KEY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_ORDINAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_UNIQUE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_META_DATA;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MINIMUM_SCALE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NUMERIC_PRECISION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NUMERIC_SCALE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_OBJECT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_OPTIONAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ORDINAL_POSITION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ORIGIN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARAMETER_LIST;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARENT_COUNT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARENT_LEVEL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARENT_UNIQUE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_POPULARITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PREFERRED_QUERY_PATTERNS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_ACCESS_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_CONTENT_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_DESCRIPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_NAME_LC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_ORIGIN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_TYPE_LC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROPERTY_VISIBILITY;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROVIDER_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROVIDER_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_REPEATABLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_REPEATGROUP;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_RESTRICTIONS_MASK;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_RETURN_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ROLES;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_GUID;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME_LC;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_OWNER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_UPDATED_BY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SCOPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SEARCHABLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SET_CAPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SET_DISPLAY_FOLDER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SET_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_SQL_COLUMN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_STRUCTURE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_STRUCTURE_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_CATALOG;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_GUID;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_PROP_ID;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_SCHEMA;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_VERSION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_LIB;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_UNSIGNED_ATTRIBUTE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_URL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_VALUE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_VERSION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_WEIGHTEDPOPULARITY;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SCOPE;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_CAPTION;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_DISPLAY_FOLDER;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.SET_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_CATALOG;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_NAME;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_SCHEMA;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.TABLE_TYPE;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -497,8 +679,8 @@ public class SoapUtil {
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
 
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, r.cubeName());
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        addChildElement(row, QN_CUBE_NAME, r.cubeName());
         r.actionName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_ACTION_NAME,  v));
         r.actionType().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_ACTION_TYPE, String.valueOf(v.getValue())));
         addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_COORDINATE, r.coordinate());
@@ -512,36 +694,35 @@ public class SoapUtil {
 
     private static void addDbSchemaTablesResponseRow(SOAPElement root, DbSchemaTablesResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.tableCatalog().ifPresent(v -> addChildElement(row, QN_TABLE_CATALOG, v));
         r.tableSchema().ifPresent(v -> addChildElement(row, QN_TABLE_SCHEMA, v));
         r.tableName().ifPresent(v -> addChildElement(row, QN_TABLE_NAME, v));
         r.tableType().ifPresent(v -> addChildElement(row, QN_TABLE_TYPE, v));
-        r.tableGuid().ifPresent(v -> addChildElement(row, "TABLE_GUID", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.tablePropId().ifPresent(v -> addChildElement(row, "TABLE_PROP_ID", prefix, String.valueOf(v)));
-        r.dateCreated().ifPresent(v -> addChildElement(row, "DATE_CREATED", prefix, String.valueOf(v)));
-        r.dateModified().ifPresent(v -> addChildElement(row, "DATE_MODIFIED", prefix, String.valueOf(v)));
+        r.tableGuid().ifPresent(v -> addChildElement(row, QN_TABLE_GUID, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.tablePropId().ifPresent(v -> addChildElement(row, QN_TABLE_PROP_ID, String.valueOf(v)));
+        r.dateCreated().ifPresent(v -> addChildElement(row, QN_DATE_CREATED, String.valueOf(v)));
+        r.dateModified().ifPresent(v -> addChildElement(row,  QN_DATE_MODIFIED, String.valueOf(v)));
     }
 
     private static void addDiscoverLiteralsResponseRow(SOAPElement root, DiscoverLiteralsResponseRow r)
             throws SOAPException {
         String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        addChildElement(row, "LiteralName", prefix, r.literalName());
-        addChildElement(row, "LiteralValue", prefix, r.literalValue());
-        addChildElement(row, "LiteralInvalidChars", prefix, r.literalInvalidChars());
-        addChildElement(row, "LiteralInvalidStartingChars", prefix, r.literalInvalidStartingChars());
-        addChildElement(row, "LiteralMaxLength", prefix, String.valueOf(r.literalMaxLength()));
-        addChildElement(row, "LiteralNameEnumValue", prefix, String.valueOf(r.literalNameEnumValue().getValue()));
+        addChildElement(row, QN_LITERAL_NAME, r.literalName());
+        addChildElement(row, QN_LITERAL_VALUE, r.literalValue());
+        addChildElement(row, QN_LITERAL_INVALID_CHARS, r.literalInvalidChars());
+        addChildElement(row, QN_LITERAL_INVALID_STARTING_CHARS, r.literalInvalidStartingChars());
+        addChildElement(row, QN_LITERAL_MAX_LENGTH, String.valueOf(r.literalMaxLength()));
+        addChildElement(row, QN_LITERAL_NAME_ENUM_VALUE, String.valueOf(r.literalNameEnumValue().getValue()));
     }
 
     private static void addDiscoverKeywordsResponseRow(SOAPElement root, DiscoverKeywordsResponseRow r)
             throws SOAPException {
         String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        addChildElement(row, "Keyword", prefix, r.keyword());
+        addChildElement(row, QN_KEYWORD, r.keyword());
     }
 
     private static void addDiscoverEnumeratorsResponseRow(SOAPElement root, DiscoverEnumeratorsResponseRow r)
@@ -625,69 +806,67 @@ public class SoapUtil {
         r.tableCatalog().ifPresent(v -> addChildElement(row, QN_TABLE_CATALOG, v));
         r.tableSchema().ifPresent(v -> addChildElement(row, QN_TABLE_SCHEMA, v));
         r.tableName().ifPresent(v -> addChildElement(row, QN_TABLE_NAME, v));
-        r.columnName().ifPresent(v -> addChildElement(row, "COLUMN_NAME", prefix, v));
-        r.columnGuid().ifPresent(v -> addChildElement(row, "COLUMN_GUID", prefix, String.valueOf(v)));
-        r.columnPropId().ifPresent(v -> addChildElement(row, "COLUMN_PROPID", prefix, String.valueOf(v)));
-        r.ordinalPosition().ifPresent(v -> addChildElement(row, "ORDINAL_POSITION", prefix, String.valueOf(v)));
-        r.columnHasDefault().ifPresent(v -> addChildElement(row, "COLUMN_HAS_DEFAULT", prefix, String.valueOf(v)));
-        r.columnDefault().ifPresent(v -> addChildElement(row, "COLUMN_DEFAULT", prefix, v));
-        r.columnFlags().ifPresent(v -> addChildElement(row, "COLUMN_FLAG", prefix, String.valueOf(v.getValue())));
-        r.isNullable().ifPresent(v -> addChildElement(row, "IS_NULLABLE", prefix, String.valueOf(v)));
-        r.dataType().ifPresent(v -> addChildElement(row, DATA_TYPE, prefix, String.valueOf(v)));
-        r.typeGuid().ifPresent(v -> addChildElement(row, "TYPE_GUID", prefix, String.valueOf(v)));
+        r.columnName().ifPresent(v -> addChildElement(row, QN_COLUMN_NAME, v));
+        r.columnGuid().ifPresent(v -> addChildElement(row, QN_COLUMN_GUID, String.valueOf(v)));
+        r.columnPropId().ifPresent(v -> addChildElement(row, QN_COLUMN_PROPID, String.valueOf(v)));
+        r.ordinalPosition().ifPresent(v -> addChildElement(row, QN_ORDINAL_POSITION, String.valueOf(v)));
+        r.columnHasDefault().ifPresent(v -> addChildElement(row, QN_COLUMN_HAS_DEFAULT, String.valueOf(v)));
+        r.columnDefault().ifPresent(v -> addChildElement(row, QN_COLUMN_DEFAULT, v));
+        r.columnFlags().ifPresent(v -> addChildElement(row, QN_COLUMN_FLAG, String.valueOf(v.getValue())));
+        r.isNullable().ifPresent(v -> addChildElement(row, QN_IS_NULLABLE, String.valueOf(v)));
+        r.dataType().ifPresent(v -> addChildElement(row, QN_DATA_TYPE, String.valueOf(v)));
+        r.typeGuid().ifPresent(v -> addChildElement(row, QN_TYPE_GUID, String.valueOf(v)));
         r.characterMaximum()
-                .ifPresent(v -> addChildElement(row, "CHARACTER_MAXIMUM_LENGTH", prefix, String.valueOf(v)));
+                .ifPresent(v -> addChildElement(row, QN_CHARACTER_MAXIMUM_LENGTH, String.valueOf(v)));
         r.characterOctetLength()
-                .ifPresent(v -> addChildElement(row, "CHARACTER_OCTET_LENGTH", prefix, String.valueOf(v)));
-        r.numericPrecision().ifPresent(v -> addChildElement(row, NUMERIC_PRECISION, prefix, String.valueOf(v)));
-        r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, prefix, String.valueOf(v)));
-        r.dateTimePrecision().ifPresent(v -> addChildElement(row, "DATETIME_PRECISION", prefix, String.valueOf(v)));
-        r.characterSetCatalog().ifPresent(v -> addChildElement(row, "CHARACTER_SET_CATALOG", prefix, v));
-        r.characterSetSchema().ifPresent(v -> addChildElement(row, "CHARACTER_SET_SCHEMA", prefix, v));
-        r.characterSetName().ifPresent(v -> addChildElement(row, "CHARACTER_SET_NAME", prefix, v));
-        r.collationCatalog().ifPresent(v -> addChildElement(row, "COLLATION_CATALOG", prefix, v));
-        r.collationSchema().ifPresent(v -> addChildElement(row, "COLLATION_SCHEMA", prefix, v));
-        r.collationName().ifPresent(v -> addChildElement(row, "COLLATION_NAME", prefix, v));
-        r.domainCatalog().ifPresent(v -> addChildElement(row, "DOMAIN_CATALOG", prefix, v));
-        r.domainSchema().ifPresent(v -> addChildElement(row, "DOMAIN_SCHEMA", prefix, v));
-        r.domainName().ifPresent(v -> addChildElement(row, "DOMAIN_NAME", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.columnOlapType().ifPresent(v -> addChildElement(row, "COLUMN_OLAP_TYPE", prefix, v.name()));
+                .ifPresent(v -> addChildElement(row, QN_CHARACTER_OCTET_LENGTH, String.valueOf(v)));
+        r.numericPrecision().ifPresent(v -> addChildElement(row, QN_NUMERIC_PRECISION, String.valueOf(v)));
+        r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, String.valueOf(v)));
+        r.dateTimePrecision().ifPresent(v -> addChildElement(row, QN_DATETIME_PRECISION, String.valueOf(v)));
+        r.characterSetCatalog().ifPresent(v -> addChildElement(row, QN_CHARACTER_SET_CATALOG, v));
+        r.characterSetSchema().ifPresent(v -> addChildElement(row, QN_CHARACTER_SET_SCHEMA, v));
+        r.characterSetName().ifPresent(v -> addChildElement(row, QN_CHARACTER_SET_NAME, v));
+        r.collationCatalog().ifPresent(v -> addChildElement(row, QN_COLLATION_CATALOG, v));
+        r.collationSchema().ifPresent(v -> addChildElement(row, QN_COLLATION_SCHEMA, v));
+        r.collationName().ifPresent(v -> addChildElement(row, QN_COLLATION_NAME, v));
+        r.domainCatalog().ifPresent(v -> addChildElement(row, QN_DOMAIN_CATALOG, v));
+        r.domainSchema().ifPresent(v -> addChildElement(row, QN_DOMAIN_SCHEMA, v));
+        r.domainName().ifPresent(v -> addChildElement(row, QN_DOMAIN_NAME, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.columnOlapType().ifPresent(v -> addChildElement(row, QN_COLUMN_OLAP_TYPE, v.name()));
     }
 
     private static void addDbSchemaProviderTypesResponseRow(SOAPElement root, DbSchemaProviderTypesResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        r.typeName().ifPresent(v -> addChildElement(row, "TYPE_NAME", prefix, v));
-        r.dataType().ifPresent(v -> addChildElement(row, DATA_TYPE, prefix, String.valueOf(v.getValue())));
-        r.columnSize().ifPresent(v -> addChildElement(row, "COLUMN_SIZE", prefix, String.valueOf(v)));
-        r.literalPrefix().ifPresent(v -> addChildElement(row, "LITERAL_PREFIX", prefix, v));
-        r.literalSuffix().ifPresent(v -> addChildElement(row, "LITERAL_SUFFIX", prefix, v));
-        r.createParams().ifPresent(v -> addChildElement(row, "CREATE_PARAMS", prefix, v));
-        r.isNullable().ifPresent(v -> addChildElement(row, "IS_NULLABLE", prefix, String.valueOf(v)));
-        r.caseSensitive().ifPresent(v -> addChildElement(row, "CASE_SENSITIVE", prefix, String.valueOf(v)));
-        r.searchable().ifPresent(v -> addChildElement(row, "SEARCHABLE", prefix, String.valueOf(v.getValue())));
-        r.unsignedAttribute().ifPresent(v -> addChildElement(row, "UNSIGNED_ATTRIBUTE", prefix, String.valueOf(v)));
-        r.fixedPrecScale().ifPresent(v -> addChildElement(row, "FIXED_PREC_SCALE", prefix, String.valueOf(v)));
-        r.autoUniqueValue().ifPresent(v -> addChildElement(row, "AUTO_UNIQUE_VALUE", prefix, String.valueOf(v)));
-        r.localTypeName().ifPresent(v -> addChildElement(row, "LOCAL_TYPE_NAME", prefix, v));
-        r.minimumScale().ifPresent(v -> addChildElement(row, "MINIMUM_SCALE", prefix, String.valueOf(v)));
-        r.maximumScale().ifPresent(v -> addChildElement(row, "MAXIMUM_SCALE", prefix, String.valueOf(v)));
-        r.guid().ifPresent(v -> addChildElement(row, "GUID", prefix, String.valueOf(v)));
-        r.typeLib().ifPresent(v -> addChildElement(row, "TYPE_LIB", prefix, v));
-        r.version().ifPresent(v -> addChildElement(row, "VERSION", prefix, v));
-        r.isLong().ifPresent(v -> addChildElement(row, "IS_LONG", prefix, String.valueOf(v)));
-        r.bestMatch().ifPresent(v -> addChildElement(row, "BEST_MATCH", prefix, String.valueOf(v)));
-        r.isFixedLength().ifPresent(v -> addChildElement(row, "IS_FIXEDLENGTH", prefix, String.valueOf(v)));
+        r.typeName().ifPresent(v -> addChildElement(row, QN_TYPE_NAME, v));
+        r.dataType().ifPresent(v -> addChildElement(row, QN_DATA_TYPE, String.valueOf(v.getValue())));
+        r.columnSize().ifPresent(v -> addChildElement(row, QN_COLUMN_SIZE, String.valueOf(v)));
+        r.literalPrefix().ifPresent(v -> addChildElement(row, QN_LITERAL_PREFIX, v));
+        r.literalSuffix().ifPresent(v -> addChildElement(row, QN_LITERAL_SUFFIX, v));
+        r.createParams().ifPresent(v -> addChildElement(row, QN_CREATE_PARAMS, v));
+        r.isNullable().ifPresent(v -> addChildElement(row, QN_IS_NULLABLE, String.valueOf(v)));
+        r.caseSensitive().ifPresent(v -> addChildElement(row, QN_CASE_SENSITIVE, String.valueOf(v)));
+        r.searchable().ifPresent(v -> addChildElement(row, QN_SEARCHABLE, String.valueOf(v.getValue())));
+        r.unsignedAttribute().ifPresent(v -> addChildElement(row, QN_UNSIGNED_ATTRIBUTE, String.valueOf(v)));
+        r.fixedPrecScale().ifPresent(v -> addChildElement(row, QN_FIXED_PREC_SCALE, String.valueOf(v)));
+        r.autoUniqueValue().ifPresent(v -> addChildElement(row, QN_AUTO_UNIQUE_VALUE, String.valueOf(v)));
+        r.localTypeName().ifPresent(v -> addChildElement(row, QN_LOCAL_TYPE_NAME, v));
+        r.minimumScale().ifPresent(v -> addChildElement(row, QN_MINIMUM_SCALE, String.valueOf(v)));
+        r.maximumScale().ifPresent(v -> addChildElement(row, QN_MAXIMUM_SCALE, String.valueOf(v)));
+        r.guid().ifPresent(v -> addChildElement(row, QN_GUID, String.valueOf(v)));
+        r.typeLib().ifPresent(v -> addChildElement(row, QN_TYPE_LIB, v));
+        r.version().ifPresent(v -> addChildElement(row, QN_VERSION, v));
+        r.isLong().ifPresent(v -> addChildElement(row, QN_IS_LONG, String.valueOf(v)));
+        r.bestMatch().ifPresent(v -> addChildElement(row, QN_BEST_MATCH, String.valueOf(v)));
+        r.isFixedLength().ifPresent(v -> addChildElement(row, QN_IS_FIXEDLENGTH, String.valueOf(v)));
     }
 
     private static void addDbSchemaSchemataResponseRow(SOAPElement root, DbSchemaSchemataResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         addChildElement(row, QN_CATALOG_NAME, r.catalogName());
-        addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, r.schemaName());
+        addChildElement(row, QN_SCHEMA_NAME, r.schemaName());
         addChildElement(row, QN_SCHEMA_OWNER, r.schemaOwner());
     }
 
@@ -702,90 +881,85 @@ public class SoapUtil {
 
     private static void addDbSchemaTablesInfoResponseRow(SOAPElement root, DbSchemaTablesInfoResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_TABLE_CATALOG, v));
         r.schemaName().ifPresent(v -> addChildElement(row, QN_TABLE_SCHEMA, v));
         addChildElement(row, QN_TABLE_NAME, r.tableName());
         addChildElement(row, QN_TABLE_TYPE, r.tableType());
-        r.tableGuid().ifPresent(v -> addChildElement(row, "TABLE_GUID", prefix, String.valueOf(v)));
-        r.bookmarks().ifPresent(v -> addChildElement(row, "BOOKMARKS", prefix, String.valueOf(v)));
-        r.bookmarkType().ifPresent(v -> addChildElement(row, "BOOKMARK_TYPE", prefix, String.valueOf(v)));
-        r.bookmarkDataType().ifPresent(v -> addChildElement(row, "BOOKMARK_DATA_TYPE", prefix, String.valueOf(v)));
+        r.tableGuid().ifPresent(v -> addChildElement(row, QN_TABLE_GUID, String.valueOf(v)));
+        r.bookmarks().ifPresent(v -> addChildElement(row, QN_BOOKMARKS, String.valueOf(v)));
+        r.bookmarkType().ifPresent(v -> addChildElement(row, QN_BOOKMARK_TYPE, String.valueOf(v)));
+        r.bookmarkDataType().ifPresent(v -> addChildElement(row, QN_BOOKMARK_DATA_TYPE, String.valueOf(v)));
         r.bookmarkMaximumLength()
-                .ifPresent(v -> addChildElement(row, "BOOKMARK_MAXIMUM_LENGTH", prefix, String.valueOf(v)));
-        r.bookmarkInformation().ifPresent(v -> addChildElement(row, "BOOKMARK_INFORMATION", prefix, String.valueOf(v)));
-        r.tableVersion().ifPresent(v -> addChildElement(row, "TABLE_VERSION", prefix, String.valueOf(v)));
-        r.cardinality().ifPresent(v -> addChildElement(row, "CARDINALITY", prefix, String.valueOf(v)));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.tablePropId().ifPresent(v -> addChildElement(row, "TABLE_PROP_ID", prefix, String.valueOf(v)));
+                .ifPresent(v -> addChildElement(row, QN_BOOKMARK_MAXIMUM_LENGTH, String.valueOf(v)));
+        r.bookmarkInformation().ifPresent(v -> addChildElement(row, QN_BOOKMARK_INFORMATION, String.valueOf(v)));
+        r.tableVersion().ifPresent(v -> addChildElement(row, QN_TABLE_VERSION, String.valueOf(v)));
+        r.cardinality().ifPresent(v -> addChildElement(row, QN_CARDINALITY, String.valueOf(v)));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.tablePropId().ifPresent(v -> addChildElement(row, QN_TABLE_PROP_ID, String.valueOf(v)));
     }
 
     private static void addMdSchemaHierarchiesResponseRow(SOAPElement root, MdSchemaHierarchiesResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.hierarchyName().ifPresent(v -> addChildElement(row, "HIERARCHY_NAME", prefix, v));
-        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, HIERARCHY_UNIQUE_NAME, prefix, v));
-        r.hierarchyGuid().ifPresent(v -> addChildElement(row, "HIERARCHY_GUID", prefix, String.valueOf(v)));
-        r.hierarchyCaption().ifPresent(v -> addChildElement(row, "HIERARCHY_CAPTION", prefix, v));
-        r.dimensionType().ifPresent(v -> addChildElement(row, "DIMENSION_TYPE", prefix, String.valueOf(v.getValue())));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.hierarchyName().ifPresent(v -> addChildElement(row, QN_HIERARCHY_NAME, v));
+        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, QN_HIERARCHY_UNIQUE_NAME, v));
+        r.hierarchyGuid().ifPresent(v -> addChildElement(row, QN_HIERARCHY_GUID, String.valueOf(v)));
+        r.hierarchyCaption().ifPresent(v -> addChildElement(row, QN_HIERARCHY_CAPTION, v));
+        r.dimensionType().ifPresent(v -> addChildElement(row, QN_DIMENSION_TYPE, String.valueOf(v.getValue())));
         r.hierarchyCardinality()
-                .ifPresent(v -> addChildElement(row, "HIERARCHY_CARDINALITY", prefix, String.valueOf(v)));
-        r.defaultMember().ifPresent(v -> addChildElement(row, "DEFAULT_MEMBER", prefix, v));
-        r.allMember().ifPresent(v -> addChildElement(row, "ALL_MEMBER", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.structure().ifPresent(v -> addChildElement(row, "STRUCTURE", prefix, String.valueOf(v.getValue())));
-        r.isVirtual().ifPresent(v -> addChildElement(row, "IS_VIRTUAL", prefix, String.valueOf(v)));
-        r.isReadWrite().ifPresent(v -> addChildElement(row, "IS_READWRITE", prefix, String.valueOf(v)));
+                .ifPresent(v -> addChildElement(row, QN_HIERARCHY_CARDINALITY, String.valueOf(v)));
+        r.defaultMember().ifPresent(v -> addChildElement(row, QN_DEFAULT_MEMBER, v));
+        r.allMember().ifPresent(v -> addChildElement(row, QN_ALL_MEMBER, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.structure().ifPresent(v -> addChildElement(row, QN_STRUCTURE, String.valueOf(v.getValue())));
+        r.isVirtual().ifPresent(v -> addChildElement(row, QN_IS_VIRTUAL, String.valueOf(v)));
+        r.isReadWrite().ifPresent(v -> addChildElement(row, QN_IS_READWRITE, String.valueOf(v)));
         r.dimensionUniqueSettings().ifPresent(
-                v -> addChildElement(row, "DIMENSION_UNIQUE_SETTINGS", prefix, String.valueOf(v.getValue())));
-        r.dimensionMasterUniqueName().ifPresent(v -> addChildElement(row, "DIMENSION_MASTER_UNIQUE_NAME", prefix, v));
-        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, DIMENSION_IS_VISIBLE, prefix, String.valueOf(v)));
-        r.hierarchyOrdinal().ifPresent(v -> addChildElement(row, "HIERARCHY_ORDINAL", prefix, String.valueOf(v)));
-        r.dimensionIsShared().ifPresent(v -> addChildElement(row, "DIMENSION_IS_SHARED", prefix, String.valueOf(v)));
-        r.hierarchyIsVisible().ifPresent(v -> addChildElement(row, "HIERARCHY_IS_VISIBLE", prefix, String.valueOf(v)));
+                v -> addChildElement(row, QN_DIMENSION_UNIQUE_SETTINGS, String.valueOf(v.getValue())));
+        r.dimensionMasterUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_MASTER_UNIQUE_NAME, v));
+        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, QN_DIMENSION_IS_VISIBLE, String.valueOf(v)));
+        r.hierarchyOrdinal().ifPresent(v -> addChildElement(row, QN_HIERARCHY_ORDINAL, String.valueOf(v)));
+        r.dimensionIsShared().ifPresent(v -> addChildElement(row, QN_DIMENSION_IS_SHARED, String.valueOf(v)));
+        r.hierarchyIsVisible().ifPresent(v -> addChildElement(row, QN_HIERARCHY_IS_VISIBLE, String.valueOf(v)));
         r.hierarchyOrigin()
-                .ifPresent(v -> addChildElement(row, "HIERARCHY_ORIGIN", prefix, String.valueOf(v.getValue())));
-        r.hierarchyDisplayFolder().ifPresent(v -> addChildElement(row, "HIERARCHY_DISPLAY_FOLDER", prefix, v));
+                .ifPresent(v -> addChildElement(row, QN_HIERARCHY_ORIGIN, String.valueOf(v.getValue())));
+        r.hierarchyDisplayFolder().ifPresent(v -> addChildElement(row, QN_HIERARCHY_DISPLAY_FOLDER, v));
         //r.hierarchyIsVisible().ifPresent(v -> addChildElement(row, "HIERARCHY_VISIBILITY", prefix, v == true ? "1" : "0"));
         //addChildElement(row, "PARENT_CHILD", prefix, "false");
         r.instanceSelection()
-                .ifPresent(v -> addChildElement(row, "INSTANCE_SELECTION", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_INSTANCE_SELECTION, String.valueOf(v.getValue())));
         r.groupingBehavior()
-                .ifPresent(v -> addChildElement(row, "GROUPING_BEHAVIOR", prefix, String.valueOf(v.getValue())));
-        r.structureType().ifPresent(v -> addChildElement(row, "STRUCTURE_TYPE", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_GROUPING_BEHAVIOR, String.valueOf(v.getValue())));
+        r.structureType().ifPresent(v -> addChildElement(row, QN_STRUCTURE_TYPE, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaLevelsResponseRow(SOAPElement root, MdSchemaLevelsResponseRow r)
             throws SOAPException {
-
-        String prefix = Constants.ROWSET.PREFIX;
-
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
 
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, HIERARCHY_UNIQUE_NAME, prefix, v));
-        r.levelName().ifPresent(v -> addChildElement(row, "LEVEL_NAME", prefix, v));
-        r.levelUniqueName().ifPresent(v -> addChildElement(row, LEVEL_UNIQUE_NAME, prefix, v));
-        r.levelGuid().ifPresent(v -> addChildElement(row, "LEVEL_GUID", prefix, String.valueOf(v)));
-        r.levelCaption().ifPresent(v -> addChildElement(row, "LEVEL_CAPTION", prefix, v));
-        r.levelNumber().ifPresent(v -> addChildElement(row, "LEVEL_NUMBER", prefix, String.valueOf(v)));
-        r.levelCardinality().ifPresent(v -> addChildElement(row, "LEVEL_CARDINALITY", prefix, String.valueOf(v)));
-        r.levelType().ifPresent(v -> addChildElement(row, "LEVEL_TYPE", prefix, String.valueOf(v.getValue())));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, QN_HIERARCHY_UNIQUE_NAME, v));
+        r.levelName().ifPresent(v -> addChildElement(row, QN_LEVEL_NAME, v));
+        r.levelUniqueName().ifPresent(v -> addChildElement(row, QN_LEVEL_UNIQUE_NAME, v));
+        r.levelGuid().ifPresent(v -> addChildElement(row, QN_LEVEL_GUID, String.valueOf(v)));
+        r.levelCaption().ifPresent(v -> addChildElement(row, QN_LEVEL_CAPTION, v));
+        r.levelNumber().ifPresent(v -> addChildElement(row, QN_LEVEL_NUMBER, String.valueOf(v)));
+        r.levelCardinality().ifPresent(v -> addChildElement(row, QN_LEVEL_CARDINALITY, String.valueOf(v)));
+        r.levelType().ifPresent(v -> addChildElement(row, QN_LEVEL_TYPE, String.valueOf(v.getValue())));
         r.customRollupSetting()
-                .ifPresent(v -> addChildElement(row, "CUSTOM_ROLLUP_SETTINGS", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_CUSTOM_ROLLUP_SETTINGS, String.valueOf(v.getValue())));
         r.levelUniqueSettings()
-                .ifPresent(v -> addChildElement(row, "LEVEL_UNIQUE_SETTINGS", prefix, String.valueOf(v.getValue())));
-        r.levelIsVisible().ifPresent(v -> addChildElement(row, "LEVEL_IS_VISIBLE", prefix, String.valueOf(v)));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
+                .ifPresent(v -> addChildElement(row, QN_LEVEL_UNIQUE_SETTINGS, String.valueOf(v.getValue())));
+        r.levelIsVisible().ifPresent(v -> addChildElement(row, QN_LEVEL_IS_VISIBLE, String.valueOf(v)));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
         // absent in old mondrian
         // r.levelOrderingProperty().ifPresent(v -> addChildElement(row,
         // "LEVEL_ORDERING_PROPERTY", prefix, v));
@@ -804,27 +978,26 @@ public class SoapUtil {
         // r.levelKeyCardinality().ifPresent(v -> addChildElement(row,
         // "LEVEL_KEY_CARDINALITY", prefix, String.valueOf(v)));
 
-        r.levelOrigin().ifPresent(v -> addChildElement(row, "LEVEL_ORIGIN", prefix, String.valueOf(v.getValue())));
+        r.levelOrigin().ifPresent(v -> addChildElement(row, QN_LEVEL_ORIGIN, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaMeasureGroupDimensionsResponseRow(SOAPElement root,
             MdSchemaMeasureGroupDimensionsResponseRow r) throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.measureGroupName().ifPresent(v -> addChildElement(row, MEASUREGROUP_NAME, prefix, v));
-        r.measureGroupCardinality().ifPresent(v -> addChildElement(row, "MEASUREGROUP_CARDINALITY", prefix, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.dimensionCardinality().ifPresent(v -> addChildElement(row, "DIMENSION_CARDINALITY", prefix, v.name()));
-        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, DIMENSION_IS_VISIBLE, prefix, String.valueOf(v)));
+        r.measureGroupName().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_NAME, v));
+        r.measureGroupCardinality().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_CARDINALITY, v));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.dimensionCardinality().ifPresent(v -> addChildElement(row, QN_DIMENSION_CARDINALITY, v.name()));
+        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, QN_DIMENSION_IS_VISIBLE, String.valueOf(v)));
         r.dimensionIsFactDimension()
-                .ifPresent(v -> addChildElement(row, "DIMENSION_IS_FACT_DIMENSION", prefix, String.valueOf(v)));
+                .ifPresent(v -> addChildElement(row, QN_DIMENSION_IS_FACT_DIMENSION, String.valueOf(v)));
         r.dimensionPath().ifPresent(v -> addMeasureGroupDimensionXmlList(row, v));
         r.dimensionGranularity()
-                .ifPresent(v -> addChildElement(row, "DIMENSION_GRANULARITY", Constants.ROWSET.PREFIX, v));
+                .ifPresent(v -> addChildElement(row, QN_DIMENSION_GRANULARITY, v));
     }
 
     private static void addMeasureGroupDimensionXmlList(SOAPElement el, List<MeasureGroupDimension> list) {
@@ -835,85 +1008,82 @@ public class SoapUtil {
     }
 
     private static void addMeasureGroupDimensionXml(SOAPElement el, MeasureGroupDimension it) {
-        addChildElement(el, "MeasureGroupDimension", Constants.ROWSET.PREFIX, it.measureGroupDimension());
+        addChildElement(el, QN_MEASURE_GROUP_DIMENSION, it.measureGroupDimension());
     }
 
     private static void addMdSchemaMeasuresResponseRow(SOAPElement root, MdSchemaMeasuresResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-        r.measureName().ifPresent(v -> addChildElement(row, "MEASURE_NAME", prefix, v));
-        r.measureUniqueName().ifPresent(v -> addChildElement(row, "MEASURE_UNIQUE_NAME", prefix, v));
-        r.measureCaption().ifPresent(v -> addChildElement(row, "MEASURE_CAPTION", prefix, v));
-        r.measureGuid().ifPresent(v -> addChildElement(row, "MEASURE_GUID", prefix, String.valueOf(v)));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
+        r.measureName().ifPresent(v -> addChildElement(row, QN_MEASURE_NAME, v));
+        r.measureUniqueName().ifPresent(v -> addChildElement(row, QN_MEASURE_UNIQUE_NAME, v));
+        r.measureCaption().ifPresent(v -> addChildElement(row, QN_MEASURE_CAPTION, v));
+        r.measureGuid().ifPresent(v -> addChildElement(row, QN_MEASURE_GUID, String.valueOf(v)));
         r.measureAggregator()
-                .ifPresent(v -> addChildElement(row, "MEASURE_AGGREGATOR", prefix, String.valueOf(v.getValue())));
-        r.dataType().ifPresent(v -> addChildElement(row, DATA_TYPE, prefix, String.valueOf(v.getValue())));
-        r.numericPrecision().ifPresent(v -> addChildElement(row, NUMERIC_PRECISION, prefix, String.valueOf(v)));
-        r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, prefix, String.valueOf(v)));
-        r.measureUnits().ifPresent(v -> addChildElement(row, "MEASURE_UNITS", prefix, v));
-        r.expression().ifPresent(v -> addChildElement(row, EXPRESSION_UC, prefix, v));
-        r.measureIsVisible().ifPresent(v -> addChildElement(row, "MEASURE_IS_VISIBLE", prefix, String.valueOf(v)));
-        r.levelsList().ifPresent(v -> addChildElement(row, "LEVELS_LIST", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.measureNameSqlColumnName().ifPresent(v -> addChildElement(row, "MEASURE_NAME_SQL_COLUMN_NAME", prefix, v));
-        r.measureUnqualifiedCaption().ifPresent(v -> addChildElement(row, "MEASURE_UNQUALIFIED_CAPTION", prefix, v));
-        r.measureGroupName().ifPresent(v -> addChildElement(row, MEASUREGROUP_NAME, prefix, v));
-        r.measureDisplayFolder().ifPresent(v -> addChildElement(row, "MEASURE_DISPLAY_FOLDER", prefix, v));
-        r.defaultFormatString().ifPresent(v -> addChildElement(row, "DEFAULT_FORMAT_STRING", prefix, v));
-        r.cubeSource().ifPresent(v -> addChildElement(row, "CUBE_SOURCE", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_MEASURE_AGGREGATOR, String.valueOf(v.getValue())));
+        r.dataType().ifPresent(v -> addChildElement(row, QN_DATA_TYPE, String.valueOf(v.getValue())));
+        r.numericPrecision().ifPresent(v -> addChildElement(row, QN_NUMERIC_PRECISION, String.valueOf(v)));
+        r.numericScale().ifPresent(v -> addChildElement(row, QN_NUMERIC_SCALE, String.valueOf(v)));
+        r.measureUnits().ifPresent(v -> addChildElement(row, QN_MEASURE_UNITS, v));
+        r.expression().ifPresent(v -> addChildElement(row, QN_EXPRESSION, v));
+        r.measureIsVisible().ifPresent(v -> addChildElement(row, QN_MEASURE_IS_VISIBLE, String.valueOf(v)));
+        r.levelsList().ifPresent(v -> addChildElement(row, QN_LEVELS_LIST, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.measureNameSqlColumnName().ifPresent(v -> addChildElement(row, QN_MEASURE_NAME_SQL_COLUMN_NAME, v));
+        r.measureUnqualifiedCaption().ifPresent(v -> addChildElement(row, QN_MEASURE_UNQUALIFIED_CAPTION, v));
+        r.measureGroupName().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_NAME, v));
+        r.measureDisplayFolder().ifPresent(v -> addChildElement(row, QN_MEASURE_DISPLAY_FOLDER, v));
+        r.defaultFormatString().ifPresent(v -> addChildElement(row, QN_DEFAULT_FORMAT_STRING, v));
+        r.cubeSource().ifPresent(v -> addChildElement(row, QN_CUBE_SOURCE, String.valueOf(v.getValue())));
         r.measureVisibility()
-                .ifPresent(v -> addChildElement(row, "MEASURE_VISIBILITY", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_MEASURE_VISIBILITY, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaMembersResponseRow(SOAPElement root, MdSchemaMembersResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, HIERARCHY_UNIQUE_NAME, prefix, v));
-        r.levelUniqueName().ifPresent(v -> addChildElement(row, LEVEL_UNIQUE_NAME, prefix, v));
-        r.levelNumber().ifPresent(v -> addChildElement(row, "LEVEL_NUMBER", prefix, String.valueOf(v)));
-        r.memberOrdinal().ifPresent(v -> addChildElement(row, "MEMBER_ORDINAL", prefix, String.valueOf(v)));
-        r.memberName().ifPresent(v -> addChildElement(row, "MEMBER_NAME", prefix, v));
-        r.memberUniqueName().ifPresent(v -> addChildElement(row, "MEMBER_UNIQUE_NAME", prefix, v));
-        r.memberType().ifPresent(v -> addChildElement(row, "MEMBER_TYPE", prefix, String.valueOf(v.getValue())));
-        r.memberGuid().ifPresent(v -> addChildElement(row, "MEMBER_GUID", prefix, String.valueOf(v)));
-        r.memberCaption().ifPresent(v -> addChildElement(row, "MEMBER_CAPTION", prefix, v));
-        r.childrenCardinality().ifPresent(v -> addChildElement(row, "CHILDREN_CARDINALITY", prefix, String.valueOf(v)));
-        r.parentLevel().ifPresent(v -> addChildElement(row, "PARENT_LEVEL", prefix, String.valueOf(v)));
-        r.parentUniqueName().ifPresent(v -> addChildElement(row, "PARENT_UNIQUE_NAME", prefix, v));
-        r.parentCount().ifPresent(v -> addChildElement(row, "PARENT_COUNT", prefix, String.valueOf(v)));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.expression().ifPresent(v -> addChildElement(row, EXPRESSION_UC, prefix, v));
-        r.memberKey().ifPresent(v -> addChildElement(row, "MEMBER_KEY", prefix, v));
-        r.isPlaceHolderMember().ifPresent(v -> addChildElement(row, "IS_PLACEHOLDERMEMBER", prefix, String.valueOf(v)));
-        r.isDataMember().ifPresent(v -> addChildElement(row, "IS_DATAMEMBER", prefix, String.valueOf(v)));
-        r.scope().ifPresent(v -> addChildElement(row, SCOPE, prefix, String.valueOf(v.getValue())));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, QN_HIERARCHY_UNIQUE_NAME, v));
+        r.levelUniqueName().ifPresent(v -> addChildElement(row, QN_LEVEL_UNIQUE_NAME, v));
+        r.levelNumber().ifPresent(v -> addChildElement(row, QN_LEVEL_NUMBER, String.valueOf(v)));
+        r.memberOrdinal().ifPresent(v -> addChildElement(row, QN_MEMBER_ORDINAL, String.valueOf(v)));
+        r.memberName().ifPresent(v -> addChildElement(row, QN_MEMBER_NAME, v));
+        r.memberUniqueName().ifPresent(v -> addChildElement(row, QN_MEMBER_UNIQUE_NAME, v));
+        r.memberType().ifPresent(v -> addChildElement(row, QN_MEMBER_TYPE, String.valueOf(v.getValue())));
+        r.memberGuid().ifPresent(v -> addChildElement(row, QN_MEMBER_GUID, String.valueOf(v)));
+        r.memberCaption().ifPresent(v -> addChildElement(row, QN_MEMBER_CAPTION, v));
+        r.childrenCardinality().ifPresent(v -> addChildElement(row, QN_CHILDREN_CARDINALITY, String.valueOf(v)));
+        r.parentLevel().ifPresent(v -> addChildElement(row, QN_PARENT_LEVEL, String.valueOf(v)));
+        r.parentUniqueName().ifPresent(v -> addChildElement(row, QN_PARENT_UNIQUE_NAME, v));
+        r.parentCount().ifPresent(v -> addChildElement(row, QN_PARENT_COUNT, String.valueOf(v)));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.expression().ifPresent(v -> addChildElement(row, QN_EXPRESSION, v));
+        r.memberKey().ifPresent(v -> addChildElement(row, QN_MEMBER_KEY, v));
+        r.isPlaceHolderMember().ifPresent(v -> addChildElement(row, QN_IS_PLACEHOLDERMEMBER, String.valueOf(v)));
+        r.isDataMember().ifPresent(v -> addChildElement(row, QN_IS_DATAMEMBER, String.valueOf(v)));
+        r.scope().ifPresent(v -> addChildElement(row, QN_SCOPE, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaPropertiesResponseRow(SOAPElement root, MdSchemaPropertiesResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, HIERARCHY_UNIQUE_NAME, prefix, v));
-        r.levelUniqueName().ifPresent(v -> addChildElement(row, LEVEL_UNIQUE_NAME, prefix, v));
-        r.memberUniqueName().ifPresent(v -> addChildElement(row, "MEMBER_UNIQUE_NAME", prefix, v));
-        r.propertyType().ifPresent(v -> addChildElement(row, "PROPERTY_TYPE", prefix, String.valueOf(v.getValue())));
-        r.propertyName().ifPresent(v -> addChildElement(row, "PROPERTY_NAME", prefix, v));
-        r.propertyCaption().ifPresent(v -> addChildElement(row, "PROPERTY_CAPTION", prefix, v));
-        r.dataType().ifPresent(v -> addChildElement(row, DATA_TYPE, prefix, String.valueOf(v.getValue())));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.hierarchyUniqueName().ifPresent(v -> addChildElement(row, QN_HIERARCHY_UNIQUE_NAME, v));
+        r.levelUniqueName().ifPresent(v -> addChildElement(row, QN_LEVEL_UNIQUE_NAME, v));
+        r.memberUniqueName().ifPresent(v -> addChildElement(row, QN_MEMBER_UNIQUE_NAME, v));
+        r.propertyType().ifPresent(v -> addChildElement(row, QN_PROPERTY_TYPE, String.valueOf(v.getValue())));
+        r.propertyName().ifPresent(v -> addChildElement(row, QN_PROPERTY_NAME, v));
+        r.propertyCaption().ifPresent(v -> addChildElement(row, QN_PROPERTY_CAPTION, v));
+        r.dataType().ifPresent(v -> addChildElement(row, QN_DATA_TYPE, String.valueOf(v.getValue())));
         // r.characterMaximumLength().ifPresent(v -> addChildElement(row,
         // "CHARACTER_MAXIMUM_LENGTH"
         // , prefix, String.valueOf(v)));
@@ -925,13 +1095,13 @@ public class SoapUtil {
         // r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, prefix,
         // String.valueOf(v)));
         r.propertyContentType()
-                .ifPresent(v -> addChildElement(row, "PROPERTY_CONTENT_TYPE", prefix, String.valueOf(v.getValue())));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.sqlColumnName().ifPresent(v -> addChildElement(row, "SQL_COLUMN_NAME", prefix, v));
+                .ifPresent(v -> addChildElement(row, QN_PROPERTY_CONTENT_TYPE, String.valueOf(v.getValue())));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.sqlColumnName().ifPresent(v -> addChildElement(row, QN_SQL_COLUMN_NAME, v));
         // r.language().ifPresent(v -> addChildElement(row, "LANGUAGE", prefix,
         // String.valueOf(v)));
         r.propertyOrigin()
-                .ifPresent(v -> addChildElement(row, "PROPERTY_ORIGIN", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_PROPERTY_ORIGIN, String.valueOf(v.getValue())));
         // r.propertyAttributeHierarchyName().ifPresent(v -> addChildElement(row
         // , "PROPERTY_ATTRIBUTE_HIERARCHY_NAME", prefix, v));
         // r.propertyCardinality().ifPresent(v -> addChildElement(row,
@@ -939,138 +1109,133 @@ public class SoapUtil {
         // , prefix, v.name()));
         // r.mimeType().ifPresent(v -> addChildElement(row, "MIME_TYPE"
         // , prefix, v));
-        r.cubeSource().ifPresent(v -> addChildElement(row, "CUBE_SOURCE", prefix, String.valueOf(v.getValue())));
+        r.cubeSource().ifPresent(v -> addChildElement(row, QN_CUBE_SOURCE, String.valueOf(v.getValue())));
         r.propertyIsVisible()
-                .ifPresent(v -> addChildElement(row, "PROPERTY_VISIBILITY", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_PROPERTY_VISIBILITY, String.valueOf(v.getValue())));
 
     }
 
     private static void addMdSchemaSetsResponseRow(SOAPElement root, MdSchemaSetsResponseRow r) throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
-        r.setName().ifPresent(v -> addChildElement(row, SET_NAME, prefix, v));
-        r.scope().ifPresent(v -> addChildElement(row, SCOPE, prefix, String.valueOf(v.getValue())));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.expression().ifPresent(v -> addChildElement(row, EXPRESSION_UC, prefix, v));
-        r.dimension().ifPresent(v -> addChildElement(row, "DIMENSIONS", prefix, v));
-        r.setCaption().ifPresent(v -> addChildElement(row, SET_CAPTION, prefix, v));
-        r.setDisplayFolder().ifPresent(v -> addChildElement(row, SET_DISPLAY_FOLDER, prefix, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
+        r.setName().ifPresent(v -> addChildElement(row, QN_SET_NAME, v));
+        r.scope().ifPresent(v -> addChildElement(row, QN_SCOPE, String.valueOf(v.getValue())));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.expression().ifPresent(v -> addChildElement(row, QN_EXPRESSION, v));
+        r.dimension().ifPresent(v -> addChildElement(row, QN_DIMENSIONS, v));
+        r.setCaption().ifPresent(v -> addChildElement(row, QN_SET_CAPTION, v));
+        r.setDisplayFolder().ifPresent(v -> addChildElement(row, QN_SET_DISPLAY_FOLDER, v));
     }
 
     private static void addMdSchemaKpisResponseRow(SOAPElement root, MdSchemaKpisResponseRow r) throws SOAPException {
         String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.measureGroupName().ifPresent(v -> addChildElement(row, MEASUREGROUP_NAME, prefix, v));
-        r.kpiName().ifPresent(v -> addChildElement(row, "KPI_NAME", prefix, v));
-        r.kpiCaption().ifPresent(v -> addChildElement(row, "KPI_CAPTION", prefix, v));
-        r.kpiDescription().ifPresent(v -> addChildElement(row, "KPI_DESCRIPTION", prefix, v));
-        r.kpiDisplayFolder().ifPresent(v -> addChildElement(row, "KPI_DISPLAY_FOLDER", prefix, v));
-        r.kpiValue().ifPresent(v -> addChildElement(row, "KPI_VALUE", prefix, v));
-        r.kpiGoal().ifPresent(v -> addChildElement(row, "KPI_GOAL", prefix, v));
-        r.kpiStatus().ifPresent(v -> addChildElement(row, "KPI_STATUS", prefix, v));
-        r.kpiTrend().ifPresent(v -> addChildElement(row, "KPI_TREND", prefix, v));
-        r.kpiStatusGraphic().ifPresent(v -> addChildElement(row, "KPI_STATUS_GRAPHIC", prefix, v));
-        r.kpiTrendGraphic().ifPresent(v -> addChildElement(row, "KPI_TREND_GRAPHIC", prefix, v));
-        r.kpiWight().ifPresent(v -> addChildElement(row, "KPI_WEIGHT", prefix, v));
-        r.kpiCurrentTimeMember().ifPresent(v -> addChildElement(row, "KPI_CURRENT_TIME_MEMBER", prefix, v));
-        r.kpiParentKpiName().ifPresent(v -> addChildElement(row, "KPI_PARENT_KPI_NAME", prefix, v));
-        r.annotation().ifPresent(v -> addChildElement(row, "ANNOTATIONS", prefix, v));
-        r.scope().ifPresent(v -> addChildElement(row, SCOPE, prefix, String.valueOf(v.getValue())));
+        r.measureGroupName().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_NAME, v));
+        r.kpiName().ifPresent(v -> addChildElement(row, QN_KPI_NAME, v));
+        r.kpiCaption().ifPresent(v -> addChildElement(row, QN_KPI_CAPTION, v));
+        r.kpiDescription().ifPresent(v -> addChildElement(row, QN_KPI_DESCRIPTION, v));
+        r.kpiDisplayFolder().ifPresent(v -> addChildElement(row, QN_KPI_DISPLAY_FOLDER, v));
+        r.kpiValue().ifPresent(v -> addChildElement(row, QN_KPI_VALUE, v));
+        r.kpiGoal().ifPresent(v -> addChildElement(row, QN_KPI_GOAL, v));
+        r.kpiStatus().ifPresent(v -> addChildElement(row, QN_KPI_STATUS, v));
+        r.kpiTrend().ifPresent(v -> addChildElement(row, QN_KPI_TREND, v));
+        r.kpiStatusGraphic().ifPresent(v -> addChildElement(row, QN_KPI_STATUS_GRAPHIC, v));
+        r.kpiTrendGraphic().ifPresent(v -> addChildElement(row, QN_KPI_TREND_GRAPHIC, v));
+        r.kpiWight().ifPresent(v -> addChildElement(row, QN_KPI_WEIGHT, v));
+        r.kpiCurrentTimeMember().ifPresent(v -> addChildElement(row, QN_KPI_CURRENT_TIME_MEMBER, v));
+        r.kpiParentKpiName().ifPresent(v -> addChildElement(row, QN_KPI_PARENT_KPI_NAME, v));
+        r.annotation().ifPresent(v -> addChildElement(row, QN_ANNOTATIONS, v));
+        r.scope().ifPresent(v -> addChildElement(row, QN_SCOPE, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaMeasureGroupsResponseRow(SOAPElement root, MdSchemaMeasureGroupsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.measureGroupName().ifPresent(v -> addChildElement(row, MEASUREGROUP_NAME, prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.isWriteEnabled().ifPresent(v -> addChildElement(row, "IS_WRITE_ENABLED", prefix, String.valueOf(v)));
-        r.measureGroupCaption().ifPresent(v -> addChildElement(row, "MEASUREGROUP_CAPTION", prefix, v));
+        r.measureGroupName().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_NAME, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.isWriteEnabled().ifPresent(v -> addChildElement(row, QN_IS_WRITE_ENABLED, String.valueOf(v)));
+        r.measureGroupCaption().ifPresent(v -> addChildElement(row, QN_MEASUREGROUP_CAPTION, v));
     }
 
     private static void addMdSchemaCubesResponseRow(SOAPElement root, MdSchemaCubesResponseRow r) throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         addChildElement(row, QN_CATALOG_NAME, r.catalogName());
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.cubeType().ifPresent(v -> addChildElement(row, "CUBE_TYPE", prefix, v.name()));
-        r.cubeGuid().ifPresent(v -> addChildElement(row, "CUBE_GUID", prefix, String.valueOf(v)));
-        r.createdOn().ifPresent(v -> addChildElement(row, "CREATED_ON", prefix, String.valueOf(v)));
-        r.lastSchemaUpdate().ifPresent(v -> addChildElement(row, "LAST_SCHEMA_UPDATE", prefix,  v.format(formatter)));
-        r.schemaUpdatedBy().ifPresent(v -> addChildElement(row, "SCHEMA_UPDATED_BY", prefix, v));
-        r.lastDataUpdate().ifPresent(v -> addChildElement(row, "LAST_DATA_UPDATE", prefix, v.format(formatter)));
-        r.dataUpdateDBy().ifPresent(v -> addChildElement(row, "DATA_UPDATED_BY", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
+        r.cubeType().ifPresent(v -> addChildElement(row, QN_CUBE_TYPE, v.name()));
+        r.cubeGuid().ifPresent(v -> addChildElement(row, QN_CUBE_GUID, String.valueOf(v)));
+        r.createdOn().ifPresent(v -> addChildElement(row, QN_CREATED_ON, String.valueOf(v)));
+        r.lastSchemaUpdate().ifPresent(v -> addChildElement(row, QN_LAST_SCHEMA_UPDATE,  v.format(formatter)));
+        r.schemaUpdatedBy().ifPresent(v -> addChildElement(row, QN_SCHEMA_UPDATED_BY, v));
+        r.lastDataUpdate().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_LAST_DATA_UPDATE, v.format(formatter)));
+        r.dataUpdateDBy().ifPresent(v -> addChildElement(row, QN_DATA_UPDATED_BY, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
         r.isDrillThroughEnabled()
-                .ifPresent(v -> addChildElement(row, "IS_DRILLTHROUGH_ENABLED", prefix, String.valueOf(v)));
-        r.isLinkable().ifPresent(v -> addChildElement(row, "IS_LINKABLE", prefix, String.valueOf(v)));
-        r.isWriteEnabled().ifPresent(v -> addChildElement(row, "IS_WRITE_ENABLED", prefix, String.valueOf(v)));
-        r.isSqlEnabled().ifPresent(v -> addChildElement(row, "IS_SQL_ENABLED", prefix, String.valueOf(v)));
-        r.cubeCaption().ifPresent(v -> addChildElement(row, "CUBE_CAPTION", prefix, v));
-        r.baseCubeName().ifPresent(v -> addChildElement(row, "BASE_CUBE_NAME", prefix, v));
-        r.cubeSource().ifPresent(v -> addChildElement(row, "CUBE_SOURCE", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_IS_DRILLTHROUGH_ENABLED, String.valueOf(v)));
+        r.isLinkable().ifPresent(v -> addChildElement(row, QN_IS_LINKABLE, String.valueOf(v)));
+        r.isWriteEnabled().ifPresent(v -> addChildElement(row, QN_IS_WRITE_ENABLED, String.valueOf(v)));
+        r.isSqlEnabled().ifPresent(v -> addChildElement(row, QN_IS_SQL_ENABLED, String.valueOf(v)));
+        r.cubeCaption().ifPresent(v -> addChildElement(row, QN_CUBE_CAPTION, v));
+        r.baseCubeName().ifPresent(v -> addChildElement(row, QN_BASE_CUBE_NAME, v));
+        r.cubeSource().ifPresent(v -> addChildElement(row, QN_CUBE_SOURCE, String.valueOf(v.getValue())));
         r.preferredQueryPatterns()
-                .ifPresent(v -> addChildElement(row, "PREFERRED_QUERY_PATTERNS", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_PREFERRED_QUERY_PATTERNS, String.valueOf(v.getValue())));
     }
 
     private static void addMdSchemaDimensionsResponseRow(SOAPElement root, MdSchemaDimensionsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
-        r.schemaName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_SCHEMA_NAME, v));
-        r.cubeName().ifPresent(v -> addChildElement(row, Constants.ROWSET.ROW_PROPERTY.QN_CUBE_NAME, v));
+        r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
+        r.cubeName().ifPresent(v -> addChildElement(row, QN_CUBE_NAME, v));
 
-        r.dimensionName().ifPresent(v -> addChildElement(row, "DIMENSION_NAME", prefix, v));
-        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, DIMENSION_UNIQUE_NAME, prefix, v));
-        r.dimensionGuid().ifPresent(v -> addChildElement(row, "DIMENSION_GUID", prefix, String.valueOf(v)));
-        r.dimensionCaption().ifPresent(v -> addChildElement(row, "DIMENSION_CAPTION", prefix, v));
-        r.dimensionOptional().ifPresent(v -> addChildElement(row, "DIMENSION_ORDINAL", prefix, String.valueOf(v)));
-        r.dimensionType().ifPresent(v -> addChildElement(row, "DIMENSION_TYPE", prefix, String.valueOf(v.getValue())));
+        r.dimensionName().ifPresent(v -> addChildElement(row, QN_DIMENSION_NAME, v));
+        r.dimensionUniqueName().ifPresent(v -> addChildElement(row, QN_DIMENSION_UNIQUE_NAME, v));
+        r.dimensionGuid().ifPresent(v -> addChildElement(row, QN_DIMENSION_GUID, String.valueOf(v)));
+        r.dimensionCaption().ifPresent(v -> addChildElement(row, QN_DIMENSION_CAPTION, v));
+        r.dimensionOptional().ifPresent(v -> addChildElement(row, QN_DIMENSION_ORDINAL, String.valueOf(v)));
+        r.dimensionType().ifPresent(v -> addChildElement(row, QN_DIMENSION_TYPE, String.valueOf(v.getValue())));
         r.dimensionCardinality()
-                .ifPresent(v -> addChildElement(row, "DIMENSION_CARDINALITY", prefix, String.valueOf(v)));
-        r.defaultHierarchy().ifPresent(v -> addChildElement(row, "DEFAULT_HIERARCHY", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        r.isVirtual().ifPresent(v -> addChildElement(row, "IS_VIRTUAL", prefix, String.valueOf(v)));
-        r.isReadWrite().ifPresent(v -> addChildElement(row, "IS_READWRITE", prefix, String.valueOf(v)));
+                .ifPresent(v -> addChildElement(row, QN_DIMENSION_CARDINALITY, String.valueOf(v)));
+        r.defaultHierarchy().ifPresent(v -> addChildElement(row, QN_DEFAULT_HIERARCHY, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        r.isVirtual().ifPresent(v -> addChildElement(row, QN_IS_VIRTUAL, String.valueOf(v)));
+        r.isReadWrite().ifPresent(v -> addChildElement(row, QN_IS_READWRITE, String.valueOf(v)));
         r.dimensionUniqueSetting().ifPresent(
-                v -> addChildElement(row, "DIMENSION_UNIQUE_SETTINGS", prefix, String.valueOf(v.getValue())));
-        r.dimensionMasterName().ifPresent(v -> addChildElement(row, "DIMENSION_MASTER_NAME", prefix, v));
-        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, DIMENSION_IS_VISIBLE, prefix, String.valueOf(v)));
+                v -> addChildElement(row, QN_DIMENSION_UNIQUE_SETTINGS, String.valueOf(v.getValue())));
+        r.dimensionMasterName().ifPresent(v -> addChildElement(row, QN_DIMENSION_MASTER_NAME, v));
+        r.dimensionIsVisible().ifPresent(v -> addChildElement(row, QN_DIMENSION_IS_VISIBLE, String.valueOf(v)));
     }
 
     private static void addMdSchemaFunctionsResponseRow(SOAPElement root, MdSchemaFunctionsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        r.functionalName().ifPresent(v -> addChildElement(row, "FUNCTION_NAME", prefix, v));
-        r.description().ifPresent(v -> addChildElement(row, DESCRIPTION_UC, prefix, v));
-        addChildElement(row, "PARAMETER_LIST", prefix, r.parameterList());
-        r.returnType().ifPresent(v -> addChildElement(row, "RETURN_TYPE", prefix, String.valueOf(v)));
-        r.origin().ifPresent(v -> addChildElement(row, "ORIGIN", prefix, String.valueOf(v.getValue())));
-        r.interfaceName().ifPresent(v -> addChildElement(row, "INTERFACE_NAME", prefix, v.name()));
-        r.libraryName().ifPresent(v -> addChildElement(row, "LIBRARY_NAME", prefix, v));
-        r.dllName().ifPresent(v -> addChildElement(row, "DLL_NAME", prefix, v));
-        r.helpFile().ifPresent(v -> addChildElement(row, "HELP_FILE", prefix, v));
-        r.helpContext().ifPresent(v -> addChildElement(row, "HELP_CONTEXT", prefix, v));
-        r.object().ifPresent(v -> addChildElement(row, "OBJECT", prefix, v));
-        r.caption().ifPresent(v -> addChildElement(row, "CAPTION", prefix, v));
+        r.functionalName().ifPresent(v -> addChildElement(row, QN_FUNCTION_NAME, v));
+        r.description().ifPresent(v -> addChildElement(row, QN_DESCRIPTION, v));
+        addChildElement(row, QN_PARAMETER_LIST, r.parameterList());
+        r.returnType().ifPresent(v -> addChildElement(row, QN_RETURN_TYPE, String.valueOf(v)));
+        r.origin().ifPresent(v -> addChildElement(row, QN_ORIGIN, String.valueOf(v.getValue())));
+        r.interfaceName().ifPresent(v -> addChildElement(row, QN_INTERFACE_NAME, v.name()));
+        r.libraryName().ifPresent(v -> addChildElement(row, QN_LIBRARY_NAME, v));
+        r.dllName().ifPresent(v -> addChildElement(row, QN_DLL_NAME, v));
+        r.helpFile().ifPresent(v -> addChildElement(row, QN_HELP_FILE, v));
+        r.helpContext().ifPresent(v -> addChildElement(row, QN_HELP_CONTEXT, v));
+        r.object().ifPresent(v -> addChildElement(row, QN_OBJECT, v));
+        r.caption().ifPresent(v -> addChildElement(row, QN_CAPTION, v));
         r.parameterInfo().ifPresent(v -> addParameterInfoXmlList(row, v));
         r.directQueryPushable()
-                .ifPresent(v -> addChildElement(row, "DIRECTQUERY_PUSHABLE", prefix, String.valueOf(v.getValue())));
+                .ifPresent(v -> addChildElement(row, QN_DIRECTQUERY_PUSHABLE, String.valueOf(v.getValue())));
     }
 
     private static void addParameterInfoXmlList(SOAPElement root, List<ParameterInfo> list) {
@@ -1082,24 +1247,22 @@ public class SoapUtil {
     private static void addParameterInfoXml(SOAPElement root, ParameterInfo it) {
         String prefix = Constants.ROWSET.PREFIX;
         SOAPElement el = addChildElement(root, "PARAMETERINFO", prefix);
-        addChildElement(el, "NAME", prefix, it.name());
-        addChildElement(el, DESCRIPTION_UC, prefix, it.description());
-        addChildElement(el, "OPTIONAL", prefix, String.valueOf(it.optional()));
-        addChildElement(el, "REPEATABLE", prefix, String.valueOf(it.repeatable()));
-        addChildElement(el, "REPEATGROUP", prefix, String.valueOf(it.repeatGroup()));
+        addChildElement(el, QN_NAME, it.name());
+        addChildElement(el, QN_DESCRIPTION, it.description());
+        addChildElement(el, QN_OPTIONAL, String.valueOf(it.optional()));
+        addChildElement(el, QN_REPEATABLE, String.valueOf(it.repeatable()));
+        addChildElement(el, QN_REPEATGROUP, String.valueOf(it.repeatGroup()));
     }
 
     private static void addDiscoverPropertiesResponseRow(SOAPElement root, DiscoverPropertiesResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
-        // String prefix = null;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
-        addChildElement(row, "PropertyName", prefix, r.propertyName());
-        r.propertyDescription().ifPresent(v -> addChildElement(row, "PropertyDescription", prefix, v));
-        r.propertyType().ifPresent(v -> addChildElement(row, "PropertyType", prefix, v));
-        addChildElement(row, "PropertyAccessType", prefix, r.propertyAccessType().getValue());
-        r.required().ifPresent(v -> addChildElement(row, "IsRequired", prefix, String.valueOf(v)));
-        r.value().ifPresent(v -> addChildElement(row, "Value", prefix, v));
+        addChildElement(row, QN_PROPERTY_NAME_LC, r.propertyName());
+        r.propertyDescription().ifPresent(v -> addChildElement(row, QN_PROPERTY_DESCRIPTION, v));
+        r.propertyType().ifPresent(v -> addChildElement(row, QN_PROPERTY_TYPE_LC, v));
+        addChildElement(row, QN_PROPERTY_ACCESS_TYPE, r.propertyAccessType().getValue());
+        r.required().ifPresent(v -> addChildElement(row, QN_IS_REQUIRED, String.valueOf(v)));
+        r.value().ifPresent(v -> addChildElement(row, QN_VALUE, v));
     }
 
     private static void addMdDataSet(SOAPElement el, Mddataset it) throws SOAPException {
@@ -1162,7 +1325,7 @@ public class SoapUtil {
             SOAPElement el = addChildElement(e, "Warning", null);
             addChildElement(el, "WarningCode", null, String.valueOf(it.warningCode()));
             addMessageLocation(el, it.location());
-            addChildElement(el, DESCRIPTION, null, it.description());
+            addChildElement(el, DESCRIPTION_LC, null, it.description());
             addChildElement(el, "Source", null, it.source());
             addChildElement(el, "HelpFile", null, it.helpFile());
         }
@@ -1395,8 +1558,8 @@ public class SoapUtil {
         if (it != null) {
             String prefix = Constants.ROWSET.PREFIX;
             SOAPElement el = addChildElement(e, "MemberRef", prefix);
-            addChildElement(el, "MemberOrdinal", prefix, String.valueOf(it.memberOrdinal()));
-            addChildElement(el, "MemberDispInfo", prefix, String.valueOf(it.memberDispInfo()));
+            addChildElement(el, QN_MEMBER_ORDINAL, String.valueOf(it.memberOrdinal()));
+            addChildElement(el, QN_MEMBER_DISP_INFO, String.valueOf(it.memberDispInfo()));
         }
     }
 
@@ -1405,7 +1568,7 @@ public class SoapUtil {
             String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement el = addChildElement(e, "CrossProduct", prefix);
             addTypeList(el, it.setType());
-            addChildElement(el, "Size", prefix, String.valueOf(it.size()));
+            addChildElement(el, Constants.MDDATASET.QN_SIZE, String.valueOf(it.size()));
         }
     }
 
@@ -1557,9 +1720,9 @@ public class SoapUtil {
         if (it != null) {
             String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement el = addChildElement(e, "Cube", prefix);
-            addChildElement(el, "CubeName", prefix, it.cubeName());
-            addChildElement(el, "LastDataUpdate", "engine", instantToString(it.lastDataUpdate()));
-            addChildElement(el, "LastSchemaUpdate", "engine", instantToString(it.lastSchemaUpdate()));
+            addChildElement(el, Constants.MDDATASET.QN_CUBE_NAME, it.cubeName());
+            addChildElement(el, Constants.ENGINE.QN_LAST_DATA_UPDATE, instantToString(it.lastDataUpdate()));
+            addChildElement(el, Constants.ENGINE.QN_LAST_SCHEMA_UPDATE, instantToString(it.lastSchemaUpdate()));
         }
     }
 
