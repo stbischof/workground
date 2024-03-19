@@ -15,6 +15,20 @@ package org.eclipse.daanse.xmla.server.adapter.soapmessage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.DESCRIPTION;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ENGINE200.QN_WARNING_COLUMN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ENGINE200.QN_WARNING_MEASURE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_AXES_INFO;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_AXIS;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_AXIS_INFO;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_CELL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_CELL_DATA;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_CROSS_PRODUCT;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_CUBE_INFO;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_HIERARCHY_INFO;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_MEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_NORM_TUPLE_SET;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_TUPLES;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_UNION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_SCALE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.DESCRIPTION_LC;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ALL_MEMBER;
@@ -88,6 +102,7 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSE
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_MASTER_UNIQUE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_ORDINAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_PATH;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_UNIQUE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_DIMENSION_UNIQUE_SETTINGS;
@@ -185,23 +200,29 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSE
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_UNITS;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_UNQUALIFIED_CAPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEASURE_VISIBILITY;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBERS_LOOKUP;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_CAPTION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_DISP_INFO;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_GUID;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_KEY;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_ORDINAL;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_REF;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MEMBER_UNIQUE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_META_DATA;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_MINIMUM_SCALE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NAME;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NAME_LC;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NORM_TUPLE;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NORM_TUPLES;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NUMERIC_PRECISION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_NUMERIC_SCALE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_OBJECT;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_OPTIONAL;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ORDINAL_POSITION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ORIGIN;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARAMETERINFO;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARAMETER_LIST;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARENT_COUNT;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PARENT_LEVEL;
@@ -222,6 +243,7 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSE
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_PROVIDER_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_REPEATABLE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_REPEATGROUP;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_RESTRICTIONS;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_RESTRICTIONS_MASK;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_RETURN_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ROLES;
@@ -247,6 +269,7 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSE
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TABLE_VERSION;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_GUID;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_LC;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_LIB;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_TYPE_NAME;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_UNSIGNED_ATTRIBUTE;
@@ -754,10 +777,10 @@ public class SoapUtil {
 
     private static void addRestriction(SOAPElement e, Restriction it) {
         if (it != null) {
-            SOAPElement el = addChildElement(e, "Restrictions", Constants.ROWSET.PREFIX);
-            SOAPElement name = addChildElement(el, "Name", Constants.ROWSET.PREFIX);
+            SOAPElement el = addChildElement(e, QN_RESTRICTIONS);
+            SOAPElement name = addChildElement(el, QN_NAME_LC);
             name.setTextContent(it.name());
-            SOAPElement type = addChildElement(el, "Type", Constants.ROWSET.PREFIX);
+            SOAPElement type = addChildElement(el, QN_TYPE_LC);
             type.setTextContent(it.type());
         }
     }
@@ -1002,7 +1025,7 @@ public class SoapUtil {
 
     private static void addMeasureGroupDimensionXmlList(SOAPElement el, List<MeasureGroupDimension> list) {
         if (list != null) {
-            SOAPElement e = addChildElement(el, "DIMENSION_PATH", Constants.ROWSET.PREFIX);
+            SOAPElement e = addChildElement(el, QN_DIMENSION_PATH);
             list.forEach(it -> addMeasureGroupDimensionXml(e, it));
         }
     }
@@ -1245,8 +1268,7 @@ public class SoapUtil {
     }
 
     private static void addParameterInfoXml(SOAPElement root, ParameterInfo it) {
-        String prefix = Constants.ROWSET.PREFIX;
-        SOAPElement el = addChildElement(root, "PARAMETERINFO", prefix);
+        SOAPElement el = addChildElement(root, QN_PARAMETERINFO);
         addChildElement(el, QN_NAME, it.name());
         addChildElement(el, QN_DESCRIPTION, it.description());
         addChildElement(el, QN_OPTIONAL, String.valueOf(it.optional()));
@@ -1277,8 +1299,7 @@ public class SoapUtil {
 
     private static void addMessages(SOAPElement e, Messages it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Messages", prefix);
+            SOAPElement el = addChildElement(e, Constants.MDDATASET.QN_MESSAGES);
             addExceptionTypeList(el, it.warningOrError());
 
         }
@@ -1355,7 +1376,7 @@ public class SoapUtil {
 
     private static void addWarningMeasure(SOAPElement e, WarningMeasure it) {
         if (it != null) {
-            SOAPElement el = addChildElement(e, "WarningMeasure", "engine200");
+            SOAPElement el = addChildElement(e, QN_WARNING_MEASURE);
             addChildElement(el, "Cube", null, it.cube());
             addChildElement(el, "MeasureGroup", null, it.measureGroup());
             addChildElement(el, "MeasureName", null, it.measureName());
@@ -1364,7 +1385,7 @@ public class SoapUtil {
 
     private static void addWarningColumn(SOAPElement e, WarningColumn it) {
         if (it != null) {
-            SOAPElement el = addChildElement(e, "WarningColumn", "engine200");
+            SOAPElement el = addChildElement(e, QN_WARNING_COLUMN);
             addChildElement(el, "Dimension", null, it.dimension());
             addChildElement(el, "Attribute", null, it.attribute());
         }
@@ -1386,19 +1407,12 @@ public class SoapUtil {
 
     private static void addCellData(SOAPElement e, CellData it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "CellData", prefix);
+            SOAPElement el = addChildElement(e, QN_CELL_DATA);
             addCellTypeList(el, it.cell());
             // addCellSetType(el, it.cellSet());
         }
     }
 
-    private static void addCellSetType(SOAPElement e, CellSetType it) {
-        if (it != null) {
-            SOAPElement el = addChildElement(e, "CellSet", Constants.ROWSET.PREFIX);
-            addDataList(el, it.data());
-        }
-    }
 
     private static void addDataList(SOAPElement el, List<byte[]> list) {
         if (list != null) {
@@ -1420,8 +1434,7 @@ public class SoapUtil {
 
     private static void addCellType(SOAPElement e, CellType it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Cell", prefix);
+            SOAPElement el = addChildElement(e, QN_CELL);
             addCellTypeValue(el, it.value());
             addCellInfoItemList(el, it.any());
             setAttribute(el, "CellOrdinal", String.valueOf(it.cellOrdinal()));
@@ -1430,8 +1443,7 @@ public class SoapUtil {
 
     private static void addCellTypeValue(SOAPElement e, Value it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Value", prefix);
+            SOAPElement el = addChildElement(e, Constants.MDDATASET.QN_VALUE);
             el.setAttribute("xsi:type", it.type().getValue());
             el.setTextContent(it.value());
             addCellTypeErrorList(el, it.error());
@@ -1446,8 +1458,7 @@ public class SoapUtil {
 
     private static void addCellTypeError(SOAPElement e, CellTypeError it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Error", prefix);
+            SOAPElement el = addChildElement(e, Constants.MDDATASET.QN_ERROR);
             setAttribute(el, "ErrorCode", String.valueOf(it.errorCode()));
             setAttribute(el, DESCRIPTION, it.description());
         }
@@ -1455,8 +1466,7 @@ public class SoapUtil {
 
     private static void addAxes(SOAPElement e, Axes it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Axes", prefix);
+            SOAPElement el = addChildElement(e, Constants.MDDATASET.QN_AXES);
             addAxisList(el, it.axis());
         }
     }
@@ -1469,8 +1479,7 @@ public class SoapUtil {
 
     private static void addAxis(SOAPElement e, Axis it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Axis", prefix);
+            SOAPElement el = addChildElement(e, QN_AXIS);
             addTypeList(el, it.setType());
             setAttribute(el, "name", it.name());
         }
@@ -1504,16 +1513,14 @@ public class SoapUtil {
 
     private static void addUnion(SOAPElement soapElement, Union union) {
         if (union != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(soapElement, "Union", prefix);
+            SOAPElement el = addChildElement(soapElement, QN_UNION);
             addTypeList(el, union.setType());
         }
     }
 
     private static void addNormTupleSet(SOAPElement soapElement, NormTupleSet normTupleSet) {
         if (normTupleSet != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(soapElement, "NormTupleSet", prefix);
+            SOAPElement el = addChildElement(soapElement, QN_NORM_TUPLE_SET);
             addNormTuplesType(el, normTupleSet.normTuples());
             addTupleTypeList(el, normTupleSet.membersLookup());
         }
@@ -1521,7 +1528,7 @@ public class SoapUtil {
 
     private static void addTupleTypeList(SOAPElement soapElement, MembersLookup membersLookup) {
         if (membersLookup != null) {
-            SOAPElement el = addChildElement(soapElement, "MembersLookup", Constants.ROWSET.PREFIX);
+            SOAPElement el = addChildElement(soapElement, QN_MEMBERS_LOOKUP);
             if (membersLookup.members() != null) {
                 membersLookup.members().forEach(it -> addTupleType(el, "Members", it));
             }
@@ -1530,7 +1537,7 @@ public class SoapUtil {
 
     private static void addNormTuplesType(SOAPElement e, NormTuplesType it) {
         if (it != null) {
-            SOAPElement el = addChildElement(e, "NormTuples", Constants.ROWSET.PREFIX);
+            SOAPElement el = addChildElement(e, QN_NORM_TUPLES);
             addNormTupleList(el, it.normTuple());
         }
     }
@@ -1543,7 +1550,7 @@ public class SoapUtil {
 
     private static void addNormTuple(SOAPElement e, NormTuple it) {
         if (it != null) {
-            SOAPElement el = addChildElement(e, "NormTuple", Constants.ROWSET.PREFIX);
+            SOAPElement el = addChildElement(e, QN_NORM_TUPLE);
             addMemberRefList(el, it.memberRef());
         }
     }
@@ -1556,8 +1563,7 @@ public class SoapUtil {
 
     private static void addMemberRef(SOAPElement e, MemberRef it) {
         if (it != null) {
-            String prefix = Constants.ROWSET.PREFIX;
-            SOAPElement el = addChildElement(e, "MemberRef", prefix);
+            SOAPElement el = addChildElement(e, QN_MEMBER_REF);
             addChildElement(el, QN_MEMBER_ORDINAL, String.valueOf(it.memberOrdinal()));
             addChildElement(el, QN_MEMBER_DISP_INFO, String.valueOf(it.memberDispInfo()));
         }
@@ -1566,7 +1572,7 @@ public class SoapUtil {
     private static void addSetListType(SOAPElement e, SetListType it) {
         if (it != null) {
             String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "CrossProduct", prefix);
+            SOAPElement el = addChildElement(e, QN_CROSS_PRODUCT);
             addTypeList(el, it.setType());
             addChildElement(el, Constants.MDDATASET.QN_SIZE, String.valueOf(it.size()));
         }
@@ -1575,7 +1581,7 @@ public class SoapUtil {
     private static void addTuplesType(SOAPElement e, TuplesType it) {
         if (it != null) {
             String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Tuples", prefix);
+            SOAPElement el = addChildElement(e, QN_TUPLES);
             addTuplesTypeList(el, it.tuple());
         }
 
@@ -1605,7 +1611,7 @@ public class SoapUtil {
     private static void addMemberType(SOAPElement e, MemberType it) {
         if (it != null) {
             String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement seMember = addChildElement(e, "Member", prefix);
+            SOAPElement seMember = addChildElement(e, QN_MEMBER);
             addCellInfoItemList(seMember, it.any());
             setAttribute(seMember, "Hierarchy", it.hierarchy());
         }
@@ -1666,8 +1672,7 @@ public class SoapUtil {
 
     private static void addAxesInfo(SOAPElement e, AxesInfo it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "AxesInfo", prefix);
+            SOAPElement el = addChildElement(e, QN_AXES_INFO);
             addAxisInfoList(el, it.axisInfo());
         }
     }
@@ -1680,8 +1685,7 @@ public class SoapUtil {
 
     private static void addAxisInfo(SOAPElement e, AxisInfo it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "AxisInfo", prefix);
+            SOAPElement el = addChildElement(e, QN_AXIS_INFO);
             setAttribute(el, "name", it.name());
             addHierarchyInfoList(el, it.hierarchyInfo());
         }
@@ -1695,8 +1699,7 @@ public class SoapUtil {
 
     private static void addHierarchyInfo(SOAPElement e, HierarchyInfo it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "HierarchyInfo", prefix);
+            SOAPElement el = addChildElement(e, QN_HIERARCHY_INFO);
             addCellInfoItemListName(el, it.any());
             setAttribute(el, "name", it.name());
         }
@@ -1704,8 +1707,7 @@ public class SoapUtil {
 
     private static void addCubeInfo(SOAPElement e, CubeInfo it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "CubeInfo", prefix);
+            SOAPElement el = addChildElement(e, QN_CUBE_INFO);
             addOlapInfoCubeList(el, it.cube());
         }
     }
@@ -1718,8 +1720,7 @@ public class SoapUtil {
 
     private static void addOlapInfoCube(SOAPElement e, OlapInfoCube it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, "Cube", prefix);
+            SOAPElement el = addChildElement(e, Constants.MDDATASET.QN_CUBE);
             addChildElement(el, Constants.MDDATASET.QN_CUBE_NAME, it.cubeName());
             addChildElement(el, Constants.ENGINE.QN_LAST_DATA_UPDATE, instantToString(it.lastDataUpdate()));
             addChildElement(el, Constants.ENGINE.QN_LAST_SCHEMA_UPDATE, instantToString(it.lastSchemaUpdate()));
@@ -1734,7 +1735,7 @@ public class SoapUtil {
 
         SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
         SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = addChildElement(seReturn, "root", Constants.ROWSET.PREFIX);
+        SOAPElement seRoot = addChildElement(seReturn, Constants.ROWSET.QN_ROOT);
         seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
         seRoot.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
@@ -3123,6 +3124,17 @@ public class SoapUtil {
         try {
             SOAPElement createdChild = element.addChildElement(qNameOfChild);
             createdChild.setTextContent(valueOfChild);
+            return createdChild;
+
+        } catch (SOAPException e) {
+            LOGGER.error("addChildElement {} error", qNameOfChild);
+            throw new RuntimeException("addChildElement error", e);
+        }
+    }
+
+    private static SOAPElement addChildElement(SOAPElement element, QName qNameOfChild) {
+        try {
+            SOAPElement createdChild = element.addChildElement(qNameOfChild);
             return createdChild;
 
         } catch (SOAPException e) {

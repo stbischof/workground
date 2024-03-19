@@ -779,6 +779,32 @@ public class Constants {
             public static final String REPEATGROUP = "REPEATGROUP";
             public static final QName QN_REPEATGROUP = new QName(ROWSET.NS_URN, REPEATGROUP, ROWSET.PREFIX);
 
+            public static final String RESTRICTIONS = "Restrictions";
+            public static final QName QN_RESTRICTIONS = new QName(ROWSET.NS_URN, RESTRICTIONS, ROWSET.PREFIX);
+
+            public static final String NAME_LC = "Name";
+            public static final QName QN_NAME_LC = new QName(ROWSET.NS_URN, NAME_LC, ROWSET.PREFIX);
+
+            public static final String TYPE_LC = "Type";
+            public static final QName QN_TYPE_LC = new QName(ROWSET.NS_URN, TYPE_LC, ROWSET.PREFIX);
+
+            public static final String DIMENSION_PATH = "DIMENSION_PATH";
+            public static final QName QN_DIMENSION_PATH = new QName(ROWSET.NS_URN, DIMENSION_PATH, ROWSET.PREFIX);
+
+            public static final String PARAMETERINFO = "PARAMETERINFO";
+            public static final QName QN_PARAMETERINFO = new QName(ROWSET.NS_URN, PARAMETERINFO, ROWSET.PREFIX);
+
+            public static final String MEMBERS_LOOKUP = "MembersLookup";
+            public static final QName QN_MEMBERS_LOOKUP = new QName(ROWSET.NS_URN, MEMBERS_LOOKUP, ROWSET.PREFIX);
+
+            public static final String NORM_TUPLES = "NormTuples";
+            public static final QName QN_NORM_TUPLES = new QName(ROWSET.NS_URN, NORM_TUPLES, ROWSET.PREFIX);
+
+            public static final String NORM_TUPLE = "NormTuple";
+            public static final QName QN_NORM_TUPLE = new QName(ROWSET.NS_URN, NORM_TUPLE, ROWSET.PREFIX);
+
+            public static final String MEMBER_REF = "MemberRef";
+            public static final QName QN_MEMBER_REF = new QName(ROWSET.NS_URN, MEMBER_REF, ROWSET.PREFIX);
         }
 
 	}
@@ -792,6 +818,23 @@ public class Constants {
 		public static final QName QN_ROOT = new QName(MDDATASET.NS_URN, "root", MDDATASET.PREFIX);
         public static final QName QN_CUBE_NAME = new QName(MDDATASET.NS_URN, "CubeName", MDDATASET.PREFIX);
         public static final QName QN_SIZE = new QName(MDDATASET.NS_URN, "Size", MDDATASET.PREFIX);
+        public static final QName QN_MESSAGES = new QName(MDDATASET.NS_URN, "Messages", MDDATASET.PREFIX);
+        public static final QName QN_CELL_DATA = new QName(MDDATASET.NS_URN, "CellData", MDDATASET.PREFIX);
+        public static final QName QN_CELL = new QName(MDDATASET.NS_URN, "Cell", MDDATASET.PREFIX);
+        public static final QName QN_VALUE = new QName(MDDATASET.NS_URN, "Value", MDDATASET.PREFIX);
+        public static final QName QN_ERROR = new QName(MDDATASET.NS_URN, "Error", MDDATASET.PREFIX);
+        public static final QName QN_AXES = new QName(MDDATASET.NS_URN, "Axes", MDDATASET.PREFIX);
+        public static final QName QN_AXIS = new QName(MDDATASET.NS_URN, "Axis", MDDATASET.PREFIX);
+        public static final QName QN_UNION = new QName(MDDATASET.NS_URN, "Union", MDDATASET.PREFIX);
+        public static final QName QN_NORM_TUPLE_SET = new QName(MDDATASET.NS_URN, "NormTupleSet", MDDATASET.PREFIX);
+        public static final QName QN_CROSS_PRODUCT = new QName(MDDATASET.NS_URN, "CrossProduct", MDDATASET.PREFIX);
+        public static final QName QN_TUPLES = new QName(MDDATASET.NS_URN, "Tuples", MDDATASET.PREFIX);
+        public static final QName QN_MEMBER = new QName(MDDATASET.NS_URN, "Member", MDDATASET.PREFIX);
+        public static final QName QN_AXES_INFO = new QName(MDDATASET.NS_URN, "AxesInfo", MDDATASET.PREFIX);
+        public static final QName QN_AXIS_INFO = new QName(MDDATASET.NS_URN, "AxisInfo", MDDATASET.PREFIX);
+        public static final QName QN_HIERARCHY_INFO = new QName(MDDATASET.NS_URN, "HierarchyInfo", MDDATASET.PREFIX);
+        public static final QName QN_CUBE_INFO = new QName(MDDATASET.NS_URN, "CubeInfo", MDDATASET.PREFIX);
+        public static final QName QN_CUBE = new QName(MDDATASET.NS_URN, "Cube", MDDATASET.PREFIX);
 	}
 
 	static class ENGINE {
@@ -804,6 +847,8 @@ public class Constants {
 	static class ENGINE200 {
 		public static final String PREFIX = "engine200";
 		public static final String NS_URN = "http://schemas.microsoft.com/analysisservices/2010/engine/200";
+        public static final QName QN_WARNING_MEASURE = new QName(ENGINE200.NS_URN, "WarningMeasure", ENGINE200.PREFIX);
+        public static final QName QN_WARNING_COLUMN = new QName(ENGINE200.NS_URN, "WarningColumn", ENGINE200.PREFIX);
 	}
 
 	static class XSI {
