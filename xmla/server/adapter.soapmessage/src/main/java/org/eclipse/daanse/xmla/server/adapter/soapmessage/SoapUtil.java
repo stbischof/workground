@@ -26,10 +26,11 @@ import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDAT
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_CUBE_INFO;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_HIERARCHY_INFO;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_MEMBER;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_MEMBERS;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_NORM_TUPLE_SET;
+import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_TUPLE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_TUPLES;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.MDDATASET.QN_UNION;
-import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.NUMERIC_SCALE;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.DESCRIPTION_LC;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ALL_MEMBER;
 import static org.eclipse.daanse.xmla.server.adapter.soapmessage.Constants.ROWSET.ROW_PROPERTY.QN_ANNOTATIONS;
@@ -335,7 +336,6 @@ import org.eclipse.daanse.xmla.api.mddataset.AxisInfo;
 import org.eclipse.daanse.xmla.api.mddataset.CellData;
 import org.eclipse.daanse.xmla.api.mddataset.CellInfo;
 import org.eclipse.daanse.xmla.api.mddataset.CellInfoItem;
-import org.eclipse.daanse.xmla.api.mddataset.CellSetType;
 import org.eclipse.daanse.xmla.api.mddataset.CellType;
 import org.eclipse.daanse.xmla.api.mddataset.CellTypeError;
 import org.eclipse.daanse.xmla.api.mddataset.CubeInfo;
@@ -634,11 +634,9 @@ public class SoapUtil {
     }
 
     public static void toStatementResponse(StatementResponse statementResponse, SOAPBody body) throws SOAPException {
-        if (statementResponse.mdDataSet() != null) {
+        if (statementResponse != null && statementResponse.mdDataSet() != null) {
             SOAPElement root = addMddatasetRoot(body);
-            if (statementResponse != null) {
-                addMdDataSet(root, statementResponse.mdDataSet());
-            }
+            addMdDataSet(root, statementResponse.mdDataSet());
         }
         if (statementResponse.rowSet() != null) {
             SOAPElement root = addRowSetRoot(body, statementResponse.rowSet());
@@ -731,7 +729,6 @@ public class SoapUtil {
 
     private static void addDiscoverLiteralsResponseRow(SOAPElement root, DiscoverLiteralsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         addChildElement(row, QN_LITERAL_NAME, r.literalName());
         addChildElement(row, QN_LITERAL_VALUE, r.literalValue());
@@ -743,7 +740,6 @@ public class SoapUtil {
 
     private static void addDiscoverKeywordsResponseRow(SOAPElement root, DiscoverKeywordsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         addChildElement(row, QN_KEYWORD, r.keyword());
     }
@@ -824,7 +820,6 @@ public class SoapUtil {
 
     private static void addDbSchemaColumnsResponseRow(SOAPElement root, DbSchemaColumnsResponseRow r)
             throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.tableCatalog().ifPresent(v -> addChildElement(row, QN_TABLE_CATALOG, v));
         r.tableSchema().ifPresent(v -> addChildElement(row, QN_TABLE_SCHEMA, v));
@@ -844,7 +839,7 @@ public class SoapUtil {
         r.characterOctetLength()
                 .ifPresent(v -> addChildElement(row, QN_CHARACTER_OCTET_LENGTH, String.valueOf(v)));
         r.numericPrecision().ifPresent(v -> addChildElement(row, QN_NUMERIC_PRECISION, String.valueOf(v)));
-        r.numericScale().ifPresent(v -> addChildElement(row, NUMERIC_SCALE, String.valueOf(v)));
+        r.numericScale().ifPresent(v -> addChildElement(row, QN_NUMERIC_SCALE, String.valueOf(v)));
         r.dateTimePrecision().ifPresent(v -> addChildElement(row, QN_DATETIME_PRECISION, String.valueOf(v)));
         r.characterSetCatalog().ifPresent(v -> addChildElement(row, QN_CHARACTER_SET_CATALOG, v));
         r.characterSetSchema().ifPresent(v -> addChildElement(row, QN_CHARACTER_SET_SCHEMA, v));
@@ -1153,7 +1148,6 @@ public class SoapUtil {
     }
 
     private static void addMdSchemaKpisResponseRow(SOAPElement root, MdSchemaKpisResponseRow r) throws SOAPException {
-        String prefix = Constants.ROWSET.PREFIX;
         SOAPElement row = root.addChildElement(Constants.ROWSET.QN_ROW);
         r.catalogName().ifPresent(v -> addChildElement(row, QN_CATALOG_NAME, v));
         r.schemaName().ifPresent(v -> addChildElement(row, QN_SCHEMA_NAME, v));
@@ -1413,13 +1407,6 @@ public class SoapUtil {
         }
     }
 
-
-    private static void addDataList(SOAPElement el, List<byte[]> list) {
-        if (list != null) {
-            list.forEach(it -> addData(el, it));
-        }
-    }
-
     private static void addData(SOAPElement e, byte[] it) {
         if (it != null) {
             addChildElement(e, "Data", new String(it, UTF_8));
@@ -1530,7 +1517,7 @@ public class SoapUtil {
         if (membersLookup != null) {
             SOAPElement el = addChildElement(soapElement, QN_MEMBERS_LOOKUP);
             if (membersLookup.members() != null) {
-                membersLookup.members().forEach(it -> addTupleType(el, "Members", it));
+                membersLookup.members().forEach(it -> addTupleTypeMembers(el, it));
             }
         }
     }
@@ -1571,7 +1558,6 @@ public class SoapUtil {
 
     private static void addSetListType(SOAPElement e, SetListType it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement el = addChildElement(e, QN_CROSS_PRODUCT);
             addTypeList(el, it.setType());
             addChildElement(el, Constants.MDDATASET.QN_SIZE, String.valueOf(it.size()));
@@ -1580,7 +1566,6 @@ public class SoapUtil {
 
     private static void addTuplesType(SOAPElement e, TuplesType it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement el = addChildElement(e, QN_TUPLES);
             addTuplesTypeList(el, it.tuple());
         }
@@ -1589,28 +1574,27 @@ public class SoapUtil {
 
     private static void addTuplesTypeList(SOAPElement e, List<TupleType> list) {
         if (list != null) {
-            list.forEach(it -> addTupleType(e, "Tuple", it));
+            list.forEach(it -> addTupleTypeTuple(e, it));
         }
     }
 
-    private static void addTupleType(SOAPElement e, String tagName, TupleType it) {
-        if (it != null) {
-            addMemberTypeList(e, tagName, it.member());
+    private static void addTupleTypeMembers(SOAPElement e, TupleType it) {
+        if (it != null && it.member() != null) {
+            SOAPElement el = addChildElement(e, QN_MEMBERS);
+            it.member().forEach(item -> addMemberType(el, item));
         }
 
     }
 
-    private static void addMemberTypeList(SOAPElement e, String tagName, List<MemberType> list) {
-        if (list != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
-            SOAPElement el = addChildElement(e, tagName, prefix);
-            list.forEach(it -> addMemberType(el, it));
+    private static void addTupleTypeTuple(SOAPElement e, TupleType it) {
+        if (it != null && it.member() != null) {
+            SOAPElement el = addChildElement(e, QN_TUPLE);
+            it.member().forEach(item -> addMemberType(el, item));
         }
     }
 
     private static void addMemberType(SOAPElement e, MemberType it) {
         if (it != null) {
-            String prefix = Constants.MDDATASET.PREFIX;
             SOAPElement seMember = addChildElement(e, QN_MEMBER);
             addCellInfoItemList(seMember, it.any());
             setAttribute(seMember, "Hierarchy", it.hierarchy());
@@ -1618,8 +1602,9 @@ public class SoapUtil {
     }
 
     private static void addMembersType(SOAPElement e, MembersType it) {
-        if (it != null) {
-            addMemberTypeList(e, "Members", it.member());
+        if (it != null && it.member() != null) {
+            SOAPElement el = addChildElement(e, QN_MEMBERS);
+            it.member().forEach(item -> addMemberType(el, item));
             setAttribute(e, "Hierarchy", it.hierarchy());
         }
     }
@@ -1733,70 +1718,70 @@ public class SoapUtil {
 
     private static SOAPElement addDiscoverRowSetsRoot(SOAPElement body) throws SOAPException {
 
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
+        SOAPElement seDiscoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
+        SOAPElement seReturn = seDiscoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
         SOAPElement seRoot = addChildElement(seReturn, Constants.ROWSET.QN_ROOT);
-        seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        seRoot.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
-        SOAPElement schema = addChildElement(seRoot, "schema", "xsd");
-        schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis:rowset");
-        schema.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        schema.setAttribute("xmlns:sql", "urn:schemas-microsoft-com:xml-sql");
-        schema.setAttribute("targetNamespace", "urn:schemas-microsoft-com:xml-analysis:rowset");
+        seRoot.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        seRoot.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        seRoot.setAttribute("xmlns:EX", Constants.EX.NS_URN);
+        SOAPElement schema = addChildElement(seRoot, Constants.XSD.QN_SCHEMA);
+        schema.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        schema.setAttribute("xmlns", Constants.ROWSET.NS_URN);
+        schema.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        schema.setAttribute("xmlns:sql", Constants.SQL.NS_URN);
+        schema.setAttribute("targetNamespace", Constants.ROWSET.NS_URN);
         schema.setAttribute("elementFormDefault", "qualified");
-        SOAPElement el = addChildElement(schema, "element", "xsd");
+        SOAPElement el = addChildElement(schema, Constants.XSD.QN_ELEMENT);
         el.setAttribute("name", "root");
-        SOAPElement ct = addChildElement(el, "complexType", "xsd");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
-        SOAPElement se = addChildElement(s, "element", "xsd");
+        SOAPElement ct = addChildElement(el, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement s = addChildElement(ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement se = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se.setAttribute("name", "row");
         se.setAttribute("type", "row");
         se.setAttribute("minOccurs", "0");
         se.setAttribute("maxOccurs", "unbounded");
 
-        SOAPElement st = addChildElement(schema, "simpleType", "xsd");
+        SOAPElement st = addChildElement(schema, Constants.XSD.QN_SIMPLE_TYPE);
         st.setAttribute("name", "uuid");
-        SOAPElement r = addChildElement(st, "restriction", "xsd");
+        SOAPElement r = addChildElement(st, Constants.XSD.QN_RESTRICTION);
         r.setAttribute("base", "xsd:string");
-        SOAPElement p = addChildElement(r, "pattern", "xsd");
+        SOAPElement p = addChildElement(r, Constants.XSD.QN_PATTERN);
         p.setAttribute("value", "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}");
 
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "row");
-        SOAPElement s1 = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement s1e1 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1 = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s1e1 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e1.setAttribute("sql:field", "SchemaName");
         s1e1.setAttribute("name", "SchemaName");
         s1e1.setAttribute("type", "xsd:string");
-        SOAPElement s1e2 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e2 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e2.setAttribute("sql:field", "SchemaGuid");
         s1e2.setAttribute("name", "SchemaGuid");
         s1e2.setAttribute("type", "uuid");
         s1e2.setAttribute("minOccurs", "0");
-        SOAPElement s1e3 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e3 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e3.setAttribute("sql:field", "Restrictions");
         s1e3.setAttribute("name", "Restrictions");
         s1e3.setAttribute("minOccurs", "0");
         s1e3.setAttribute("maxOccurs", "unbounded");
-        SOAPElement s1e3ct = addChildElement(s1e3, "complexType", "xsd");
-        SOAPElement s1e3cts = addChildElement(s1e3ct, "sequence", "xsd");
-        SOAPElement s1e3ctse1 = addChildElement(s1e3cts, "element", "xsd");
+        SOAPElement s1e3ct = addChildElement(s1e3, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement s1e3cts = addChildElement(s1e3ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s1e3ctse1 = addChildElement(s1e3cts, Constants.XSD.QN_ELEMENT);
         s1e3ctse1.setAttribute("name", "Name");
         s1e3ctse1.setAttribute("type", "xsd:string");
         s1e3ctse1.setAttribute("sql:field", "Name");
-        SOAPElement s1e3ctse2 = addChildElement(s1e3cts, "element", "xsd");
+        SOAPElement s1e3ctse2 = addChildElement(s1e3cts, Constants.XSD.QN_ELEMENT);
         s1e3ctse2.setAttribute("name", "Type");
         s1e3ctse2.setAttribute("type", "xsd:string");
         s1e3ctse2.setAttribute("sql:field", "Type");
 
-        SOAPElement s1e4 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e4 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e4.setAttribute("sql:field", "Description");
         s1e4.setAttribute("name", "Description");
         s1e4.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e5 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e5 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e5.setAttribute("sql:field", "RestrictionsMask");
         s1e5.setAttribute("name", "RestrictionsMask");
         s1e5.setAttribute("type", "xsd:unsignedLong");
@@ -1806,70 +1791,68 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverPropertiesRoot(SOAPElement body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
-        seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
+        SOAPElement seRoot = prepareRootElement(body);
+        seRoot.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        seRoot.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
         seRoot.setAttribute("xmlns:msxmla", "http://schemas.microsoft.com/analysisservices/2003/xmla");
-        SOAPElement schema = addChildElement(seRoot, "schema", "xsd");
-        schema.setAttribute("targetNamespace", "urn:schemas-microsoft-com:xml-analysis:rowset");
-        schema.setAttribute("xmlns:sql", "urn:schemas-microsoft-com:xml-sql");
+        SOAPElement schema = addChildElement(seRoot, Constants.XSD.QN_SCHEMA);
+        schema.setAttribute("targetNamespace", Constants.ROWSET.NS_URN);
+        schema.setAttribute("xmlns:sql", Constants.SQL.NS_URN);
         schema.setAttribute("elementFormDefault", "qualified");
-        SOAPElement el = addChildElement(schema, "element", "xsd");
+        SOAPElement el = addChildElement(schema, Constants.XSD.QN_ELEMENT);
         el.setAttribute("name", "root");
-        SOAPElement ct = addChildElement(el, "complexType", "xsd");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
-        SOAPElement se = addChildElement(s, "element", "xsd");
+        SOAPElement ct = addChildElement(el, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement s = addChildElement(ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement se = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se.setAttribute("name", "row");
         se.setAttribute("type", "row");
         se.setAttribute("minOccurs", "0");
         se.setAttribute("maxOccurs", "unbounded");
 
-        SOAPElement st = addChildElement(schema, "simpleType", "xsd");
+        SOAPElement st = addChildElement(schema, Constants.XSD.QN_SIMPLE_TYPE);
         st.setAttribute("name", "uuid");
-        SOAPElement r = addChildElement(st, "restriction", "xsd");
+        SOAPElement r = addChildElement(st, Constants.XSD.QN_RESTRICTION);
         r.setAttribute("base", "xsd:string");
-        SOAPElement p = addChildElement(r, "pattern", "xsd");
+        SOAPElement p = addChildElement(r, Constants.XSD.QN_PATTERN);
         p.setAttribute("value", "[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}");
 
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "xmlDocument");
-        SOAPElement s1 = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement a = addChildElement(s1, "any", "xsd");
+        SOAPElement s1 = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement a = addChildElement(s1, Constants.XSD.QN_ANY);
 
-        SOAPElement ct2 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct2 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "row");
-        SOAPElement s2 = addChildElement(ct2, "sequence", "xsd");
-        SOAPElement s2e1 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2 = addChildElement(ct2, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s2e1 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e1.setAttribute("sql:field", "PropertyName");
         s2e1.setAttribute("name", "PropertyName");
         s2e1.setAttribute("type", "xsd:string");
 
-        SOAPElement s2e2 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2e2 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e2.setAttribute("sql:field", "PropertyDescription");
         s2e2.setAttribute("name", "PropertyDescription");
         s2e2.setAttribute("type", "xsd:string");
         s2e2.setAttribute("minOccurs", "0");
 
-        SOAPElement s2e3 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2e3 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e3.setAttribute("sql:field", "PropertyType");
         s2e3.setAttribute("name", "PropertyType");
         s2e3.setAttribute("type", "xsd:string");
         s2e3.setAttribute("minOccurs", "0");
 
-        SOAPElement s2e4 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2e4 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e4.setAttribute("sql:field", "PropertyAccessType");
         s2e4.setAttribute("name", "PropertyAccessType");
         s2e4.setAttribute("type", "xsd:string");
 
-        SOAPElement s2e5 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2e5 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e5.setAttribute("sql:field", "IsRequired");
         s2e5.setAttribute("name", "IsRequired");
         s2e5.setAttribute("type", "xsd:boolean");
         s2e5.setAttribute("minOccurs", "0");
 
-        SOAPElement s2e6 = addChildElement(s2, "element", "xsd");
+        SOAPElement s2e6 = addChildElement(s2, Constants.XSD.QN_ELEMENT);
         s2e6.setAttribute("sql:field", "Value");
         s2e6.setAttribute("name", "Value");
         s2e6.setAttribute("type", "xsd:string");
@@ -1879,31 +1862,29 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaCatalogsRoot(SOAPElement body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "row");
-        SOAPElement s1 = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement s1e1 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1 = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s1e1 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e1.setAttribute("sql:field", "CATALOG_NAME");
         s1e1.setAttribute("name", "CATALOG_NAME");
         s1e1.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e2 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e2 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e2.setAttribute("sql:field", "DESCRIPTION");
         s1e2.setAttribute("name", "DESCRIPTION");
         s1e2.setAttribute("type", "xsd:string");
         s1e2.setAttribute("minOccurs", "0");
 
-        SOAPElement s1e3 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e3 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e3.setAttribute("sql:field", "ROLES");
         s1e3.setAttribute("name", "ROLES");
         s1e3.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e4 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e4 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e4.setAttribute("sql:field", "DATE_MODIFIED");
         s1e4.setAttribute("name", "DATE_MODIFIED");
         s1e4.setAttribute("type", "xsd:dateTime");
@@ -1912,42 +1893,40 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverEnumeratorsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "row");
-        SOAPElement s1 = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement s1e1 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1 = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s1e1 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e1.setAttribute("sql:field", "EnumName");
         s1e1.setAttribute("name", "EnumName");
         s1e1.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e2 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e2 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e2.setAttribute("sql:field", "EnumDescription");
         s1e2.setAttribute("name", "EnumDescription");
         s1e2.setAttribute("type", "xsd:string");
         s1e2.setAttribute("minOccurs", "0");
 
-        SOAPElement s1e3 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e3 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e3.setAttribute("sql:field", "EnumType");
         s1e3.setAttribute("name", "EnumType");
         s1e3.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e4 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e4 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e4.setAttribute("sql:field", "ElementName");
         s1e4.setAttribute("name", "ElementName");
         s1e4.setAttribute("type", "xsd:string");
 
-        SOAPElement s1e5 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e5 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e5.setAttribute("sql:field", "ElementDescription");
         s1e5.setAttribute("name", "ElementDescription");
         s1e5.setAttribute("type", "xsd:string");
         s1e5.setAttribute("minOccurs", "0");
 
-        SOAPElement s1e6 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1e6 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e6.setAttribute("sql:field", "ElementValue");
         s1e6.setAttribute("name", "ElementValue");
         s1e6.setAttribute("type", "xsd:string");
@@ -1957,15 +1936,13 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverKeywordsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "row");
-        SOAPElement s1 = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement s1e1 = addChildElement(s1, "element", "xsd");
+        SOAPElement s1 = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement s1e1 = addChildElement(s1, Constants.XSD.QN_ELEMENT);
         s1e1.setAttribute("sql:field", "Keyword");
         s1e1.setAttribute("name", "Keyword");
         s1e1.setAttribute("type", "xsd:string");
@@ -1974,44 +1951,40 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverLiteralsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
-        SOAPElement se1 = addChildElement(s, "element", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
+        SOAPElement se1 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se1.setAttribute("sql:field", "LiteralName");
         se1.setAttribute("name", "LiteralName");
         se1.setAttribute("type", "xsd:string");
 
-        SOAPElement se2 = addChildElement(s, "element", "xsd");
+        SOAPElement se2 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se2.setAttribute("sql:field", "LiteralValue");
         se2.setAttribute("name", "LiteralValue");
         se2.setAttribute("type", "xsd:string");
         se2.setAttribute("minOccurs", "0");
 
-        SOAPElement se3 = addChildElement(s, "element", "xsd");
+        SOAPElement se3 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se3.setAttribute("sql:field", "LiteralInvalidChars");
         se3.setAttribute("name", "LiteralInvalidChars");
         se3.setAttribute("type", "xsd:string");
         se3.setAttribute("minOccurs", "0");
 
-        SOAPElement se4 = addChildElement(s, "element", "xsd");
+        SOAPElement se4 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se4.setAttribute("sql:field", "LiteralInvalidStartingChars");
         se4.setAttribute("name", "LiteralInvalidStartingChars");
         se4.setAttribute("type", "xsd:string");
         se4.setAttribute("minOccurs", "0");
 
-        SOAPElement se5 = addChildElement(s, "element", "xsd");
+        SOAPElement se5 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se5.setAttribute("sql:field", "LiteralMaxLength");
         se5.setAttribute("name", "LiteralMaxLength");
         se5.setAttribute("type", "xsd:int");
         se5.setAttribute("minOccurs", "0");
 
-        SOAPElement se6 = addChildElement(s, "element", "xsd");
+        SOAPElement se6 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se6.setAttribute("sql:field", "LiteralNameEnumValue");
         se6.setAttribute("name", "LiteralNameEnumValue");
         se6.setAttribute("type", "xsd:int");
@@ -2021,61 +1994,57 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaTablesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
 
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
-        SOAPElement se1 = addChildElement(s, "element", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
+        SOAPElement se1 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se1.setAttribute("sql:field", "TABLE_CATALOG");
         se1.setAttribute("name", "TABLE_CATALOG");
         se1.setAttribute("type", "xsd:string");
 
-        SOAPElement se2 = addChildElement(s, "element", "xsd");
+        SOAPElement se2 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se2.setAttribute("sql:field", "TABLE_SCHEMA");
         se2.setAttribute("name", "TABLE_SCHEMA");
         se2.setAttribute("type", "xsd:string");
         se2.setAttribute("minOccurs", "0");
 
-        SOAPElement se3 = addChildElement(s, "element", "xsd");
+        SOAPElement se3 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se3.setAttribute("sql:field", "TABLE_NAME");
         se3.setAttribute("name", "TABLE_NAME");
         se3.setAttribute("type", "xsd:string");
 
-        SOAPElement se4 = addChildElement(s, "element", "xsd");
+        SOAPElement se4 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se4.setAttribute("sql:field", "TABLE_TYPE");
         se4.setAttribute("name", "TABLE_TYPE");
         se4.setAttribute("type", "xsd:string");
 
-        SOAPElement se5 = addChildElement(s, "element", "xsd");
+        SOAPElement se5 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se5.setAttribute("sql:field", "TABLE_GUID");
         se5.setAttribute("name", "TABLE_GUID");
         se5.setAttribute("type", "uuid");
         se5.setAttribute("minOccurs", "0");
 
-        SOAPElement se6 = addChildElement(s, "element", "xsd");
+        SOAPElement se6 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se6.setAttribute("sql:field", "DESCRIPTION");
         se6.setAttribute("name", "DESCRIPTION");
         se6.setAttribute("type", "xsd:string");
         se6.setAttribute("minOccurs", "0");
 
-        SOAPElement se7 = addChildElement(s, "element", "xsd");
+        SOAPElement se7 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se7.setAttribute("sql:field", "TABLE_PROPID");
         se7.setAttribute("name", "TABLE_PROPID");
         se7.setAttribute("type", "xsd:unsignedInt");
         se7.setAttribute("minOccurs", "0");
 
-        SOAPElement se8 = addChildElement(s, "element", "xsd");
+        SOAPElement se8 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se8.setAttribute("sql:field", "DATE_CREATED");
         se8.setAttribute("name", "DATE_CREATED");
         se8.setAttribute("type", "xsd:dateTime");
         se8.setAttribute("minOccurs", "0");
 
-        SOAPElement se9 = addChildElement(s, "element", "xsd");
+        SOAPElement se9 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se9.setAttribute("sql:field", "DATE_MODIFIED");
         se9.setAttribute("name", "DATE_MODIFIED");
         se9.setAttribute("type", "xsd:dateTime");
@@ -2085,127 +2054,123 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaCubesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
 
-        SOAPElement se1 = addChildElement(s, "element", "xsd");
+        SOAPElement se1 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se1.setAttribute("sql:field", "CATALOG_NAME");
         se1.setAttribute("name", "CATALOG_NAME");
         se1.setAttribute("type", "xsd:string");
         se1.setAttribute("minOccurs", "0");
 
-        SOAPElement se2 = addChildElement(s, "element", "xsd");
+        SOAPElement se2 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se2.setAttribute("sql:field", "SCHEMA_NAME");
         se2.setAttribute("name", "SCHEMA_NAME");
         se2.setAttribute("type", "xsd:string");
         se2.setAttribute("minOccurs", "0");
 
-        SOAPElement se3 = addChildElement(s, "element", "xsd");
+        SOAPElement se3 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se3.setAttribute("sql:field", "CUBE_NAME");
         se3.setAttribute("name", "CUBE_NAME");
         se3.setAttribute("type", "xsd:string");
 
-        SOAPElement se4 = addChildElement(s, "element", "xsd");
+        SOAPElement se4 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se4.setAttribute("sql:field", "CUBE_TYPE");
         se4.setAttribute("name", "CUBE_TYPE");
         se4.setAttribute("type", "xsd:string");
 
-        SOAPElement se5 = addChildElement(s, "element", "xsd");
+        SOAPElement se5 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se5.setAttribute("sql:field", "CUBE_GUID");
         se5.setAttribute("name", "CUBE_GUID");
         se5.setAttribute("type", "xsd:string");
         se2.setAttribute("minOccurs", "0");
 
-        SOAPElement se6 = addChildElement(s, "element", "xsd");
+        SOAPElement se6 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se6.setAttribute("sql:field", "CREATED_ON");
         se6.setAttribute("name", "CREATED_ON");
         se6.setAttribute("type", "xsd:dateTime");
         se6.setAttribute("minOccurs", "0");
 
-        SOAPElement se7 = addChildElement(s, "element", "xsd");
+        SOAPElement se7 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se7.setAttribute("sql:field", "LAST_SCHEMA_UPDATE");
         se7.setAttribute("name", "LAST_SCHEMA_UPDATE");
         se7.setAttribute("type", "xsd:dateTime");
         se7.setAttribute("minOccurs", "0");
 
-        SOAPElement se8 = addChildElement(s, "element", "xsd");
+        SOAPElement se8 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se8.setAttribute("sql:field", "SCHEMA_UPDATED_BY");
         se8.setAttribute("name", "SCHEMA_UPDATED_BY");
         se8.setAttribute("type", "xsd:string");
         se8.setAttribute("minOccurs", "0");
 
-        SOAPElement se9 = addChildElement(s, "element", "xsd");
+        SOAPElement se9 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se9.setAttribute("sql:field", "LAST_DATA_UPDATE");
         se9.setAttribute("name", "LAST_DATA_UPDATE");
         se9.setAttribute("type", "xsd:dateTime");
         se9.setAttribute("minOccurs", "0");
 
-        SOAPElement se10 = addChildElement(s, "element", "xsd");
+        SOAPElement se10 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se10.setAttribute("sql:field", "DATA_UPDATED_BY");
         se10.setAttribute("name", "DATA_UPDATED_BY");
         se10.setAttribute("type", "xsd:string");
         se10.setAttribute("minOccurs", "0");
 
-        SOAPElement se11 = addChildElement(s, "element", "xsd");
+        SOAPElement se11 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se11.setAttribute("sql:field", "DESCRIPTION");
         se11.setAttribute("name", "DESCRIPTION");
         se11.setAttribute("type", "xsd:string");
         se11.setAttribute("minOccurs", "0");
 
-        SOAPElement se12 = addChildElement(s, "element", "xsd");
+        SOAPElement se12 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se12.setAttribute("sql:field", "IS_DRILLTHROUGH_ENABLED");
         se12.setAttribute("name", "IS_DRILLTHROUGH_ENABLED");
         se12.setAttribute("type", "xsd:boolean");
 
-        SOAPElement se13 = addChildElement(s, "element", "xsd");
+        SOAPElement se13 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se13.setAttribute("sql:field", "IS_LINKABLE");
         se13.setAttribute("name", "IS_LINKABLE");
         se13.setAttribute("type", "xsd:boolean");
 
-        SOAPElement se14 = addChildElement(s, "element", "xsd");
+        SOAPElement se14 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se14.setAttribute("sql:field", "IS_WRITE_ENABLED");
         se14.setAttribute("name", "IS_WRITE_ENABLED");
         se14.setAttribute("type", "xsd:boolean");
 
-        SOAPElement se15 = addChildElement(s, "element", "xsd");
+        SOAPElement se15 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se15.setAttribute("sql:field", "IS_SQL_ENABLED");
         se15.setAttribute("name", "IS_SQL_ENABLED");
         se15.setAttribute("type", "xsd:boolean");
 
-        SOAPElement se16 = addChildElement(s, "element", "xsd");
+        SOAPElement se16 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se16.setAttribute("sql:field", "CUBE_CAPTION");
         se16.setAttribute("name", "CUBE_CAPTION");
         se16.setAttribute("type", "xsd:string");
         se16.setAttribute("minOccurs", "0");
 
-        SOAPElement se17 = addChildElement(s, "element", "xsd");
+        SOAPElement se17 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se17.setAttribute("sql:field", "BASE_CUBE_NAME");
         se17.setAttribute("name", "BASE_CUBE_NAME");
         se17.setAttribute("type", "xsd:string");
         se17.setAttribute("minOccurs", "0");
 
-        SOAPElement se18 = addChildElement(s, "element", "xsd");
+        SOAPElement se18 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se18.setAttribute("sql:field", "DIMENSIONS");
         se18.setAttribute("name", "DIMENSIONS");
         se18.setAttribute("minOccurs", "0");
 
-        SOAPElement se19 = addChildElement(s, "element", "xsd");
+        SOAPElement se19 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se19.setAttribute("sql:field", "SETS");
         se19.setAttribute("name", "SETS");
         se19.setAttribute("minOccurs", "0");
 
-        SOAPElement se20 = addChildElement(s, "element", "xsd");
+        SOAPElement se20 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se20.setAttribute("sql:field", "MEASURES");
         se20.setAttribute("name", "MEASURES");
         se20.setAttribute("minOccurs", "0");
 
-        SOAPElement se21 = addChildElement(s, "element", "xsd");
+        SOAPElement se21 = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se21.setAttribute("sql:field", "CUBE_SOURCE");
         se21.setAttribute("name", "CUBE_SOURCE");
         se21.setAttribute("type", "xsd:int");
@@ -2215,14 +2180,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaHierarchiesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
+        SOAPElement s = prepareSequenceElement(schema);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2253,15 +2214,23 @@ public class SoapUtil {
         return seRoot;
     }
 
+    private static SOAPElement prepareSequenceElement(SOAPElement schema) throws SOAPException {
+        SOAPElement ct = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
+        ct.setAttribute("name", "row");
+        return addChildElement(ct, Constants.XSD.QN_SEQUENCE);
+    }
+
+    private static SOAPElement prepareRootElement(SOAPElement body) throws SOAPException {
+        SOAPElement seDiscoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
+        SOAPElement seReturn = seDiscoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
+        return seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+    }
+
     private static SOAPElement addMdSchemaMeasuresRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2283,14 +2252,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaDimensionsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2313,14 +2278,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaMeasureGroupsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2332,14 +2293,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaMeasureGroupDimensionsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2355,14 +2312,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaLevelsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2386,14 +2339,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaSetsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2408,14 +2357,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaPropertiesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2436,14 +2381,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaMembersRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2467,14 +2408,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaTablesInfoRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "TABLE_CATALOG", "xsd:string", "0");
         addElement(s, "TABLE_SCHEMA", "xsd:string", "0");
         addElement(s, "TABLE_NAME", "xsd:string", null);
@@ -2493,14 +2430,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaSourceTablesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "TABLE_CATALOG", "xsd:string", "0");
         addElement(s, "TABLE_SCHEMA", "xsd:string", "0");
         addElement(s, "TABLE_NAME", "xsd:string", null);
@@ -2509,14 +2442,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaSchemataRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", null);
         addElement(s, "SCHEMA_NAME", "xsd:string", null);
         addElement(s, "SCHEMA_OWNER", "xsd:string", null);
@@ -2524,14 +2453,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaProviderTypesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "TYPE_NAME", "xsd:string", null);
         addElement(s, "DATA_TYPE", "xsd:unsignedShort", null);
         addElement(s, "COLUMN_SIZE", "xsd:unsignedInt", null);
@@ -2549,14 +2474,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDbSchemaColumnsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "TABLE_CATALOG", "xsd:string", null);
         addElement(s, "TABLE_SCHEMA", "xsd:string", "0");
         addElement(s, "TABLE_NAME", "xsd:string", null);
@@ -2574,14 +2495,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverXmlMetaDataRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "METADATA", "xsd:string", null);
         addElement(s, "ObjectType", "xsd:string", "0");
         addElement(s, "DatabaseID", "xsd:string", "0");
@@ -2589,14 +2506,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addDiscoverDataSourcesRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "LiteralName", "xsd:string", null);
         addElement(s, "LiteralValue", "xsd:string", "0");
         addElement(s, "LiteralInvalidChars", "xsd:string", "0");
@@ -2607,14 +2520,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaActionsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
         addElement(s, "CUBE_NAME", "xsd:string", null);
@@ -2625,14 +2534,10 @@ public class SoapUtil {
     }
 
     private static SOAPElement addMdSchemaFunctionsRoot(SOAPBody body) throws SOAPException {
-        SOAPElement seDicoverResponse = body.addChildElement(Constants.MSXMLA.QN_DISCOVER_RESPONSE);
-        SOAPElement seReturn = seDicoverResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
-        SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
+        SOAPElement seRoot = prepareRootElement(body);
         SOAPElement schema = fillRoot(seRoot);
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
-        ct.setAttribute("name", "row");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
+        SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "FUNCTION_NAME", "xsd:string", null);
         addElement(s, "DESCRIPTION", "xsd:string", "0");
         addElement(s, "PARAMETER_LIST", "xsd:string", "0");
@@ -2645,7 +2550,7 @@ public class SoapUtil {
     }
 
     private static void addElement(SOAPElement s, String name, String type, String minOccurs) {
-        SOAPElement se = addChildElement(s, "element", "xsd");
+        SOAPElement se = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se.setAttribute("sql:field", name);
         se.setAttribute("name", name);
         if (type != null) {
@@ -2657,32 +2562,32 @@ public class SoapUtil {
     }
 
     private static SOAPElement fillRoot(SOAPElement root) {
-        root.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        root.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        root.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
-        SOAPElement schema = addChildElement(root, "schema", "xsd");
-        schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis:rowset");
-        schema.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        schema.setAttribute("xmlns:sql", "urn:schemas-microsoft-com:xml-sql");
-        schema.setAttribute("targetNamespace", "urn:schemas-microsoft-com:xml-analysis:rowset");
+        root.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        root.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        root.setAttribute("xmlns:EX", Constants.EX.NS_URN);
+        SOAPElement schema = addChildElement(root, Constants.XSD.QN_SCHEMA);
+        schema.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        schema.setAttribute("xmlns", Constants.ROWSET.NS_URN);
+        schema.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        schema.setAttribute("xmlns:sql", Constants.SQL.NS_URN);
+        schema.setAttribute("targetNamespace", Constants.ROWSET.NS_URN);
         schema.setAttribute("elementFormDefault", "qualified");
 
-        SOAPElement el = addChildElement(schema, "element", "xsd");
+        SOAPElement el = addChildElement(schema, Constants.XSD.QN_ELEMENT);
         el.setAttribute("name", "root");
-        SOAPElement ct = addChildElement(el, "complexType", "xsd");
-        SOAPElement s = addChildElement(ct, "sequence", "xsd");
-        SOAPElement se = addChildElement(s, "element", "xsd");
+        SOAPElement ct = addChildElement(el, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement s = addChildElement(ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement se = addChildElement(s, Constants.XSD.QN_ELEMENT);
         se.setAttribute("name", "row");
         se.setAttribute("type", "row");
         se.setAttribute("minOccurs", "0");
         se.setAttribute("maxOccurs", "unbounded");
 
-        SOAPElement st = addChildElement(schema, "simpleType", "xsd");
+        SOAPElement st = addChildElement(schema, Constants.XSD.QN_SIMPLE_TYPE);
         st.setAttribute("name", "uuid");
-        SOAPElement r = addChildElement(st, "restriction", "xsd");
+        SOAPElement r = addChildElement(st, Constants.XSD.QN_RESTRICTION);
         r.setAttribute("base", "xsd:string");
-        SOAPElement p = addChildElement(r, "pattern", "xsd");
+        SOAPElement p = addChildElement(r, Constants.XSD.QN_PATTERN);
         p.setAttribute("value", "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
         return schema;
     }
@@ -2693,9 +2598,9 @@ public class SoapUtil {
         SOAPElement seReturn = seExecuteResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
         SOAPElement seRoot = seReturn.addChildElement(Constants.EMPTY.QN_ROOT);
 
-        seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        seRoot.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
+        seRoot.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        seRoot.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        seRoot.setAttribute("xmlns:EX", Constants.EX.NS_URN);
         return seRoot;
     }
 
@@ -2703,9 +2608,9 @@ public class SoapUtil {
         SOAPElement seExecuteResponse = body.addChildElement(Constants.MSXMLA.QN_EXECUTE_RESPONSE);
         SOAPElement seReturn = seExecuteResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
         SOAPElement seRoot = seReturn.addChildElement(Constants.MDDATASET.QN_ROOT);
-        seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        seRoot.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
+        seRoot.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        seRoot.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        seRoot.setAttribute("xmlns:EX", Constants.EX.NS_URN);
         addMddatasetSchema(seRoot);
         return seRoot;
     }
@@ -2716,46 +2621,46 @@ public class SoapUtil {
         SOAPElement seReturn = seExecuteResponse.addChildElement(Constants.MSXMLA.QN_RETURN);
         SOAPElement seRoot = seReturn.addChildElement(Constants.ROWSET.QN_ROOT);
 
-        seRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        seRoot.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        seRoot.setAttribute("xmlns:EX", "urn:schemas-microsoft-com:xml-analysis:exception");
+        seRoot.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        seRoot.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        seRoot.setAttribute("xmlns:EX", Constants.EX.NS_URN);
         addRowsetSchema(seRoot, rowSet);
         return seRoot;
     }
 
     private static void addRowsetSchema(SOAPElement root, RowSet rowSet) {
-        SOAPElement schema = addChildElement(root, "schema", "xsd");
-        schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("targetNamespace", "urn:schemas-microsoft-com:xml-analysis:rowset");
-        schema.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis:rowset");
-        schema.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        schema.setAttribute("xmlns:sql", "urn:schemas-microsoft-com:xml-sql");
+        SOAPElement schema = addChildElement(root, Constants.XSD.QN_SCHEMA);
+        schema.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        schema.setAttribute("targetNamespace", Constants.ROWSET.NS_URN);
+        schema.setAttribute("xmlns", Constants.ROWSET.NS_URN);
+        schema.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        schema.setAttribute("xmlns:sql", Constants.SQL.NS_URN);
         schema.setAttribute("elementFormDefault", "qualified");
 
-        SOAPElement el1 = addChildElement(schema, "element", "xsd");
+        SOAPElement el1 = addChildElement(schema, Constants.XSD.QN_ELEMENT);
         el1.setAttribute("name", "root");
-        SOAPElement el1complexType = addChildElement(el1, "complexType", "xsd");
-        SOAPElement el1complexTypeSequence = addChildElement(el1complexType, "sequence", "xsd");
-        SOAPElement el1complexTypeSequenceEl = addChildElement(el1complexTypeSequence, "element", "xsd");
+        SOAPElement el1complexType = addChildElement(el1, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement el1complexTypeSequence = addChildElement(el1complexType, Constants.XSD.QN_SEQUENCE);
+        SOAPElement el1complexTypeSequenceEl = addChildElement(el1complexTypeSequence, Constants.XSD.QN_ELEMENT);
         el1complexTypeSequenceEl.setAttribute("maxOccurs", "unbounded");
         el1complexTypeSequenceEl.setAttribute("minOccurs", "0");
         el1complexTypeSequenceEl.setAttribute("name", "row");
         el1complexTypeSequenceEl.setAttribute("type", "row");
 
-        SOAPElement simpleType = addChildElement(schema, "simpleType", "xsd");
+        SOAPElement simpleType = addChildElement(schema, Constants.XSD.QN_SIMPLE_TYPE);
         simpleType.setAttribute("name", "uuid");
-        SOAPElement restriction = addChildElement(simpleType, "restriction", "xsd");
+        SOAPElement restriction = addChildElement(simpleType, Constants.XSD.QN_RESTRICTION);
         restriction.setAttribute("base", "xsd:string");
-        SOAPElement pattern = addChildElement(restriction, "restriction", "xsd");
+        SOAPElement pattern = addChildElement(restriction, Constants.XSD.QN_RESTRICTION);
         pattern.setAttribute("value", "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
-        SOAPElement ct = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct.setAttribute("name", "row");
-        SOAPElement ctSequence = addChildElement(ct, "sequence", "xsd");
-        if (rowSet.rowSetRows() != null && rowSet.rowSetRows().size() > 0 && rowSet.rowSetRows().get(0) != null
+        SOAPElement ctSequence = addChildElement(ct, Constants.XSD.QN_SEQUENCE);
+        if (rowSet.rowSetRows() != null && !rowSet.rowSetRows().isEmpty() && rowSet.rowSetRows().get(0) != null
                 && rowSet.rowSetRows().get(0).rowSetRowItem() != null) {
             for (RowSetRowItem item : rowSet.rowSetRows().get(0).rowSetRowItem()) {
-                SOAPElement ctSequenceEl1 = addChildElement(ctSequence, "element", "xsd");
+                SOAPElement ctSequenceEl1 = addChildElement(ctSequence, Constants.XSD.QN_ELEMENT);
                 ItemTypeEnum type = item.type().orElse(ItemTypeEnum.STRING);
                 ctSequenceEl1.setAttribute("minOccurs", "0");
                 ctSequenceEl1.setAttribute("name", item.tagName());
@@ -2766,356 +2671,355 @@ public class SoapUtil {
     }
 
     private static void addMddatasetSchema(SOAPElement root) {
-        SOAPElement schema = addChildElement(root, "schema", "xsd");
-        schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("targetNamespace", "urn:schemas-microsoft-com:xml-analysis:mddataset");
-        schema.setAttribute("xmlns", "urn:schemas-microsoft-com:xml-analysis:mddataset");
-        schema.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        schema.setAttribute("xmlns:sql", "urn:schemas-microsoft-com:xml-sql");
+        SOAPElement schema = addChildElement(root, Constants.XSD.QN_SCHEMA);
+        schema.setAttribute("xmlns:xsd", Constants.XSD.NS_URN);
+        schema.setAttribute("targetNamespace", Constants.MDDATASET.NS_URN);
+        schema.setAttribute("xmlns", Constants.MDDATASET.NS_URN);
+        schema.setAttribute("xmlns:xsi", Constants.XSI.NS_URN);
+        schema.setAttribute("xmlns:sql", Constants.SQL.NS_URN);
         schema.setAttribute("elementFormDefault", "qualified");
-        SOAPElement ct1 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct1 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct1.setAttribute("name", "MemberType");
-        SOAPElement ct1Sequence = addChildElement(ct1, "sequence", "xsd");
-        SOAPElement e1 = addChildElement(ct1Sequence, "element", "xsd");
+        SOAPElement ct1Sequence = addChildElement(ct1, Constants.XSD.QN_SEQUENCE);
+        SOAPElement e1 = addChildElement(ct1Sequence, Constants.XSD.QN_ELEMENT);
         e1.setAttribute("name", "UName");
         e1.setAttribute("type", "xsd:string");
-        SOAPElement e2 = addChildElement(ct1Sequence, "element", "xsd");
+        SOAPElement e2 = addChildElement(ct1Sequence, Constants.XSD.QN_ELEMENT);
         e2.setAttribute("name", "Caption");
         e2.setAttribute("type", "xsd:string");
-        SOAPElement e3 = addChildElement(ct1Sequence, "element", "xsd");
+        SOAPElement e3 = addChildElement(ct1Sequence, Constants.XSD.QN_ELEMENT);
         e3.setAttribute("name", "LName");
         e3.setAttribute("type", "xsd:string");
-        SOAPElement e4 = addChildElement(ct1Sequence, "element", "xsd");
+        SOAPElement e4 = addChildElement(ct1Sequence, Constants.XSD.QN_ELEMENT);
         e4.setAttribute("name", "LNum");
         e4.setAttribute("type", "xsd:unsignedInt");
-        SOAPElement e5 = addChildElement(ct1Sequence, "element", "xsd");
+        SOAPElement e5 = addChildElement(ct1Sequence, Constants.XSD.QN_ELEMENT);
         e5.setAttribute("name", "DisplayInfo");
         e5.setAttribute("type", "xsd:unsignedInt");
-        SOAPElement s = addChildElement(ct1Sequence, "sequence", "xsd");
+        SOAPElement s = addChildElement(ct1Sequence, Constants.XSD.QN_SEQUENCE);
         s.setAttribute("maxOccurs", "unbounded");
         s.setAttribute("minOccurs", "0");
-        SOAPElement any = addChildElement(s, "any", "xsd");
+        SOAPElement any = addChildElement(s, Constants.XSD.QN_ANY);
         any.setAttribute("processContents", "lax");
         any.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct1Attribute = addChildElement(ct1, "attribute", "xsd");
+        SOAPElement ct1Attribute = addChildElement(ct1, Constants.XSD.QN_ATTRIBUTE);
         ct1Attribute.setAttribute("name", "Hierarchy");
         ct1Attribute.setAttribute("type", "xsd:string");
 
-        SOAPElement ct2 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct2 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct2.setAttribute("name", "PropType");
-        SOAPElement ct2Attribute = addChildElement(ct2, "attribute", "xsd");
+        SOAPElement ct2Attribute = addChildElement(ct2, Constants.XSD.QN_ATTRIBUTE);
         ct2Attribute.setAttribute("name", "name");
         ct2Attribute.setAttribute("type", "xsd:string");
 
-        SOAPElement ct3 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct3 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct3.setAttribute("name", "TupleType");
-        SOAPElement ct3Sequence = addChildElement(ct3, "sequence", "xsd");
+        SOAPElement ct3Sequence = addChildElement(ct3, Constants.XSD.QN_SEQUENCE);
         ct3Sequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct3SequenceElement = addChildElement(ct3Sequence, "element", "xsd");
+        SOAPElement ct3SequenceElement = addChildElement(ct3Sequence, Constants.XSD.QN_ELEMENT);
         ct3SequenceElement.setAttribute("name", "Member");
         ct3SequenceElement.setAttribute("type", "MemberType");
 
-        SOAPElement ct4 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct4 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct4.setAttribute("name", "MembersType");
-        SOAPElement ct4Sequence = addChildElement(ct4, "sequence", "xsd");
+        SOAPElement ct4Sequence = addChildElement(ct4, Constants.XSD.QN_SEQUENCE);
         ct4Sequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct4SequenceElement = addChildElement(ct4Sequence, "element", "xsd");
+        SOAPElement ct4SequenceElement = addChildElement(ct4Sequence, Constants.XSD.QN_ELEMENT);
         ct4SequenceElement.setAttribute("name", "Member");
         ct4SequenceElement.setAttribute("type", "MemberType");
-        SOAPElement ct4Attribute = addChildElement(ct4, "attribute", "xsd");
+        SOAPElement ct4Attribute = addChildElement(ct4, Constants.XSD.QN_ATTRIBUTE);
         ct4Attribute.setAttribute("name", "Hierarchy");
         ct4Attribute.setAttribute("type", "xsd:string");
 
-        SOAPElement ct5 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct5 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct5.setAttribute("name", "TuplesType");
-        SOAPElement ct5Sequence = addChildElement(ct5, "sequence", "xsd");
+        SOAPElement ct5Sequence = addChildElement(ct5, Constants.XSD.QN_SEQUENCE);
         ct5Sequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct5SequenceElement = addChildElement(ct5Sequence, "element", "xsd");
+        SOAPElement ct5SequenceElement = addChildElement(ct5Sequence, Constants.XSD.QN_ELEMENT);
         ct5SequenceElement.setAttribute("name", "Tuple");
         ct5SequenceElement.setAttribute("type", "TupleType");
 
-        SOAPElement ct6 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct6 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct6.setAttribute("name", "CrossProductType");
-        SOAPElement ct6Sequence = addChildElement(ct6, "sequence", "xsd");
+        SOAPElement ct6Sequence = addChildElement(ct6, Constants.XSD.QN_SEQUENCE);
         //ct6Sequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct6SequenceChoice = addChildElement(ct6Sequence, "choice", "xsd");
+        SOAPElement ct6SequenceChoice = addChildElement(ct6Sequence, Constants.XSD.QN_CHOICE);
         ct6SequenceChoice.setAttribute("minOccurs", "0");
         ct6SequenceChoice.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct6SequenceChoiceE1 = addChildElement(ct6SequenceChoice, "element", "xsd");
+        SOAPElement ct6SequenceChoiceE1 = addChildElement(ct6SequenceChoice, Constants.XSD.QN_ELEMENT);
         ct6SequenceChoiceE1.setAttribute("name", "Members");
         ct6SequenceChoiceE1.setAttribute("type", "MembersType");
-        SOAPElement ct6SequenceChoiceE2 = addChildElement(ct6SequenceChoice, "element", "xsd");
+        SOAPElement ct6SequenceChoiceE2 = addChildElement(ct6SequenceChoice, Constants.XSD.QN_ELEMENT);
         ct6SequenceChoiceE2.setAttribute("name", "Tuples");
         ct6SequenceChoiceE2.setAttribute("type", "TuplesType");
-        SOAPElement ct6Attribute = addChildElement(ct6, "attribute", "xsd");
+        SOAPElement ct6Attribute = addChildElement(ct6, Constants.XSD.QN_ATTRIBUTE);
         ct6Attribute.setAttribute("name", "Size");
         ct6Attribute.setAttribute("type", "xsd:unsignedInt");
 
-        SOAPElement ct7 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct7 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct7.setAttribute("name", "OlapInfo");
-        SOAPElement ct7Sequence = addChildElement(ct7, "sequence", "xsd");
-        SOAPElement ct7SequenceElement1 = addChildElement(ct7Sequence, "element", "xsd");
+        SOAPElement ct7Sequence = addChildElement(ct7, Constants.XSD.QN_SEQUENCE);
+        SOAPElement ct7SequenceElement1 = addChildElement(ct7Sequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement1.setAttribute("name", "CubeInfo");
 
-        SOAPElement ct7SequenceElement1Ct = addChildElement(ct7SequenceElement1, "complexType", "xsd");
-        SOAPElement ct7SequenceElement1CtSequence = addChildElement(ct7SequenceElement1Ct, "sequence", "xsd");
-        SOAPElement ct7SequenceElement1CtSequenceEl = addChildElement(ct7SequenceElement1CtSequence, "element", "xsd");
+        SOAPElement ct7SequenceElement1Ct = addChildElement(ct7SequenceElement1, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement ct7SequenceElement1CtSequence = addChildElement(ct7SequenceElement1Ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement ct7SequenceElement1CtSequenceEl = addChildElement(ct7SequenceElement1CtSequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement1CtSequenceEl.setAttribute("name", "Cube");
         ct7SequenceElement1CtSequenceEl.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct7SequenceElement1CtSequenceElCt = addChildElement(ct7SequenceElement1CtSequenceEl, "complexType",
-                "xsd");
+        SOAPElement ct7SequenceElement1CtSequenceElCt = addChildElement(ct7SequenceElement1CtSequenceEl,
+            Constants.XSD.QN_COMPLEX_TYPE);
         SOAPElement ct7SequenceElement1CtSequenceElCtSequence = addChildElement(ct7SequenceElement1CtSequenceElCt,
-                "sequence", "xsd");
+                Constants.XSD.QN_SEQUENCE);
         SOAPElement ct7SequenceElement1CtSequenceElCtSequenceEl = addChildElement(
-                ct7SequenceElement1CtSequenceElCtSequence, "element", "xsd");
+                ct7SequenceElement1CtSequenceElCtSequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement1CtSequenceElCtSequenceEl.setAttribute("name", "CubeName");
         ct7SequenceElement1CtSequenceElCtSequenceEl.setAttribute("type", "xsd:string");
 
-        SOAPElement ct7SequenceElement2 = addChildElement(ct7Sequence, "element", "xsd");
+        SOAPElement ct7SequenceElement2 = addChildElement(ct7Sequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2.setAttribute("name", "AxesInfo");
-        SOAPElement ct7SequenceElement2Ct = addChildElement(ct7SequenceElement2, "complexType", "xsd");
-        SOAPElement ct7SequenceElement2CtSequence = addChildElement(ct7SequenceElement2Ct, "sequence", "xsd");
-        SOAPElement ct7SequenceElement2CtSequenceEl = addChildElement(ct7SequenceElement2CtSequence, "element", "xsd");
+        SOAPElement ct7SequenceElement2Ct = addChildElement(ct7SequenceElement2, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement ct7SequenceElement2CtSequence = addChildElement(ct7SequenceElement2Ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement ct7SequenceElement2CtSequenceEl = addChildElement(ct7SequenceElement2CtSequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceEl.setAttribute("name", "AxisInfo");
         ct7SequenceElement2CtSequenceEl.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct7SequenceElement2CtSequenceElCt = addChildElement(ct7SequenceElement2CtSequenceEl, "complexType",
-                "xsd");
+        SOAPElement ct7SequenceElement2CtSequenceElCt = addChildElement(ct7SequenceElement2CtSequenceEl,
+            Constants.XSD.QN_COMPLEX_TYPE);
         SOAPElement ct7SequenceElement2CtSequenceElCtSequence = addChildElement(ct7SequenceElement2CtSequenceElCt,
-                "sequence", "xsd");
+                Constants.XSD.QN_SEQUENCE);
 
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElement = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequence, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceElement.setAttribute("name", "HierarchyInfo");
         ct7SequenceElement2CtSequenceElCtSequenceElement.setAttribute("minOccurs", "0");
         ct7SequenceElement2CtSequenceElCtSequenceElement.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElementCt = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElement, "complexType", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElement, Constants.XSD.QN_COMPLEX_TYPE);
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElementCt, "sequence", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElementCt, Constants.XSD.QN_SEQUENCE);
 
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence, "sequence", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence, Constants.XSD.QN_SEQUENCE);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1E1 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence1, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence1, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E1.setAttribute("name", "UName");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E1.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1E2 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence1, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence1, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E2.setAttribute("name", "Caption");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E2.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1E3 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence1, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence1, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E3.setAttribute("name", "LName");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E3.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1E4 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence1, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence1, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E4.setAttribute("name", "LNum");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E4.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence1E5 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence1, "element", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence1, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E5.setAttribute("name", "DisplayInfo");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E5.setAttribute("type", "PropType");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E5.setAttribute("minOccurs", "0");
         ct7SequenceElement2CtSequenceElCtSequenceSequence1E5.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence2 = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence, "sequence", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElementCtSequence, Constants.XSD.QN_SEQUENCE);
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceSequence2Any = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceSequence2, "any", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceSequence2, Constants.XSD.QN_ANY);
         ct7SequenceElement2CtSequenceElCtSequenceSequence2Any.setAttribute("processContents", "lax");
         ct7SequenceElement2CtSequenceElCtSequenceSequence2Any.setAttribute("minOccurs", "0");
         ct7SequenceElement2CtSequenceElCtSequenceSequence2Any.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct7SequenceElement2CtSequenceElCtSequenceElementCtAttribute = addChildElement(
-                ct7SequenceElement2CtSequenceElCtSequenceElementCt, "attribute", "xsd");
+                ct7SequenceElement2CtSequenceElCtSequenceElementCt, Constants.XSD.QN_ATTRIBUTE);
         ct7SequenceElement2CtSequenceElCtSequenceElementCtAttribute.setAttribute("name", "name");
         ct7SequenceElement2CtSequenceElCtSequenceElementCtAttribute.setAttribute("type", "xsd:string");
         ct7SequenceElement2CtSequenceElCtSequenceElementCtAttribute.setAttribute("use", "required");
-        SOAPElement ct7SequenceElement2CtAttribute = addChildElement(ct7SequenceElement2CtSequenceElCt, "attribute",
-                "xsd");
+        SOAPElement ct7SequenceElement2CtAttribute = addChildElement(ct7SequenceElement2CtSequenceElCt,
+            Constants.XSD.QN_ATTRIBUTE);
         ct7SequenceElement2CtAttribute.setAttribute("name", "name");
         ct7SequenceElement2CtAttribute.setAttribute("type", "xsd:string");
 
-        SOAPElement ct7SequenceElement3 = addChildElement(ct7Sequence, "element", "xsd");
+        SOAPElement ct7SequenceElement3 = addChildElement(ct7Sequence, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement3.setAttribute("name", "CellInfo");
-        SOAPElement ct7SequenceElement3Ct = addChildElement(ct7SequenceElement3, "complexType", "xsd");
-        SOAPElement ct7SequenceElement3CtSequence = addChildElement(ct7SequenceElement3Ct, "sequence", "xsd");
-        SOAPElement ct7SequenceElement2CtSequenceSequence1 = addChildElement(ct7SequenceElement3CtSequence, "sequence",
-                "xsd");
+        SOAPElement ct7SequenceElement3Ct = addChildElement(ct7SequenceElement3, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement ct7SequenceElement3CtSequence = addChildElement(ct7SequenceElement3Ct, Constants.XSD.QN_SEQUENCE);
+        SOAPElement ct7SequenceElement2CtSequenceSequence1 = addChildElement(ct7SequenceElement3CtSequence,
+            Constants.XSD.QN_SEQUENCE);
         ct7SequenceElement2CtSequenceSequence1.setAttribute("minOccurs", "0");
         ct7SequenceElement2CtSequenceSequence1.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct7SequenceElement2CtSequenceSequence1Ch = addChildElement(ct7SequenceElement2CtSequenceSequence1,
-                "choice", "xsd");
+            Constants.XSD.QN_CHOICE);
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE1 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE1.setAttribute("name", "Value");
         ct7SequenceElement2CtSequenceSequence1ChE1.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE2 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE2.setAttribute("name", "FmtValue");
         ct7SequenceElement2CtSequenceSequence1ChE2.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE3 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE3.setAttribute("name", "BackColor");
         ct7SequenceElement2CtSequenceSequence1ChE3.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE4 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE4.setAttribute("name", "ForeColor");
         ct7SequenceElement2CtSequenceSequence1ChE4.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE5 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE5.setAttribute("name", "FontName");
         ct7SequenceElement2CtSequenceSequence1ChE5.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE6 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE6.setAttribute("name", "FontSize");
         ct7SequenceElement2CtSequenceSequence1ChE6.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE7 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE7.setAttribute("name", "FontFlags");
         ct7SequenceElement2CtSequenceSequence1ChE7.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE8 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE8.setAttribute("name", "FormatString");
         ct7SequenceElement2CtSequenceSequence1ChE8.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE9 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE9.setAttribute("name", "NonEmptyBehavior");
         ct7SequenceElement2CtSequenceSequence1ChE9.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE10 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE10.setAttribute("name", "SolveOrder");
         ct7SequenceElement2CtSequenceSequence1ChE10.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE11 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE11.setAttribute("name", "Updateable");
         ct7SequenceElement2CtSequenceSequence1ChE11.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE12 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE12.setAttribute("name", "Visible");
         ct7SequenceElement2CtSequenceSequence1ChE12.setAttribute("type", "PropType");
         SOAPElement ct7SequenceElement2CtSequenceSequence1ChE13 = addChildElement(
-                ct7SequenceElement2CtSequenceSequence1Ch, "element", "xsd");
+                ct7SequenceElement2CtSequenceSequence1Ch, Constants.XSD.QN_ELEMENT);
         ct7SequenceElement2CtSequenceSequence1ChE13.setAttribute("name", "Expression");
         ct7SequenceElement2CtSequenceSequence1ChE13.setAttribute("type", "PropType");
-        SOAPElement ct7SequenceElement2CtSequenceSequence2 = addChildElement(ct7SequenceElement3CtSequence, "sequence",
-                "xsd");
+        SOAPElement ct7SequenceElement2CtSequenceSequence2 = addChildElement(ct7SequenceElement3CtSequence, Constants.XSD.QN_SEQUENCE);
         ct7SequenceElement2CtSequenceSequence2.setAttribute("maxOccurs", "unbounded");
         ct7SequenceElement2CtSequenceSequence2.setAttribute("minOccurs", "0");
         SOAPElement ct7SequenceElement2CtSequenceSequence2Any = addChildElement(ct7SequenceElement2CtSequenceSequence2,
-                "any", "xsd");
+                Constants.XSD.QN_ANY);
         ct7SequenceElement2CtSequenceSequence2Any.setAttribute("processContents", "lax");
         ct7SequenceElement2CtSequenceSequence2Any.setAttribute("maxOccurs", "unbounded");
 
-        SOAPElement ct8 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct8 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct8.setAttribute("name", "Axes");
-        SOAPElement ct8Sequence = addChildElement(ct8, "sequence", "xsd");
+        SOAPElement ct8Sequence = addChildElement(ct8, Constants.XSD.QN_SEQUENCE);
         ct8Sequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct8SequenceElement = addChildElement(ct8Sequence, "element", "xsd");
+        SOAPElement ct8SequenceElement = addChildElement(ct8Sequence, Constants.XSD.QN_ELEMENT);
         ct8SequenceElement.setAttribute("name", "Axis");
-        SOAPElement ct8SequenceElementComplexType = addChildElement(ct8SequenceElement, "complexType", "xsd");
-        SOAPElement ct8SequenceElementComplexTypeChoice = addChildElement(ct8SequenceElementComplexType, "choice",
-                "xsd");
+        SOAPElement ct8SequenceElementComplexType = addChildElement(ct8SequenceElement, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement ct8SequenceElementComplexTypeChoice = addChildElement(ct8SequenceElementComplexType,
+            Constants.XSD.QN_CHOICE);
         ct8SequenceElementComplexTypeChoice.setAttribute("minOccurs", "0");
         ct8SequenceElementComplexTypeChoice.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct8SequenceElementComplexTypeChoiceE1 = addChildElement(ct8SequenceElementComplexTypeChoice,
-                "element", "xsd");
+                Constants.XSD.QN_ELEMENT);
         ct8SequenceElementComplexTypeChoiceE1.setAttribute("name", "CrossProduct");
         ct8SequenceElementComplexTypeChoiceE1.setAttribute("type", "CrossProductType");
         SOAPElement ct8SequenceElementComplexTypeChoiceE2 = addChildElement(ct8SequenceElementComplexTypeChoice,
-                "element", "xsd");
+                Constants.XSD.QN_ELEMENT);
         ct8SequenceElementComplexTypeChoiceE2.setAttribute("name", "Tuples");
         ct8SequenceElementComplexTypeChoiceE2.setAttribute("type", "TuplesType");
         SOAPElement ct8SequenceElementComplexTypeChoiceE3 = addChildElement(ct8SequenceElementComplexTypeChoice,
-                "element", "xsd");
+                Constants.XSD.QN_ELEMENT);
         ct8SequenceElementComplexTypeChoiceE3.setAttribute("name", "Members");
         ct8SequenceElementComplexTypeChoiceE3.setAttribute("type", "MembersType");
-        SOAPElement ct8SequenceElementComplexTypeAttribute = addChildElement(ct8SequenceElementComplexType, "attribute",
-                "xsd");
+        SOAPElement ct8SequenceElementComplexTypeAttribute = addChildElement(ct8SequenceElementComplexType,
+            Constants.XSD.QN_ATTRIBUTE);
         ct8SequenceElementComplexTypeAttribute.setAttribute("name", "name");
         ct8SequenceElementComplexTypeAttribute.setAttribute("type", "xsd:string");
 
-        SOAPElement ct9 = addChildElement(schema, "complexType", "xsd");
+        SOAPElement ct9 = addChildElement(schema, Constants.XSD.QN_COMPLEX_TYPE);
         ct9.setAttribute("name", "CellData");
-        SOAPElement ct9Sequence = addChildElement(ct9, "sequence", "xsd");
-        SOAPElement ct9SequenceElement = addChildElement(ct9Sequence, "element", "xsd");
+        SOAPElement ct9Sequence = addChildElement(ct9, Constants.XSD.QN_SEQUENCE);
+        SOAPElement ct9SequenceElement = addChildElement(ct9Sequence, Constants.XSD.QN_ELEMENT);
         ct9SequenceElement.setAttribute("name", "Cell");
         ct9SequenceElement.setAttribute("minOccurs", "0");
         ct9SequenceElement.setAttribute("maxOccurs", "unbounded");
-        SOAPElement ct9SequenceElementComplexType = addChildElement(ct9SequenceElement, "complexType", "xsd");
-        SOAPElement ct9SequenceElementComplexTypeSequence = addChildElement(ct9SequenceElementComplexType, "sequence",
-                "xsd");
+        SOAPElement ct9SequenceElementComplexType = addChildElement(ct9SequenceElement, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement ct9SequenceElementComplexTypeSequence = addChildElement(ct9SequenceElementComplexType,
+            Constants.XSD.QN_SEQUENCE);
         ct9SequenceElementComplexTypeSequence.setAttribute("maxOccurs", "unbounded");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoice = addChildElement(ct9SequenceElementComplexTypeSequence,
-                "choice", "xsd");
+            Constants.XSD.QN_CHOICE);
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE1 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE1.setAttribute("name", "Value");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE2 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE2.setAttribute("name", "FmtValue");
         ct9SequenceElementComplexTypeSequenceChoiceE2.setAttribute("type", "xsd:string");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE3 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE3.setAttribute("name", "BackColor");
         ct9SequenceElementComplexTypeSequenceChoiceE3.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE4 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE4.setAttribute("name", "ForeColor");
         ct9SequenceElementComplexTypeSequenceChoiceE4.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE5 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE5.setAttribute("name", "FontName");
         ct9SequenceElementComplexTypeSequenceChoiceE5.setAttribute("type", "xsd:string");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE6 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE6.setAttribute("name", "FontSize");
         ct9SequenceElementComplexTypeSequenceChoiceE6.setAttribute("type", "xsd:unsignedShort");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE7 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE7.setAttribute("name", "FontFlags");
         ct9SequenceElementComplexTypeSequenceChoiceE7.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE8 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE8.setAttribute("name", "FormatString");
         ct9SequenceElementComplexTypeSequenceChoiceE8.setAttribute("type", "xsd:string");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE9 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE9.setAttribute("name", "NonEmptyBehavior");
         ct9SequenceElementComplexTypeSequenceChoiceE9.setAttribute("type", "xsd:unsignedShort");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE10 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE10.setAttribute("name", "SolveOrder");
         ct9SequenceElementComplexTypeSequenceChoiceE10.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE11 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE11.setAttribute("name", "Updateable");
         ct9SequenceElementComplexTypeSequenceChoiceE11.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE12 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE12.setAttribute("name", "Visible");
         ct9SequenceElementComplexTypeSequenceChoiceE12.setAttribute("type", "xsd:unsignedInt");
         SOAPElement ct9SequenceElementComplexTypeSequenceChoiceE13 = addChildElement(
-                ct9SequenceElementComplexTypeSequenceChoice, "element", "xsd");
+                ct9SequenceElementComplexTypeSequenceChoice, Constants.XSD.QN_ELEMENT);
         ct9SequenceElementComplexTypeSequenceChoiceE13.setAttribute("name", "Expression");
         ct9SequenceElementComplexTypeSequenceChoiceE13.setAttribute("type", "xsd:string");
-        SOAPElement ct9SequenceElementComplexTypeAttribute = addChildElement(ct9SequenceElementComplexType, "attribute",
-                "xsd");
+        SOAPElement ct9SequenceElementComplexTypeAttribute = addChildElement(ct9SequenceElementComplexType,
+            Constants.XSD.QN_ATTRIBUTE);
         ct9SequenceElementComplexTypeAttribute.setAttribute("name", "CellOrdinal");
         ct9SequenceElementComplexTypeAttribute.setAttribute("type", "xsd:unsignedInt");
         ct9SequenceElementComplexTypeAttribute.setAttribute("use", "required");
 
-        SOAPElement element = addChildElement(schema, "element", "xsd");
+        SOAPElement element = addChildElement(schema, Constants.XSD.QN_ELEMENT);
         element.setAttribute("name", "root");
-        SOAPElement elementComplexType = addChildElement(element, "complexType", "xsd");
-        SOAPElement elementComplexTypeSequence = addChildElement(elementComplexType, "sequence", "xsd");
+        SOAPElement elementComplexType = addChildElement(element, Constants.XSD.QN_COMPLEX_TYPE);
+        SOAPElement elementComplexTypeSequence = addChildElement(elementComplexType, Constants.XSD.QN_SEQUENCE);
         elementComplexTypeSequence.setAttribute("maxOccurs", "unbounded");
-        SOAPElement elementComplexTypeSequenceE1 = addChildElement(elementComplexTypeSequence, "element", "xsd");
+        SOAPElement elementComplexTypeSequenceE1 = addChildElement(elementComplexTypeSequence, Constants.XSD.QN_ELEMENT);
         elementComplexTypeSequenceE1.setAttribute("name", "OlapInfo");
         elementComplexTypeSequenceE1.setAttribute("type", "OlapInfo");
-        SOAPElement elementComplexTypeSequenceE2 = addChildElement(elementComplexTypeSequence, "element", "xsd");
+        SOAPElement elementComplexTypeSequenceE2 = addChildElement(elementComplexTypeSequence, Constants.XSD.QN_ELEMENT);
         elementComplexTypeSequenceE2.setAttribute("name", "Axes");
         elementComplexTypeSequenceE2.setAttribute("type", "Axes");
-        SOAPElement elementComplexTypeSequenceE3 = addChildElement(elementComplexTypeSequence, "element", "xsd");
+        SOAPElement elementComplexTypeSequenceE3 = addChildElement(elementComplexTypeSequence, Constants.XSD.QN_ELEMENT);
         elementComplexTypeSequenceE3.setAttribute("name", "CellData");
         elementComplexTypeSequenceE3.setAttribute("type", "CellData");
     }
@@ -3134,9 +3038,7 @@ public class SoapUtil {
 
     private static SOAPElement addChildElement(SOAPElement element, QName qNameOfChild) {
         try {
-            SOAPElement createdChild = element.addChildElement(qNameOfChild);
-            return createdChild;
-
+            return element.addChildElement(qNameOfChild);
         } catch (SOAPException e) {
             LOGGER.error("addChildElement {} error", qNameOfChild);
             throw new RuntimeException("addChildElement error", e);

@@ -835,6 +835,8 @@ public class Constants {
         public static final QName QN_HIERARCHY_INFO = new QName(MDDATASET.NS_URN, "HierarchyInfo", MDDATASET.PREFIX);
         public static final QName QN_CUBE_INFO = new QName(MDDATASET.NS_URN, "CubeInfo", MDDATASET.PREFIX);
         public static final QName QN_CUBE = new QName(MDDATASET.NS_URN, "Cube", MDDATASET.PREFIX);
+        public static final QName QN_MEMBERS = new QName(MDDATASET.NS_URN, "Members", MDDATASET.PREFIX);
+        public static final QName QN_TUPLE = new QName(MDDATASET.NS_URN, "Tuple", MDDATASET.PREFIX);
 	}
 
 	static class ENGINE {
@@ -857,7 +859,35 @@ public class Constants {
 	}
 	///////////////////////////
 
-	public static final String DISPLAY_FOLDER = "DisplayFolder";
+    static class XSD {
+        public static final String PREFIX = "xsd";
+        public static final String NS_URN = "http://www.w3.org/2001/XMLSchema";
+        public static final QName QN_SCHEMA = new QName(XSD.NS_URN, "schema", XSD.PREFIX);
+        public static final QName QN_ELEMENT = new QName(XSD.NS_URN, "element", XSD.PREFIX);
+        public static final QName QN_COMPLEX_TYPE = new QName(XSD.NS_URN, "complexType", XSD.PREFIX);
+        public static final QName QN_SEQUENCE = new QName(XSD.NS_URN, "sequence", XSD.PREFIX);
+        public static final QName QN_SIMPLE_TYPE = new QName(XSD.NS_URN, "simpleType", XSD.PREFIX);
+        public static final QName QN_RESTRICTION = new QName(XSD.NS_URN, "restriction", XSD.PREFIX);
+        public static final QName QN_PATTERN = new QName(XSD.NS_URN, "pattern", XSD.PREFIX);
+        public static final QName QN_ANY = new QName(XSD.NS_URN, "any", XSD.PREFIX);
+        public static final QName QN_ATTRIBUTE = new QName(XSD.NS_URN, "attribute", XSD.PREFIX);
+        public static final QName QN_CHOICE = new QName(XSD.NS_URN, "choice", XSD.PREFIX);
+    }
+    ///////////////////////////
+
+    static class SQL {
+        public static final String PREFIX = "sql";
+        public static final String NS_URN = "urn:schemas-microsoft-com:xml-sql";
+    }
+    ///////////////////////////
+
+    static class EX {
+        public static final String PREFIX = "EX";
+        public static final String NS_URN = "urn:schemas-microsoft-com:xml-analysis:exception";
+    }
+    ///////////////////////////
+
+    public static final String DISPLAY_FOLDER = "DisplayFolder";
 	public static final String DIMENSIONS = "Dimensions";
 	public static final String DIMENSION_ID = "DimensionID";
 	public static final String DIMENSION = "Dimension";
@@ -1034,6 +1064,4 @@ public class Constants {
 	public static final String KEYWORD = "Keyword";
 	public static final String ENUM_NAME = "EnumName";
 	public static final String SCHEMA_NAME_LOW = "SchemaName";
-	public static final String NUMERIC_SCALE = "NUMERIC_SCALE";
-
 }
