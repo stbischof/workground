@@ -152,11 +152,16 @@ public abstract class AbstractSchemaWalker {
     protected void checkMeasure(MappingMeasure measure, MappingCube cube) {
         if (measure != null) {
             checkMeasureColumn(measure, cube);
+            checkMeasureAggregation(measure, cube);
             checkAnnotationList(measure.annotations());
             checkCalculatedMemberPropertyList(measure.calculatedMemberProperties());
             checkExpressionView(measure.measureExpression());
             checkElementFormatter(measure.cellFormatter());
         }
+    }
+
+    protected void checkMeasureAggregation(MappingMeasure measure, MappingCube cube) {
+        //empty
     }
 
     protected void checkMeasureColumn(MappingMeasure measure, MappingCube cube) {

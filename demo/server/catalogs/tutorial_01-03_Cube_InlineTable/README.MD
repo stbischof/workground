@@ -66,8 +66,3 @@ quadrant-4 Wide
 Cube CubeOneMeasureInlineTable: [0.0000, 0.0001]
 ```
 ---
-## Validation result for schema Minimal_Cube_With_Inline_Tables
-## <span style='color: red;'>ERROR</span> : 
-|Type|   |
-|----|---|
-|SCHEMA|Cube with name CubeOneMeasureInlineTable must contain Dimensions|

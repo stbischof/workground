@@ -74,5 +74,4 @@ null VALUE_NUMERIC
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
 |DATABASE|Measure Measure-Sum column PRICE doesn't exist in table Fact of cube with name CubeOneMeasure|

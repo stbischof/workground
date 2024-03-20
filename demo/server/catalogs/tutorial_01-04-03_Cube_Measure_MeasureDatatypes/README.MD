@@ -3,9 +3,9 @@
 ### Schema Minimal_Cube_With_Measures_Of_Different_Datatypes : 
 
 		
-		A minimal cube with measures of different datatypes 
-		
-		The datatype of the measuse can be adapted by using the optional datatype attribute of the <Measure> element. 
+		A minimal cube with measures of different datatypes
+
+		The datatype of the measuse can be adapted by using the optional datatype attribute of the <Measure> element.
 		- String
 		- Numeric
 		- Integer
@@ -16,7 +16,7 @@
 		If no datatype attribute is defined, the following default datatypes are used:
 		- if the aggregator "count" or "distinct-count" is used: Integer
 		- it another aggregator is used: Numeric
-		
+
 		In this example cube both measurements are generated from the "VALUE_NUMERIC" column of the "Fact" table, but one is provided with an Intger and the other one with a Numeric datatype.
 		
   
@@ -83,8 +83,3 @@ null VALUE
 
 ```
 ---
-## Validation result for schema Minimal_Cube_With_Measures_Of_Different_Datatypes
-## <span style='color: red;'>ERROR</span> : 
-|Type|   |
-|----|---|
-|SCHEMA|Cube with name CubeOneNumericMeasureDifferentDataTypes must contain Dimensions|

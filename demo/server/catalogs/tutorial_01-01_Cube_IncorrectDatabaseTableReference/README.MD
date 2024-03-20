@@ -72,6 +72,6 @@ int VALUE
 ## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|
 |DATABASE|Cube with name CubeOneMeasure must contain measures|
 |DATABASE|Fact table Fakt does not exist in database .|
+|DATABASE|Measure Measure-Sum column VALUE doesn't exist in table Fakt of cube with name CubeOneMeasure|

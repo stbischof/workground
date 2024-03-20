@@ -1,28 +1,24 @@
 # Documentation
-### CatalogName : tutorial_01-04-05_Cube_Measure_CalculatedMeasure
-### Schema Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure : 
+### CatalogName : tutorial_01-05_Cube_with_absent_Measure_Error
+### Schema Minimal_Cubes_With_No_Measures : 
 
 		
-		A mininmal cube with a simple measure-based calculated member
-		
-		.
-		
-		
+		A minimal cube with absent measure.
 		
   
 ---
 ### Cubes :
 
-    CubeTwoMeasuresPlusOneCalculatedMeasure
+    Cube
 
 ---
-#### Cube "CubeTwoMeasuresPlusOneCalculatedMeasure":
+#### Cube "Cube":
 
     
 
 ##### Table: "Fact"
 
-### Cube "CubeTwoMeasuresPlusOneCalculatedMeasure" diagram:
+### Cube "Cube" diagram:
 
 ---
 
@@ -39,13 +35,11 @@
 ]
 }}%%
 erDiagram
-c0["CubeTwoMeasuresPlusOneCalculatedMeasure"]{
-M Measure1-Sum ""
-M Measure2-Count ""
+c0["Cube"]{
 }
 ```
 ---
-### Cube Matrix for Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure:
+### Cube Matrix for Minimal_Cubes_With_No_Measures:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -56,7 +50,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube CubeTwoMeasuresPlusOneCalculatedMeasure: [0.0000, 0.0000]
+Cube Cube: [0.0000, 0.0000]
 ```
 ---
 ### Database :
@@ -68,9 +62,14 @@ title: Diagram;
 erDiagram
 Fact{
 string KEY
-int VALUE
-null VALUE_NUMERIC
+int VALUE1
+int VALUE2
 }
 
 ```
 ---
+## Validation result for schema Minimal_Cubes_With_No_Measures
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Cube with name Cube must contain Measure|

@@ -6,7 +6,11 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -73,6 +77,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MandantoriesSchemaWalker.class);
     private static final String[] DEF_LEVEL = {"column", "nameColumn", "parentColumn", "ordinalColumn", "captionColumn"};
+    private static final Set<String> aggregation = Set.of("sum", "count", "min", "max", "avg", "distinct-count");
 
     public MandantoriesSchemaWalker(MandantoriesVerifierConfig config) {
     }
@@ -108,14 +113,6 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
                 String msg = String.format(FACT_NAME_MUST_BE_SET, orNotSet(cube.name()));
                 results.add(new VerificationResultR(CUBE, msg, ERROR,
                     Cause.SCHEMA));
-            }
-
-            //CubeDimension
-            if (cube.dimensionUsageOrDimensions() == null || cube.dimensionUsageOrDimensions()
-                .isEmpty()) {
-                String msg = String.format(CUBE_WITH_NAME_MUST_CONTAIN, orNotSet(cube.name()), DIMENSIONS);
-                results.add(new VerificationResultR(DIMENSIONS, msg,
-                    ERROR, Cause.SCHEMA));
             }
 
             //Measure
@@ -458,6 +455,22 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             }
         }
     }
+
+    @Override
+    protected void checkMeasureAggregation(MappingMeasure measure, MappingCube cube) {
+        super.checkMeasureAggregation(measure, cube);
+        if (measure != null && !isEmpty(measure.aggregator())) {
+            String aggregatorName = measure.aggregator();
+            Optional<String> op = aggregation.stream().filter(it -> aggregatorName.equals(it)).findFirst();
+            if (!op.isPresent()) {
+                String chString = aggregation.stream().collect(
+                    Collectors.joining(", "));
+                String msg = String.format(WRONG_MEASURE_AGGREGATOR_FOR_MEASURE_IN_CUBE, aggregatorName, measure.name(), cube.name());
+                results.add(new VerificationResultR(MEASURE, msg, ERROR, Cause.SCHEMA));
+            }
+        }
+    }
+
 
     @Override
     protected void checkCalculatedMemberProperty(MappingCalculatedMemberProperty calculatedMemberProperty) {

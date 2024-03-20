@@ -83,8 +83,3 @@ int VALUE
 
 ```
 ---
-## Validation result for schema 01-03_Minimal_Cube_With_One_Measure_And_Different_Aggregators
-## <span style='color: red;'>ERROR</span> : 
-|Type|   |
-|----|---|
-|SCHEMA|Cube with name CubeDifferentAggregators must contain Dimensions|

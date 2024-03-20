@@ -77,8 +77,3 @@ int VALUE
 
 ```
 ---
-## Validation result for schema 01_Minimal_Cube_With_One_Measure
-## <span style='color: red;'>ERROR</span> : 
-|Type|   |
-|----|---|
-|SCHEMA|Cube with name CubeOneMeasure must contain Dimensions|

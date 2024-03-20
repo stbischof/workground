@@ -74,8 +74,3 @@ null VALUE
 
 ```
 ---
-## Validation result for schema Minimal_Cube_With_Measures_Of_Different_Datatypes
-## <span style='color: red;'>ERROR</span> : 
-|Type|   |
-|----|---|
-|SCHEMA|Cube with name CubeOneNumericMeasureDifferentFormatStrings must contain Dimensions|

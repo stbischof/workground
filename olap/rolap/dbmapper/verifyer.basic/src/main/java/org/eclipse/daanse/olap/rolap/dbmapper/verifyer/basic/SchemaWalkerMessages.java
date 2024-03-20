@@ -254,6 +254,8 @@ public class SchemaWalkerMessages {
     public static final String DRILL_THROUGH_ACTION_MUST_CONTAIN_DESCRIPTION =
         "DrillThroughAction must contain description";
     public static final String SCHEMA_MUST_CONTAIN_DESCRIPTION = "Schema must contain description";
+    public static final String WRONG_MEASURE_AGGREGATOR_FOR_MEASURE_IN_CUBE =
+        "Wrong measure aggregator %s  for measure with name %s in cube with name %s";
 
     private SchemaWalkerMessages() {
         //private constructor

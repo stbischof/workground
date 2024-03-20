@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.documentation.common;
 
+import mondrian.olap.MondrianException;
 import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.common.jdbc.db.api.meta.TableDefinition;
 import org.eclipse.daanse.common.jdbc.db.api.sql.ColumnDefinition;
@@ -175,7 +176,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                         context.getConnection().getDataSource().getConnection().getSchema(), tableName.get());
                 }
             }
-        } catch (SQLException throwables) {
+        } catch (SQLException | MondrianException throwables) {
             throwables.printStackTrace();
         }
 
