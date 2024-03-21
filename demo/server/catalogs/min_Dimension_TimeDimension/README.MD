@@ -116,7 +116,4 @@ string MONTH_NAME
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for Years|
-|SCHEMA|Level: Type should be set for Months|
-|SCHEMA|Level: Type should be set for Quarters|
 |DATABASE|Table: Schema must be set|

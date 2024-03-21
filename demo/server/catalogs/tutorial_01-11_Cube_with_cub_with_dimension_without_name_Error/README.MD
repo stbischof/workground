@@ -1,19 +1,28 @@
 # Documentation
-### CatalogName : min_Level_Closure_parent_child
-### Schema Minimal_Parent_Child_With_Closure : 
-### Public Dimensions:
+### CatalogName : tutorial_01-11_Cube_with_cub_with_dimension_without_name_Error
+### Schema Cube_with_cub_with_dimension_without_name : 
+---
+### Cubes :
 
-    Dimension1
+    Cube
 
-##### Dimension "Dimension1":
+---
+#### Cube "Cube":
+
+    
+
+##### Table: "Fact"
+
+##### Dimensions:
+##### Dimension "null":
 
 Hierarchies:
 
-    Hierarchy1
+    HierarchyWithHasAll
 
-##### Hierarchy Hierarchy1:
+##### Hierarchy HierarchyWithHasAll:
 
-Tables: "Hierarchy"
+Tables: "Fact"
 
 Levels: "Level"
 
@@ -21,22 +30,7 @@ Levels: "Level"
 
     column(s): KEY
 
----
-### Cubes :
-
-    CubeParentChildClosure
-
----
-#### Cube "CubeParentChildClosure":
-
-    
-
-##### Table: "Fact"
-
-##### Dimensions:
-##### Dimension: "Dimension1 -> Dimension1":
-
-### Cube "CubeParentChildClosure" diagram:
+### Cube "Cube" diagram:
 
 ---
 
@@ -53,21 +47,21 @@ Levels: "Level"
 ]
 }}%%
 erDiagram
-c0["CubeParentChildClosure"]{
-M Measure1 ""
-D Dimension1 ""
+c0["Cube"]{
+M Measure ""
+D _ ""
 }
-d00["Dimension1"] {
-H Hierarchy1 ""
+d00["null"] {
+H HierarchyWithHasAll ""
 }
-h000["Hierarchy1"] {
+h000["HierarchyWithHasAll"] {
 L Level ""
 }
-"c0" ||--|| "d00" : "DIM_KEY-KEY"
+"c0" ||--|| "d00" : "KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Minimal_Parent_Child_With_Closure:
+### Cube Matrix for Cube_with_cub_with_dimension_without_name:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -78,7 +72,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube CubeParentChildClosure: [0.0500, 0.0000]
+Cube Cube: [0.0500, 0.0000]
 ```
 ---
 ### Database :
@@ -88,25 +82,18 @@ Cube CubeParentChildClosure: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Closure{
-int PARENT_KEY
-int CHILD_KEY
-int DIST
-}
 Fact{
-int DIM_KEY
+string KEY
 int VALUE
 }
-Hierarchy{
-int KEY
-string NAME
-int PARENT_KEY
-}
 
-"Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"
 ```
 ---
-## Validation result for schema Minimal_Parent_Child_With_Closure
+## Validation result for schema Cube_with_cub_with_dimension_without_name
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Cube Dimension name must be set for element with name Cube|
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

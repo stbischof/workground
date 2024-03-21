@@ -88,8 +88,8 @@ public class DescriptionWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCubeDimension(MappingCubeDimension dimension, MappingCube cube) {
-        super.checkCubeDimension(dimension, cube);
+    protected void checkCubeDimension(MappingCubeDimension dimension, MappingCube cube, MappingSchema schema) {
+        super.checkCubeDimension(dimension, cube, schema);
         Level lavel = config.dimension();
         if (lavel != null && (dimension.description() == null || dimension.description()
                 .isEmpty())) {
@@ -99,8 +99,8 @@ public class DescriptionWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkVirtualCube(MappingVirtualCube virtualCube) {
-        super.checkVirtualCube(virtualCube);
+    protected void checkVirtualCube(MappingVirtualCube virtualCube, MappingSchema schema) {
+        super.checkVirtualCube(virtualCube, schema);
         Level lavel = config.virtualCube();
         if (lavel != null && (virtualCube.description() == null || virtualCube.description()
                 .isEmpty())) {
@@ -110,8 +110,8 @@ public class DescriptionWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCube(MappingCube cube) {
-        super.checkCube(cube);
+    protected void checkCube(MappingCube cube, MappingSchema schema) {
+        super.checkCube(cube, schema);
         Level lavel = config.cube();
         if (lavel != null && (cube.description() == null || cube.description()
                 .isEmpty())) {

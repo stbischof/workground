@@ -701,23 +701,4 @@ int anzahl_klassen
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for Schulabschlüsse|
-|SCHEMA|Level: Type should be set for Schulträger|
-|SCHEMA|Level: Type should be set for Schule|
-|SCHEMA|Level: Type should be set for Art des Ganztagsangebots|
-|SCHEMA|Level: Type should be set for Wohnlandkreis|
-|SCHEMA|Level: Type should be set for Einschulung|
-|SCHEMA|Level: Type should be set for Schulart|
-|SCHEMA|Level: Type should be set for Schulträger-Kategorie|
-|SCHEMA|Level: Type should be set for Bundesland|
-|SCHEMA|Level: Type should be set for Schulträger-Art|
-|SCHEMA|Level: Type should be set for Art der Förderung|
-|SCHEMA|Level: Type should be set for Migrationshintergrund|
-|SCHEMA|Level: Type should be set for Geschlecht|
-|SCHEMA|Level: Type should be set for Förderbedarf|
-|SCHEMA|Level: Type should be set for Schuljahr|
-|SCHEMA|Level: Type should be set for Klassenwiederholung|
-|SCHEMA|Level: Type should be set for Berufsgruppe|
-|SCHEMA|Level: Type should be set for Altersgruppe|
-|SCHEMA|Level: Type should be set for Schulkategorie|
 |DATABASE|Table: Schema must be set|

@@ -105,5 +105,4 @@ int PARENT_KEY
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for Level|
 |DATABASE|Table: Schema must be set|

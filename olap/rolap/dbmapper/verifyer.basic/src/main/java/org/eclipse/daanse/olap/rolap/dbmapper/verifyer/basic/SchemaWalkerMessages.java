@@ -137,6 +137,10 @@ public class SchemaWalkerMessages {
         "Formatter: either a Class Name or a Script are required";
     public static final String CUBE_DIMENSION_NAME_MUST_BE_SET =
         "Cube Dimension name must be set for element with name %s";
+    public static final String SCHEMA_DIMENSION_WITH_NAME_ABSENT_IN_SCHEMA_BUT_USED_IN_CUBE_WITH_NAME =
+        "Schema Dimension with name %s absent in schema but usedin cube with name %s";
+    public static final String SCHEMA_DIMENSION_NAME_MUST_BE_SET =
+        "Schema Dimension name must be set";
     public static final String SOURCE_MUST_BE_SET =
         "Source must be set for dimension with name %s";
     public static final String JOIN_LEFT_KEY_MUST_BE_SET = "Join: Left key must be set";
@@ -187,10 +191,12 @@ public class SchemaWalkerMessages {
     public static final String VIRTUAL_CUBE_MUST_CONTAIN_MEASURES =
         "VirtualCube with name %s must contain measures";
 
-    public static final String COULD_NOT_CHECK_EXISTANCE_OF_FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
-        "could not check existance of Fact table {0} does not exist in database {1}";
+    public static final String COULD_NOT_CHECK_EXISTANCE_OF_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
+        "could not check existance of table {0} does not exist in database {1}";
     public static final String FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
         "Fact table %s does not exist in database %s";
+    public static final String AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
+        "Agg Exclude table %s does not exist in database %s";
     public static final String CUBE_MUST_CONTAIN_MEASURES = "Cube with name %s must contain measures";
     public static final String COULD_NOT_QUERY_COLUMN_DATA_TYPE_ON_SCHEMA_TABLE_COLUMN =
         "Could not Query ColumnDataType on Schema: %s, Table: %s, Column: %s";

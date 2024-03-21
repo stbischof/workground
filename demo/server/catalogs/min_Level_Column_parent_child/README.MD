@@ -118,7 +118,4 @@ int PARENT_L2
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for Level3|
-|SCHEMA|Level: Type should be set for Level1|
-|SCHEMA|Level: Type should be set for Level2|
 |DATABASE|Table: Schema must be set|

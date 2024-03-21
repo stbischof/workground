@@ -1,42 +1,19 @@
 # Documentation
-### CatalogName : min_Hierarchy_hasAll_single
-### Schema Minimal_1 : 
-### Public Dimensions:
-
-    Dimension1
-
-##### Dimension "Dimension1":
-
-Hierarchies:
-
-    HierarchyWithHasAll
-
-##### Hierarchy HierarchyWithHasAll:
-
-Tables: "Fact"
-
-Levels: "Level1"
-
-###### Level "Level1" :
-
-    column(s): KEY
-
+### CatalogName : tutorial_01-13_Cube_with_table_reference_with_wrong_AggExclude_Warning
+### Schema Cube_with_reference_with_wrong_AggExclude_Warning : 
 ---
 ### Cubes :
 
-    Cube1
+    Cube
 
 ---
-#### Cube "Cube1":
+#### Cube "Cube":
 
     
 
 ##### Table: "Fact"
 
-##### Dimensions:
-##### Dimension: "Dimension1 -> Dimension1":
-
-### Cube "Cube1" diagram:
+### Cube "Cube" diagram:
 
 ---
 
@@ -53,21 +30,12 @@ Levels: "Level1"
 ]
 }}%%
 erDiagram
-c0["Cube1"]{
-M Measure1 ""
-D Dimension1 ""
+c0["Cube"]{
+M Measure ""
 }
-d00["Dimension1"] {
-H HierarchyWithHasAll ""
-}
-h000["HierarchyWithHasAll"] {
-L Level1 ""
-}
-"c0" ||--|| "d00" : "KEY-KEY"
-"d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Minimal_1:
+### Cube Matrix for Cube_with_reference_with_wrong_AggExclude_Warning:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -78,7 +46,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube1: [0.0500, 0.0000]
+Cube Cube: [0.0000, 0.0000]
 ```
 ---
 ### Database :
@@ -92,11 +60,15 @@ Fact{
 string KEY
 int VALUE
 }
+agg_01_Fact{
+string KEY
+int VALUE_count
+}
 
 ```
 ---
-## Validation result for schema Minimal_1
+## Validation result for schema Cube_with_reference_with_wrong_AggExclude_Warning
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|DATABASE|Table: Schema must be set|
+|DATABASE|Agg Exclude table agg_01_Fact1 does not exist in database .|

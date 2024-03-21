@@ -2215,39 +2215,6 @@ string description
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for Promotion Name|
-|SCHEMA|Level: Type should be set for City|
-|SCHEMA|Level: Type should be set for Week|
-|SCHEMA|Level: Type should be set for Education Level|
-|SCHEMA|Level: Type should be set for State|
-|SCHEMA|Level: Type should be set for Year|
-|SCHEMA|Level: Type should be set for Store Name|
-|SCHEMA|Level: Type should be set for Product Department|
-|SCHEMA|Level: Type should be set for Quarter|
-|SCHEMA|Level: Type should be set for State Province|
-|SCHEMA|Level: Type should be set for Product Name|
-|SCHEMA|Level: Type should be set for Day|
-|SCHEMA|Level: Type should be set for Store Country|
-|SCHEMA|Level: Type should be set for Store City|
-|SCHEMA|Level: Type should be set for Brand Name|
-|SCHEMA|Level: Type should be set for Department Description|
-|SCHEMA|Level: Type should be set for Pay Type|
-|SCHEMA|Level: Type should be set for Position Title|
-|SCHEMA|Level: Type should be set for Warehouse Name|
-|SCHEMA|Level: Type should be set for Yearly Income|
-|SCHEMA|Level: Type should be set for Media Type|
-|SCHEMA|Level: Type should be set for Product Subcategory|
-|SCHEMA|Level: Type should be set for Product Category|
-|SCHEMA|Level: Type should be set for Store Sqft|
-|SCHEMA|Level: Type should be set for Employee Id|
-|SCHEMA|Level: Type should be set for Marital Status|
-|SCHEMA|Level: Type should be set for Has coffee bar|
-|SCHEMA|Level: Type should be set for Product Family|
-|SCHEMA|Level: Type should be set for Gender|
-|SCHEMA|Level: Type should be set for Management Role|
-|SCHEMA|Level: Type should be set for Country|
-|SCHEMA|Level: Type should be set for Name|
-|SCHEMA|Level: Type should be set for Month|
-|SCHEMA|Level: Type should be set for Store Type|
-|SCHEMA|Level: Type should be set for Store State|
+|DATABASE|Agg Exclude table agg_lc_10_sales_fact_1997 does not exist in database .|
 |DATABASE|Table: Schema must be set|
+|DATABASE|Agg Exclude table agg_pc_10_sales_fact_1997 does not exist in database .|

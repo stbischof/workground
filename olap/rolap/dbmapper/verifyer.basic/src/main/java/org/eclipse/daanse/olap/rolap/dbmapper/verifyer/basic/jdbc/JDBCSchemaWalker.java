@@ -21,6 +21,7 @@ import org.eclipse.daanse.common.jdbc.db.api.sql.TableReference;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.ColumnReferenceR;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.SchemaReferenceR;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.TableReferenceR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
@@ -29,6 +30,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.AbstractSchemaWalker;
@@ -42,14 +44,16 @@ import java.util.Optional;
 
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause.DATABASE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.ERROR;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.WARNING;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_S_DOES_NOT_EXIST_IN_TABLE_S2;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOCH_CHECK_EXISTANCE_OF_TABLE_0;
-import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_CHECK_EXISTANCE_OF_FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_CHECK_EXISTANCE_OF_TABLE_0_DOES_NOT_EXIST_IN_DATABASE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_CHECK_EXISTANCE_OF_SCHEMA_S;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_EVALUEATE_DOES_COLUMN_EXIST_SCHEMA_TABLE_COLUMN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE;
@@ -61,7 +65,6 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.CUBE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.CUBE_DIMENSION;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.CUBE_DIMENSION_FOREIGN_KEY_S_DOES_NOT_EXIST_IN_FACT_TABLE;
-import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.CUBE_MUST_CONTAIN_MEASURES;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.DATABASE_DOES_NOW_ANSWER_WITH_DATA_TYPE_FOR_AGGREGATOR_COLUMN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE1;
@@ -94,31 +97,54 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCube(MappingCube cube) {
-        super.checkCube(cube);
+    protected void checkCube(MappingCube cube, MappingSchema schema) {
+        super.checkCube(cube, schema);
+        checkFact(cube, schema);
+    }
 
+    @Override
+    protected void checkFact(MappingCube cube, MappingSchema schema) {
         if (cube.fact() instanceof MappingTable table) {
             String schemaName = table.schema();
             String factTable = table.name();
             TableReference tableReference = getTableReference(schemaName, factTable);
             try {
                 if (!databaseService.tableExists(databaseMetaData, tableReference)) {
-                    String msg = String.format(CUBE_MUST_CONTAIN_MEASURES, orNotSet(cube.name()));
-                    results.add(new VerificationResultR(CUBE, msg,
-                        ERROR, DATABASE));
-
                     String message = String.format(FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE, factTable,
                         ((schemaName == null || schemaName.equals("")) ? "." : SCHEMA_SPACE + schemaName));
                     results.add(new VerificationResultR(CUBE, message, ERROR, DATABASE));
                 }
+
+                if (table.aggExcludes() != null && !table.aggExcludes().isEmpty()) {
+                    table.aggExcludes()
+                        .forEach(ae -> checkAggExclude(ae, schemaName));
+                }
             } catch (SQLException e) {
-                String message = String.format(COULD_NOT_CHECK_EXISTANCE_OF_FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE,
+                String message = String.format(COULD_NOT_CHECK_EXISTANCE_OF_TABLE_0_DOES_NOT_EXIST_IN_DATABASE,
                     factTable,
                     ((schemaName == null || schemaName.equals("")) ? "." : SCHEMA_SPACE + schemaName));
                 results.add(new VerificationResultR(CUBE, message, ERROR, DATABASE));
             }
         }
+    }
 
+    @Override
+    protected void checkAggExclude(MappingAggExclude aggExclude, String schemaName) {
+        if (!isEmpty(aggExclude.name())) {
+            try {
+                TableReference tableReference = getTableReference(schemaName, aggExclude.name());
+                if (!databaseService.tableExists(databaseMetaData, tableReference)) {
+                    String message = String.format(AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE, aggExclude.name(),
+                        ((schemaName == null || schemaName.equals("")) ? "." : SCHEMA_SPACE + schemaName));
+                    results.add(new VerificationResultR(CUBE, message, WARNING, DATABASE));
+                }
+            } catch (SQLException e) {
+                String message = String.format(COULD_NOT_CHECK_EXISTANCE_OF_TABLE_0_DOES_NOT_EXIST_IN_DATABASE,
+                    aggExclude.name(),
+                    ((schemaName == null || schemaName.equals("")) ? "." : SCHEMA_SPACE + schemaName));
+                results.add(new VerificationResultR(CUBE, message, ERROR, DATABASE));
+            }
+        }
     }
 
     @Override
@@ -147,8 +173,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube) {
-        super.checkCubeDimension(cubeDimension, cube);
+    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube, MappingSchema schema) {
+        super.checkCubeDimension(cubeDimension, cube, schema);
 
         if (cubeDimension instanceof MappingPrivateDimension &&
             !isEmpty((cubeDimension).foreignKey()) &&

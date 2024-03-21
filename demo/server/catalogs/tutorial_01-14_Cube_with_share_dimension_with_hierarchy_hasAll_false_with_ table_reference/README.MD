@@ -1,6 +1,6 @@
 # Documentation
-### CatalogName : min_Level_Join
-### Schema Minimal_Single_Hierarchy : 
+### CatalogName : tutorial_01-14_Cube_with_share_dimension_with_hierarchy_hasAll_false_with_ table_reference
+### Schema Cube_with_share_dimension_with_hierarchy_hasAll_false_with_table_reference : 
 ### Public Dimensions:
 
     Dimension1
@@ -9,17 +9,13 @@
 
 Hierarchies:
 
-    Hierarchy1
+    HierarchyWithoutHasAll
 
-##### Hierarchy Hierarchy1:
+##### Hierarchy HierarchyWithoutHasAll:
 
-Tables: "Level_2,Level_1"
+Tables: "Fact"
 
-Levels: "Level1, Level2"
-
-###### Level "Level1" :
-
-    column(s): KEY
+Levels: "Level2"
 
 ###### Level "Level2" :
 
@@ -62,18 +58,16 @@ M Measure1 ""
 D Dimension1 ""
 }
 d00["Dimension1"] {
-H Hierarchy1 ""
+H HierarchyWithoutHasAll ""
 }
-h000["Hierarchy1"] {
-L Level1 ""
+h000["HierarchyWithoutHasAll"] {
 L Level2 ""
 }
-"c0" ||--|| "d00" : "DIM_KEY-KEY"
-"d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d00" : "KEY-KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Minimal_Single_Hierarchy:
+### Cube Matrix for Cube_with_share_dimension_with_hierarchy_hasAll_false_with_table_reference:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -84,7 +78,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube1: [0.1000, 0.0000]
+Cube Cube1: [0.0500, 0.0000]
 ```
 ---
 ### Database :
@@ -95,24 +89,13 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-int DIM_KEY
+string KEY
 int VALUE
 }
-Level_1{
-int KEY
-string NAME
-}
-Level_2{
-int KEY
-string NAME
-int L1_KEY
-}
 
-"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
-"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
 ```
 ---
-## Validation result for schema Minimal_Single_Hierarchy
+## Validation result for schema Cube_with_share_dimension_with_hierarchy_hasAll_false_with_table_reference
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -99,8 +99,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCube(MappingCube cube) {
-        super.checkCube(cube);
+    protected void checkCube(MappingCube cube, MappingSchema schema) {
+        super.checkCube(cube, schema);
         if (cube != null) {
             if (isEmpty(cube.name())) {
                 results.add(new VerificationResultR(CUBE, CUBE_NAME_MUST_SET, Level.ERROR,
@@ -164,18 +164,33 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube) {
-        super.checkCubeDimension(cubeDimension, cube);
+    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube, MappingSchema schema) {
+        super.checkCubeDimension(cubeDimension, cube, schema);
+
         if (cube != null) {
             if (isEmpty(cubeDimension.name())) {
                 String msg = String.format(CUBE_DIMENSION_NAME_MUST_BE_SET, orNotSet(cube.name()));
                 results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
-
             }
 
-            if (cubeDimension instanceof MappingDimensionUsage dimensionUsage && isEmpty(dimensionUsage.source())) {
-                String msg = String.format(SOURCE_MUST_BE_SET, orNotSet(cubeDimension.name()));
-                results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
+            if (cubeDimension instanceof MappingDimensionUsage dimensionUsage) {
+                if (isEmpty(dimensionUsage.source())) {
+                    String msg = String.format(SOURCE_MUST_BE_SET, orNotSet(cubeDimension.name()));
+                    results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
+                } else {
+                    //check that share dimension exist
+                    Optional<MappingPrivateDimension> oDim = schema.dimensions().stream().filter(d -> dimensionUsage.source().equals(d.name())).findFirst();
+                    if (!oDim.isPresent()) {
+                        String msg = String.format(SCHEMA_DIMENSION_WITH_NAME_ABSENT_IN_SCHEMA_BUT_USED_IN_CUBE_WITH_NAME, dimensionUsage.source(), orNotSet(cube.name()));
+                        results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
+                    }
+                }
+            }
+        }
+        else {
+            //schema dimension
+            if (isEmpty(cubeDimension.name())) {
+                results.add(new VerificationResultR(CUBE_DIMENSION, SCHEMA_DIMENSION_NAME_MUST_BE_SET, ERROR, Cause.SCHEMA));
             }
         }
     }
@@ -302,8 +317,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkVirtualCube(MappingVirtualCube virtCube) {
-        super.checkVirtualCube(virtCube);
+    protected void checkVirtualCube(MappingVirtualCube virtCube, MappingSchema schema) {
+        super.checkVirtualCube(virtCube, schema);
         if (virtCube != null) {
             if (isEmpty(virtCube.name())) {
                 results.add(new VerificationResultR(VIRTUAL_CUBE, VIRTUAL_CUBE_NAME_MUST_BE_SET,
@@ -548,8 +563,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkAggTable(MappingAggTable aggTable) {
-        super.checkAggTable(aggTable);
+    protected void checkAggTable(MappingAggTable aggTable, String schema) {
+        super.checkAggTable(aggTable, schema);
         if (aggTable != null && aggTable.aggFactCount() == null) {
             results.add(new VerificationResultR(AGG_TABLE, AGG_TABLE_AGG_FACT_COUNT_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
@@ -566,8 +581,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkAggPattern(MappingAggPattern aggPattern) {
-        super.checkAggPattern(aggPattern);
+    protected void checkAggPattern(MappingAggPattern aggPattern, String schema) {
+        super.checkAggPattern(aggPattern, schema);
         if (aggPattern != null && isEmpty(aggPattern.pattern())) {
             results.add(new VerificationResultR(AGG_PATTERN, AGG_PATTERN_PATTERN_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
@@ -912,7 +927,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
                 results.add(new VerificationResultR(LEVEL, msg, ERROR, Cause.SCHEMA));
             }
         }
-        if (level.type() != null) {
+        if (level.type() == null) {
             String msg = String.format(LEVEL_TYPE_MUST_BE_SET,
                 level.name() == null ? NOT_SET : level.name());
             results.add(new VerificationResultR(LEVEL, msg, WARNING, Cause.SCHEMA));

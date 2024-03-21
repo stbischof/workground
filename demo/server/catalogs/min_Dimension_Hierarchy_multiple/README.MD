@@ -145,8 +145,4 @@ int H2L1_KEY
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
-|SCHEMA|Level: Type should be set for H1_Level2|
-|SCHEMA|Level: Type should be set for H1_Level1|
-|SCHEMA|Level: Type should be set for H2_Level1|
-|SCHEMA|Level: Type should be set for H2_Level2|
 |DATABASE|Table: Schema must be set|

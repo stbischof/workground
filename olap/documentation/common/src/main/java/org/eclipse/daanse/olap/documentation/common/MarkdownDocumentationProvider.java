@@ -176,7 +176,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                         context.getConnection().getDataSource().getConnection().getSchema(), tableName.get());
                 }
             }
-        } catch (SQLException | MondrianException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
         }
 

@@ -90,9 +90,9 @@ public abstract class AbstractSchemaWalker {
         if (schema != null) {
             checkAnnotationList(schema.annotations());
             checkParameterList(schema.parameters());
-            checkCubeDimensionList(schema.dimensions(), null);
-            checkCubeList(schema.cubes());
-            checkVirtualCubeList(schema.virtualCubes());
+            checkCubeDimensionList(schema.dimensions(), null, schema);
+            checkCubeList(schema.cubes(), schema);
+            checkVirtualCubeList(schema.virtualCubes(), schema);
             checkNamedSetList(schema.namedSets());
             checkRoleList(schema.roles());
             checkUserDefinedFunctionList(schema.userDefinedFunctions());
@@ -101,10 +101,10 @@ public abstract class AbstractSchemaWalker {
         return results;
     }
 
-    protected void checkCube(MappingCube cube) {
+    protected void checkCube(MappingCube cube, MappingSchema schema) {
         if (cube != null) {
             checkAnnotationList(cube.annotations());
-            checkCubeDimensionList(cube.dimensionUsageOrDimensions(), cube);
+            checkCubeDimensionList(cube.dimensionUsageOrDimensions(), cube, schema);
             checkMeasureList(cube.measures(), cube);
             checkCalculatedMemberList(cube.calculatedMembers());
             checkNamedSetList(cube.namedSets());
@@ -186,7 +186,7 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube) {
+    protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube, MappingSchema schema) {
         if (cubeDimension != null) {
             checkAnnotationList(cubeDimension.annotations());
             if (cubeDimension instanceof MappingPrivateDimension privateDimension && privateDimension.hierarchies() != null) {
@@ -266,9 +266,9 @@ public abstract class AbstractSchemaWalker {
         if (table != null) {
             checkSQL(table.sql());
 
-            checkAggExcludeList(table.aggExcludes());
+            checkAggExcludeList(table.aggExcludes(), table.schema());
 
-            checkAggTableList(table.aggTables());
+            checkAggTableList(table.aggTables(), table.schema());
 
             checkHintList(table.hints());
         }
@@ -278,7 +278,7 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkAggTable(MappingAggTable aggTable) {
+    protected void checkAggTable(MappingAggTable aggTable, String schema) {
         if (aggTable != null) {
             checkAggColumnName(aggTable.aggFactCount());
             checkAggColumnNameList(aggTable.aggIgnoreColumns());
@@ -290,14 +290,14 @@ public abstract class AbstractSchemaWalker {
                 checkAggName(aggName);
             }
             if (aggTable instanceof MappingAggPattern aggPattern) {
-                checkAggPattern(aggPattern);
+                checkAggPattern(aggPattern, schema);
             }
         }
     }
 
-    protected void checkAggPattern(MappingAggPattern aggTable) {
+    protected void checkAggPattern(MappingAggPattern aggTable, String schema) {
         if (aggTable != null) {
-            checkAggExcludeList(aggTable.aggExcludes());
+            checkAggExcludeList(aggTable.aggExcludes(), schema);
         }
     }
 
@@ -333,7 +333,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkAggExclude(MappingAggExclude aggExclude) {
+    protected void checkAggExclude(MappingAggExclude aggExclude, String schemaName) {
         //empty
     }
 
@@ -396,13 +396,13 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkVirtualCube(MappingVirtualCube virtCube) {
+    protected void checkVirtualCube(MappingVirtualCube virtCube, MappingSchema schema) {
         if (virtCube != null) {
             checkAnnotationList(virtCube.annotations());
 
             checkCubeUsageList(virtCube.cubeUsages());
 
-            checkCubeDimensionList(virtCube.virtualCubeDimensions(), null);
+            checkCubeDimensionList(virtCube.virtualCubeDimensions(), null, schema);
 
             checkVirtualCubeMeasureList(virtCube.virtualCubeMeasures());
 
@@ -586,6 +586,10 @@ public abstract class AbstractSchemaWalker {
         return value == null ? NOT_SET : value;
     }
 
+    protected void checkFact(MappingCube cube, MappingSchema schema) {
+        //empty
+    }
+
     private void checkHintList(List<? extends MappingHint> list) {
         if (list != null) {
             list.forEach(this::checkHint);
@@ -598,9 +602,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkAggTableList(List<? extends MappingAggTable> list) {
+    private void checkAggTableList(List<? extends MappingAggTable> list, String schema) {
         if (list != null) {
-            list.forEach(this::checkAggTable);
+            list.forEach(at -> checkAggTable(at, schema));
         }
     }
 
@@ -682,9 +686,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkAggExcludeList(List<? extends MappingAggExclude> list) {
+    private void checkAggExcludeList(List<? extends MappingAggExclude> list, String schema) {
         if (list != null) {
-            list.forEach(this::checkAggExclude);
+            list.forEach(ae -> checkAggExclude(ae, schema));
         }
     }
 
@@ -741,15 +745,15 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkCubeDimensionList(List<? extends MappingCubeDimension> list, MappingCube cube) {
+    private void checkCubeDimensionList(List<? extends MappingCubeDimension> list, MappingCube cube, MappingSchema schema) {
         if (list != null) {
-            list.forEach(it -> checkCubeDimension(it, cube));
+            list.forEach(it -> checkCubeDimension(it, cube, schema));
         }
     }
 
-    private void checkVirtualCubeList(List<? extends MappingVirtualCube> list) {
+    private void checkVirtualCubeList(List<? extends MappingVirtualCube> list, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkVirtualCube);
+            list.forEach(vc -> checkVirtualCube(vc, schema));
         }
     }
 
@@ -763,9 +767,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkCubeList(List<? extends MappingCube> list) {
+    private void checkCubeList(List<? extends MappingCube> list, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkCube);
+            list.forEach(cube -> checkCube(cube, schema));
         }
     }
 

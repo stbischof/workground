@@ -1,11 +1,20 @@
 # Documentation
-### CatalogName : min_Hierarchy_hasAll_single
-### Schema Minimal_1 : 
-### Public Dimensions:
+### CatalogName : tutorial_01-08_1_Cube_with_cub_dimension_with_level_with_property
+### Schema Minimal_Cube_with_cube_dimension_level : 
+---
+### Cubes :
 
-    Dimension1
+    Cube
 
-##### Dimension "Dimension1":
+---
+#### Cube "Cube":
+
+    
+
+##### Table: "Fact"
+
+##### Dimensions:
+##### Dimension "Dimension":
 
 Hierarchies:
 
@@ -15,28 +24,13 @@ Hierarchies:
 
 Tables: "Fact"
 
-Levels: "Level1"
+Levels: "Level"
 
-###### Level "Level1" :
+###### Level "Level" :
 
-    column(s): KEY
+    column(s): L
 
----
-### Cubes :
-
-    Cube1
-
----
-#### Cube "Cube1":
-
-    
-
-##### Table: "Fact"
-
-##### Dimensions:
-##### Dimension: "Dimension1 -> Dimension1":
-
-### Cube "Cube1" diagram:
+### Cube "Cube" diagram:
 
 ---
 
@@ -53,21 +47,21 @@ Levels: "Level1"
 ]
 }}%%
 erDiagram
-c0["Cube1"]{
-M Measure1 ""
-D Dimension1 ""
+c0["Cube"]{
+M Measure ""
+D Dimension ""
 }
-d00["Dimension1"] {
+d00["Dimension"] {
 H HierarchyWithHasAll ""
 }
 h000["HierarchyWithHasAll"] {
-L Level1 ""
+L Level ""
 }
-"c0" ||--|| "d00" : "KEY-KEY"
-"d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d00" : "KEY"
+"d00" ||--|| "h000" : "KEY-L"
 ```
 ---
-### Cube Matrix for Minimal_1:
+### Cube Matrix for Minimal_Cube_with_cube_dimension_level:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -78,7 +72,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube1: [0.0500, 0.0000]
+Cube Cube: [0.0500, 0.0000]
 ```
 ---
 ### Database :
@@ -91,11 +85,13 @@ erDiagram
 Fact{
 string KEY
 int VALUE
+string L
+string prop
 }
 
 ```
 ---
-## Validation result for schema Minimal_1
+## Validation result for schema Minimal_Cube_with_cube_dimension_level
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
