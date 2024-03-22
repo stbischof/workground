@@ -135,7 +135,7 @@ public class DemoSetup {
 
 //		String PATH_TO_OBSERVE = "./activeCatalogs";
 
-		String PATH_TO_OBSERVE = "./../../../../../catalogs";
+		String PATH_TO_OBSERVE = "./../../../../../activeCatalogs";
 
 		String path = Paths.get(PATH_TO_OBSERVE).toAbsolutePath().normalize().toString();
 

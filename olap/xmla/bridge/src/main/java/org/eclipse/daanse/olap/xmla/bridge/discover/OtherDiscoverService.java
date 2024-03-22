@@ -229,10 +229,14 @@ public class OtherDiscoverService {
             if (propertyDefinition.name().equals(PropertyDefinition.Catalog.name())) {
                 List<String> catalogs = new ArrayList<>();
                 for (Context context : contextsListSupplyer.get()) {
-                    Connection connection = context.getConnection();
-                    if (connection != null && connection.getCatalogName() != null) {
-                        catalogs.add(connection.getCatalogName());
-                    }
+                	try {
+                		Connection connection = context.getConnection();
+                		if (connection != null && connection.getCatalogName() != null) {
+                			catalogs.add(connection.getCatalogName());
+                		}
+                	} catch (Exception e) {
+                		LOGGER.error("connection error.", e);
+                	}
                 }
                 //List<String> catalogs = contextsListSupplyer.get().stream()
                 //    .map(c -> c.getConnection().getCatalogName()).toList();
