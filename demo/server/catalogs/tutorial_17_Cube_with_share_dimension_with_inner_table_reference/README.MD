@@ -1,12 +1,17 @@
 # Documentation
-### CatalogName : tutorial_01-08_0_Cube_with_cub_dimension_with_level
-### Schema Minimal_Cube_with_cube_dimension_level : 
+### CatalogName : tutorial_17_Cube_with_share_dimension_with_inner_table_reference
+### Schema Cube_with_share_dimension_with hierarchy_with_inner_table : 
 
-    
-		A basic OLAP schema with a level
+  
+		A basic OLAP schema with a level with reference with inner table
+    Share dimension Dimension1 is defined in a <Dimension> element inside <Schema> element.
+    Hierarchy is defined in a <Hierarchy> element inside <Dimension> element.
+    Hierarchy have reference to inner table element
+    Cube dimension Dimension1 have link on share dimension Dimension1 as source.
+
 
 		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
-		This example schema contains one cube named "Cube".
+		This example schema contains one cube named "Cube1".
 
 		A cube is based on a fact table (<Table>) which refers to a database table containing one or more measurements to be aggregated (and optionally further columns defining factual dimensions).
 		In this case the database table representing the fact table is named "Fact" in the database, which is adressed in the name attribute within the <Table> tag.
@@ -18,36 +23,42 @@
 
 		
   
+### Public Dimensions:
+
+    Dimension1
+
+##### Dimension "Dimension1":
+
+Hierarchies:
+
+    Hierarchy1
+
+##### Hierarchy Hierarchy1:
+
+Tables: ""
+
+Levels: "Level1"
+
+###### Level "Level1" :
+
+    column(s): KEY
+
 ---
 ### Cubes :
 
-    Cube
+    Cube1
 
 ---
-#### Cube "Cube":
+#### Cube "Cube1":
 
     
 
 ##### Table: "Fact"
 
 ##### Dimensions:
-##### Dimension "Dimension":
+##### Dimension: "Dimension1 -> Dimension1":
 
-Hierarchies:
-
-    HierarchyWithHasAll
-
-##### Hierarchy HierarchyWithHasAll:
-
-Tables: "Fact"
-
-Levels: "Level"
-
-###### Level "Level" :
-
-    column(s): KEY
-
-### Cube "Cube" diagram:
+### Cube "Cube1" diagram:
 
 ---
 
@@ -64,21 +75,21 @@ Levels: "Level"
 ]
 }}%%
 erDiagram
-c0["Cube"]{
-M Measure ""
-D Dimension ""
+c0["Cube1"]{
+M Measure1 ""
+D Dimension1 ""
 }
-d00["Dimension"] {
-H HierarchyWithHasAll ""
+d00["Dimension1"] {
+H Hierarchy1 ""
 }
-h000["HierarchyWithHasAll"] {
-L Level ""
+h000["Hierarchy1"] {
+L Level1 ""
 }
-"c0" ||--|| "d00" : "KEY"
+"c0" ||--|| "d00" : "DIM_KEY-KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Minimal_Cube_with_cube_dimension_level:
+### Cube Matrix for Cube_with_share_dimension_with hierarchy_with_inner_table:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -89,7 +100,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube: [0.0500, 0.0000]
+Cube Cube1: [0.0500, 0.0000]
 ```
 ---
 ### Database :
@@ -100,14 +111,10 @@ title: Diagram;
 ---
 erDiagram
 Fact{
-string KEY
+int DIM_KEY
 int VALUE
 }
 
+"Fact" ||--o{ "HT" : "DIM_KEY-KEY"
 ```
 ---
-## Validation result for schema Minimal_Cube_with_cube_dimension_level
-## <span style='color: blue;'>WARNING</span> : 
-|Type|   |
-|----|---|
-|DATABASE|Table: Schema must be set|

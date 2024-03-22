@@ -149,7 +149,7 @@ public class SchemaWalkerMessages {
     public static final String HIERARCHY_TABLE_FIELD_MUST_BE_EMPTY =
         "Hierarchy: Table field must be empty in dimension with name %s";
     public static final String HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_ANY_JOIN =
-        "Hierarchy: Table value does not correspond to any join in dimension with name %s";
+        "Hierarchy: Table %s does not correspond to any join in dimension with name %s";
     public static final String HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_HIERARCHY_RELATION =
         "Hierarchy: Table value does not correspond to Hierarchy Relation  in dimension with name %s";
     public static final String LEVEL_LEVEL_TYPE_S_CAN_ONLY_BE_USED_WITH_A_TIME_DIMENSION =
@@ -218,8 +218,8 @@ public class SchemaWalkerMessages {
     public static final String DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE =
         "Degenerate dimension validation check - Column %s does not exist in fact table";
     public static final String RELATON = "relaton";
-    public static final String COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE =
-        "Column {0} does not exist in Dimension table";
+    public static final String PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE =
+        "Property column %s does not exist in Hierarchy table %s";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN =
         "Could not lookup existance of Column %s defined in field %s in ";
     public static final String MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE =

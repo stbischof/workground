@@ -10,10 +10,10 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 -->
-<Schema name="Minimal_Cube_with_cube_dimension_level">
+<Schema name="Minimal_Cube_with_cube_dimension_level_with_property_with_wrong_column">
   <Documentation>
     <![CDATA[
-		A basic OLAP schema with a level
+		A basic OLAP schema with a level with property with wrong column
 
 		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
 		This example schema contains one cube named "Cube".
@@ -25,7 +25,7 @@
 		The measurement in this example cube is named "Measure" (name attribute). It corresponds to the "VALUE" column (column attribute) in the database table "Fact" and is aggregated by summation (aggregator attribute).
 		Level is defined in <Level> element.
 		Property is defined in <Property> element inside <Level> element. Property we can see in cell tooltip in excel
-
+    We use wrong column name for test.
 		]]>
   </Documentation>
   <Cube name="Cube">
@@ -33,7 +33,9 @@
     <Dimension name="Dimension">
       <Hierarchy hasAll="true" name="HierarchyWithHasAll" primaryKey="KEY">
         <Table name="Fact"/>
-        <Level name="Level" column="KEY" />
+        <Level name="Level" column="L" >
+          <Property name="Prop" column="prop_wrong" type="String" description="Test Property"/>
+        </Level>
       </Hierarchy>
     </Dimension>
     <Measure aggregator="sum" name="Measure" column="VALUE"/>

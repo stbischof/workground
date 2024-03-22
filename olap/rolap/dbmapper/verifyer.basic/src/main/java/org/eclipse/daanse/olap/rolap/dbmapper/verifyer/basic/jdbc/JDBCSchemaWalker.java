@@ -47,7 +47,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.ERROR;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.WARNING;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE;
-import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_S_DOES_NOT_EXIST_IN_TABLE_S2;
@@ -387,8 +387,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             TableReference tableReference = getTableReference(parentTable.schema(), parentTable.name());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
-                String msg = String.format(COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE,
-                    parentTable.name());
+                String msg = String.format(PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE,
+                    column, parentTable.name());
                 results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
             }
         } catch (SQLException e) {

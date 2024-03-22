@@ -2,7 +2,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN;
-import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COULD_NOT_EVALUEATE_DOES_COLUMN_EXIST_SCHEMA_TABLE_COLUMN;
@@ -243,8 +243,8 @@ class DatabaseVerifyerTest {
 
         assertThat(result)
             .extracting(VerificationResult::description)
-            .contains( String.format(COLUMN_0_DOES_NOT_EXIST_IN_DIMENSION_TABLE,
-                            "name"));
+            .contains( String.format(PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE,
+                "column", "name"));
         assertThat(result).extracting(VerificationResult::title)
             .contains(PROPERTY);
         assertThat(result).extracting(VerificationResult::level)

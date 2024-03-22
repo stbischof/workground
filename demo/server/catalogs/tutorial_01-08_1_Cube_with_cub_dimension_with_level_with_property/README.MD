@@ -1,6 +1,23 @@
 # Documentation
 ### CatalogName : tutorial_01-08_1_Cube_with_cub_dimension_with_level_with_property
-### Schema Minimal_Cube_with_cube_dimension_level : 
+### Schema Minimal_Cube_with_cube_dimension_level_with_property : 
+
+    
+		A basic OLAP schema with a level with property
+
+		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
+		This example schema contains one cube named "Cube".
+
+		A cube is based on a fact table (<Table>) which refers to a database table containing one or more measurements to be aggregated (and optionally further columns defining factual dimensions).
+		In this case the database table representing the fact table is named "Fact" in the database, which is adressed in the name attribute within the <Table> tag.
+
+		Each measurement of the cube is defined in a separate <Measure> element.
+		The measurement in this example cube is named "Measure" (name attribute). It corresponds to the "VALUE" column (column attribute) in the database table "Fact" and is aggregated by summation (aggregator attribute).
+		Level is defined in <Level> element.
+		Property is defined in <Property> element inside <Level> element. Property we can see in cell tooltip in excel
+
+		
+  
 ---
 ### Cubes :
 
@@ -61,7 +78,7 @@ L Level ""
 "d00" ||--|| "h000" : "KEY-L"
 ```
 ---
-### Cube Matrix for Minimal_Cube_with_cube_dimension_level:
+### Cube Matrix for Minimal_Cube_with_cube_dimension_level_with_property:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -91,7 +108,7 @@ string prop
 
 ```
 ---
-## Validation result for schema Minimal_Cube_with_cube_dimension_level
+## Validation result for schema Minimal_Cube_with_cube_dimension_level_with_property
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -681,23 +681,42 @@ int anzahl_klassen
 |----|---|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Migrationshintergrund|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Schuljahre|
-|SCHEMA|Hierarchy: Table field must be empty in dimension with name Einschulungen|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Klassenwiederholung|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Berufsgruppen Personal|
+|SCHEMA|Hierarchy: Table field must be empty in dimension with name Einschulungen|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Schulabschluss|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Geschlecht|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Altersgruppen Personal|
+|DATABASE|Table schul_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table geschlecht|
-|DATABASE|Column id defined in field primaryKey does not exist in table foerderung_art|
+|DATABASE|Table schule does not exist in database|
+|DATABASE|Table schul_jahr does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table alters_gruppe|
 |DATABASE|Column id defined in field primaryKey does not exist in table schule|
-|DATABASE|Column id defined in field primaryKey does not exist in table wohnort_landkreis|
+|DATABASE|Table traeger_kategorie does not exist in database|
+|DATABASE|Table personal_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table personal_art|
+|DATABASE|Table sonderpaed_foerderbedarf does not exist in database|
+|DATABASE|Table foerderung_art does not exist in database|
+|DATABASE|Table traeger_art does not exist in database|
+|DATABASE|Column id defined in field primaryKey does not exist in table foerderung_art|
+|DATABASE|Table bundesland does not exist in database|
+|DATABASE|Table schul_kategorie does not exist in database|
+|DATABASE|Table alters_gruppe does not exist in database|
+|DATABASE|Table wohnort_landkreis does not exist in database|
+|DATABASE|Column id defined in field primaryKey does not exist in table wohnort_landkreis|
+|DATABASE|Table einschulung does not exist in database|
+|DATABASE|Table klassen_wiederholung does not exist in database|
+|DATABASE|Table schul_abschluss does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table migrations_hintergrund|
+|DATABASE|Table migrations_hintergrund does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table schul_jahr|
+|DATABASE|Table ganztags_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table schul_abschluss|
+|DATABASE|Table geschlecht does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table klassen_wiederholung|
 |DATABASE|Column id defined in field primaryKey does not exist in table einschulung|
+|DATABASE|Table traeger does not exist in database|
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -880,7 +880,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             SchemaExplorer.getTableNamesForJoin(hierarchy.relation(), joinTables);
             if (!joinTables.contains(primaryKeyTable)) {
                 String msg = String.format(HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_ANY_JOIN,
-                    orNotSet(cubeDimension.name()));
+                    orNotSet(primaryKeyTable), orNotSet(cubeDimension.name()));
                 results.add(new VerificationResultR(HIERARCHY, msg, ERROR, Cause.DATABASE));
             }
             checkJoin(join);

@@ -418,7 +418,7 @@ class MandantoriesVerifyerTest {
             .contains(String.format(MEASURE_NAME_MUST_BE_SET, "cubeName"))
             .contains(String.format(MEASURE_AGGREGATOR_MUST_BE_SET, "cubeName"))
             .contains(String.format(MEASURE_COLUMN_MUST_BE_SET, "cubeName"))
-            .contains(String.format(HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_ANY_JOIN, NOT_SET))
+            .contains(String.format(HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_ANY_JOIN, NOT_SET, NOT_SET))
             .contains(String.format(LEVEL_NAME_MUST_BE_SET, NOT_SET))
             .contains(String.format(LEVEL_COLUMN_MUST_BE_SET, NOT_SET))
             .contains(JOIN_LEFT_KEY_MUST_BE_SET)

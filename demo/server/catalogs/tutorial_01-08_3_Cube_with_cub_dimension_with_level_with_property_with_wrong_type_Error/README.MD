@@ -1,21 +1,21 @@
 # Documentation
-### CatalogName : tutorial_01-08_0_Cube_with_cub_dimension_with_level
-### Schema Minimal_Cube_with_cube_dimension_level : 
+### CatalogName : tutorial_01-08_3_Cube_with_cub_dimension_with_level_with_property_with_wrong_type_Error
+### Schema Minimal_Cube_with_cube_dimension_level_with_property_with_wrong_type : 
 
     
-		A basic OLAP schema with a level
+		A basic OLAP schema with a level with property
 
 		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
 		This example schema contains one cube named "Cube".
 
 		A cube is based on a fact table (<Table>) which refers to a database table containing one or more measurements to be aggregated (and optionally further columns defining factual dimensions).
-		In this case the database table representing the fact table is named "Fact" in the database, which is adressed in the name attribute within the <Table> tag.
+		In this case the database table representing the fact table is named "Fact" in the database, which is addressed in the name attribute within the <Table> tag.
 
 		Each measurement of the cube is defined in a separate <Measure> element.
 		The measurement in this example cube is named "Measure" (name attribute). It corresponds to the "VALUE" column (column attribute) in the database table "Fact" and is aggregated by summation (aggregator attribute).
 		Level is defined in <Level> element.
 		Property is defined in <Property> element inside <Level> element. Property we can see in cell tooltip in excel
-
+    We use wrong type name for test.
 		
   
 ---
@@ -45,7 +45,7 @@ Levels: "Level"
 
 ###### Level "Level" :
 
-    column(s): KEY
+    column(s): L
 
 ### Cube "Cube" diagram:
 
@@ -75,10 +75,10 @@ h000["HierarchyWithHasAll"] {
 L Level ""
 }
 "c0" ||--|| "d00" : "KEY"
-"d00" ||--|| "h000" : "KEY-KEY"
+"d00" ||--|| "h000" : "KEY-L"
 ```
 ---
-### Cube Matrix for Minimal_Cube_with_cube_dimension_level:
+### Cube Matrix for Minimal_Cube_with_cube_dimension_level_with_property_with_wrong_type:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -102,11 +102,13 @@ erDiagram
 Fact{
 string KEY
 int VALUE
+string L
+string prop
 }
 
 ```
 ---
-## Validation result for schema Minimal_Cube_with_cube_dimension_level
+## Validation result for schema Minimal_Cube_with_cube_dimension_level_with_property_with_wrong_type
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

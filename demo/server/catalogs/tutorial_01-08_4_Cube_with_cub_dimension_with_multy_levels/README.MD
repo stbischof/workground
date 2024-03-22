@@ -1,15 +1,15 @@
 # Documentation
-### CatalogName : tutorial_01-08_0_Cube_with_cub_dimension_with_level
-### Schema Minimal_Cube_with_cube_dimension_level : 
+### CatalogName : tutorial_01-08_4_Cube_with_cub_dimension_with_multy_levels
+### Schema Minimal_Cube_with_cube_dimension_level_with_property : 
 
     
-		A basic OLAP schema with a level
+		A basic OLAP schema with a level with property
 
 		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
 		This example schema contains one cube named "Cube".
 
 		A cube is based on a fact table (<Table>) which refers to a database table containing one or more measurements to be aggregated (and optionally further columns defining factual dimensions).
-		In this case the database table representing the fact table is named "Fact" in the database, which is adressed in the name attribute within the <Table> tag.
+		In this case the database table representing the fact table is named "Fact" in the database, which is addressed in the name attribute within the <Table> tag.
 
 		Each measurement of the cube is defined in a separate <Measure> element.
 		The measurement in this example cube is named "Measure" (name attribute). It corresponds to the "VALUE" column (column attribute) in the database table "Fact" and is aggregated by summation (aggregator attribute).
@@ -41,11 +41,15 @@ Hierarchies:
 
 Tables: "Fact"
 
-Levels: "Level"
+Levels: "Level, Level"
 
 ###### Level "Level" :
 
-    column(s): KEY
+    column(s): L1
+
+###### Level "Level" :
+
+    column(s): L2
 
 ### Cube "Cube" diagram:
 
@@ -73,12 +77,14 @@ H HierarchyWithHasAll ""
 }
 h000["HierarchyWithHasAll"] {
 L Level ""
+L Level ""
 }
 "c0" ||--|| "d00" : "KEY"
-"d00" ||--|| "h000" : "KEY-KEY"
+"d00" ||--|| "h000" : "KEY-L1"
+"d00" ||--|| "h000" : "KEY-L2"
 ```
 ---
-### Cube Matrix for Minimal_Cube_with_cube_dimension_level:
+### Cube Matrix for Minimal_Cube_with_cube_dimension_level_with_property:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -89,7 +95,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube: [0.0500, 0.0000]
+Cube Cube: [0.1000, 0.0000]
 ```
 ---
 ### Database :
@@ -102,11 +108,15 @@ erDiagram
 Fact{
 string KEY
 int VALUE
+string L1
+int L2
+string prop1
+int prop2
 }
 
 ```
 ---
-## Validation result for schema Minimal_Cube_with_cube_dimension_level
+## Validation result for schema Minimal_Cube_with_cube_dimension_level_with_property
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

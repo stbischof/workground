@@ -200,7 +200,7 @@ public abstract class AbstractSchemaWalker {
         if (hierarchy != null) {
             checkAnnotationList(hierarchy.annotations());
             checkMemberReaderParameterList(hierarchy.memberReaderParameters());
-
+            checkRelationOrJoin(hierarchy.relation());
             //Level
             if (hierarchy.levels() != null) {
                 hierarchy.levels().forEach(l -> checkLevel(l, hierarchy, cubeDimension, cube));
