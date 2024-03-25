@@ -101,8 +101,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write(ENTER);
         writeSchemas(writer, context);
         writeCubeMatrixDiagram(writer, context);
-        List<String> tablesConnections = schemaTablesConnections(context);
-        writeDatabaseInfo(writer, context, tablesConnections);
+        writeDatabaseInfo(writer, context);
         writeVerifyer(writer, context);
         writer.flush();
         writer.close();
@@ -231,22 +230,22 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         verifyers.remove(verifyer);
     }
 
-    private List<String> schemaTablesConnections(Context context) {
+    private List<String> schemaTablesConnections(Context context, List<String> missedTableNames) {
         List<String> result = new ArrayList<>();
         context.getDatabaseMappingSchemaProviders().forEach(p -> {
             MappingSchema schema = p.get();
-            result.addAll(schema.cubes().stream().flatMap(c -> cubeTablesConnections(schema, c).stream()).toList());
+            result.addAll(schema.cubes().stream().flatMap(c -> cubeTablesConnections(schema, c, missedTableNames).stream()).toList());
         });
         return result;
     }
 
-    private List<String> cubeTablesConnections(MappingSchema schema, MappingCube c) {
+    private List<String> cubeTablesConnections(MappingSchema schema, MappingCube c, List<String> missedTableNames) {
         List<String> result = new ArrayList<>();
         Optional<String> optionalFactTable = getFactTableName(c.fact());
         if (optionalFactTable.isPresent()) {
-            result.addAll(getFactTableConnections(c.fact()));
+            result.addAll(getFactTableConnections(c.fact(), missedTableNames));
             result.addAll(dimensionsTablesConnections(schema, c.dimensionUsageOrDimensions(),
-                optionalFactTable.get()));
+                optionalFactTable.get(), missedTableNames));
         }
 
         return result;
@@ -325,24 +324,26 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private List<String> dimensionsTablesConnections(
         MappingSchema schema,
         List<MappingCubeDimension> dimensionUsageOrDimensions,
-        String fact
+        String fact,
+        List<String> missedTableNames
     ) {
         if (dimensionUsageOrDimensions != null) {
-            return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionTablesConnections(schema, d, fact).stream()).toList();
+            return dimensionUsageOrDimensions.stream().flatMap(d -> dimensionTablesConnections(schema, d, fact, missedTableNames).stream()).toList();
         }
         return List.of();
     }
 
-    private List<String> dimensionTablesConnections(MappingSchema schema, MappingCubeDimension d, String fact) {
+    private List<String> dimensionTablesConnections(MappingSchema schema, MappingCubeDimension d, String fact,
+                                                    List<String> missedTableNames) {
         if (d instanceof MappingDimensionUsage mdu) {
             Optional<MappingPrivateDimension> optionalDimension = getPrivateDimension(schema, mdu.source());
             if (optionalDimension.isPresent()) {
                 return hierarchiesTablesConnections(schema, optionalDimension.get().hierarchies(), fact,
-                    d.foreignKey());
+                    d.foreignKey(), missedTableNames);
             }
         }
         if (d instanceof MappingPrivateDimension mpd) {
-            return hierarchiesTablesConnections(schema, mpd.hierarchies(), fact, mpd.foreignKey());
+            return hierarchiesTablesConnections(schema, mpd.hierarchies(), fact, mpd.foreignKey(), missedTableNames);
         }
         return List.of();
     }
@@ -351,10 +352,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         MappingSchema schema,
         List<MappingHierarchy> hierarchies,
         String fact,
-        String foreignKey
+        String foreignKey,
+        List<String> missedTableNames
     ) {
         if (hierarchies != null) {
-            return hierarchies.stream().flatMap(h -> hierarchyTablesConnections(schema, h, fact, foreignKey).stream()).toList();
+            return hierarchies.stream().flatMap(h -> hierarchyTablesConnections(schema, h, fact, foreignKey, missedTableNames).stream()).toList();
         }
         return List.of();
     }
@@ -363,7 +365,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         MappingSchema schema,
         MappingHierarchy h,
         String fact,
-        String foreignKey
+        String foreignKey,
+        List<String> missedTableNames
     ) {
         List<String> result = new ArrayList<>();
         String primaryKeyTable = h.primaryKeyTable();
@@ -375,10 +378,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
         if (primaryKeyTable != null) {
             if (fact != null && !fact.equals(primaryKeyTable)) {
-                result.add(connection(fact, primaryKeyTable, foreignKey, h.primaryKey()));
+                String flag1 = missedTableNames.contains(fact) ? NEGATIVE_FLAG : POSITIVE_FLAG;
+                String flag2 = missedTableNames.contains(primaryKeyTable) ? NEGATIVE_FLAG : POSITIVE_FLAG;
+                result.add(connection(fact, primaryKeyTable, flag1, flag2, foreignKey, h.primaryKey()));
             }
         }
-        result.addAll(getFactTableConnections(h.relation()));
+        result.addAll(getFactTableConnections(h.relation(), missedTableNames));
         return result;
     }
 
@@ -817,7 +822,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return Optional.empty();
     }
 
-    private List<String> getFactTableConnections(MappingRelationOrJoin relation) {
+    private List<String> getFactTableConnections(MappingRelationOrJoin relation, List<String> missedTableNames) {
         if (relation instanceof MappingTable mt) {
             return List.of();
         }
@@ -831,21 +836,23 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             if (mj.relations() != null && mj.relations().size() > 1) {
                 ArrayList<String> res = new ArrayList<>();
                 String t1 = getFirstTable(mj.relations().get(0));
+                String flag1  = missedTableNames.contains(t1) ? NEGATIVE_FLAG : POSITIVE_FLAG;
                 String t2 = getFirstTable(mj.relations().get(1));
+                String flag2  = missedTableNames.contains(t2) ? NEGATIVE_FLAG : POSITIVE_FLAG;
                 if (t1 != null && !t1.equals(t2)) {
-                    res.add(connection(t1, t2, mj.leftKey(), mj.rightKey()));
+                    res.add(connection(t1, t2, flag1, flag2, mj.leftKey(), mj.rightKey()));
                 }
-                res.addAll(getFactTableConnections(mj.relations().get(1)));
+                res.addAll(getFactTableConnections(mj.relations().get(1), missedTableNames));
                 return res;
             }
         }
         return List.of();
     }
 
-    private String connection(String t1, String t2, String key1, String key2) {
+    private String connection(String t1, String t2, String f1, String f2, String key1, String key2) {
         String k1 = key1 == null ? EMPTY_STRING : key1 + "-";
         String k2 = key2 == null ? EMPTY_STRING : key2;
-        return "\"" + t1 + "\" ||--o{ \"" + t2 + "\" : \"" + k1 + k2 + "\"";
+        return "\"" + t1 + f1 + "\" ||--o{ \"" + t2 + f2 + "\" : \"" + k1 + k2 + "\"";
     }
 
     private String connection1(String t1, String t2, String key1, String key2) {
@@ -889,13 +896,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return "";
     }
 
-    private void writeDatabaseInfo(FileWriter writer, Context context, List<String> tablesConnections) {
+    private void writeDatabaseInfo(FileWriter writer, Context context) {
         try (Connection connection = context.getDataSource().getConnection()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             List<DBStructure> dbStructureList = context.getDatabaseMappingSchemaProviders().stream().map(p -> Utils.getDBStructure(p.get())).toList();
             SchemaReference schemaReference = new SchemaReferenceR(connection.getSchema());
             List<TableDefinition> tables = databaseService.getTableDefinitions(databaseMetaData, schemaReference);
-            writeTables(writer, tables, databaseMetaData, tablesConnections, dbStructureList);
+            writeTables(writer, context, tables, databaseMetaData, dbStructureList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -903,9 +910,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeTables(
         final FileWriter writer,
+        final Context context,
         final List<TableDefinition> tables,
         final DatabaseMetaData jdbcMetaDataService,
-        final List<String> tablesConnections,
         List<DBStructure> dbStructureList
     ) {
         try {
@@ -921,9 +928,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     erDiagram
                     """);
                 List<Table> missedTables = getMissedTablesFromDbStructureFromSchema(dbStructureList, tables);
-                tables.forEach(t -> writeTablesDiagram(writer, t.table(), jdbcMetaDataService, dbStructureList));
+                List<String> missedTableNames = new ArrayList<>();
+                missedTableNames.addAll(missedTables.stream().map(t -> t.tableName()).toList());
+                tables.forEach(t -> writeTablesDiagram(writer, t.table(), jdbcMetaDataService, dbStructureList, missedTableNames));
                 missedTables.forEach(t -> writeTablesDiagram(writer, t));
                 writer.write(ENTER);
+                List<String> tablesConnections = schemaTablesConnections(context, missedTableNames);
                 for (String c : tablesConnections) {
                     writer.write(c);
                     writer.write(ENTER);
@@ -963,14 +973,15 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private void writeTablesDiagram(FileWriter writer, TableReference tableReference, DatabaseMetaData databaseMetaData, List<DBStructure> dbStructureList) {
+    private void writeTablesDiagram(FileWriter writer, TableReference tableReference, DatabaseMetaData databaseMetaData, List<DBStructure> dbStructureList, List<String> missedTableNames) {
         try {
             List<ColumnDefinition> columnList = databaseService.getColumnDefinitions(databaseMetaData, tableReference);
             String name = tableReference.name();
-            String tableFlag = POSITIVE_FLAG;
             List<Column> missedColumns = getMissedColumnsFromDbStructureFromSchema(dbStructureList, name, columnList);
+            String tableFlag = POSITIVE_FLAG;
             if (!missedColumns.isEmpty()) {
                 tableFlag = NEGATIVE_FLAG;
+                missedTableNames.add(name);
             }
             if (columnList != null) {
                 writer.write(STR. """

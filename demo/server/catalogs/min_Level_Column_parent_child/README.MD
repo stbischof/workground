@@ -111,7 +111,7 @@ int PARENT_L1 "✔"
 int PARENT_L2 "✔"
 }
 
-"Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"
+"Fact✔" ||--o{ "Hierarchy✔" : "DIM_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Parent_Child_DifferentValueLevels

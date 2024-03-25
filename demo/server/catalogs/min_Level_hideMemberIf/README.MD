@@ -265,13 +265,13 @@ string NAME "✔"
 int L2_KEY "✔"
 }
 
-"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
-"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
-"Fact" ||--o{ "Level_2_NULL" : "DIM_KEY-KEY"
-"Level_2_NULL" ||--o{ "Level_1" : "L1_KEY-KEY"
-"Fact_Multiple" ||--o{ "Level_3_Multiple" : "DIM_KEY-KEY"
-"Level_3_Multiple" ||--o{ "Level_2_Multiple" : "L2_KEY-KEY"
-"Level_2_Multiple" ||--o{ "Level_1_Multiple" : "L1_KEY-KEY"
+"Fact✔" ||--o{ "Level_2✔" : "DIM_KEY-KEY"
+"Level_2✔" ||--o{ "Level_1✔" : "L1_KEY-KEY"
+"Fact✔" ||--o{ "Level_2_NULL✔" : "DIM_KEY-KEY"
+"Level_2_NULL✔" ||--o{ "Level_1✔" : "L1_KEY-KEY"
+"Fact_Multiple✔" ||--o{ "Level_3_Multiple✔" : "DIM_KEY-KEY"
+"Level_3_Multiple✔" ||--o{ "Level_2_Multiple✔" : "L2_KEY-KEY"
+"Level_2_Multiple✔" ||--o{ "Level_1_Multiple✔" : "L1_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Single_Hierarchy_Hidden_Members

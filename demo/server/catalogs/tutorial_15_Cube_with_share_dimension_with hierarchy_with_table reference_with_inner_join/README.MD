@@ -129,8 +129,8 @@ string NAME "✔"
 int L1_KEY "✔"
 }
 
-"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
-"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
+"Fact✔" ||--o{ "Level_2✔" : "DIM_KEY-KEY"
+"Level_2✔" ||--o{ "Level_1✔" : "L1_KEY-KEY"
 ```
 ---
 ## Validation result for schema Cube_with_share_dimension_with_hierarchy_with_table reference_with_inner_join

@@ -135,10 +135,10 @@ int H1L1_KEY "✔"
 int H2L1_KEY "✔"
 }
 
-"Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"
-"HX_L2" ||--o{ "H1_L1" : "H1L1_KEY-KEY"
-"Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"
-"HX_L2" ||--o{ "H2_L1" : "H2L1_KEY-KEY"
+"Fact✔" ||--o{ "HX_L2✔" : "DIM_KEY-KEY"
+"HX_L2✔" ||--o{ "H1_L1✔" : "H1L1_KEY-KEY"
+"Fact✔" ||--o{ "HX_L2✔" : "DIM_KEY-KEY"
+"HX_L2✔" ||--o{ "H2_L1✔" : "H2L1_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Multiple_Hierarchy

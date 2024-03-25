@@ -123,6 +123,6 @@ int VALUE "✔"
 INTEGER KEY "❌"
 }
 
-"Fact" ||--o{ "HT_VIEW" : "DIM_KEY-KEY"
+"Fact✔" ||--o{ "HT_VIEW❌" : "DIM_KEY-KEY"
 ```
 ---

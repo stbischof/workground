@@ -108,8 +108,8 @@ string NAME "✔"
 int L1_KEY "✔"
 }
 
-"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
-"Level_2" ||--o{ "Level_1" : "L1_KEY-KEY"
+"Fact✔" ||--o{ "Level_2✔" : "DIM_KEY-KEY"
+"Level_2✔" ||--o{ "Level_1✔" : "L1_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Single_Hierarchy

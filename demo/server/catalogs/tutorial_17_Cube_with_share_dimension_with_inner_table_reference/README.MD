@@ -120,6 +120,6 @@ VARCHAR KEY "❌"
 VARCHAR NAME "❌"
 }
 
-"Fact" ||--o{ "HT" : "DIM_KEY-KEY"
+"Fact✔" ||--o{ "HT❌" : "DIM_KEY-KEY"
 ```
 ---

@@ -255,13 +255,13 @@ string D3H3L3_NAME "✔"
 string D3H3L3_Ordinal "✔"
 }
 
-"Cube1Fact" ||--o{ "D1H1L1Table" : "D1-D1H1L1"
-"Cube1Fact" ||--o{ "D2H1L1Table" : "D2-D2H1L1"
-"Cube1Fact" ||--o{ "D2H2L2Table" : "D2-D2H2L2"
-"Cube1Fact" ||--o{ "D3H1L1Table" : "D3-D3H1L1"
-"Cube1Fact" ||--o{ "D3H3L3Table" : "D3-D3H3L3"
-"D3H3L3Table" ||--o{ "D3H3L2Table" : "D3H3L2_id-D3H3L2"
-"D3H3L2Table" ||--o{ "D3H3L1Table" : "D3H3L1_id-D3H3L1"
+"Cube1Fact✔" ||--o{ "D1H1L1Table✔" : "D1-D1H1L1"
+"Cube1Fact✔" ||--o{ "D2H1L1Table✔" : "D2-D2H1L1"
+"Cube1Fact✔" ||--o{ "D2H2L2Table✔" : "D2-D2H2L2"
+"Cube1Fact✔" ||--o{ "D3H1L1Table✔" : "D3-D3H1L1"
+"Cube1Fact✔" ||--o{ "D3H3L3Table✔" : "D3-D3H3L3"
+"D3H3L3Table✔" ||--o{ "D3H3L2Table✔" : "D3H3L2_id-D3H3L2"
+"D3H3L2Table✔" ||--o{ "D3H3L1Table✔" : "D3H3L1_id-D3H3L1"
 ```
 ---
 ## Validation result for schema ExpressiveNames

@@ -129,8 +129,8 @@ int DIM2_KEY "✔"
 int VALUE "✔"
 }
 
-"Fact" ||--o{ "DIM_1" : "DIM1_KEY-KEY"
-"Fact" ||--o{ "DIM_2" : "DIM2_KEY-KEY"
+"Fact✔" ||--o{ "DIM_1✔" : "DIM1_KEY-KEY"
+"Fact✔" ||--o{ "DIM_2✔" : "DIM2_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Two_Dimensions

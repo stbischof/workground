@@ -281,10 +281,10 @@ string QTR_NAME "✔"
 string QTR_DESC "✔"
 }
 
-"orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
-"orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
-"orderfact" ||--o{ "products" : "PRODUCTCODE-PRODUCTCODE"
-"orderfact" ||--o{ "time" : "TIME_ID-TIME_ID"
+"orderfact✔" ||--o{ "customer_w_ter✔" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"orderfact✔" ||--o{ "customer_w_ter✔" : "CUSTOMERNUMBER-CUSTOMERNUMBER"
+"orderfact✔" ||--o{ "products✔" : "PRODUCTCODE-PRODUCTCODE"
+"orderfact✔" ||--o{ "time✔" : "TIME_ID-TIME_ID"
 ```
 ---
 ## Validation result for schema SteelWheels

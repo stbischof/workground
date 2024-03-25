@@ -98,7 +98,7 @@ string NAME "✔"
 int PARENT_KEY "✔"
 }
 
-"Fact" ||--o{ "Hier_One_Top_Member" : "DIM_KEY-KEY"
+"Fact✔" ||--o{ "Hier_One_Top_Member✔" : "DIM_KEY-KEY"
 ```
 ---
 ## Validation result for schema Minimal_Parent_Child_Hierarchy

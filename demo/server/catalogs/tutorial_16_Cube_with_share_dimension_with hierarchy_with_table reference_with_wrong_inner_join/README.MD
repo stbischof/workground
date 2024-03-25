@@ -133,8 +133,8 @@ int L1_KEY "✔"
 INTEGER L1_KEY "❌"
 }
 
-"Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"
-"Level_2_wrong" ||--o{ "Level_1" : "L1_KEY-KEY"
+"Fact✔" ||--o{ "Level_2✔" : "DIM_KEY-KEY"
+"Level_2_wrong❌" ||--o{ "Level_1✔" : "L1_KEY-KEY"
 ```
 ---
 ## Validation result for schema Cube_with_share_dimension_with_hierarchy_with_table_reference_with_inner_join
