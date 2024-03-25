@@ -1,5 +1,5 @@
 id,bezeichnung,,,,,,,,,,,,,,,,,id,bezeichnung
-INTEGER,STRING,,,,,,,,,,,,,,,,,INTEGER,STRING
+INTEGER,VARCHAR,,,,,,,,,,,,,,,,,INTEGER,VARCHAR
 ,,,,,,,,,,,,,,,,,,0,Lehrer:in
 ,,,,,,,,,,,,,,,,,,1,Erzieher:in
 ,,,,,,,,,,,,,,,,,,2,Sonderpädagogische Fachkraft

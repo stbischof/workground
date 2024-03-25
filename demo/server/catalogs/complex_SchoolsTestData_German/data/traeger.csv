@@ -1,5 +1,5 @@
 id,traeger_name,traeger_art_id
-INTEGER,STRING,INTEGER
+INTEGER,VARCHAR,INTEGER
 0,Stadt Jena,0
 1,Freistaat Thüringen,1
 2,Euro-Schulen gemeinnützige Gesellschaft für berufliche Bildung und Beschäftigung Thüringen mbH,2

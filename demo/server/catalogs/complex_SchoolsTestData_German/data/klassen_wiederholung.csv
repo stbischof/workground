@@ -1,4 +1,4 @@
 id,klassenwiederholung
-INTEGER,STRING
+INTEGER,VARCHAR
 0,klasse erstmalig absolviert
 1,klasse wiederholt

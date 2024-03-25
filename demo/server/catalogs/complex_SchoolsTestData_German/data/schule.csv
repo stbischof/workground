@@ -1,5 +1,5 @@
 id,schul_nummer,schul_name,traeger_id,schul_art_id,ganztags_art_id
-INTEGER,INTEGER,STRING,INTEGER,INTEGER,INTEGER
+INTEGER,INTEGER,VARCHAR,INTEGER,INTEGER,INTEGER
 0,18996,Talschule Jena Staatliche Grundschule,0,0,1
 1,19001,"Staatliche Grundschule ""Heinrich Heine"" Jena",0,0,1
 2,19014,Schule am Rautal Jena Staatliche Grundschule,0,0,1

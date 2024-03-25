@@ -1,5 +1,5 @@
 id,schulabschluss
-INTEGER,STRING
+INTEGER,VARCHAR
 0,Abgang ohne Abschluss
 1,Abitur
 2,Realschulabschluss

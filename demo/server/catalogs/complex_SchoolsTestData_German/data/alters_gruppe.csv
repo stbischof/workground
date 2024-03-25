@@ -1,5 +1,5 @@
 id,altersgruppe
-INTEGER,STRING
+INTEGER,VARCHAR
 10,bis unter 30 Jahre
 11,30 bis unter 45 Jahre
 12,45 bis unter 55 Jahre
