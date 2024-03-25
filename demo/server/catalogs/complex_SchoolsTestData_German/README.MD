@@ -604,31 +604,117 @@ Cube Schueler_innen_an_Jenaer_Schulen: [0.9500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-fact_personal{
-int schule_id
-int schul_jahr_id
-int alters_gruppe_id
-int geschlecht_id
-int personal_art_id
-int anzahl_personen
+"fact_schueler✔"{
+int schule_id "✔"
+int schul_jahr_id "✔"
+int geschlecht_id "✔"
+int wohn_lk_id "✔"
+int einschulung_id "✔"
+int schul_abschluss_id "✔"
+int klassen_wdh "✔"
+int migrations_hg_id "✔"
+int foerder_art_id "✔"
+int anzahl_schueler "✔"
 }
-fact_schueler{
-int schule_id
-int schul_jahr_id
-int geschlecht_id
-int wohn_lk_id
-int einschulung_id
-int schul_abschluss_id
-int klassen_wdh
-int migrations_hg_id
-int foerder_art_id
-int anzahl_schueler
+"fact_schulen✔"{
+int schule_id "✔"
+int schul_jahr_id "✔"
+int anzahl_schulen "✔"
+int anzahl_klassen "✔"
 }
-fact_schulen{
-int schule_id
-int schul_jahr_id
-int anzahl_schulen
-int anzahl_klassen
+"sonderpaed_foerderbedarf❌"{
+VARCHAR sonderpaed_bedarf "❌"
+INTEGER id "❌"
+}
+"einschulung❌"{
+VARCHAR einschulung "❌"
+VARCHAR id "❌"
+}
+"klassen_wiederholung❌"{
+VARCHAR id "❌"
+VARCHAR klassenwiederholung "❌"
+}
+"geschlecht❌"{
+VARCHAR bezeichnung "❌"
+VARCHAR id "❌"
+}
+"schul_art❌"{
+INTEGER schul_kategorie_id "❌"
+VARCHAR schulart_name "❌"
+INTEGER id "❌"
+}
+"schul_jahr❌"{
+VARCHAR id "❌"
+VARCHAR schul_jahr "❌"
+INTEGER order "❌"
+}
+"foerderung_art❌"{
+INTEGER sp_foerderbedarf_id "❌"
+VARCHAR id "❌"
+VARCHAR foerderung_art "❌"
+}
+"traeger❌"{
+INTEGER traeger_art_id "❌"
+VARCHAR traeger_name "❌"
+INTEGER id "❌"
+}
+"ganztags_art❌"{
+INTEGER id "❌"
+VARCHAR schul_umfang "❌"
+}
+"schule❌"{
+INTEGER schul_nummer "❌"
+INTEGER traeger_id "❌"
+INTEGER ganztags_art_id "❌"
+VARCHAR schul_name "❌"
+VARCHAR id "❌"
+INTEGER schul_art_id "❌"
+}
+"schul_abschluss❌"{
+VARCHAR schulabschluss "❌"
+VARCHAR id "❌"
+}
+"bundesland❌"{
+VARCHAR bezeichnung "❌"
+INTEGER id "❌"
+}
+"fact_personal❌"{
+VARCHAR anzahl_personen "❌"
+INTEGER alters_gruppe_id "❌"
+INTEGER schule_id "❌"
+INTEGER schul_jahr_id "❌"
+INTEGER personal_art_id "❌"
+INTEGER geschlecht_id "❌"
+}
+"schul_kategorie❌"{
+VARCHAR schul_kategorie_name "❌"
+INTEGER id "❌"
+}
+"traeger_kategorie❌"{
+INTEGER id "❌"
+VARCHAR traeger_kategorie "❌"
+}
+"personal_art❌"{
+VARCHAR bezeichnung "❌"
+VARCHAR id "❌"
+}
+"traeger_art❌"{
+INTEGER traeger_kat_id "❌"
+INTEGER id "❌"
+VARCHAR traeger_art "❌"
+}
+"migrations_hintergrund❌"{
+VARCHAR id "❌"
+VARCHAR migrations_hintergrund "❌"
+}
+"alters_gruppe❌"{
+VARCHAR id "❌"
+VARCHAR altersgruppe "❌"
+}
+"wohnort_landkreis❌"{
+INTEGER bundesland_id "❌"
+VARCHAR bezeichnung "❌"
+VARCHAR id "❌"
 }
 
 "fact_schulen" ||--o{ "schule" : "schule_id-id"
@@ -696,11 +782,13 @@ int anzahl_klassen
 |DATABASE|Table traeger_kategorie does not exist in database|
 |DATABASE|Table personal_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table personal_art|
+|DATABASE|Measure Anzahl Personen column anzahl_personen doesn't exist in table fact_personal of cube with name Pädagogisches Personal an Jenaer Schulen|
 |DATABASE|Table sonderpaed_foerderbedarf does not exist in database|
 |DATABASE|Table foerderung_art does not exist in database|
 |DATABASE|Table traeger_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table foerderung_art|
 |DATABASE|Table bundesland does not exist in database|
+|DATABASE|Fact table fact_personal does not exist in database .|
 |DATABASE|Table schul_kategorie does not exist in database|
 |DATABASE|Table alters_gruppe does not exist in database|
 |DATABASE|Table wohnort_landkreis does not exist in database|

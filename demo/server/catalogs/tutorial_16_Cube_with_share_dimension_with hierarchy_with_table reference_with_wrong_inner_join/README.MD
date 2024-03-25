@@ -116,18 +116,21 @@ Cube Cube1: [0.1000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Level_1{
-int KEY
-string NAME
+"Level_1✔"{
+int KEY "✔"
+string NAME "✔"
 }
-Level_2{
-int KEY
-string NAME
-int L1_KEY
+"Level_2✔"{
+int KEY "✔"
+string NAME "✔"
+int L1_KEY "✔"
+}
+"Level_2_wrong❌"{
+INTEGER L1_KEY "❌"
 }
 
 "Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"

@@ -116,23 +116,23 @@ Cube CubeMultipleHierarchy: [0.2000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-H1_L1{
-int KEY
-string NAME
+"H1_L1✔"{
+int KEY "✔"
+string NAME "✔"
 }
-H2_L1{
-int KEY
-string NAME
+"H2_L1✔"{
+int KEY "✔"
+string NAME "✔"
 }
-HX_L2{
-int KEY
-string NAME
-int H1L1_KEY
-int H2L1_KEY
+"HX_L2✔"{
+int KEY "✔"
+string NAME "✔"
+int H1L1_KEY "✔"
+int H2L1_KEY "✔"
 }
 
 "Fact" ||--o{ "HX_L2" : "DIM_KEY-KEY"

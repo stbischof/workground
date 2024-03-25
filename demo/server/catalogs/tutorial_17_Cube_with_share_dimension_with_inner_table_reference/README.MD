@@ -110,9 +110,14 @@ Cube Cube1: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
+}
+"HT❌"{
+DECIMAL VALUE "❌"
+VARCHAR KEY "❌"
+VARCHAR NAME "❌"
 }
 
 "Fact" ||--o{ "HT" : "DIM_KEY-KEY"

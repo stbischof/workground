@@ -1684,429 +1684,429 @@ Cube Sales_2: [0.9500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-account{
-int account_id
-int account_parent
-string account_description
-string account_type
-string account_rollup
-string Custom_Members
+"account✔"{
+int account_id "✔"
+int account_parent "✔"
+string account_description "✔"
+string account_type "✔"
+string account_rollup "✔"
+string Custom_Members "✔"
 }
-agg_c_10_sales_fact_1997{
-int month_of_year
-string quarter
-int the_year
-null store_sales
-null store_cost
-null unit_sales
-int customer_count
-int fact_count
+"agg_c_10_sales_fact_1997✔"{
+int month_of_year "✔"
+string quarter "✔"
+int the_year "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int customer_count "✔"
+int fact_count "✔"
 }
-agg_c_14_sales_fact_1997{
-int product_id
-int customer_id
-int store_id
-int promotion_id
-int month_of_year
-string quarter
-int the_year
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_c_14_sales_fact_1997✔"{
+int product_id "✔"
+int customer_id "✔"
+int store_id "✔"
+int promotion_id "✔"
+int month_of_year "✔"
+string quarter "✔"
+int the_year "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_c_special_sales_fact_1997{
-int product_id
-int promotion_id
-int customer_id
-int store_id
-int time_month
-string time_quarter
-int time_year
-null store_sales_sum
-null store_cost_sum
-null unit_sales_sum
-int fact_count
+"agg_c_special_sales_fact_1997✔"{
+int product_id "✔"
+int promotion_id "✔"
+int customer_id "✔"
+int store_id "✔"
+int time_month "✔"
+string time_quarter "✔"
+int time_year "✔"
+null store_sales_sum "✔"
+null store_cost_sum "✔"
+null unit_sales_sum "✔"
+int fact_count "✔"
 }
-agg_g_ms_pcat_sales_fact_1997{
-string gender
-string marital_status
-string product_family
-string product_department
-string product_category
-int month_of_year
-string quarter
-int the_year
-null store_sales
-null store_cost
-null unit_sales
-int customer_count
-int fact_count
+"agg_g_ms_pcat_sales_fact_1997✔"{
+string gender "✔"
+string marital_status "✔"
+string product_family "✔"
+string product_department "✔"
+string product_category "✔"
+int month_of_year "✔"
+string quarter "✔"
+int the_year "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int customer_count "✔"
+int fact_count "✔"
 }
-agg_l_03_sales_fact_1997{
-int time_id
-int customer_id
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_l_03_sales_fact_1997✔"{
+int time_id "✔"
+int customer_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_l_04_sales_fact_1997{
-int time_id
-null store_sales
-null store_cost
-null unit_sales
-int customer_count
-int fact_count
+"agg_l_04_sales_fact_1997✔"{
+int time_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int customer_count "✔"
+int fact_count "✔"
 }
-agg_l_05_sales_fact_1997{
-int product_id
-int customer_id
-int promotion_id
-int store_id
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_l_05_sales_fact_1997✔"{
+int product_id "✔"
+int customer_id "✔"
+int promotion_id "✔"
+int store_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_lc_06_sales_fact_1997{
-int time_id
-string city
-string state_province
-string country
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_lc_06_sales_fact_1997✔"{
+int time_id "✔"
+string city "✔"
+string state_province "✔"
+string country "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_lc_100_sales_fact_1997{
-int product_id
-int customer_id
-string quarter
-int the_year
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_lc_100_sales_fact_1997✔"{
+int product_id "✔"
+int customer_id "✔"
+string quarter "✔"
+int the_year "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_ll_01_sales_fact_1997{
-int product_id
-int time_id
-int customer_id
-null store_sales
-null store_cost
-null unit_sales
-int fact_count
+"agg_ll_01_sales_fact_1997✔"{
+int product_id "✔"
+int time_id "✔"
+int customer_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
+int fact_count "✔"
 }
-agg_pl_01_sales_fact_1997{
-int product_id
-int time_id
-int customer_id
-null store_sales_sum
-null store_cost_sum
-null unit_sales_sum
-int fact_count
+"agg_pl_01_sales_fact_1997✔"{
+int product_id "✔"
+int time_id "✔"
+int customer_id "✔"
+null store_sales_sum "✔"
+null store_cost_sum "✔"
+null unit_sales_sum "✔"
+int fact_count "✔"
 }
-category{
-string category_id
-string category_parent
-string category_description
-string category_rollup
+"category✔"{
+string category_id "✔"
+string category_parent "✔"
+string category_description "✔"
+string category_rollup "✔"
 }
-currency{
-int currency_id
-date date
-string currency
-null conversion_ratio
+"currency✔"{
+int currency_id "✔"
+date date "✔"
+string currency "✔"
+null conversion_ratio "✔"
 }
-customer{
-int customer_id
-long account_num
-string lname
-string fname
-string mi
-string address1
-string address2
-string address3
-string address4
-string city
-string state_province
-string postal_code
-string country
-int customer_region_id
-string phone1
-string phone2
-date birthdate
-string marital_status
-string yearly_income
-string gender
-int total_children
-int num_children_at_home
-string education
-date date_accnt_opened
-string member_card
-string occupation
-string houseowner
-int num_cars_owned
-string fullname
+"customer✔"{
+int customer_id "✔"
+long account_num "✔"
+string lname "✔"
+string fname "✔"
+string mi "✔"
+string address1 "✔"
+string address2 "✔"
+string address3 "✔"
+string address4 "✔"
+string city "✔"
+string state_province "✔"
+string postal_code "✔"
+string country "✔"
+int customer_region_id "✔"
+string phone1 "✔"
+string phone2 "✔"
+date birthdate "✔"
+string marital_status "✔"
+string yearly_income "✔"
+string gender "✔"
+int total_children "✔"
+int num_children_at_home "✔"
+string education "✔"
+date date_accnt_opened "✔"
+string member_card "✔"
+string occupation "✔"
+string houseowner "✔"
+int num_cars_owned "✔"
+string fullname "✔"
 }
-days{
-int day
-string week_day
+"days✔"{
+int day "✔"
+string week_day "✔"
 }
-department{
-int department_id
-string department_description
+"department✔"{
+int department_id "✔"
+string department_description "✔"
 }
-employee{
-int employee_id
-string full_name
-string first_name
-string last_name
-int position_id
-string position_title
-int store_id
-int department_id
-date birth_date
-timestamp hire_date
-timestamp end_date
-null salary
-int supervisor_id
-string education_level
-string marital_status
-string gender
-string management_role
+"employee✔"{
+int employee_id "✔"
+string full_name "✔"
+string first_name "✔"
+string last_name "✔"
+int position_id "✔"
+string position_title "✔"
+int store_id "✔"
+int department_id "✔"
+date birth_date "✔"
+timestamp hire_date "✔"
+timestamp end_date "✔"
+null salary "✔"
+int supervisor_id "✔"
+string education_level "✔"
+string marital_status "✔"
+string gender "✔"
+string management_role "✔"
 }
-employee_closure{
-int employee_id
-int supervisor_id
-int distance
+"employee_closure✔"{
+int employee_id "✔"
+int supervisor_id "✔"
+int distance "✔"
 }
-expense_fact{
-int store_id
-int account_id
-timestamp exp_date
-int time_id
-string category_id
-int currency_id
-null amount
+"expense_fact✔"{
+int store_id "✔"
+int account_id "✔"
+timestamp exp_date "✔"
+int time_id "✔"
+string category_id "✔"
+int currency_id "✔"
+null amount "✔"
 }
-inventory_fact_1997{
-int product_id
-int time_id
-int warehouse_id
-int store_id
-int units_ordered
-int units_shipped
-null warehouse_sales
-null warehouse_cost
-int supply_time
-null store_invoice
+"inventory_fact_1997✔"{
+int product_id "✔"
+int time_id "✔"
+int warehouse_id "✔"
+int store_id "✔"
+int units_ordered "✔"
+int units_shipped "✔"
+null warehouse_sales "✔"
+null warehouse_cost "✔"
+int supply_time "✔"
+null store_invoice "✔"
 }
-inventory_fact_1998{
-int product_id
-int time_id
-int warehouse_id
-int store_id
-int units_ordered
-int units_shipped
-null warehouse_sales
-null warehouse_cost
-int supply_time
-null store_invoice
+"inventory_fact_1998✔"{
+int product_id "✔"
+int time_id "✔"
+int warehouse_id "✔"
+int store_id "✔"
+int units_ordered "✔"
+int units_shipped "✔"
+null warehouse_sales "✔"
+null warehouse_cost "✔"
+int supply_time "✔"
+null store_invoice "✔"
 }
-position{
-int position_id
-string position_title
-string pay_type
-null min_scale
-null max_scale
-string management_role
+"position✔"{
+int position_id "✔"
+string position_title "✔"
+string pay_type "✔"
+null min_scale "✔"
+null max_scale "✔"
+string management_role "✔"
 }
-product{
-int product_class_id
-int product_id
-string brand_name
-string product_name
-long SKU
-null SRP
-null gross_weight
-null net_weight
-int recyclable_package
-int low_fat
-int units_per_case
-int cases_per_pallet
-null shelf_width
-null shelf_height
-null shelf_depth
+"product✔"{
+int product_class_id "✔"
+int product_id "✔"
+string brand_name "✔"
+string product_name "✔"
+long SKU "✔"
+null SRP "✔"
+null gross_weight "✔"
+null net_weight "✔"
+int recyclable_package "✔"
+int low_fat "✔"
+int units_per_case "✔"
+int cases_per_pallet "✔"
+null shelf_width "✔"
+null shelf_height "✔"
+null shelf_depth "✔"
 }
-product_class{
-int product_class_id
-string product_subcategory
-string product_category
-string product_department
-string product_family
+"product_class✔"{
+int product_class_id "✔"
+string product_subcategory "✔"
+string product_category "✔"
+string product_department "✔"
+string product_family "✔"
 }
-promotion{
-int promotion_id
-int promotion_district_id
-string promotion_name
-string media_type
-null cost
-timestamp start_date
-timestamp end_date
+"promotion✔"{
+int promotion_id "✔"
+int promotion_district_id "✔"
+string promotion_name "✔"
+string media_type "✔"
+null cost "✔"
+timestamp start_date "✔"
+timestamp end_date "✔"
 }
-region{
-int region_id
-string sales_city
-string sales_state_province
-string sales_district
-string sales_region
-string sales_country
-int sales_district_id
+"region✔"{
+int region_id "✔"
+string sales_city "✔"
+string sales_state_province "✔"
+string sales_district "✔"
+string sales_region "✔"
+string sales_country "✔"
+int sales_district_id "✔"
 }
-reserve_employee{
-int employee_id
-string full_name
-string first_name
-string last_name
-int position_id
-string position_title
-int store_id
-int department_id
-timestamp birth_date
-timestamp hire_date
-timestamp end_date
-null salary
-int supervisor_id
-string education_level
-string marital_status
-string gender
+"reserve_employee✔"{
+int employee_id "✔"
+string full_name "✔"
+string first_name "✔"
+string last_name "✔"
+int position_id "✔"
+string position_title "✔"
+int store_id "✔"
+int department_id "✔"
+timestamp birth_date "✔"
+timestamp hire_date "✔"
+timestamp end_date "✔"
+null salary "✔"
+int supervisor_id "✔"
+string education_level "✔"
+string marital_status "✔"
+string gender "✔"
 }
-salary{
-timestamp pay_date
-int employee_id
-int department_id
-int currency_id
-null salary_paid
-null overtime_paid
-null vacation_accrued
-null vacation_used
+"salary✔"{
+timestamp pay_date "✔"
+int employee_id "✔"
+int department_id "✔"
+int currency_id "✔"
+null salary_paid "✔"
+null overtime_paid "✔"
+null vacation_accrued "✔"
+null vacation_used "✔"
 }
-sales_fact_1997{
-int product_id
-int time_id
-int customer_id
-int promotion_id
-int store_id
-null store_sales
-null store_cost
-null unit_sales
+"sales_fact_1997✔"{
+int product_id "✔"
+int time_id "✔"
+int customer_id "✔"
+int promotion_id "✔"
+int store_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
 }
-sales_fact_1998{
-int product_id
-int time_id
-int customer_id
-int promotion_id
-int store_id
-null store_sales
-null store_cost
-null unit_sales
+"sales_fact_1998✔"{
+int product_id "✔"
+int time_id "✔"
+int customer_id "✔"
+int promotion_id "✔"
+int store_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
 }
-sales_fact_dec_1998{
-int product_id
-int time_id
-int customer_id
-int promotion_id
-int store_id
-null store_sales
-null store_cost
-null unit_sales
+"sales_fact_dec_1998✔"{
+int product_id "✔"
+int time_id "✔"
+int customer_id "✔"
+int promotion_id "✔"
+int store_id "✔"
+null store_sales "✔"
+null store_cost "✔"
+null unit_sales "✔"
 }
-store{
-int store_id
-string store_type
-int region_id
-string store_name
-int store_number
-string store_street_address
-string store_city
-string store_state
-string store_postal_code
-string store_country
-string store_manager
-string store_phone
-string store_fax
-timestamp first_opened_date
-timestamp last_remodel_date
-int store_sqft
-int grocery_sqft
-int frozen_sqft
-int meat_sqft
-int coffee_bar
-int video_store
-int salad_bar
-int prepared_food
-int florist
+"store✔"{
+int store_id "✔"
+string store_type "✔"
+int region_id "✔"
+string store_name "✔"
+int store_number "✔"
+string store_street_address "✔"
+string store_city "✔"
+string store_state "✔"
+string store_postal_code "✔"
+string store_country "✔"
+string store_manager "✔"
+string store_phone "✔"
+string store_fax "✔"
+timestamp first_opened_date "✔"
+timestamp last_remodel_date "✔"
+int store_sqft "✔"
+int grocery_sqft "✔"
+int frozen_sqft "✔"
+int meat_sqft "✔"
+int coffee_bar "✔"
+int video_store "✔"
+int salad_bar "✔"
+int prepared_food "✔"
+int florist "✔"
 }
-store_ragged{
-int store_id
-string store_type
-int region_id
-string store_name
-int store_number
-string store_street_address
-string store_city
-string store_state
-string store_postal_code
-string store_country
-string store_manager
-string store_phone
-string store_fax
-timestamp first_opened_date
-timestamp last_remodel_date
-int store_sqft
-int grocery_sqft
-int frozen_sqft
-int meat_sqft
-int coffee_bar
-int video_store
-int salad_bar
-int prepared_food
-int florist
+"store_ragged✔"{
+int store_id "✔"
+string store_type "✔"
+int region_id "✔"
+string store_name "✔"
+int store_number "✔"
+string store_street_address "✔"
+string store_city "✔"
+string store_state "✔"
+string store_postal_code "✔"
+string store_country "✔"
+string store_manager "✔"
+string store_phone "✔"
+string store_fax "✔"
+timestamp first_opened_date "✔"
+timestamp last_remodel_date "✔"
+int store_sqft "✔"
+int grocery_sqft "✔"
+int frozen_sqft "✔"
+int meat_sqft "✔"
+int coffee_bar "✔"
+int video_store "✔"
+int salad_bar "✔"
+int prepared_food "✔"
+int florist "✔"
 }
-time_by_day{
-int time_id
-timestamp the_date
-string the_day
-string the_month
-int the_year
-int day_of_month
-int week_of_year
-int month_of_year
-string quarter
-string fiscal_period
+"time_by_day✔"{
+int time_id "✔"
+timestamp the_date "✔"
+string the_day "✔"
+string the_month "✔"
+int the_year "✔"
+int day_of_month "✔"
+int week_of_year "✔"
+int month_of_year "✔"
+string quarter "✔"
+string fiscal_period "✔"
 }
-warehouse{
-int warehouse_id
-int warehouse_class_id
-int stores_id
-string warehouse_name
-string wa_address1
-string wa_address2
-string wa_address3
-string wa_address4
-string warehouse_city
-string warehouse_state_province
-string warehouse_postal_code
-string warehouse_country
-string warehouse_owner_name
-string warehouse_phone
-string warehouse_fax
+"warehouse✔"{
+int warehouse_id "✔"
+int warehouse_class_id "✔"
+int stores_id "✔"
+string warehouse_name "✔"
+string wa_address1 "✔"
+string wa_address2 "✔"
+string wa_address3 "✔"
+string wa_address4 "✔"
+string warehouse_city "✔"
+string warehouse_state_province "✔"
+string warehouse_postal_code "✔"
+string warehouse_country "✔"
+string warehouse_owner_name "✔"
+string warehouse_phone "✔"
+string warehouse_fax "✔"
 }
-warehouse_class{
-int warehouse_class_id
-string description
+"warehouse_class✔"{
+int warehouse_class_id "✔"
+string description "✔"
 }
 
 "sales_fact_1997" ||--o{ "store" : "store_id-store_id"

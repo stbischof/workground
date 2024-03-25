@@ -225,60 +225,60 @@ Cube SteelWheelsSales: [0.6000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-customer_w_ter{
-int CUSTOMERNUMBER
-string CUSTOMERNAME
-string CONTACTLASTNAME
-string CONTACTFIRSTNAME
-string PHONE
-string ADDRESSLINE1
-string ADDRESSLINE2
-string CITY
-string STATE
-string POSTALCODE
-string COUNTRY
-int EMPLOYEENUMBER
-null CREDITLIMIT
-string TERRITORY
+"customer_w_ter✔"{
+int CUSTOMERNUMBER "✔"
+string CUSTOMERNAME "✔"
+string CONTACTLASTNAME "✔"
+string CONTACTFIRSTNAME "✔"
+string PHONE "✔"
+string ADDRESSLINE1 "✔"
+string ADDRESSLINE2 "✔"
+string CITY "✔"
+string STATE "✔"
+string POSTALCODE "✔"
+string COUNTRY "✔"
+int EMPLOYEENUMBER "✔"
+null CREDITLIMIT "✔"
+string TERRITORY "✔"
 }
-orderfact{
-int ORDERNUMBER
-string PRODUCTCODE
-int QUANTITYORDERED
-null PRICEEACH
-int ORDERLINENUMBER
-null TOTALPRICE
-timestamp ORDERDATE
-timestamp REQUIREDDATE
-timestamp SHIPPEDDATE
-string STATUS
-string COMMENTS
-int CUSTOMERNUMBER
-string TIME_ID
-int QTR_ID
-int MONTH_ID
-int YEAR_ID
+"orderfact✔"{
+int ORDERNUMBER "✔"
+string PRODUCTCODE "✔"
+int QUANTITYORDERED "✔"
+null PRICEEACH "✔"
+int ORDERLINENUMBER "✔"
+null TOTALPRICE "✔"
+timestamp ORDERDATE "✔"
+timestamp REQUIREDDATE "✔"
+timestamp SHIPPEDDATE "✔"
+string STATUS "✔"
+string COMMENTS "✔"
+int CUSTOMERNUMBER "✔"
+string TIME_ID "✔"
+int QTR_ID "✔"
+int MONTH_ID "✔"
+int YEAR_ID "✔"
 }
-products{
-string PRODUCTCODE
-string PRODUCTNAME
-string PRODUCTLINE
-string PRODUCTSCALE
-string PRODUCTVENDOR
-string PRODUCTDESCRIPTION
-int QUANTITYINSTOCK
-null BUYPRICE
-null MSRP
+"products✔"{
+string PRODUCTCODE "✔"
+string PRODUCTNAME "✔"
+string PRODUCTLINE "✔"
+string PRODUCTSCALE "✔"
+string PRODUCTVENDOR "✔"
+string PRODUCTDESCRIPTION "✔"
+int QUANTITYINSTOCK "✔"
+null BUYPRICE "✔"
+null MSRP "✔"
 }
-time{
-string TIME_ID
-int MONTH_ID
-int QTR_ID
-int YEAR_ID
-string MONTH_NAME
-string MONTH_DESC
-string QTR_NAME
-string QTR_DESC
+"time✔"{
+string TIME_ID "✔"
+int MONTH_ID "✔"
+int QTR_ID "✔"
+int YEAR_ID "✔"
+string MONTH_NAME "✔"
+string MONTH_DESC "✔"
+string QTR_NAME "✔"
+string QTR_DESC "✔"
 }
 
 "orderfact" ||--o{ "customer_w_ter" : "CUSTOMERNUMBER-CUSTOMERNUMBER"

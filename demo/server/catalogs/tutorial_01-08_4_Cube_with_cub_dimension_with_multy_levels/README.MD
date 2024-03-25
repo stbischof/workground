@@ -105,13 +105,13 @@ Cube Cube: [0.1000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-string KEY
-int VALUE
-string L1
-int L2
-string prop1
-int prop2
+"Fact✔"{
+string KEY "✔"
+int VALUE "✔"
+string L1 "✔"
+int L2 "✔"
+string prop1 "✔"
+int prop2 "✔"
 }
 
 ```

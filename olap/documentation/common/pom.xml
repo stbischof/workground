@@ -34,6 +34,12 @@
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.common.jdbc.db.core</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.eclipse.daanse</groupId>
+          <artifactId>org.eclipse.daanse.olap.rolap.dbmapper.utils</artifactId>
+          <version>${revision}</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
 </project>

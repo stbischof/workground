@@ -100,14 +100,14 @@ Cube CubeTimeDimension: [0.1500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-timestamp DATE_KEY
-int VALUE
-int YEAR_ID
-string QTR_ID
-string QTR_NAME
-string MONTH_ID
-string MONTH_NAME
+"Fact✔"{
+timestamp DATE_KEY "✔"
+int VALUE "✔"
+int YEAR_ID "✔"
+string QTR_ID "✔"
+string QTR_NAME "✔"
+string MONTH_ID "✔"
+string MONTH_NAME "✔"
 }
 
 ```

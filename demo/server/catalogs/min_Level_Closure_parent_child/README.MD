@@ -88,19 +88,19 @@ Cube CubeParentChildClosure: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Closure{
-int PARENT_KEY
-int CHILD_KEY
-int DIST
+"Closure✔"{
+int PARENT_KEY "✔"
+int CHILD_KEY "✔"
+int DIST "✔"
 }
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Hierarchy{
-int KEY
-string NAME
-int PARENT_KEY
+"Hierarchy✔"{
+int KEY "✔"
+string NAME "✔"
+int PARENT_KEY "✔"
 }
 
 "Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"

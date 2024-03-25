@@ -99,11 +99,12 @@ Cube Cube: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-string KEY
-int VALUE
-string L
-string prop
+"Fact❌"{
+string KEY "✔"
+int VALUE "✔"
+string L "✔"
+string prop "✔"
+VARCHAR prop_wrong "❌"
 }
 
 ```

@@ -100,15 +100,15 @@ Cube CubeParentChild: [0.1500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Hierarchy{
-int KEY
-string NAME
-int PARENT_L1
-int PARENT_L2
+"Hierarchy✔"{
+int KEY "✔"
+string NAME "✔"
+int PARENT_L1 "✔"
+int PARENT_L2 "✔"
 }
 
 "Fact" ||--o{ "Hierarchy" : "DIM_KEY-KEY"

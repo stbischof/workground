@@ -228,41 +228,41 @@ Cube HiddenMembersMultipleLevels: [0.1500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Fact_Multiple{
-int DIM_KEY
-int VALUE
+"Fact_Multiple✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Level_1{
-int KEY
-string NAME
+"Level_1✔"{
+int KEY "✔"
+string NAME "✔"
 }
-Level_1_Multiple{
-int KEY
-string NAME
+"Level_1_Multiple✔"{
+int KEY "✔"
+string NAME "✔"
 }
-Level_2{
-int KEY
-string NAME
-int L1_KEY
+"Level_2✔"{
+int KEY "✔"
+string NAME "✔"
+int L1_KEY "✔"
 }
-Level_2_Multiple{
-int KEY
-string NAME
-int L1_KEY
+"Level_2_Multiple✔"{
+int KEY "✔"
+string NAME "✔"
+int L1_KEY "✔"
 }
-Level_2_NULL{
-int KEY
-string NAME
-int L1_KEY
+"Level_2_NULL✔"{
+int KEY "✔"
+string NAME "✔"
+int L1_KEY "✔"
 }
-Level_3_Multiple{
-int KEY
-string NAME
-int L2_KEY
+"Level_3_Multiple✔"{
+int KEY "✔"
+string NAME "✔"
+int L2_KEY "✔"
 }
 
 "Fact" ||--o{ "Level_2" : "DIM_KEY-KEY"

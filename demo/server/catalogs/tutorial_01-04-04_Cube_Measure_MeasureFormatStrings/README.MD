@@ -67,9 +67,9 @@ Cube CubeOneNumericMeasureDifferentFormatStrings: [0.0000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-string KEY
-null VALUE
+"Fact✔"{
+string KEY "✔"
+null VALUE "✔"
 }
 
 ```

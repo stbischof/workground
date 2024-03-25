@@ -88,14 +88,14 @@ Cube CubeParentChildOneTopMember: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-int DIM_KEY
-int VALUE
+"Fact✔"{
+int DIM_KEY "✔"
+int VALUE "✔"
 }
-Hier_One_Top_Member{
-int KEY
-string NAME
-int PARENT_KEY
+"Hier_One_Top_Member✔"{
+int KEY "✔"
+string NAME "✔"
+int PARENT_KEY "✔"
 }
 
 "Fact" ||--o{ "Hier_One_Top_Member" : "DIM_KEY-KEY"

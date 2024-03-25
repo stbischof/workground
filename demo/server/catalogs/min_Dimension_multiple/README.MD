@@ -115,18 +115,18 @@ Cube CubeTwoDimensions: [0.1000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-DIM_1{
-int KEY
-string NAME
+"DIM_1✔"{
+int KEY "✔"
+string NAME "✔"
 }
-DIM_2{
-int KEY
-string NAME
+"DIM_2✔"{
+int KEY "✔"
+string NAME "✔"
 }
-Fact{
-int DIM1_KEY
-int DIM2_KEY
-int VALUE
+"Fact✔"{
+int DIM1_KEY "✔"
+int DIM2_KEY "✔"
+int VALUE "✔"
 }
 
 "Fact" ||--o{ "DIM_1" : "DIM1_KEY-KEY"

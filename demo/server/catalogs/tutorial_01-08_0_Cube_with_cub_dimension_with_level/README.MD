@@ -99,9 +99,9 @@ Cube Cube: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-string KEY
-int VALUE
+"Fact✔"{
+string KEY "✔"
+int VALUE "✔"
 }
 
 ```

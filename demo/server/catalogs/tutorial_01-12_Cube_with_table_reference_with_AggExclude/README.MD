@@ -56,13 +56,13 @@ Cube Cube: [0.0000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-Fact{
-string KEY
-int VALUE
+"Fact✔"{
+string KEY "✔"
+int VALUE "✔"
 }
-agg_01_Fact{
-string KEY
-int VALUE_count
+"agg_01_Fact✔"{
+string KEY "✔"
+int VALUE_count "✔"
 }
 
 ```
