@@ -40,6 +40,8 @@ public class DemoSetup {
     public static final String PID_DESCRIPTION_VER = "org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.description.DescriptionVerifyer";
     public static final String PID_MANDATORIES_VER = "org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.mandantory.MandantoriesVerifyer";
 
+    public static final String PID_DESCRIPTION_DOC = "org.eclipse.daanse.olap.documentation.common.MarkdownDocumentationProvider";
+
 	public static final String PID_MS_SOAP = "org.eclipse.daanse.xmla.server.jakarta.jws.MsXmlAnalysisSoap";
 
 	public static final String PID_MS_SOAP_MSG_WS = "org.eclipse.daanse.xmla.server.jakarta.xml.ws.provider.soapmessage.XmlaWebserviceProvider";
@@ -76,6 +78,8 @@ public class DemoSetup {
 
 	private Configuration cCtxs;
 
+    private Configuration cDoc;
+
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     public void bindContext(Context context) {
 
@@ -101,6 +105,7 @@ public class DemoSetup {
 
         initVerifiers();
 
+        initDocumentation();
 	}
 
 	private void runTest(Context context) {
@@ -176,6 +181,17 @@ public class DemoSetup {
 //        mVC = configurationAdmin.getFactoryConfiguration(PID_MANDATORIES_VER, "1", "?");
 //        mVC.update(propsMVC);
 
+    }
+
+    private void initDocumentation() throws IOException {
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put("writeSchemasDescribing", true);
+        props.put("writeCubsDiagrams", true);
+        props.put("writeCubeMatrixDiagram", true);
+        props.put("writeDatabaseInfoDiagrams", true);
+        props.put("writeVerifierResult", true);
+        cDoc = configurationAdmin.getFactoryConfiguration(PID_DESCRIPTION_DOC, "1", "?");
+        cDoc.update(props);
     }
 
 	private void initXmlaService() throws IOException {

@@ -43,11 +43,17 @@ import org.eclipse.daanse.olap.rolap.dbmapper.utils.Utils;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.VerificationResult;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Verifyer;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.util.converter.Converter;
+import org.osgi.util.converter.Converters;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -69,21 +75,37 @@ import java.util.stream.Collectors;
 
 import static java.lang.StringTemplate.STR;
 
-@Component(service = ConntextDocumentationProvider.class, scope = ServiceScope.SINGLETON, immediate = true)
+@Designate(ocd = DocumentationProviderConfig.class, factory = true)
+@Component(service = ConntextDocumentationProvider.class, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class MarkdownDocumentationProvider extends AbstractContextDocumentationProvider {
 
     public static final String REF_NAME_VERIFIERS = "verifyer";
     public static final String EMPTY_STRING = "";
     public static final String NEGATIVE_FLAG = "❌";
     public static final String POSITIVE_FLAG = "✔";
+    public static final Converter CONVERTER = Converters.standardConverter();
     double MAX_ROW = 10000.00;
     double MAX_LEVEL = 20.00;
 
     private static String ENTER = System.lineSeparator();
     private List<Verifyer> verifyers = new CopyOnWriteArrayList<>();
+    private DocumentationProviderConfig config;
 
     @Reference
     DatabaseService databaseService;
+
+    @Activate
+    public void activate(Map<String, Object> configMap) {
+        this.config = CONVERTER.convert(configMap)
+            .to(DocumentationProviderConfig.class);
+    }
+
+
+    @Deactivate
+    public void deactivate() {
+
+        config = null;
+    }
 
     @Override
     public void createDocumentation(Context context, Path path) throws Exception {
@@ -99,10 +121,21 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         writer.write(ENTER);
         writer.write("### CatalogName : " + dbName);
         writer.write(ENTER);
-        writeSchemas(writer, context);
-        writeCubeMatrixDiagram(writer, context);
-        writeDatabaseInfo(writer, context);
-        writeVerifyer(writer, context);
+        if (config.writeSchemasDescribing()) {
+            writeSchemas(writer, context);
+        }
+        if (config.writeCubsDiagrams()) {
+            writeCubeDiagram(writer, context);
+        }
+        if (config.writeCubeMatrixDiagram()) {
+            writeCubeMatrixDiagram(writer, context);
+        }
+        if (config.writeDatabaseInfoDiagrams()) {
+            writeDatabaseInfo(writer, context);
+        }
+        if (config.writeVerifierResult()) {
+            writeVerifyer(writer, context);
+        }
         writer.flush();
         writer.close();
 
@@ -471,11 +504,31 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return path;
     }
 
-    private void writeSchemas(FileWriter writer, Context context) throws IOException {
+    private void writeSchemas(FileWriter writer, Context context) {
         context.getDatabaseMappingSchemaProviders().forEach(p -> {
             MappingSchema schema = p.get();
             writeSchema(writer, schema);
         });
+    }
+
+    private void writeCubeDiagram(FileWriter writer, Context context) {
+        context.getDatabaseMappingSchemaProviders().forEach(p -> {
+            MappingSchema schema = p.get();
+            writeSchemaDiagram(writer, schema);
+        });
+    }
+
+    private void writeSchemaDiagram(FileWriter writer, MappingSchema schema) {
+        List<MappingCube> cubes =  schema.cubes();
+        if (cubes != null && !cubes.isEmpty()) {
+            int i = 0;
+            for (MappingCube c : cubes) {
+                writeCubeDiagram(writer, schema, c, i);
+                i++;
+            }
+        }
+
+
     }
 
     private void writeSchema(FileWriter writer, MappingSchema schema) {
@@ -507,7 +560,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     \{cubes}
 
                 """);
-            writeCubeList(writer, schema, schema.cubes());
+            writeCubeList(writer, schema.cubes());
             //write roles
             writeRoles(writer, schema.roles());
             //write database
@@ -517,13 +570,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private void writeCubeList(FileWriter writer, MappingSchema schema, List<MappingCube> cubes) {
+    private void writeCubeList(FileWriter writer, List<MappingCube> cubes) {
         if (cubes != null && !cubes.isEmpty()) {
             int i = 0;
-            for (MappingCube c : cubes) {
-                writeCube(writer, schema, c, i);
-                i++;
-            }
+            cubes.forEach(c -> writeCube(writer, c));
         }
     }
 
@@ -551,7 +601,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     }
 
-    private void writeCube(FileWriter writer, MappingSchema schema, MappingCube cube, int index) {
+    private void writeCube(FileWriter writer, MappingCube cube) {
         try {
             String description = cube.description() != null ? cube.description() : EMPTY_STRING;
             String name = cube.name();
@@ -566,7 +616,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
                 """);
             writeCubeDimensions(writer, cube.dimensionUsageOrDimensions());
-            writeCubeDiagram(writer, schema, cube, index);
         } catch (IOException e) {
             e.printStackTrace();
         }
