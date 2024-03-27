@@ -1,13 +1,10 @@
 # Documentation
-### CatalogName : tutorial_01-04-05_Cube_Measure_CalculatedMeasure
+### CatalogName : tutorial_01-04-06_Cube_Measure_CalculatedMember_without_name_Error
 ### Schema Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure : 
 
 		
-		A mininmal cube with a simple measure-based calculated member
-		
-		.
-		
-		
+		A mininmal cube with a simple measure-based calculated member without name.
+
 		
   
 ---
@@ -74,3 +71,9 @@ null VALUE_NUMERIC "✔"
 
 ```
 ---
+## Validation result for schema Minimal_Cubes_With_Two_Measures_Plus_One_Calculated_Measure
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Dimension must be set for CalculatedMember with name Measure3-Calculated|
+|SCHEMA|CalculatedMember name must be set|

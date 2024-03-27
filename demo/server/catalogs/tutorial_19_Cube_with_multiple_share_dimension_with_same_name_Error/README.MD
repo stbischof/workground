@@ -1,17 +1,17 @@
 # Documentation
-### CatalogName : tutorial_18_Cube_with_share_dimension_with_view_reference
-### Schema Cube_with_share_dimension_with hierarchy_with_view_reference : 
+### CatalogName : tutorial_19_Cube_with_multiple_share_dimension_with_same_name_Error
+### Schema Minimal_Cube_with_two_dimensions_with_same_name : 
 
-  
+    
 		A basic OLAP schema with a level with reference with view
     Share dimension Dimension1 is defined in a <Dimension> element inside <Schema> element.
     Hierarchy is defined in a <Hierarchy> element inside <Dimension> element.
     Hierarchy have reference in view element
-    Cube dimension Dimension1 have link on share dimension Dimension1 as source.
+    Cube have two dimensions with one name Dimension1 for test case which have link on share dimension D1 and D2 as source.
 
 
 		Data cubes (<Cube>) are defined in an OLAP schema (<Schema>). Within the schema the name of each data cube must be unique.
-		This example schema contains one cube named "Cube1".
+		This example schema contains one cube named "CubeTwoDimensions".
 
 		A cube is based on a fact table (<Table>) which refers to a database table containing one or more measurements to be aggregated (and optionally further columns defining factual dimensions).
 		In this case the database table representing the fact table is named "Fact" in the database, which is adressed in the name attribute within the <Table> tag.
@@ -24,40 +24,74 @@
   
 ### Public Dimensions:
 
-    Dimension1
+    D1, D2, D1
 
-##### Dimension "Dimension1":
+##### Dimension "D1":
 
 Hierarchies:
 
-    Hierarchy1
+    D1H1
 
-##### Hierarchy Hierarchy1:
+##### Hierarchy D1H1:
 
-Tables: "select * from HT"
+Tables: "DIM_1"
 
-Levels: "Level1"
+Levels: "D1H1L1"
 
-###### Level "Level1" :
+###### Level "D1H1L1" :
+
+    column(s): KEY
+
+##### Dimension "D2":
+
+Hierarchies:
+
+    D2H1
+
+##### Hierarchy D2H1:
+
+Tables: "DIM_2"
+
+Levels: "D2H1L1"
+
+###### Level "D2H1L1" :
+
+    column(s): KEY
+
+##### Dimension "D1":
+
+Hierarchies:
+
+    D1H1
+
+##### Hierarchy D1H1:
+
+Tables: "DIM_1"
+
+Levels: "D1H1L1"
+
+###### Level "D1H1L1" :
 
     column(s): KEY
 
 ---
 ### Cubes :
 
-    Cube1
+    CubeTwoDimensions
 
 ---
-#### Cube "Cube1":
+#### Cube "CubeTwoDimensions":
 
     
 
 ##### Table: "Fact"
 
 ##### Dimensions:
-##### Dimension: "Dimension1 -> Dimension1":
+##### Dimension: "Dimension1 -> D1":
 
-### Cube "Cube1" diagram:
+##### Dimension: "Dimension1 -> D2":
+
+### Cube "CubeTwoDimensions" diagram:
 
 ---
 
@@ -74,21 +108,30 @@ Levels: "Level1"
 ]
 }}%%
 erDiagram
-c0["Cube1"]{
+c0["CubeTwoDimensions"]{
 M Measure1 ""
 D Dimension1 ""
+D Dimension1 ""
 }
-d00["Dimension1"] {
-H Hierarchy1 ""
+d00["D1"] {
+H D1H1 ""
 }
-h000["Hierarchy1"] {
-L Level1 ""
+h000["D1H1"] {
+L D1H1L1 ""
 }
-"c0" ||--|| "d00" : "DIM_KEY-KEY"
+d01["D2"] {
+H D2H1 ""
+}
+h010["D2H1"] {
+L D2H1L1 ""
+}
+"c0" ||--|| "d00" : "DIM1_KEY-KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d01" : "DIM2_KEY-KEY"
+"d01" ||--|| "h010" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Cube_with_share_dimension_with hierarchy_with_view_reference:
+### Cube Matrix for Minimal_Cube_with_two_dimensions_with_same_name:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -99,7 +142,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube1: [0.0500, 0.0000]
+Cube CubeTwoDimensions: [0.1000, 0.0000]
 ```
 ---
 ### Database :
@@ -109,19 +152,31 @@ Cube Cube1: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-"Fact✔"{
-int DIM_KEY "✔"
-int VALUE "✔"
-}
-"HT✔"{
+"DIM_1✔"{
 int KEY "✔"
 string NAME "✔"
+}
+"DIM_2✔"{
+int KEY "✔"
+string NAME "✔"
+}
+"Fact✔"{
+int DIM1_KEY "✔"
+int DIM2_KEY "✔"
 int VALUE "✔"
 }
-"HT_VIEW❌"{
-INTEGER KEY "❌"
-}
 
-"Fact✔" ||--o{ "HT_VIEW❌" : "DIM_KEY-KEY"
+"Fact✔" ||--o{ "DIM_1✔" : "DIM1_KEY-KEY"
+"Fact✔" ||--o{ "DIM_2✔" : "DIM2_KEY-KEY"
 ```
 ---
+## Validation result for schema Minimal_Cube_with_two_dimensions_with_same_name
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Schema Dimension with name D1 meets more then one time|
+|SCHEMA|Cube Dimension with name Dimension1 meets more then one time in cube with name CubeTwoDimensions|
+## <span style='color: blue;'>WARNING</span> : 
+|Type|   |
+|----|---|
+|DATABASE|Table: Schema must be set|

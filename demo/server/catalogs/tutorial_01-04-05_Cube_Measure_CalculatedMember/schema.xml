@@ -16,10 +16,10 @@
   <Documentation>
 		<![CDATA[
 		A mininmal cube with a simple measure-based calculated member
-		
+
 		.
-		
-		
+
+
 		]]>
   </Documentation>
   -->
@@ -30,6 +30,8 @@
       column="VALUE" />
     <CalculatedMember name="Measure3-Calculated"
       dimension="Measures"
-      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]" />
+      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
   </Cube>
 </Schema>

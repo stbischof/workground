@@ -20,6 +20,8 @@ public class SchemaWalkerMessages {
     public static final String SCHEMA = "Schema";
     public static final String CUBE = "Cube";
     public static final String DIMENSIONS = "Dimensions";
+    public static final String VIRTUAL_CUBE_DIMENSIONS = "Virtual Cube Dimensions";
+    public static final String VIRTUAL_CUBE_MEASURE = "Virtual Cube Measure";
     public static final String MEASURE = "Measure";
     public static final String HIERARCHY = "Hierarchy";
     public static final String PROPERTY = "Property";
@@ -99,8 +101,14 @@ public class SchemaWalkerMessages {
     public static final String ROLE_NAME_MUST_BE_SET = "Role name must be set";
     public static final String SCHEMA_GRANT_ACCESS_MUST_BE_SET = "SchemaGrant access must be set";
     public static final String CUBE_GRANT_CUBE_MUST_BE_SET = "CubeGrant cube must be set";
+    public static final String CUBE_GRANT_CUBE_ABSENT_IN_SCHEMA = "CubeGrant cube %s absent in schema";
+    public static final String CUBE_GRANT_ACCESS_MUST_BE_SET = "CubeGrant access must be set";
     public static final String DIMENSION_GRANT_DIMENSION_MUST_BE_SET = "DimensionGrant dimension must be set";
     public static final String HIERARCHY_GRANT_HIERARCHY_MUST_BE_SET = "HierarchyGrant hierarchy must be set";
+    public static final String HIERARCHY_GRANT_USE_DIMENSION_WHICH_ABSENT_IN_CUBE_WITH_NAME =
+        "HierarchyGrant hierarchy use %s  dimension which absent in cube with name %s";
+    public static final String MEMBER_GRANT_USE_DIMENSION_WHICH_ABSENT_IN_CUBE_WITH_NAME =
+        "MemberGrant member use %s dimension which absent in cube with name %s";
     public static final String MEMBER_GRANT_MEMBER_MUST_BE_SET = "MemberGrant member must be set";
     public static final String MEMBER_GRANT_ACCESS_MUST_BE_SET = "MemberGrant access must be set";
     public static final String UNION_ROLE_USAGE_MUST_BE_SET = "Union roleUsage must be set";
@@ -137,10 +145,22 @@ public class SchemaWalkerMessages {
         "Formatter: either a Class Name or a Script are required";
     public static final String CUBE_DIMENSION_NAME_MUST_BE_SET =
         "Cube Dimension name must be set for element with name %s";
+    public static final String CUBE_DIMENSION_WITH_NAME_MEETS_MORE_THEN_ONE_TIMES_IN_CUBE =
+        "Cube Dimension with name %s meets more then one time in cube with name %s";
+    public static final String SCHEMA_DIMENSION_WITH_NAME_MEETS_MORE_THEN_ONE_TIMES =
+        "Schema Dimension with name %s meets more then one time";
     public static final String SCHEMA_DIMENSION_WITH_NAME_ABSENT_IN_SCHEMA_BUT_USED_IN_CUBE_WITH_NAME =
         "Schema Dimension with name %s absent in schema but usedin cube with name %s";
     public static final String SCHEMA_DIMENSION_NAME_MUST_BE_SET =
         "Schema Dimension name must be set";
+    public static final String VIRTUAL_CUBE_DIMENSION_CUBE_NAME_MUST_BE_SET =
+        "Virtual Cube Dimension Cube name must be set";
+    public static final String VIRTUAL_CUBE_MEASURE_CUBE_NAME_MUST_BE_SET =
+        "Virtual Cube Measure Cube name must be set";
+    public static final String VIRTUAL_CUBE_DIMENSION_CUBE_NAME_IS_WRONG_CUBE_ABSENT_IN_SCHEMA =
+        "Virtual Cube Dimension Cube name %s is wrong. Cube with name %s absent in schema";
+    public static final String VIRTUAL_CUBE_MEASURE_CUBE_NAME_IS_WRONG_CUBE_ABSENT_IN_SCHEMA =
+        "Virtual Cube Measure Cube name %s is wrong. Cube with name %s absent in schema";
     public static final String SOURCE_MUST_BE_SET =
         "Source must be set for dimension with name %s";
     public static final String JOIN_LEFT_KEY_MUST_BE_SET = "Join: Left key must be set";

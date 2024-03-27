@@ -59,6 +59,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFuncti
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribute;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
@@ -171,6 +173,14 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             if (isEmpty(cubeDimension.name())) {
                 String msg = String.format(CUBE_DIMENSION_NAME_MUST_BE_SET, orNotSet(cube.name()));
                 results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
+            } else {
+                if (cube.dimensionUsageOrDimensions() != null) {
+                    long countWithSameName = cube.dimensionUsageOrDimensions().stream().filter(d ->  cubeDimension.name().equals(d.name())).count();
+                    if (countWithSameName > 1) {
+                        String msg = String.format(CUBE_DIMENSION_WITH_NAME_MEETS_MORE_THEN_ONE_TIMES_IN_CUBE, cubeDimension.name(), orNotSet(cube.name()));
+                        results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, Cause.SCHEMA));
+                    }
+                }
             }
 
             if (cubeDimension instanceof MappingDimensionUsage dimensionUsage) {
@@ -190,7 +200,43 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
         else {
             //schema dimension
             if (isEmpty(cubeDimension.name())) {
-                results.add(new VerificationResultR(CUBE_DIMENSION, SCHEMA_DIMENSION_NAME_MUST_BE_SET, ERROR, Cause.SCHEMA));
+                results.add(new VerificationResultR(DIMENSIONS, SCHEMA_DIMENSION_NAME_MUST_BE_SET, ERROR, Cause.SCHEMA));
+            } else {
+                if (schema.dimensions() != null) {
+                    long countWithSameName = schema.dimensions().stream().filter(d ->  cubeDimension.name().equals(d.name())).count();
+                    if (countWithSameName > 1) {
+                        String msg = String.format(SCHEMA_DIMENSION_WITH_NAME_MEETS_MORE_THEN_ONE_TIMES, cubeDimension.name());
+                        results.add(new VerificationResultR(DIMENSIONS, msg, ERROR, Cause.SCHEMA));
+                    }
+                }
+            }
+            //virtual cube dimension
+            if (cubeDimension instanceof MappingVirtualCubeDimension virtualCubeDimension) {
+                if (virtualCubeDimension.cubeName() == null) {
+                    results.add(new VerificationResultR(VIRTUAL_CUBE_DIMENSIONS, VIRTUAL_CUBE_DIMENSION_CUBE_NAME_MUST_BE_SET, ERROR, Cause.SCHEMA));
+                } else {
+                    Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> virtualCubeDimension.cubeName().equals(c.name())).findFirst();
+                    if (!oCube.isPresent()) {
+                        String msg = String.format(VIRTUAL_CUBE_DIMENSION_CUBE_NAME_IS_WRONG_CUBE_ABSENT_IN_SCHEMA, cubeDimension.name(), cubeDimension.name());
+                        results.add(new VerificationResultR(VIRTUAL_CUBE_DIMENSIONS, msg, ERROR, Cause.SCHEMA));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkVirtualCubeMeasure(MappingVirtualCubeMeasure virtualCubeMeasure, MappingVirtualCube vCube, MappingSchema schema) {
+        super.checkVirtualCubeMeasure(virtualCubeMeasure, vCube, schema);
+        if (virtualCubeMeasure != null) {
+            if (virtualCubeMeasure.cubeName() == null) {
+                results.add(new VerificationResultR(VIRTUAL_CUBE_MEASURE, VIRTUAL_CUBE_MEASURE_CUBE_NAME_MUST_BE_SET, ERROR, Cause.SCHEMA));
+            } else {
+                Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> virtualCubeMeasure.cubeName().equals(c.name())).findFirst();
+                if (!oCube.isPresent()) {
+                    String msg = String.format(VIRTUAL_CUBE_MEASURE_CUBE_NAME_IS_WRONG_CUBE_ABSENT_IN_SCHEMA, virtualCubeMeasure.cubeName(), virtualCubeMeasure.cubeName());
+                    results.add(new VerificationResultR(VIRTUAL_CUBE_DIMENSIONS, msg, ERROR, Cause.SCHEMA));
+                }
             }
         }
     }
@@ -662,8 +708,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkRole(MappingRole role) {
-        super.checkRole(role);
+    protected void checkRole(MappingRole role, MappingSchema schema) {
+        super.checkRole(role, schema);
         if (role != null && role.name() == null) {
             results.add(new VerificationResultR(ROLE, ROLE_NAME_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
@@ -671,8 +717,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSchemaGrant(MappingSchemaGrant schemaGrant) {
-        super.checkSchemaGrant(schemaGrant);
+    protected void checkSchemaGrant(MappingSchemaGrant schemaGrant, MappingSchema schema) {
+        super.checkSchemaGrant(schemaGrant, schema);
         if (schemaGrant != null && schemaGrant.access() == null) {
             results.add(new VerificationResultR(SCHEMA_GRANT, SCHEMA_GRANT_ACCESS_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
@@ -680,10 +726,23 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkCubeGrant(MappingCubeGrant cubeGrant) {
-        super.checkCubeGrant(cubeGrant);
+    protected void checkCubeGrant(MappingCubeGrant cubeGrant, MappingSchema schema) {
+        super.checkCubeGrant(cubeGrant, schema);
         if (cubeGrant != null && isEmpty(cubeGrant.cube())) {
             results.add(new VerificationResultR(CUBE_GRANT, CUBE_GRANT_CUBE_MUST_BE_SET,
+                ERROR, Cause.SCHEMA));
+        }
+        if (cubeGrant != null && !isEmpty(cubeGrant.cube())) {
+            Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> cubeGrant.cube().equals(c.name())).findFirst();
+            if (!oCube.isPresent()) {
+                String msg = String.format(CUBE_GRANT_CUBE_ABSENT_IN_SCHEMA, cubeGrant.cube());
+                results.add(new VerificationResultR(CUBE_GRANT, msg,
+                    ERROR, Cause.SCHEMA));
+            }
+        }
+
+        if (cubeGrant != null && isEmpty(cubeGrant.access())) {
+            results.add(new VerificationResultR(CUBE_GRANT, CUBE_GRANT_ACCESS_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
         }
     }
@@ -698,21 +757,63 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkHierarchyGrant(MappingHierarchyGrant hierarchyGrant) {
-        super.checkHierarchyGrant(hierarchyGrant);
+    protected void checkHierarchyGrant(MappingHierarchyGrant hierarchyGrant, String cubeName, MappingSchema schema) {
+        super.checkHierarchyGrant(hierarchyGrant, cubeName, schema);
         if (hierarchyGrant != null && isEmpty(hierarchyGrant.hierarchy())) {
             results.add(new VerificationResultR(HIERARCHY_GRANT, HIERARCHY_GRANT_HIERARCHY_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
         }
+        if (hierarchyGrant != null && !isEmpty(hierarchyGrant.hierarchy())) {
+            String hierarchy = removeBrackets(hierarchyGrant.hierarchy());
+            if (hierarchy != null) {
+                Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> cubeName.equals(c.name())).findFirst();
+                if (oCube.isPresent()) {
+                    Optional<MappingCubeDimension> oDim = oCube.get().dimensionUsageOrDimensions().stream().filter(d -> hierarchy.equals(d.name())).findFirst();
+                    if (!oDim.isPresent()) {
+                        String msg = String.format(HIERARCHY_GRANT_USE_DIMENSION_WHICH_ABSENT_IN_CUBE_WITH_NAME,
+                            hierarchy, orNotSet(cubeName));
+                        results.add(new VerificationResultR(HIERARCHY_GRANT, msg,
+                            ERROR, Cause.SCHEMA));
+
+                    }
+                }
+            }
+        }
+    }
+
+    private String removeBrackets(String str) {
+        if (str.length() > 0 && str.charAt(0) == '[') {
+            str = str.substring(1);
+        }
+        if (str.length() > 1 && str.charAt(str.length() - 1) == ']') {
+            str =  str.substring(0, str.length() - 1);
+        }
+        return str;
     }
 
     @Override
-    protected void checkMemberGrant(MappingMemberGrant memberGrant) {
-        super.checkMemberGrant(memberGrant);
+    protected void checkMemberGrant(MappingMemberGrant memberGrant, String cubeName, MappingSchema schema) {
+        super.checkMemberGrant(memberGrant, cubeName, schema);
         if (memberGrant != null) {
             if (isEmpty(memberGrant.member())) {
                 results.add(new VerificationResultR(MEMBER_GRANT, MEMBER_GRANT_MEMBER_MUST_BE_SET,
                     ERROR, Cause.SCHEMA));
+            } else {
+                String[] ms = memberGrant.member().split("\\.");
+                if(ms.length > 0) {
+                    String hierarchy = removeBrackets(ms[0]);
+                    Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> cubeName.equals(c.name())).findFirst();
+                    if (oCube.isPresent()) {
+                        Optional<MappingCubeDimension> oDim = oCube.get().dimensionUsageOrDimensions().stream().filter(d -> hierarchy.equals(d.name())).findFirst();
+                        if (!oDim.isPresent()) {
+                            String msg = String.format(MEMBER_GRANT_USE_DIMENSION_WHICH_ABSENT_IN_CUBE_WITH_NAME,
+                                hierarchy, orNotSet(cubeName));
+                            results.add(new VerificationResultR(MEMBER_GRANT, msg,
+                                ERROR, Cause.SCHEMA));
+
+                        }
+                    }
+                }
             }
             if (memberGrant.access() == null) {
                 results.add(new VerificationResultR(MEMBER_GRANT, MEMBER_GRANT_ACCESS_MUST_BE_SET,

@@ -401,11 +401,10 @@ public class Utils {
         Optional<String> baseCubeName,
         Optional<CubeSourceEnum> cubeSource
     ) {
-        List<DatabaseMappingSchemaProvider> schemas = context.getDatabaseMappingSchemaProviders();
+        List<Schema> schemas = context.getConnection().getSchemas();
         if (schemas != null) {
-            return getDatabaseMappingSchemaProviderWithFilter(schemas, schemaName).stream()
-                .filter(dmsp -> (dmsp != null && dmsp.get() != null))
-                .map(dmsp -> getMdSchemaCubesResponseRow(context.getName(), dmsp.get(), cubeName, baseCubeName,
+            return getSchemasWithFilter(schemas, schemaName).stream()
+                .map(s -> getMdSchemaCubesResponseRow(context.getName(), s, cubeName, baseCubeName,
                     cubeSource))
                 .flatMap(Collection::stream)
                 .toList();
@@ -493,14 +492,15 @@ public class Utils {
 
     private static List<MdSchemaCubesResponseRow> getMdSchemaCubesResponseRow(
         String catalogName,
-        MappingSchema schema,
+        Schema schema,
         Optional<String> cubeName,
         Optional<String> baseCubeName,
         Optional<CubeSourceEnum> cubeSource
     ) {
-        if (schema.cubes() != null) {
-            return Utils.getMappingCubeWithFilter(schema.cubes(), cubeName).stream().
-                map(c -> getMdSchemaCubesResponseRow(catalogName, schema.name(), c)).
+        if (schema.getCubes() != null) {
+            List<Cube> cubes = Arrays.asList(schema.getCubes());
+            return Utils.getCubesWithFilter(cubes, cubeName).stream().
+                map(c -> getMdSchemaCubesResponseRow(catalogName, schema.getName(), c)).
                 flatMap(Collection::stream).toList();
         }
         return List.of();
@@ -509,22 +509,22 @@ public class Utils {
     private static List<MdSchemaCubesResponseRow> getMdSchemaCubesResponseRow(
         String catalogName,
         String schemaName,
-        MappingCube cube
+        Cube cube
     ) {
         if (cube != null) {
-            if (cube.visible()) {
-                String desc = cube.description();
+            if (cube.isVisible()) {
+                String desc = cube.getDescription();
                 if (desc == null) {
                     desc = new StringBuilder(catalogName)
                         .append(" Schema - ")
-                        .append(cube.name())
+                        .append(cube.getName())
                         .append(" Cube")
                         .toString();
                 }
                 return List.of(new MdSchemaCubesResponseRowR(
                     catalogName,
                     Optional.ofNullable(schemaName),
-                    Optional.ofNullable(cube.name()),
+                    Optional.ofNullable(cube.getName()),
                     Optional.of(CubeTypeEnum.CUBE), //TODO get cube type from olap
                     Optional.empty(),
                     Optional.empty(),
@@ -537,7 +537,7 @@ public class Utils {
                     Optional.of(false),
                     Optional.of(false),
                     Optional.of(false),
-                    Optional.ofNullable(cube.caption() == null ? cube.name() : cube.caption()),
+                    Optional.ofNullable(cube.getCaption() == null ? cube.getName() : cube.getCaption()),
                     Optional.empty(),
                     Optional.of(CubeSourceEnum.CUBE),
                     Optional.empty())

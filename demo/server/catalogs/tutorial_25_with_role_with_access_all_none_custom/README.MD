@@ -1,6 +1,10 @@
 # Documentation
-### CatalogName : min_VirtualCube_common_dimension
-### Schema Minimal_Virtual_Cubes_With_1_Dimension : 
+### CatalogName : tutorial_25_with_role_with_access_all_none_custom
+### Schema Cube_with_role_access_all_none_custom : 
+
+    Cube with examples of roles with access (all, none, custom)
+    role4 use SchemaGrant, CubeGrant, HierarchyGrant, MemberGrant
+  
 ### Public Dimensions:
 
     Dimension1
@@ -13,11 +17,11 @@ Hierarchies:
 
 ##### Hierarchy Hierarchy1:
 
-Tables: "Dim_1"
+Tables: "Fact"
 
-Levels: "Level1"
+Levels: "Level2"
 
-###### Level "Level1" :
+###### Level "Level2" :
 
     column(s): KEY
 
@@ -31,7 +35,7 @@ Levels: "Level1"
 
     
 
-##### Table: "C1_Fact"
+##### Table: "Fact"
 
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
@@ -41,10 +45,18 @@ Levels: "Level1"
 
     
 
-##### Table: "C2_Fact"
+##### Table: "Fact"
 
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
+
+### Roles :##### Role: "role1"
+
+##### Role: "role2"
+
+##### Role: "role3"
+
+##### Role: "role4"
 
 ### Cube "Cube1" diagram:
 
@@ -64,16 +76,16 @@ Levels: "Level1"
 }}%%
 erDiagram
 c0["Cube1"]{
-M C1-Measure-Sum ""
+M Measure1 ""
 D Dimension1 ""
 }
 d00["Dimension1"] {
 H Hierarchy1 ""
 }
 h000["Hierarchy1"] {
-L Level1 ""
+L Level2 ""
 }
-"c0" ||--|| "d00" : "DIM_1_KEY-KEY"
+"c0" ||--|| "d00" : "KEY-KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
@@ -95,20 +107,20 @@ L Level1 ""
 }}%%
 erDiagram
 c1["Cube2"]{
-M C2-Measure-Sum ""
+M Measure1 ""
 D Dimension1 ""
 }
 d10["Dimension1"] {
 H Hierarchy1 ""
 }
 h100["Hierarchy1"] {
-L Level1 ""
+L Level2 ""
 }
-"c1" ||--|| "d10" : "DIM_1_KEY-KEY"
+"c1" ||--|| "d10" : "KEY-KEY"
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
-### Cube Matrix for Minimal_Virtual_Cubes_With_1_Dimension:
+### Cube Matrix for Cube_with_role_access_all_none_custom:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -130,24 +142,14 @@ Cube Cube2: [0.0500, 0.0000]
 title: Diagram;
 ---
 erDiagram
-"C1_Fact✔"{
-int DIM_1_KEY "✔"
+"Fact✔"{
+string KEY "✔"
 int VALUE "✔"
-}
-"C2_Fact✔"{
-int DIM_1_KEY "✔"
-int VALUE "✔"
-}
-"Dim_1✔"{
-int KEY "✔"
-string NAME "✔"
 }
 
-"C1_Fact✔" ||--o{ "Dim_1✔" : "DIM_1_KEY-KEY"
-"C2_Fact✔" ||--o{ "Dim_1✔" : "DIM_1_KEY-KEY"
 ```
 ---
-## Validation result for schema Minimal_Virtual_Cubes_With_1_Dimension
+## Validation result for schema Cube_with_role_access_all_none_custom
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

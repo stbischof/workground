@@ -94,7 +94,7 @@ public abstract class AbstractSchemaWalker {
             checkCubeList(schema.cubes(), schema);
             checkVirtualCubeList(schema.virtualCubes(), schema);
             checkNamedSetList(schema.namedSets());
-            checkRoleList(schema.roles());
+            checkRoleList(schema.roles(), schema);
             checkUserDefinedFunctionList(schema.userDefinedFunctions());
         }
 
@@ -404,7 +404,7 @@ public abstract class AbstractSchemaWalker {
 
             checkCubeDimensionList(virtCube.virtualCubeDimensions(), null, schema);
 
-            checkVirtualCubeMeasureList(virtCube.virtualCubeMeasures());
+            checkVirtualCubeMeasureList(virtCube.virtualCubeMeasures(), virtCube, schema);
 
             checkNamedSetList(virtCube.namedSets());
 
@@ -420,7 +420,7 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkVirtualCubeMeasure(MappingVirtualCubeMeasure virtualCubeMeasure) {
+    protected void checkVirtualCubeMeasure(MappingVirtualCubeMeasure virtualCubeMeasure, MappingVirtualCube vCube, MappingSchema schema) {
         if (virtualCubeMeasure != null) {
             checkAnnotationList(virtualCubeMeasure.annotations());
         }
@@ -487,10 +487,10 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkRole(MappingRole role) {
+    protected void checkRole(MappingRole role, MappingSchema schema) {
         if (role != null) {
             checkAnnotationList(role.annotations());
-            checkSchemaGrantList(role.schemaGrants());
+            checkSchemaGrantList(role.schemaGrants(), schema);
             checkUnion(role.union());
         }
     }
@@ -511,26 +511,26 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkSchemaGrant(MappingSchemaGrant schemaGrant) {
+    protected void checkSchemaGrant(MappingSchemaGrant schemaGrant, MappingSchema schema) {
         if (schemaGrant != null) {
-            checkCubeGrantList(schemaGrant.cubeGrants());
+            checkCubeGrantList(schemaGrant.cubeGrants(), schema);
         }
     }
 
-    protected void checkCubeGrant(MappingCubeGrant cubeGrant) {
-        if (cubeGrant != null) {
+    protected void checkCubeGrant(MappingCubeGrant cubeGrant, MappingSchema schema) {
+        if (cubeGrant != null && cubeGrant.cube() != null) {
             checkDimensionGrantList(cubeGrant.dimensionGrants());
-            checkHierarchyGrantList(cubeGrant.hierarchyGrants());
+            checkHierarchyGrantList(cubeGrant.hierarchyGrants(), cubeGrant.cube(), schema);
         }
     }
 
-    protected void checkHierarchyGrant(MappingHierarchyGrant hierarchyGrant) {
+    protected void checkHierarchyGrant(MappingHierarchyGrant hierarchyGrant, String cubeName,  MappingSchema schema) {
         if (hierarchyGrant != null) {
-            checkMemberGrantList(hierarchyGrant.memberGrants());
+            checkMemberGrantList(hierarchyGrant.memberGrants(), cubeName, schema);
         }
     }
 
-    protected void checkMemberGrant(MappingMemberGrant memberGrant) {
+    protected void checkMemberGrant(MappingMemberGrant memberGrant, String cubeName, MappingSchema schema) {
         //empty
     }
 
@@ -709,27 +709,27 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkVirtualCubeMeasureList(List<? extends MappingVirtualCubeMeasure> list) {
+    private void checkVirtualCubeMeasureList(List<? extends MappingVirtualCubeMeasure> list, MappingVirtualCube virtCube, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkVirtualCubeMeasure);
+            list.forEach(m -> checkVirtualCubeMeasure(m, virtCube, schema));
         }
     }
 
-    private void checkCubeGrantList(List<? extends MappingCubeGrant> list) {
+    private void checkCubeGrantList(List<? extends MappingCubeGrant> list, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkCubeGrant);
+            list.forEach(cg -> checkCubeGrant(cg, schema));
         }
     }
 
-    private void checkHierarchyGrantList(List<? extends MappingHierarchyGrant> list) {
+    private void checkHierarchyGrantList(List<? extends MappingHierarchyGrant> list, String cubeName, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkHierarchyGrant);
+            list.forEach(hg -> checkHierarchyGrant(hg, cubeName, schema));
         }
     }
 
-    private void checkMemberGrantList(List<? extends MappingMemberGrant> list) {
+    private void checkMemberGrantList(List<? extends MappingMemberGrant> list, String cubeName, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkMemberGrant);
+            list.forEach(mg -> checkMemberGrant(mg, cubeName, schema));
         }
     }
 
@@ -739,9 +739,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkSchemaGrantList(List<? extends MappingSchemaGrant> list) {
+    private void checkSchemaGrantList(List<? extends MappingSchemaGrant> list, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkSchemaGrant);
+            list.forEach(sg -> checkSchemaGrant(sg, schema));
         }
     }
 
@@ -797,9 +797,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkRoleList(List<? extends MappingRole> list) {
+    private void checkRoleList(List<? extends MappingRole> list, MappingSchema schema) {
         if (list != null) {
-            list.forEach(this::checkRole);
+            list.forEach(r -> checkRole(r, schema));
         }
     }
 
