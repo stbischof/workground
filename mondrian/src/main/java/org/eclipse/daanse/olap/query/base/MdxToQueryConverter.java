@@ -13,10 +13,16 @@
  */
 package org.eclipse.daanse.olap.query.base;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import mondrian.mdx.UnresolvedFunCallImpl;
+import mondrian.olap.CellPropertyImpl;
+import mondrian.olap.FormulaImpl;
+import mondrian.olap.IdImpl;
+import mondrian.olap.NullLiteralImpl;
+import mondrian.olap.NumericLiteralImpl;
+import mondrian.olap.QueryAxisImpl;
+import mondrian.olap.StringLiteralImpl;
+import mondrian.olap.SubcubeImpl;
+import mondrian.olap.SymbolLiteralImpl;
 import org.eclipse.daanse.mdx.model.api.expression.CallExpression;
 import org.eclipse.daanse.mdx.model.api.expression.CompoundId;
 import org.eclipse.daanse.mdx.model.api.expression.KeyObjectIdentifier;
@@ -52,6 +58,7 @@ import org.eclipse.daanse.olap.api.query.component.CellProperty;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.query.component.Id;
+import org.eclipse.daanse.olap.api.query.component.MemberProperty;
 import org.eclipse.daanse.olap.api.query.component.Subcube;
 import org.eclipse.daanse.olap.operation.api.AmpersandQuotedPropertyOperationAtom;
 import org.eclipse.daanse.olap.operation.api.BracesOperationAtom;
@@ -69,16 +76,9 @@ import org.eclipse.daanse.olap.operation.api.PostfixOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PrefixOperationAtom;
 import org.eclipse.daanse.olap.operation.api.QuotedPropertyOperationAtom;
 
-import mondrian.mdx.UnresolvedFunCallImpl;
-import mondrian.olap.CellPropertyImpl;
-import mondrian.olap.FormulaImpl;
-import mondrian.olap.IdImpl;
-import mondrian.olap.NullLiteralImpl;
-import mondrian.olap.NumericLiteralImpl;
-import mondrian.olap.QueryAxisImpl;
-import mondrian.olap.StringLiteralImpl;
-import mondrian.olap.SubcubeImpl;
-import mondrian.olap.SymbolLiteralImpl;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MdxToQueryConverter {
 
@@ -111,7 +111,8 @@ public class MdxToQueryConverter {
 			if (selectCellPropertyListClause.properties() != null) {
 				List<Segment> list = selectCellPropertyListClause.properties().stream()
 						.map(p -> ((Segment) new IdImpl.NameSegmentImpl(p))).toList();
-				return List.of(new CellPropertyImpl(list));
+                return list.stream().map(s -> (CellProperty)new CellPropertyImpl(List.of(s))).toList();
+				//return List.of(new CellPropertyImpl(list));
 			}
 		}
 		return List.of();
@@ -125,7 +126,7 @@ public class MdxToQueryConverter {
 			boolean nonEmpty = false;
 			Id[] dimensionProperties = new Id[0];
 
-			new QueryAxisImpl(nonEmpty, exp, AxisOrdinal.StandardAxisOrdinal.SLICER, SubtotalVisibility.Undefined,
+			return new QueryAxisImpl(nonEmpty, exp, AxisOrdinal.StandardAxisOrdinal.SLICER, SubtotalVisibility.Undefined,
 					dimensionProperties);
 		}
 		return null;
@@ -211,7 +212,7 @@ public class MdxToQueryConverter {
 				if (swc instanceof CreateMemberBodyClause createMemberBodyClause) {
 					IdImpl id = getId(createMemberBodyClause.compoundId());
 					Expression exp = getExpression(createMemberBodyClause.expression());
-					formulaList.add(new FormulaImpl(id, exp));
+					formulaList.add(new FormulaImpl(id, exp, new MemberProperty[0]));
 				}
 				if (swc instanceof CreateSetBodyClause createSetBodyClause) {
 					IdImpl id = getId(createSetBodyClause.compoundId());
@@ -400,7 +401,7 @@ public class MdxToQueryConverter {
 	static String convertName(NameObjectIdentifier nameObjectIdentifier) {
 		switch (nameObjectIdentifier.quoting()) {
 		case QUOTED:
-			return quoted(nameObjectIdentifier.name());
+			return nameObjectIdentifier.name();
 		case UNQUOTED:
 			return nameObjectIdentifier.name();
 		case KEY:

@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.eclipse.daanse.olap.api.function.FunctionService;
 import org.eclipse.daanse.olap.api.monitor.EventBus;
 import org.eclipse.daanse.olap.api.query.QueryProvider;
@@ -118,12 +119,13 @@ public interface Context {
 	List<Statement> getStatements(Connection connection);
 
     BasicContextConfig getConfig();
-    
+
     Semaphore getQueryLimitSemaphore();
 
 	Optional<Map<Object, Object>> getSqlMemberSourceValuePool();
 
     FunctionService getFunctionService();
-    
-    
+
+    //MdxParserProvider getMdxParserProvider();
+
 }

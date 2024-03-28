@@ -42,6 +42,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
+import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
+import org.eclipse.daanse.mdx.parser.api.MdxParser;
+import org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.ConnectionProps;
@@ -51,6 +54,7 @@ import org.eclipse.daanse.olap.api.Locus;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.access.Role;
+import org.eclipse.daanse.olap.api.query.QueryProvider;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.query.component.QueryAxis;
@@ -61,6 +65,7 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.todo.TupleCursor;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
+import org.eclipse.daanse.olap.query.base.QueryProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +106,7 @@ public class RolapConnection extends ConnectionBase {
 
   private final int id;
   private final Statement internalStatement;
+  private final QueryProvider queryProvider = new QueryProviderImpl();
 
 
 	public RolapConnection(Context context, ConnectionProps rolapConnectionProps) {
@@ -470,10 +476,10 @@ public Expression parseExpression( String expr ) {
         String msg  = Util.NL + expr;
         getLogger().debug(msg);
     }
-    final Statement statement = getInternalStatement();
     try {
-      MdxParserValidator parser = createParser();
-      return parser.parseExpression( statement, expr, debug, context.getFunctionService() );
+      MdxParser mdxParser = new MdxParserWrapper(expr);
+      MdxExpression expression = mdxParser.parseExpression();
+      return getExpressionProvider().createExpression(expression);
     } catch ( Throwable exception ) {
       throw new FailedToParseQueryException( expr, exception );
     }

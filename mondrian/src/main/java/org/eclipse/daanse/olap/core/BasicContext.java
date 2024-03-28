@@ -24,12 +24,12 @@ import javax.sql.DataSource;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.function.FunctionService;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
-import org.eclipse.daanse.olap.calc.base.compiler.BaseExpressionCompilerFactory;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Activate;
@@ -61,6 +61,7 @@ public class BasicContext extends AbstractBasicContext {
 	public static final String REF_NAME_DATA_SOURCE = "dataSource";
 //	public static final String REF_NAME_QUERY_PROVIDER = "queryProvier";
 	public static final String REF_NAME_DB_MAPPING_SCHEMA_PROVIDER = "databaseMappingSchemaProviders";
+    public static final String REF_NAME_MDX_PARSER_PROVIDER = "mdxParserProvider";
 	public static final String REF_NAME_EXPRESSION_COMPILER_FACTORY = "expressionCompilerFactory";
 
 	private static final String ERR_MSG_DIALECT_INIT = "Could not activate context. Error on initialisation of Dialect";
@@ -82,8 +83,8 @@ public class BasicContext extends AbstractBasicContext {
 
 	@Reference(name = REF_NAME_EXPRESSION_COMPILER_FACTORY, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
 	private ExpressionCompilerFactory expressionCompilerFactory = null;
-	
-	@Reference 
+
+	@Reference
 	private FunctionService functionService;
 
 	private BasicContextConfig config;
@@ -91,6 +92,9 @@ public class BasicContext extends AbstractBasicContext {
 	private Dialect dialect = null;
 
 	private Semaphore queryLimitSemaphore;
+
+    //@Reference(name = REF_NAME_MDX_PARSER_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
+    //private MdxParserProvider mdxParserProvider;
 
 	@Activate
 	public void activate(Map<String, Object> coniguration) throws Exception {
@@ -215,9 +219,14 @@ public class BasicContext extends AbstractBasicContext {
 	public Optional<Map<Object, Object>> getSqlMemberSourceValuePool() {
 		return Optional.empty(); //Caffein Cache is an option
 	}
-	
+
 	@Override
     public FunctionService getFunctionService() {
         return functionService;
     }
+
+    //@Override
+    //public MdxParserProvider getMdxParserProvider() {
+    //    return mdxParserProvider;
+    //}
 }

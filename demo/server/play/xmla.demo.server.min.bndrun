@@ -41,7 +41,8 @@
 	bnd.identity;id='org.eclipse.daanse.common.jdbc.loader.csv',\
 	bnd.identity;id='org.eclipse.daanse.common.jdbc.db.core',\
 	bnd.identity;id='org.eclipse.daanse.olap.documentation.common',\
-	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic'
+	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic',\
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.api'
 
 
 
@@ -89,6 +90,9 @@
 	org.eclipse.daanse.demo.server.play;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.emondrian;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.model.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.mdx.model.record;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.mdx.parser.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.mdx.parser.ccc;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.documentation.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.documentation.common;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.filecatalog;version='[0.0.1,0.0.2)',\

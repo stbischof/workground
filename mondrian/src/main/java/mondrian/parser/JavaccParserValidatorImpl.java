@@ -15,8 +15,6 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 
 import mondrian.olap.FactoryImpl;
-import mondrian.olap.MondrianException;
-import mondrian.olap.Util;
 
 /**
  * Default implementation of {@link MdxParserValidator}, using the
@@ -45,76 +43,23 @@ public class JavaccParserValidatorImpl implements MdxParserValidator {
     }
 
     @Override
-	public QueryComponent parseInternal(
+    public QueryComponent parseInternal(
         Statement statement,
         String queryString,
         boolean debug,
         FunctionTable funTable,
-        boolean strictValidation)
-    {
-        final MdxParserImpl mdxParser =
-            new MdxParserImpl(
-                factory,
-                statement,
-                queryString,
-                debug,
-                funTable,
-                strictValidation);
-        try {
-            return mdxParser.statementEof();
-        } catch (ParseException e) {
-            throw convertException(queryString, e);
-        }
+        boolean strictValidation
+    ) {
+        return null;
     }
 
     @Override
-	public Expression parseExpression(
+    public Expression parseExpression(
         Statement statement,
         String queryString,
         boolean debug,
-        FunctionTable funTable)
-    {
-        final MdxParserImpl mdxParser =
-            new MdxParserImpl(
-                factory,
-                statement,
-                queryString,
-                debug,
-                funTable,
-                false);
-        try {
-            return mdxParser.expressionEof();
-        } catch (ParseException e) {
-            throw convertException(queryString, e);
-        }
-    }
-
-    /**
-     * Converts the exception so that it looks like the exception produced by
-     * JavaCUP. (Not that that format is ideal, but it minimizes test output
-     * changes during the transition from JavaCUP to JavaCC.)
-     *
-     * @param queryString MDX query string
-     * @param pe JavaCC parse exception
-     * @return Wrapped exception
-     */
-    private RuntimeException convertException(
-        String queryString,
-        ParseException pe)
-    {
-        Exception e;
-        if (pe.getMessage().startsWith("Encountered ")) {
-            e = new MondrianException(
-                new StringBuilder("Syntax error at line ")
-                .append(pe.currentToken.next.beginLine)
-                .append(", column ")
-                .append(pe.currentToken.next.beginColumn)
-                .append(", token '")
-                .append(pe.currentToken.next.image)
-                .append("'").toString());
-        } else {
-            e = pe;
-        }
-        return Util.newError(e, "While parsing " + queryString);
+        FunctionTable funTable
+    ) {
+        return null;
     }
 }

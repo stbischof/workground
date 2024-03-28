@@ -394,7 +394,25 @@
 			<version>2.2.224</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.mdx.parser.api</artifactId>
+      <version>${revision}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.mdx.parser.ccc</artifactId>
+      <version>${revision}</version>
+      <scope>test</scope>
+    </dependency>
+        <dependency>
+            <groupId>org.eclipse.daanse</groupId>
+            <artifactId>org.eclipse.daanse.mdx.parser.ccc</artifactId>
+            <version>${revision}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 	<build>
 		<!--
 
@@ -420,7 +438,7 @@
 					</filesets>
 				</configuration>
 			</plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <version>3.0.1</version>
@@ -435,7 +453,7 @@
           <sourceDirectory>${project.basedir}/src/main/java/mondrian/parser</sourceDirectory>
           <outputDirectory>${project.basedir}/src/generated/java</outputDirectory>
         </configuration>
-      </plugin>
+      </plugin-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>

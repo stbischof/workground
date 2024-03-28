@@ -56,16 +56,16 @@ import mondrian.olap.UpdateImpl;
 public class QueryProviderImpl implements QueryProvider {
 
     @Override
-    public QueryComponent createQuery(MdxStatement mdxStatement) {
+    public QueryComponent createQuery(Statement statement, MdxStatement mdxStatement) {
 
         if (mdxStatement instanceof SelectStatement selectStatement) {
-            return createQuery(selectStatement);
+            return createQuery(statement, selectStatement);
         }
         if (mdxStatement instanceof DrillthroughStatement drillthroughStatement) {
-            return createDrillThrough(drillthroughStatement);
+            return createDrillThrough(statement, drillthroughStatement);
         }
         if (mdxStatement instanceof ExplainStatement explainStatement) {
-            return createExplain(explainStatement);
+            return createExplain(statement, explainStatement);
         }
         if (mdxStatement instanceof DMVStatement dmvStatement) {
             return createDMV(dmvStatement);
@@ -100,14 +100,14 @@ public class QueryProviderImpl implements QueryProvider {
     }
 
     @Override
-    public Explain createExplain(ExplainStatement explainStatement) {
-        QueryComponent queryPart = createQuery(explainStatement.mdxStatement());
+    public Explain createExplain(Statement statement, ExplainStatement explainStatement) {
+        QueryComponent queryPart = createQuery(statement, explainStatement.mdxStatement());
         return new ExplainImpl(queryPart);
     }
 
     @Override
-    public DrillThrough createDrillThrough(DrillthroughStatement drillthroughStatement) {
-        Query query = createQuery(drillthroughStatement.selectStatement());
+    public DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillthroughStatement) {
+        Query query = createQuery(statement, drillthroughStatement.selectStatement());
         List<Expression> returnList = List.of();
         return new DrillThroughImpl(query,
             drillthroughStatement.maxRows().orElse(0),
@@ -116,8 +116,7 @@ public class QueryProviderImpl implements QueryProvider {
     }
 
     @Override
-    public Query createQuery(SelectStatement selectStatement) {
-        Statement statement = null;
+    public Query createQuery(Statement statement, SelectStatement selectStatement) {
         boolean strictValidation = false;
         Subcube subcube = convertSubcube(selectStatement.selectSubcubeClause());
         List<Formula> formulaList = convertFormulaList(selectStatement.selectWithClauses());

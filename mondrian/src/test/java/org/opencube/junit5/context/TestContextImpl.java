@@ -13,6 +13,8 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
+import org.eclipse.daanse.mdx.parser.ccc.MdxParserProviderImpl;
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.function.FunctionService;
 import org.eclipse.daanse.olap.api.result.Scenario;
@@ -207,6 +209,11 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
         return functionService;
     }
 
+    //@Override
+    //public MdxParserProvider getMdxParserProvider() {
+    //    return new MdxParserProviderImpl();
+    //}
+
     public void setFunctionService(FunctionService functionService) {
         this.functionService = functionService;
     }
@@ -217,7 +224,7 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 			return dataSource.getConnection().getMetaData().getURL();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			
+
 			return dataSource.getClass().getPackageName();
 		}
     }
