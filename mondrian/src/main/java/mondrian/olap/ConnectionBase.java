@@ -14,16 +14,19 @@ package mondrian.olap;
 import java.util.List;
 
 import mondrian.olap.exceptions.FailedToParseQueryException;
+import org.eclipse.daanse.mdx.model.api.MdxStatement;
+import org.eclipse.daanse.mdx.parser.api.MdxParser;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.function.FunctionTable;
+import org.eclipse.daanse.olap.api.query.ExpressionProvider;
+import org.eclipse.daanse.olap.api.query.QueryProvider;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
-import org.eclipse.daanse.olap.impl.StatementImpl;
+import org.eclipse.daanse.olap.query.base.ExpressionProviderImpl;
+import org.eclipse.daanse.olap.query.base.QueryProviderImpl;
 import org.slf4j.Logger;
 
-import mondrian.parser.JavaccParserValidatorImpl;
-import mondrian.parser.MdxParserValidator;
 
 /**
  * <code>ConnectionBase</code> implements some of the methods in
@@ -33,6 +36,10 @@ import mondrian.parser.MdxParserValidator;
  * @since 6 August, 2001
  */
 public abstract class ConnectionBase implements Connection {
+
+    QueryProvider queryProvider = new QueryProviderImpl();
+
+    ExpressionProvider expressionProvider = new ExpressionProviderImpl();
 
     protected ConnectionBase() {
     }
@@ -68,7 +75,7 @@ public abstract class ConnectionBase implements Connection {
         FunctionTable funTable,
         boolean strictValidation)
     {
-        MdxParserValidator parser = createParser();
+        //MdxParserValidator parser = createParser();
         boolean debug = false;
 
         if (getLogger().isDebugEnabled()) {
@@ -77,16 +84,15 @@ public abstract class ConnectionBase implements Connection {
         }
 
         try {
-            return
-                parser.parseInternal(
-                    statement, query, debug, funTable, strictValidation);
+            MdxParser parser = getContext().getMdxParserProvider().newParser(query);
+            MdxStatement statement1  = parser.parseMdxStatement();
+            return getQueryProvider().createQuery(statement1);
+            //return
+            //    parser.parseInternal(
+            //        statement, query, debug, funTable, strictValidation);
         } catch (Exception e) {
             throw new FailedToParseQueryException(query, e);
         }
-    }
-
-    protected MdxParserValidator createParser() {
-        return new JavaccParserValidatorImpl();
     }
 
     @Override
@@ -94,23 +100,12 @@ public abstract class ConnectionBase implements Connection {
         return List.of(getSchema());
     }
 
-    public  QueryComponent parseStatementN(StatementImpl statement, String query,
-                                           FunctionTable funTable,
-                                           boolean strictValidation) {
-        MdxParserValidator parser = createParser();
-        boolean debug = false;
-
-        if (getLogger().isDebugEnabled()) {
-            String s = new StringBuilder().append(Util.NL).append(query.replaceAll("[\n\r]", "_")).toString();
-            getLogger().debug(s);
-        }
-
-        try {
-            return
-                parser.parseInternal(
-                    statement, query, debug, funTable, strictValidation);
-        } catch (Exception e) {
-            throw new FailedToParseQueryException(query, e);
-        }
+    public QueryProvider getQueryProvider() {
+        return queryProvider;
     }
+
+    public ExpressionProvider getExpressionProvider() {
+        return expressionProvider;
+    }
+
 }

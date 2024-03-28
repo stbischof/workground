@@ -455,7 +455,7 @@ class IdBatchResolverTest  {
 
         RolapConnection conn = (RolapConnection) spy(
         		context.getConnection());
-        when(conn.createParser()).thenReturn(parser);
+        //when(conn.createParser()).thenReturn(parser);
 
         query = conn.parseQuery(mdx);
         LocusImpl.push(new LocusImpl(new ExecutionImpl(

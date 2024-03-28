@@ -27,7 +27,6 @@ import mondrian.olap.QueryCanceledException;
 import mondrian.olap.QueryTimeoutException;
 import mondrian.rolap.RolapConnection;
 import mondrian.server.LocusImpl;
-import mondrian.util.Pair;
 
 public class StatementImpl extends mondrian.server.StatementImpl implements Statement {
 
@@ -68,7 +67,7 @@ public class StatementImpl extends mondrian.server.StatementImpl implements Stat
         return executeOlapQueryInternal(query);
 
     }
-    
+
     @Override
     public CellSet executeQuery(Query query) {
         return executeOlapQueryInternal(query);
@@ -200,7 +199,7 @@ public class StatementImpl extends mondrian.server.StatementImpl implements Stat
                     public Query execute()
                     {
                         final Query query =
-                            (Query) ((ConnectionBase)connection).parseStatementN(
+                            (Query) ((ConnectionBase)connection).parseStatement(
                                 StatementImpl.this,
                                 mdx,
                                 context.getFunctionService(),
