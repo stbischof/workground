@@ -21,6 +21,7 @@ import org.eclipse.daanse.common.jdbc.db.api.sql.TableReference;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.ColumnReferenceR;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.SchemaReferenceR;
 import org.eclipse.daanse.common.jdbc.db.record.sql.element.TableReferenceR;
+import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
@@ -30,6 +31,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
@@ -37,8 +39,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.AbstractSchemaWalke
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaExplorer;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.VerificationResultR;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +86,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.RELATON;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.SCHEMA_SPACE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.SCHEMA_S_DOES_NOT_EXIST;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.SQL;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.TABLE_S_DOES_NOT_EXIST_IN_DATABASE;
 
@@ -89,11 +95,13 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     private DatabaseService databaseService;
     private DatabaseVerifierConfig config;
     private DatabaseMetaData databaseMetaData;
+    private Optional<Dialect> optionalDialect;
 
-    public JDBCSchemaWalker(DatabaseVerifierConfig config, DatabaseService databaseService, DatabaseMetaData databaseMetaData) {
+    public JDBCSchemaWalker(DatabaseVerifierConfig config, DatabaseService databaseService, DatabaseMetaData databaseMetaData, Optional<Dialect> optionalDialect) {
         this.config = config;
         this.databaseService = databaseService;
         this.databaseMetaData = databaseMetaData;
+        this.optionalDialect = optionalDialect;
     }
 
     @Override
@@ -371,6 +379,33 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected boolean isSchemaRequired() {
         return config.isSchemaRequired();
+    }
+
+    @Override
+    protected void checkSQLList(List<? extends MappingSQL> list) {
+        if (list != null && optionalDialect.isPresent()) {
+            String dialectName = optionalDialect.get().getDialectName();
+            List<? extends MappingSQL> sqls = list.stream().filter(sql -> dialectName.equals(sql.dialect())).toList();
+            if (!sqls.isEmpty()) {
+                checkSQL(sqls.get(0));
+            } else {
+                sqls = list.stream().filter(sql -> "generic".equals(sql.dialect())).toList();
+                if (!sqls.isEmpty()) {
+                    checkSQL(sqls.get(0));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkSQL(MappingSQL sql) {
+        try {
+            Connection con = databaseMetaData.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql.content());
+        } catch (SQLException e) {
+            results.add(new VerificationResultR(SQL, e.getMessage().replace("\n",""), ERROR, DATABASE));
+        }
     }
 
     private void checkPropertyHierarchy(String column, MappingHierarchy hierarchy, MappingCube cube) {

@@ -13,6 +13,13 @@
 
 ##### Table: "C1_Fact"
 
+---
+#### Cube "Cube2":
+
+    
+
+##### Table: "C2_Fact"
+
 ### Cube "Cube1" diagram:
 
 ---
@@ -35,13 +42,6 @@ M C1-Measure-Sum ""
 }
 ```
 ---
----
-#### Cube "Cube2":
-
-    
-
-##### Table: "C2_Fact"
-
 ### Cube "Cube2" diagram:
 
 ---

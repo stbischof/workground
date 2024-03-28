@@ -14,6 +14,8 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
 import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.db.dialect.api.Dialect;
+import org.eclipse.daanse.db.dialect.api.DialectResolver;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
@@ -35,6 +37,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Designate(ocd = DatabaseVerifierConfig.class)
 @Component(service = Verifyer.class)
@@ -44,6 +47,9 @@ public class DatabaseVerifyer implements Verifyer {
 
     @Reference()
     private DatabaseService databaseService;
+
+    @Reference
+    private DialectResolver dialectResolver;
 
     private DatabaseVerifierConfig config;
 
@@ -64,7 +70,8 @@ public class DatabaseVerifyer implements Verifyer {
 
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            JDBCSchemaWalker walker = new JDBCSchemaWalker(config, databaseService, databaseMetaData);
+            Optional<Dialect> optionalDialect = dialectResolver.resolve(dataSource);
+            JDBCSchemaWalker walker = new JDBCSchemaWalker(config, databaseService, databaseMetaData, optionalDialect);
             return walker.checkSchema(schema);
 
         } catch (SQLException e) {

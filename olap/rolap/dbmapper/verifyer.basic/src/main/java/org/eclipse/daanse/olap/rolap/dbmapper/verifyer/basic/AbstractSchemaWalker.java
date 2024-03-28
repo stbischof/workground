@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic;
 
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.NOT_SET;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -614,7 +615,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkSQLList(List<? extends MappingSQL> list) {
+    protected void checkSQLList(List<? extends MappingSQL> list) {
         if (list != null) {
             list.forEach(this::checkSQL);
         }

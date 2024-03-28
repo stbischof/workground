@@ -212,7 +212,7 @@ public class SchemaWalkerMessages {
         "VirtualCube with name %s must contain measures";
 
     public static final String COULD_NOT_CHECK_EXISTANCE_OF_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
-        "could not check existance of table {0} does not exist in database {1}";
+        "could not check existence of table {0} does not exist in database {1}";
     public static final String FACT_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
         "Fact table %s does not exist in database %s";
     public static final String AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE =
@@ -229,7 +229,7 @@ public class SchemaWalkerMessages {
     public static final String CUBE_DIMENSION_FOREIGN_KEY_S_DOES_NOT_EXIST_IN_FACT_TABLE =
         "Cube Dimension foreignKey %s does not exist in fact table";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE =
-        "Could not lookup existance of Column %s defined in field %s in table %s";
+        "Could not lookup existence of Column %s defined in field %s in table %s";
     public static final String FOREIGN_KEY = "foreignKey";
     public static final String COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE =
         "Column %s defined in field %s does not exist in table %s";
@@ -241,27 +241,27 @@ public class SchemaWalkerMessages {
     public static final String PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE =
         "Property column %s does not exist in Hierarchy table %s";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN =
-        "Could not lookup existance of Column %s defined in field %s in ";
+        "Could not lookup existence of Column %s defined in field %s in ";
     public static final String MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE =
         "Measure %s column %s doesn't exist in table %s of cube with name %s";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_IN_TABLE =
-        "Could not lookup existance of Column %s in table %s";
+        "Could not lookup existence of Column %s in table %s";
     public static final String PARENT_TABLE_NAME = "parentTable.name";
     public static final String COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S = "Column %s does not exist in Level table %s";
     public static final String TABLE_S_DOES_NOT_EXIST_IN_DATABASE = "Table %s does not exist in database";
-    public static final String COULD_NOCH_CHECK_EXISTANCE_OF_TABLE_0 = "could noch check existance of Table {0}";
+    public static final String COULD_NOCH_CHECK_EXISTANCE_OF_TABLE_0 = "could noch check existence of Table {0}";
     public static final String SCHEMA_S_DOES_NOT_EXIST = "Schema %s does not exist";
-    public static final String COULD_NOT_CHECK_EXISTANCE_OF_SCHEMA_S = "could not check existance of Schema %s";
+    public static final String COULD_NOT_CHECK_EXISTANCE_OF_SCHEMA_S = "could not check existence of Schema %s";
     public static final String DEGENERATE_DIMENSION_VALIDATION_CHECK_COLUMN_S_DOES_NOT_EXIST_IN_FACT_TABLE1 =
         "Degenerate dimension validation check - Column %s does not exist in fact table";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE_24 =
-        "Could not lookup existance of Column %s defined in field %s in table {2}";
+        "Could not lookup existence of Column %s defined in field %s in table {2}";
     public static final String COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE =
         "Column %s defined in field %s does not exist in table %s";
     public static final String COLUMN_S_DEFINED_IN_FIELD_S_DOES_NOT_EXIST_IN_TABLE_S2 =
         "Column %s defined in field %s does not exist in table %s";
     public static final String COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE =
-        "Could not lookup existance of Column %s defined in field %s in table %s";
+        "Could not lookup existence of Column %s defined in field %s in table %s";
     public static final String CUBE_NAME_MUST_SET = "Cube name must be set";
     public static final String DIMENSION_MUST_CONTAIN_DESCRIPTION = "Dimension must contain description";
     public static final String VIRTUAL_CUBE_MUST_CONTAIN_DESCRIPTION = "Virtual Cube must contain description";

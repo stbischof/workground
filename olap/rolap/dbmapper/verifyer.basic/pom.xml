@@ -89,5 +89,11 @@
       <artifactId>org.osgi.util.converter</artifactId>
       <scope>compile</scope>
     </dependency>
+      <dependency>
+          <groupId>org.eclipse.daanse</groupId>
+          <artifactId>org.eclipse.daanse.db.dialect.api</artifactId>
+          <version>${revision}</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 </project>
