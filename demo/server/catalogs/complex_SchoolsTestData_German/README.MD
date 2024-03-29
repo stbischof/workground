@@ -250,6 +250,50 @@ Levels: "Förderbedarf, Art der Förderung"
 
 ##### Dimension: "Schuljahr -> Schuljahre":
 
+---
+#### Cube "Pädagogisches Personal an Jenaer Schulen":
+
+    
+
+##### Table: "fact_personal"
+
+##### Dimensions:
+##### Dimension: "Schulen -> Schulen":
+
+##### Dimension: "Schuljahr -> Schuljahre":
+
+##### Dimension: "Altersgruppe -> Altersgruppen Personal":
+
+##### Dimension: "Geschlecht -> Geschlecht":
+
+##### Dimension: "Berufsgruppe -> Berufsgruppen Personal":
+
+---
+#### Cube "Schüler:innen an Jenaer Schulen":
+
+    
+
+##### Table: "fact_schueler"
+
+##### Dimensions:
+##### Dimension: "Schulen -> Schulen":
+
+##### Dimension: "Schuljahr -> Schuljahre":
+
+##### Dimension: "Geschlecht -> Geschlecht":
+
+##### Dimension: "Wohnlandkreis -> Wohnlandkreis":
+
+##### Dimension: "Einschulung -> Einschulungen":
+
+##### Dimension: "Schulabschluss -> Schulabschluss":
+
+##### Dimension: "Klassenwiederholung -> Klassenwiederholung":
+
+##### Dimension: "Migrationshintergrund -> Migrationshintergrund":
+
+##### Dimension: "Sonderpädagogische Förderung -> Inklusion":
+
 ### Cube "Schulen in Jena (Institutionen)" diagram:
 
 ---
@@ -315,24 +359,6 @@ L Schuljahr ""
 "d01" ||--|| "h010" : "id-id"
 ```
 ---
----
-#### Cube "Pädagogisches Personal an Jenaer Schulen":
-
-    
-
-##### Table: "fact_personal"
-
-##### Dimensions:
-##### Dimension: "Schulen -> Schulen":
-
-##### Dimension: "Schuljahr -> Schuljahre":
-
-##### Dimension: "Altersgruppe -> Altersgruppen Personal":
-
-##### Dimension: "Geschlecht -> Geschlecht":
-
-##### Dimension: "Berufsgruppe -> Berufsgruppen Personal":
-
 ### Cube "Pädagogisches Personal an Jenaer Schulen" diagram:
 
 ---
@@ -424,32 +450,6 @@ L Berufsgruppe ""
 "d14" ||--|| "h140" : "id-id"
 ```
 ---
----
-#### Cube "Schüler:innen an Jenaer Schulen":
-
-    
-
-##### Table: "fact_schueler"
-
-##### Dimensions:
-##### Dimension: "Schulen -> Schulen":
-
-##### Dimension: "Schuljahr -> Schuljahre":
-
-##### Dimension: "Geschlecht -> Geschlecht":
-
-##### Dimension: "Wohnlandkreis -> Wohnlandkreis":
-
-##### Dimension: "Einschulung -> Einschulungen":
-
-##### Dimension: "Schulabschluss -> Schulabschluss":
-
-##### Dimension: "Klassenwiederholung -> Klassenwiederholung":
-
-##### Dimension: "Migrationshintergrund -> Migrationshintergrund":
-
-##### Dimension: "Sonderpädagogische Förderung -> Inklusion":
-
 ### Cube "Schüler:innen an Jenaer Schulen" diagram:
 
 ---
@@ -604,6 +604,18 @@ Cube Schueler_innen_an_Jenaer_Schulen: [0.9500, 0.0000]
 title: Diagram;
 ---
 erDiagram
+"alters_gruppe✔"{
+int id "✔"
+string altersgruppe "✔"
+}
+"fact_personal✔"{
+int schule_id "✔"
+int schul_jahr_id "✔"
+int alters_gruppe_id "✔"
+int geschlecht_id "✔"
+int personal_art_id "✔"
+int anzahl_personen "✔"
+}
 "fact_schueler✔"{
 int schule_id "✔"
 int schul_jahr_id "✔"
@@ -622,72 +634,76 @@ int schul_jahr_id "✔"
 int anzahl_schulen "✔"
 int anzahl_klassen "✔"
 }
-"sonderpaed_foerderbedarf❌"{
-VARCHAR sonderpaed_bedarf "❌"
-INTEGER id "❌"
+"ganztags_art✔"{
+int id "✔"
+string schul_umfang "✔"
+}
+"geschlecht✔"{
+int id "✔"
+string kuerzel "✔"
+string bezeichnung "✔"
+}
+"klassen_wiederholung✔"{
+int id "✔"
+string klassenwiederholung "✔"
+}
+"schul_abschluss✔"{
+int id "✔"
+string schulabschluss "✔"
+}
+"schul_art✔"{
+int id "✔"
+string schulart_name "✔"
+int schul_kategorie_id "✔"
+}
+"schul_jahr✔"{
+int id "✔"
+string schul_jahr "✔"
+int order "✔"
+}
+"schul_kategorie✔"{
+int id "✔"
+string schul_kategorie_name "✔"
+}
+"schule✔"{
+int id "✔"
+int schul_nummer "✔"
+string schul_name "✔"
+int traeger_id "✔"
+int schul_art_id "✔"
+int ganztags_art_id "✔"
+}
+"sonderpaed_foerderbedarf✔"{
+int id "✔"
+string sonderpaed_bedarf "✔"
+}
+"traeger✔"{
+int id "✔"
+string traeger_name "✔"
+int traeger_art_id "✔"
+}
+"traeger_art✔"{
+int id "✔"
+string traeger_art "✔"
+string traeger_kat_id "✔"
+}
+"wohnort_landkreis✔"{
+int id "✔"
+string kuerzel "✔"
+string bezeichnung "✔"
+int bundesland_id "✔"
 }
 "einschulung❌"{
 VARCHAR einschulung "❌"
 VARCHAR id "❌"
-}
-"klassen_wiederholung❌"{
-VARCHAR id "❌"
-VARCHAR klassenwiederholung "❌"
-}
-"geschlecht❌"{
-VARCHAR bezeichnung "❌"
-VARCHAR id "❌"
-}
-"schul_art❌"{
-INTEGER schul_kategorie_id "❌"
-VARCHAR schulart_name "❌"
-INTEGER id "❌"
-}
-"schul_jahr❌"{
-VARCHAR id "❌"
-VARCHAR schul_jahr "❌"
-INTEGER order "❌"
 }
 "foerderung_art❌"{
 INTEGER sp_foerderbedarf_id "❌"
 VARCHAR id "❌"
 VARCHAR foerderung_art "❌"
 }
-"traeger❌"{
-INTEGER traeger_art_id "❌"
-VARCHAR traeger_name "❌"
-INTEGER id "❌"
-}
-"ganztags_art❌"{
-INTEGER id "❌"
-VARCHAR schul_umfang "❌"
-}
-"schule❌"{
-INTEGER schul_nummer "❌"
-INTEGER traeger_id "❌"
-INTEGER ganztags_art_id "❌"
-VARCHAR schul_name "❌"
-VARCHAR id "❌"
-INTEGER schul_art_id "❌"
-}
-"schul_abschluss❌"{
-VARCHAR schulabschluss "❌"
-VARCHAR id "❌"
-}
 "bundesland❌"{
 VARCHAR bezeichnung "❌"
-INTEGER id "❌"
-}
-"fact_personal❌"{
-VARCHAR anzahl_personen "❌"
-INTEGER alters_gruppe_id "❌"
-INTEGER schule_id "❌"
-INTEGER schul_jahr_id "❌"
-INTEGER personal_art_id "❌"
-INTEGER geschlecht_id "❌"
-}
-"schul_kategorie❌"{
-VARCHAR schul_kategorie_name "❌"
 INTEGER id "❌"
 }
 "traeger_kategorie❌"{
@@ -698,67 +714,53 @@ VARCHAR traeger_kategorie "❌"
 VARCHAR bezeichnung "❌"
 VARCHAR id "❌"
 }
-"traeger_art❌"{
-INTEGER traeger_kat_id "❌"
-INTEGER id "❌"
-VARCHAR traeger_art "❌"
-}
 "migrations_hintergrund❌"{
 VARCHAR id "❌"
 VARCHAR migrations_hintergrund "❌"
 }
-"alters_gruppe❌"{
-VARCHAR id "❌"
-VARCHAR altersgruppe "❌"
-}
-"wohnort_landkreis❌"{
-INTEGER bundesland_id "❌"
-VARCHAR bezeichnung "❌"
-VARCHAR id "❌"
-}
 
-"fact_schulen✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "ganztags_art❌" : "ganztags_art_id-id"
-"fact_schulen✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "traeger❌" : "traeger_id-id"
-"traeger❌" ||--o{ "traeger_art❌" : "traeger_art_id-id"
-"traeger_art❌" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
-"fact_schulen✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "schul_art❌" : "schul_art_id-id"
-"schul_art❌" ||--o{ "schul_kategorie❌" : "schul_kategorie_id-id"
-"fact_schulen✔" ||--o{ "schul_jahr❌" : "schul_jahr_id-id"
-"fact_personal❌" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "ganztags_art❌" : "ganztags_art_id-id"
-"fact_personal❌" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "traeger❌" : "traeger_id-id"
-"traeger❌" ||--o{ "traeger_art❌" : "traeger_art_id-id"
-"traeger_art❌" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
-"fact_personal❌" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "schul_art❌" : "schul_art_id-id"
-"schul_art❌" ||--o{ "schul_kategorie❌" : "schul_kategorie_id-id"
-"fact_personal❌" ||--o{ "schul_jahr❌" : "schul_jahr_id-id"
-"fact_personal❌" ||--o{ "alters_gruppe❌" : "alters_gruppe_id-id"
-"fact_personal❌" ||--o{ "geschlecht❌" : "geschlecht_id-id"
-"fact_personal❌" ||--o{ "personal_art❌" : "personal_art_id-id"
-"fact_schueler✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "ganztags_art❌" : "ganztags_art_id-id"
-"fact_schueler✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "traeger❌" : "traeger_id-id"
-"traeger❌" ||--o{ "traeger_art❌" : "traeger_art_id-id"
-"traeger_art❌" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
-"fact_schueler✔" ||--o{ "schule❌" : "schule_id-id"
-"schule❌" ||--o{ "schul_art❌" : "schul_art_id-id"
-"schul_art❌" ||--o{ "schul_kategorie❌" : "schul_kategorie_id-id"
-"fact_schueler✔" ||--o{ "schul_jahr❌" : "schul_jahr_id-id"
-"fact_schueler✔" ||--o{ "geschlecht❌" : "geschlecht_id-id"
-"fact_schueler✔" ||--o{ "wohnort_landkreis❌" : "wohn_lk_id-id"
-"wohnort_landkreis❌" ||--o{ "bundesland❌" : "bundesland_id-id"
+"fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "ganztags_art✔" : "ganztags_art_id-id"
+"fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "traeger✔" : "traeger_id-id"
+"traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
+"schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
+"fact_schulen✔" ||--o{ "schul_jahr✔" : "schul_jahr_id-id"
+"fact_personal✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "ganztags_art✔" : "ganztags_art_id-id"
+"fact_personal✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "traeger✔" : "traeger_id-id"
+"traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"fact_personal✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
+"schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
+"fact_personal✔" ||--o{ "schul_jahr✔" : "schul_jahr_id-id"
+"fact_personal✔" ||--o{ "alters_gruppe✔" : "alters_gruppe_id-id"
+"fact_personal✔" ||--o{ "geschlecht✔" : "geschlecht_id-id"
+"fact_personal✔" ||--o{ "personal_art❌" : "personal_art_id-id"
+"fact_schueler✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "ganztags_art✔" : "ganztags_art_id-id"
+"fact_schueler✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "traeger✔" : "traeger_id-id"
+"traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"fact_schueler✔" ||--o{ "schule✔" : "schule_id-id"
+"schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
+"schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
+"fact_schueler✔" ||--o{ "schul_jahr✔" : "schul_jahr_id-id"
+"fact_schueler✔" ||--o{ "geschlecht✔" : "geschlecht_id-id"
+"fact_schueler✔" ||--o{ "wohnort_landkreis✔" : "wohn_lk_id-id"
+"wohnort_landkreis✔" ||--o{ "bundesland❌" : "bundesland_id-id"
 "fact_schueler✔" ||--o{ "einschulung❌" : "einschulung_id-id"
-"fact_schueler✔" ||--o{ "schul_abschluss❌" : "schul_abschluss_id-id"
-"fact_schueler✔" ||--o{ "klassen_wiederholung❌" : "klassen_wdh-id"
+"fact_schueler✔" ||--o{ "schul_abschluss✔" : "schul_abschluss_id-id"
+"fact_schueler✔" ||--o{ "klassen_wiederholung✔" : "klassen_wdh-id"
 "fact_schueler✔" ||--o{ "migrations_hintergrund❌" : "migrations_hg_id-id"
 "fact_schueler✔" ||--o{ "foerderung_art❌" : "foerder_art_id-id"
-"foerderung_art❌" ||--o{ "sonderpaed_foerderbedarf❌" : "sp_foerderbedarf_id-id"
+"foerderung_art❌" ||--o{ "sonderpaed_foerderbedarf✔" : "sp_foerderbedarf_id-id"
 ```
 ---
 ## Validation result for schema Schulwesen
@@ -767,44 +769,22 @@ VARCHAR id "❌"
 |----|---|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Migrationshintergrund|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Schuljahre|
+|SCHEMA|Hierarchy: Table field must be empty in dimension with name Einschulungen|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Klassenwiederholung|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Berufsgruppen Personal|
-|SCHEMA|Hierarchy: Table field must be empty in dimension with name Einschulungen|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Schulabschluss|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Geschlecht|
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Altersgruppen Personal|
-|DATABASE|Table schul_art does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table geschlecht|
-|DATABASE|Table schule does not exist in database|
-|DATABASE|Table schul_jahr does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table alters_gruppe|
-|DATABASE|Column id defined in field primaryKey does not exist in table schule|
-|DATABASE|Table traeger_kategorie does not exist in database|
-|DATABASE|Table personal_art does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table personal_art|
-|DATABASE|Measure Anzahl Personen column anzahl_personen doesn't exist in table fact_personal of cube with name Pädagogisches Personal an Jenaer Schulen|
-|DATABASE|Table sonderpaed_foerderbedarf does not exist in database|
-|DATABASE|Table foerderung_art does not exist in database|
-|DATABASE|Table traeger_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table foerderung_art|
 |DATABASE|Table bundesland does not exist in database|
-|DATABASE|Fact table fact_personal does not exist in database .|
-|DATABASE|Table schul_kategorie does not exist in database|
-|DATABASE|Table alters_gruppe does not exist in database|
-|DATABASE|Table wohnort_landkreis does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table wohnort_landkreis|
+|DATABASE|Table traeger_kategorie does not exist in database|
+|DATABASE|Table personal_art does not exist in database|
 |DATABASE|Table einschulung does not exist in database|
-|DATABASE|Table klassen_wiederholung does not exist in database|
-|DATABASE|Table schul_abschluss does not exist in database|
+|DATABASE|Column id defined in field primaryKey does not exist in table personal_art|
 |DATABASE|Column id defined in field primaryKey does not exist in table migrations_hintergrund|
 |DATABASE|Table migrations_hintergrund does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table schul_jahr|
-|DATABASE|Table ganztags_art does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table schul_abschluss|
-|DATABASE|Table geschlecht does not exist in database|
-|DATABASE|Column id defined in field primaryKey does not exist in table klassen_wiederholung|
+|DATABASE|Table foerderung_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table einschulung|
-|DATABASE|Table traeger does not exist in database|
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -108,6 +108,31 @@ L Level1 ""
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
+### Virtual Cube "VirtualCubeSharedDimension" diagram:
+
+---
+
+```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
+erDiagram
+c2["VirtualCubeSharedDimension"]{
+M Cube1_Measures_C1-Measure-Sum ""
+M Cube2_Measures_C2-Measure-Sum ""
+D Dimension1 ""
+CM Calculation1 ""
+}
+```
+---
 ### Cube Matrix for Minimal_Virtual_Cubes_With_1_Dimension:
 ```mermaid
 quadrantChart
@@ -148,6 +173,10 @@ string NAME "✔"
 ```
 ---
 ## Validation result for schema Minimal_Virtual_Cubes_With_1_Dimension
+## <span style='color: red;'>ERROR</span> : 
+|Type|   |
+|----|---|
+|SCHEMA|Virtual Cube Dimension Cube name must be set|
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -399,13 +399,15 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     @Override
     protected void checkSQL(MappingSQL sql) {
-        try {
-            Connection con = databaseMetaData.getConnection();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql.content());
-        } catch (SQLException e) {
-            results.add(new VerificationResultR(SQL, e.getMessage().replace("\n",""), ERROR, DATABASE));
-        }
+    	if (sql != null && sql.content() != null) {
+    		try {        	
+    			Connection con = databaseMetaData.getConnection();
+    			Statement stmt = con.createStatement();
+    			ResultSet rs = stmt.executeQuery(sql.content());
+    		} catch (SQLException e) {
+    			results.add(new VerificationResultR(SQL, e.getMessage().replace("\n",""), ERROR, DATABASE));
+    		}
+    	}
     }
 
     private void checkPropertyHierarchy(String column, MappingHierarchy hierarchy, MappingCube cube) {

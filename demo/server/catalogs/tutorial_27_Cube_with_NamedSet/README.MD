@@ -60,6 +60,7 @@ erDiagram
 c0["Cube1"]{
 M Measure1 ""
 D Dimension1 ""
+NS NS ""
 }
 d00["Dimension1"] {
 H HierarchyWithoutHasAll ""

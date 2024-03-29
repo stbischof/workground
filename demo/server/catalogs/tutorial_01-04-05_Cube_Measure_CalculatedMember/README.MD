@@ -42,6 +42,7 @@ erDiagram
 c0["CubeTwoMeasuresPlusOneCalculatedMeasure"]{
 M Measure1-Sum ""
 M Measure2-Count ""
+CM Measure3-Calculated ""
 }
 ```
 ---

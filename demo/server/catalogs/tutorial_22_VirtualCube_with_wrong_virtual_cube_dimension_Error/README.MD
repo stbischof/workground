@@ -114,6 +114,31 @@ L Level2 ""
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
+### Virtual Cube "Cube1Cube2" diagram:
+
+---
+
+```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
+erDiagram
+c2["Cube1Cube2"]{
+M Cube1_Measures_MeasureCube1 ""
+M Cube2_Measures_MeasureCube2 ""
+D Cube1Dimension1Wrong ""
+D Cube2Dimension1Wrong ""
+}
+```
+---
 ### Cube Matrix for Cube_with_virtual_cube_with_wrong_VirtualCubeDimension:
 ```mermaid
 quadrantChart

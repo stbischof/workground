@@ -84,6 +84,26 @@ Levels: "Level1, Level2, Level3"
 ##### Dimensions:
 ##### Dimension: "DimensionMembersHiddenIfParentsName -> DimensionMembersHiddenIfParentsName":
 
+---
+#### Cube "HiddenMembersIfBlankName":
+
+    
+
+##### Table: "Fact"
+
+##### Dimensions:
+##### Dimension: "DimensionMembersHiddenIfBlankName -> DimensionMembersHiddenIfBlankName":
+
+---
+#### Cube "HiddenMembersMultipleLevels":
+
+    
+
+##### Table: "Fact_Multiple"
+
+##### Dimensions:
+##### Dimension: "DimensionMembersHiddenMultipleLevels -> DimensionMembersHiddenMultipleLevels":
+
 ### Cube "HiddenMembersIfParentName" diagram:
 
 ---
@@ -117,16 +137,6 @@ L Level2 ""
 "d00" ||--|| "h000" : "KEY-KEY"
 ```
 ---
----
-#### Cube "HiddenMembersIfBlankName":
-
-    
-
-##### Table: "Fact"
-
-##### Dimensions:
-##### Dimension: "DimensionMembersHiddenIfBlankName -> DimensionMembersHiddenIfBlankName":
-
 ### Cube "HiddenMembersIfBlankName" diagram:
 
 ---
@@ -160,16 +170,6 @@ L Level2 ""
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
----
-#### Cube "HiddenMembersMultipleLevels":
-
-    
-
-##### Table: "Fact_Multiple"
-
-##### Dimensions:
-##### Dimension: "DimensionMembersHiddenMultipleLevels -> DimensionMembersHiddenMultipleLevels":
-
 ### Cube "HiddenMembersMultipleLevels" diagram:
 
 ---

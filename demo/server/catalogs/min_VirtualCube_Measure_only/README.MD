@@ -64,6 +64,30 @@ M C2-Measure-Sum ""
 }
 ```
 ---
+### Virtual Cube "VirtualCubeMeasureOnly" diagram:
+
+---
+
+```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
+erDiagram
+c2["VirtualCubeMeasureOnly"]{
+M Cube1_Measures_C1-Measure-Sum ""
+M Cube2_Measures_C2-Measure-Sum ""
+CM Calculation1 ""
+}
+```
+---
 ### Cube Matrix for Minimal_Virtual_Cubes_With_Measures:
 ```mermaid
 quadrantChart

@@ -25,6 +25,7 @@ import org.eclipse.daanse.db.jdbc.util.impl.DBStructure;
 import org.eclipse.daanse.db.jdbc.util.impl.Table;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.documentation.api.ConntextDocumentationProvider;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
@@ -33,6 +34,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
@@ -40,6 +42,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.jaxb.SerializerModifier;
 import org.eclipse.daanse.olap.rolap.dbmapper.utils.Utils;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
@@ -300,9 +305,19 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return result;
     }
 
+    private List<String> virtualCubeDimensionConnections(MappingSchema schema, MappingVirtualCube c, int cubeIndex) {
+        List<String> result = new ArrayList<>();
+        String cubeName = STR. "c\{cubeIndex}";
+        if (cubeName != null) {
+            result.addAll(dimensionsConnections(schema, c.virtualCubeDimensions(), cubeName, cubeIndex));
+        }
+
+        return result;
+    }
+
     private List<String> dimensionsConnections(
         MappingSchema schema,
-        List<MappingCubeDimension> dimensionUsageOrDimensions,
+        List<? extends MappingCubeDimension> dimensionUsageOrDimensions,
         String cubeName,
         int cubeIndex
     ) {
@@ -334,6 +349,25 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
         if (d instanceof MappingPrivateDimension mpd) {
             result.addAll(hierarchyConnections(cubeName, mpd, mpd.foreignKey(), cubeIndex, dimensionIndex));
+        }
+        if (d instanceof MappingVirtualCubeDimension vcd) {
+            String cubeN = vcd.cubeName();
+            String name = vcd.name();
+            if (cubeN != null && name != null) {
+                Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> cubeN.equals(c.name())).findFirst();
+                if (oCube.isPresent()) {
+                    Optional<MappingCubeDimension> od = oCube.get().dimensionUsageOrDimensions().stream()
+                        .filter(dim -> name.equals(dim.name())).findFirst();
+                    if (od.isPresent()) {
+                        result.addAll(dimensionConnections(
+                            schema,
+                            od.get(),
+                            cubeName,
+                            cubeIndex,
+                            dimensionIndex));
+                    }
+                }
+            }
         }
         return result;
     }
@@ -533,15 +567,20 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeSchemaDiagram(FileWriter writer, MappingSchema schema) {
         List<MappingCube> cubes =  schema.cubes();
+        int i = 0;
         if (cubes != null && !cubes.isEmpty()) {
-            int i = 0;
             for (MappingCube c : cubes) {
                 writeCubeDiagram(writer, schema, c, i);
                 i++;
             }
         }
-
-
+        List<MappingVirtualCube> virtualCubes =  schema.virtualCubes();
+        if (virtualCubes != null && !virtualCubes.isEmpty()) {
+            for (MappingVirtualCube c : virtualCubes) {
+                writeVirtualCubeDiagram(writer, schema, c, i);
+                i++;
+            }
+        }
     }
 
     private void writeSchemaAsXML(FileWriter writer, MappingSchema schema) {
@@ -685,10 +724,92 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(STR."D \{dimensionName} \"\{description}\"");
                     writer.write(ENTER);
                 }
+                for (MappingNamedSet ns : cube.namedSets()) {
+                    String description = ns.description() == null ? EMPTY_STRING : ns.description();
+                    String namedSetName =  prepare(ns.name());
+                    writer.write(STR."NS \{namedSetName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                for (MappingCalculatedMember cm : cube.calculatedMembers()) {
+                    String description = cm.description() == null ? EMPTY_STRING : cm.description();
+                    String calculatedMemberName =  prepare(cm.name());
+                    writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
                 writer.write("}");
                 writer.write(ENTER);
 
                 writeDimensionPartDiagram(writer, schema, cube, index);
+
+                for (String c : connections) {
+                    writer.write(c);
+                    writer.write(ENTER);
+                }
+                writer.write(STR. """
+                    ```
+                    ---
+                    """);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeVirtualCubeDiagram(FileWriter writer, MappingSchema schema, MappingVirtualCube virtualCube, int index) {
+        try {
+            List<String> connections = virtualCubeDimensionConnections(schema, virtualCube, index);
+            if (virtualCube.name() != null) {
+                String tableName = STR. "c\{index}[\"\{virtualCube.name()}\"]";
+                String cubeName = virtualCube.name();
+                writer.write(STR. """
+                    ### Virtual Cube \"\{cubeName}\" diagram:
+
+                    ---
+
+                    ```mermaid
+                    %%{init: {
+                    "theme": "default",
+                    "themeCSS": [
+                        ".er.entityBox {stroke: black;}",
+                        ".er.attributeBoxEven {stroke: black;}",
+                        ".er.attributeBoxOdd {stroke: black;}",
+                        "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+                        "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+                        "[id^=entity-h] .er.entityBox { fill: pink;} "
+                    ]
+                    }}%%
+                    erDiagram
+                    \{tableName}{
+                    """);
+                for (MappingVirtualCubeMeasure m : virtualCube.virtualCubeMeasures()) {
+                    String description = EMPTY_STRING;
+                    String cube = m.cubeName() != null ? m.cubeName() : EMPTY_STRING;
+                    String measureName = prepare(m.name());
+                    writer.write(STR."M \{cube}_\{measureName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                for (MappingCubeDimension d : virtualCube.virtualCubeDimensions()) {
+                    String description = d.description() == null ? EMPTY_STRING : d.description();
+                    String dimensionName =  prepare(d.name());
+                    writer.write(STR."D \{dimensionName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                for (MappingNamedSet ns : virtualCube.namedSets()) {
+                    String description = ns.description() == null ? EMPTY_STRING : ns.description();
+                    String namedSetName =  prepare(ns.name());
+                    writer.write(STR."NS \{namedSetName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                for (MappingCalculatedMember cm : virtualCube.calculatedMembers()) {
+                    String description = cm.description() == null ? EMPTY_STRING : cm.description();
+                    String calculatedMemberName =  prepare(cm.name());
+                    writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                writer.write("}");
+                writer.write(ENTER);
+
+                writeVirtualCubeDimensionPartDiagram(writer, schema, virtualCube, index);
 
                 for (String c : connections) {
                     writer.write(c);
@@ -713,7 +834,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 .replace(" ", "_")
                 .replace(":", "_")
                 .replace("(", "_")
-                .replace(")", "_");
+                .replace(")", "_")
+                .replace(".", "_")
+                .replace("[", "")
+                .replace("]", "");
         }
         return "_";
     }
@@ -721,14 +845,39 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeDimensionPartDiagram(FileWriter writer, MappingSchema schema, MappingCube cube, int cubeIndex) {
         int i = 0;
         for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) {
-            if (d instanceof MappingDimensionUsage du) {
-                Optional<MappingPrivateDimension> oPrivateDimension = getPrivateDimension(schema, du.source());
-                if (oPrivateDimension.isPresent()) {
-                    writeDimensionPartDiagram(writer, oPrivateDimension.get(), cubeIndex, i);
-                }
+            writeDimensionPartDiagram(writer, schema, d, cubeIndex, i);
+            i++;
+        }
+    }
+
+    private void writeDimensionPartDiagram(FileWriter writer, MappingSchema schema, MappingCubeDimension d, int cubeIndex, int dimIndex) {
+        if (d instanceof MappingDimensionUsage du) {
+            Optional<MappingPrivateDimension> oPrivateDimension = getPrivateDimension(schema, du.source());
+            if (oPrivateDimension.isPresent()) {
+                writeDimensionPartDiagram(writer, oPrivateDimension.get(), cubeIndex, dimIndex);
             }
-            if (d instanceof MappingPrivateDimension pd) {
-                writeDimensionPartDiagram(writer, pd, cubeIndex, i);
+        }
+        if (d instanceof MappingPrivateDimension pd) {
+            writeDimensionPartDiagram(writer, pd, cubeIndex, dimIndex);
+        }
+    }
+
+    private void writeVirtualCubeDimensionPartDiagram(FileWriter writer, MappingSchema schema, MappingVirtualCube cube, int cubeIndex) {
+        int i = 0;
+        for (MappingCubeDimension d : cube.virtualCubeDimensions()) {
+            if (d instanceof MappingVirtualCubeDimension vcd) {
+                String cubeName = vcd.cubeName();
+                String name = vcd.name();
+                if (cubeName != null && name != null) {
+                    Optional<MappingCube> oCube = schema.cubes().stream().filter(c -> cubeName.equals(c.name())).findFirst();
+                    if (oCube.isPresent()) {
+                        Optional<MappingCubeDimension> od = oCube.get().dimensionUsageOrDimensions().stream()
+                            .filter(dim -> name.equals(dim.name())).findFirst();
+                        if (od.isPresent()) {
+                            writeDimensionPartDiagram(writer, schema, od.get(), cubeIndex, i);
+                        }
+                    }
+                }
             }
             i++;
         }

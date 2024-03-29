@@ -114,6 +114,47 @@ L Level2 ""
 "d10" ||--|| "h100" : "KEY-KEY"
 ```
 ---
+### Virtual Cube "Cube1Cube2" diagram:
+
+---
+
+```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
+erDiagram
+c2["Cube1Cube2"]{
+M Cube1_Measures_MeasureCube1 ""
+M Cube2_Measures_MeasureCube2 ""
+D Cube1Dimension1 ""
+D Cube2Dimension1 ""
+}
+d20["Dimension1"] {
+H HierarchyWithoutHasAll ""
+}
+h200["HierarchyWithoutHasAll"] {
+L Level2 ""
+}
+d21["Dimension1"] {
+H HierarchyWithoutHasAll ""
+}
+h210["HierarchyWithoutHasAll"] {
+L Level2 ""
+}
+"c2" ||--|| "d20" : "KEY-KEY"
+"d20" ||--|| "h200" : "KEY-KEY"
+"c2" ||--|| "d21" : "KEY-KEY"
+"d21" ||--|| "h210" : "KEY-KEY"
+```
+---
 ### Cube Matrix for Cube_with_virtual_cube:
 ```mermaid
 quadrantChart
