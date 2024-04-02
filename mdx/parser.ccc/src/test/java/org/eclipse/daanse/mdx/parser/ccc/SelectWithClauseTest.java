@@ -88,6 +88,36 @@ class SelectWithClauseTest {
 		}
 	}
 
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery() throws MdxParserException {
+        String mdx = """
+            SET [Top Sellers]
+                AS 'TopCount([Warehouse].[Warehouse Name].MEMBERS, 5, [Measures].[Warehouse Sales])'
+            """;
+
+        SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+        assertThat(selectWithClause).isNotNull().isInstanceOf(CreateSetBodyClause.class);
+        CreateSetBodyClause createSetBodyClause = (CreateSetBodyClause) selectWithClause;
+        assertThat(createSetBodyClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
+
+    }
+
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery1() throws MdxParserException {
+        String mdx = """
+            SET [Top Sellers]
+                AS TopCount([Warehouse].[Warehouse Name].MEMBERS, 5, [Measures].[Warehouse Sales])
+            """;
+
+        SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+        assertThat(selectWithClause).isNotNull().isInstanceOf(CreateSetBodyClause.class);
+        CreateSetBodyClause createSetBodyClause = (CreateSetBodyClause) selectWithClause;
+        assertThat(createSetBodyClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
+
+    }
+
 	@Nested
 	class MeasureBodyClauseTest {
 

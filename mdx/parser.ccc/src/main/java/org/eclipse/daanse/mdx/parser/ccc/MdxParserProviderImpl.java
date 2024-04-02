@@ -16,10 +16,24 @@ package org.eclipse.daanse.mdx.parser.ccc;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
-@Component(service = MdxParserProvider.class)
+import java.util.Map;
+
+@Component(scope = ServiceScope.SINGLETON, configurationPid = MdxParserProviderImpl.PID, service = MdxParserProvider.class)
 public class MdxParserProviderImpl implements MdxParserProvider {
+
+	public static final String PID = "org.eclipse.daanse.mdx.parser.ccc.MdxParserProviderImpl";
+
+    @Activate
+    public MdxParserProviderImpl(Map<String,Object> map) {
+    }
+
+    public MdxParserProviderImpl() {
+
+    }
 
     @Override
     public MdxParser newParser(CharSequence mdx) throws MdxParserException {

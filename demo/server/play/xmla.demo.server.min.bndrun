@@ -42,7 +42,8 @@
 	bnd.identity;id='org.eclipse.daanse.common.jdbc.db.core',\
 	bnd.identity;id='org.eclipse.daanse.olap.documentation.common',\
 	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic',\
-	bnd.identity;id='org.eclipse.daanse.mdx.parser.api'
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.api',\
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.ccc'
 
 
 

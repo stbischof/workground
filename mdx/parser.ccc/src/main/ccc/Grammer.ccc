@@ -116,6 +116,7 @@ import org.eclipse.daanse.olap.operation.api.InfixOperationAtom;
 import org.eclipse.daanse.olap.operation.api.ParenthesesOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PostfixOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PrefixOperationAtom;
+import org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper;
 {
 
 }
@@ -766,6 +767,24 @@ FormulaExpression parseFormulaExpression :
   }
 ;
 
+MdxExpression parseSetExpression :
+{
+  MdxExpression expression;
+}
+  < SINGLE_QUOTED_STRING >
+  {
+    try {
+        return new MdxParserWrapper(MdxParserUtil.stripQuotes(getToken(0).getImage(), "'", "'", "''")).parseExpression();
+    } catch (Exception e) {
+        throw new ParseException("parseSetExpression error");
+    }
+  }
+  |
+  expression = parseExpression
+  {
+    return expression;
+  }
+;
 
 MdxExpression parseExpression :
 {
@@ -1446,7 +1465,7 @@ CreateSetBodyClause parseCreateSetBodyClause :
  //MemberPropertyDefinition memberPropertyDefinition = null;
 }
 
-  compoundId = parseCompoundId < AS > expression = parseExpression
+  compoundId = parseCompoundId < AS >  expression = parseSetExpression
   {
     return new CreateSetBodyClauseR(compoundId,expression);
   }

@@ -51,8 +51,10 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 
 	public static final String PID_SATATISTICS = "org.eclipse.daanse.db.statistics.metadata.JdbcStatisticsProvider";
 
+    public static final String PID_PARSER = "org.eclipse.daanse.mdx.parser.ccc.MdxParserProviderImpl";
+
 	public static final String PID_EXP_COMP_FAC = "org.eclipse.daanse.olap.calc.base.compiler.BaseExpressionCompilerFactory";
-	
+
 
 	static final String PID_XML_SCHEMA = "org.eclipse.daanse.olap.rolap.dbmapper.provider.xml.XmlDbMappingSchemaProvider";
 
@@ -89,6 +91,7 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 		props.put(BasicContext.REF_NAME_EXPRESSION_COMPILER_FACTORY + TARGET_EXT,
 				"(component.name=" + PID_EXP_COMP_FAC + ")");
 		props.put(BasicContext.REF_NAME_DB_MAPPING_SCHEMA_PROVIDER + TARGET_EXT, contextSpecificFilter);
+        props.put(BasicContext.REF_NAME_MDX_PARSER_PROVIDER + TARGET_EXT, "(component.name=" + PID_PARSER + ")");
 		// props.put(BasicContext.REF_NAME_QUERY_PROVIDER+ TARGET_EXT, "(qp=1)");
 
 		String catalog_path = config.io_fs_watcher_path();
@@ -106,7 +109,7 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 
 	@Deactivate
 	public void deactivate() throws IOException {
-		
+
 		schemaConfigs.forEach((pathAsKey, configurationAsValue) -> {
 			try {
 				schemaConfigs.remove(pathAsKey);
@@ -115,7 +118,7 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 				e.printStackTrace();
 			}
 		});
-		
+
 		cContext.delete();
 	}
 

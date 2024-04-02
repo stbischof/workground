@@ -80,7 +80,6 @@ import mondrian.olap.ResultLimitExceededException;
 import mondrian.olap.RoleImpl;
 import mondrian.olap.Util;
 import mondrian.olap.exceptions.FailedToParseQueryException;
-import mondrian.parser.MdxParserValidator;
 import mondrian.server.ExecutionImpl;
 import mondrian.server.LocusImpl;
 import mondrian.util.FauxMemoryMonitor;
@@ -477,7 +476,8 @@ public Expression parseExpression( String expr ) {
         getLogger().debug(msg);
     }
     try {
-      MdxParser mdxParser = new MdxParserWrapper(expr);
+      MdxParser mdxParser = context.getMdxParserProvider().newParser(expr);
+      //MdxParser mdxParser = new MdxParserWrapper(expr);
       MdxExpression expression = mdxParser.parseExpression();
       return getExpressionProvider().createExpression(expression);
     } catch ( Throwable exception ) {

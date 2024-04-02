@@ -209,10 +209,10 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
         return functionService;
     }
 
-    //@Override
-    //public MdxParserProvider getMdxParserProvider() {
-    //    return new MdxParserProviderImpl();
-    //}
+    @Override
+    public MdxParserProvider getMdxParserProvider() {
+        return new MdxParserProviderImpl();
+    }
 
     public void setFunctionService(FunctionService functionService) {
         this.functionService = functionService;

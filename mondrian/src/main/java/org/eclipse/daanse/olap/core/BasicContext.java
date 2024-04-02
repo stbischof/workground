@@ -93,8 +93,8 @@ public class BasicContext extends AbstractBasicContext {
 
 	private Semaphore queryLimitSemaphore;
 
-    //@Reference(name = REF_NAME_MDX_PARSER_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
-    //private MdxParserProvider mdxParserProvider;
+    @Reference(name = REF_NAME_MDX_PARSER_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
+    private MdxParserProvider mdxParserProvider;
 
 	@Activate
 	public void activate(Map<String, Object> coniguration) throws Exception {
@@ -225,8 +225,8 @@ public class BasicContext extends AbstractBasicContext {
         return functionService;
     }
 
-    //@Override
-    //public MdxParserProvider getMdxParserProvider() {
-    //    return mdxParserProvider;
-    //}
+    @Override
+    public MdxParserProvider getMdxParserProvider() {
+        return mdxParserProvider;
+    }
 }

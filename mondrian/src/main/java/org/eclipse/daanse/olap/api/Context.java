@@ -126,6 +126,6 @@ public interface Context {
 
     FunctionService getFunctionService();
 
-    //MdxParserProvider getMdxParserProvider();
+    MdxParserProvider getMdxParserProvider();
 
 }

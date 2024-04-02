@@ -85,7 +85,8 @@ public abstract class ConnectionBase implements Connection {
         }
 
         try {
-            MdxParser parser = new MdxParserWrapper(query);
+            MdxParser parser = getContext().getMdxParserProvider().newParser(query);
+            //MdxParser parser = new MdxParserWrapper(query);
             MdxStatement mdxStatement  = parser.parseMdxStatement();
             return getQueryProvider().createQuery(statement, mdxStatement);
             //return
