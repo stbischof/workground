@@ -76,7 +76,6 @@ public abstract class ConnectionBase implements Connection {
         FunctionTable funTable,
         boolean strictValidation)
     {
-        //MdxParserValidator parser = createParser();
         boolean debug = false;
 
         if (getLogger().isDebugEnabled()) {
@@ -86,12 +85,8 @@ public abstract class ConnectionBase implements Connection {
 
         try {
             MdxParser parser = getContext().getMdxParserProvider().newParser(query);
-            //MdxParser parser = new MdxParserWrapper(query);
             MdxStatement mdxStatement  = parser.parseMdxStatement();
-            return getQueryProvider().createQuery(statement, mdxStatement);
-            //return
-            //    parser.parseInternal(
-            //        statement, query, debug, funTable, strictValidation);
+            return getQueryProvider().createQuery(statement, mdxStatement, strictValidation);
         } catch (Exception e) {
             throw new FailedToParseQueryException(query, e);
         }

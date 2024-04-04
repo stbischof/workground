@@ -56,15 +56,15 @@ class QueryProviderImplTest {
         when(nameObjectIdentifier.quoting()).thenReturn(ObjectIdentifier.Quoting.QUOTED);
         when(refreshStatement.cubeName()).thenReturn(nameObjectIdentifier);
         Statement statement = mock(Statement.class);
-        QueryComponent queryPart = queryProviderImpl.createQuery(statement, refreshStatement);
+        QueryComponent queryPart = queryProviderImpl.createQuery(statement, refreshStatement, false);
         assertThat(queryPart).isNotNull().isInstanceOf(Refresh.class);
         Refresh refresh = (Refresh) queryPart;
-        assertThat(refresh.getCubeName()).isEqualTo("[cube]");
+        assertThat(refresh.getCubeName()).isEqualTo("cube");
         assertThat(refresh.getChildren()).isNotNull();
         assertThat(refresh.getChildren()).hasSize(1);
-        assertThat(refresh.getChildren()[0]).isEqualTo("[cube]");
+        assertThat(refresh.getChildren()[0]).isEqualTo("cube");
         refresh.unparse(printWriter);
-        assertThat(stringWriter.toString()).isNotNull().isEqualTo("REFRESH CUBE [[cube]]");
+        assertThat(stringWriter.toString()).isNotNull().isEqualTo("REFRESH CUBE [cube]");
     }
 
     @Test
@@ -75,7 +75,7 @@ class QueryProviderImplTest {
         when(nameObjectIdentifier.quoting()).thenReturn(ObjectIdentifier.Quoting.UNQUOTED);
         when(refreshStatement.cubeName()).thenReturn(nameObjectIdentifier);
         Statement statement = mock(Statement.class);
-        QueryComponent queryPart = queryProviderImpl.createQuery(statement, refreshStatement);
+        QueryComponent queryPart = queryProviderImpl.createQuery(statement, refreshStatement, false);
         assertThat(queryPart).isNotNull().isInstanceOf(Refresh.class);
         Refresh refresh = (Refresh) queryPart;
         assertThat(refresh.getCubeName()).isEqualTo("cube");

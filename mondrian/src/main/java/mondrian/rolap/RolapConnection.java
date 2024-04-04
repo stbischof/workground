@@ -44,7 +44,6 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
-import org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.ConnectionProps;
@@ -105,7 +104,6 @@ public class RolapConnection extends ConnectionBase {
 
   private final int id;
   private final Statement internalStatement;
-  private final QueryProvider queryProvider = new QueryProviderImpl();
 
 
 	public RolapConnection(Context context, ConnectionProps rolapConnectionProps) {
@@ -470,14 +468,12 @@ public QueryComponent parseStatement(String query ) {
 
   @Override
 public Expression parseExpression( String expr ) {
-    boolean debug = false;
     if ( getLogger().isDebugEnabled() ) {
         String msg  = Util.NL + expr;
         getLogger().debug(msg);
     }
     try {
       MdxParser mdxParser = context.getMdxParserProvider().newParser(expr);
-      //MdxParser mdxParser = new MdxParserWrapper(expr);
       MdxExpression expression = mdxParser.parseExpression();
       return getExpressionProvider().createExpression(expression);
     } catch ( Throwable exception ) {

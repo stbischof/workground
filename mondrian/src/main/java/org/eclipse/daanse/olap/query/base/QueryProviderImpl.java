@@ -56,16 +56,16 @@ import mondrian.olap.UpdateImpl;
 public class QueryProviderImpl implements QueryProvider {
 
     @Override
-    public QueryComponent createQuery(Statement statement, MdxStatement mdxStatement) {
+    public QueryComponent createQuery(Statement statement, MdxStatement mdxStatement, boolean strictValidation) {
 
         if (mdxStatement instanceof SelectStatement selectStatement) {
-            return createQuery(statement, selectStatement);
+            return createQuery(statement, selectStatement, strictValidation);
         }
         if (mdxStatement instanceof DrillthroughStatement drillthroughStatement) {
-            return createDrillThrough(statement, drillthroughStatement);
+            return createDrillThrough(statement, drillthroughStatement, strictValidation);
         }
         if (mdxStatement instanceof ExplainStatement explainStatement) {
-            return createExplain(statement, explainStatement);
+            return createExplain(statement, explainStatement, strictValidation);
         }
         if (mdxStatement instanceof DMVStatement dmvStatement) {
             return createDMV(dmvStatement);
@@ -100,14 +100,14 @@ public class QueryProviderImpl implements QueryProvider {
     }
 
     @Override
-    public Explain createExplain(Statement statement, ExplainStatement explainStatement) {
-        QueryComponent queryPart = createQuery(statement, explainStatement.mdxStatement());
+    public Explain createExplain(Statement statement, ExplainStatement explainStatement, boolean strictValidation) {
+        QueryComponent queryPart = createQuery(statement, explainStatement.mdxStatement(), strictValidation);
         return new ExplainImpl(queryPart);
     }
 
     @Override
-    public DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillthroughStatement) {
-        Query query = createQuery(statement, drillthroughStatement.selectStatement());
+    public DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillthroughStatement, boolean strictValidation) {
+        Query query = createQuery(statement, drillthroughStatement.selectStatement(), strictValidation);
         List<Expression> returnList = List.of();
         return new DrillThroughImpl(query,
             drillthroughStatement.maxRows().orElse(0),
@@ -116,8 +116,7 @@ public class QueryProviderImpl implements QueryProvider {
     }
 
     @Override
-    public Query createQuery(Statement statement, SelectStatement selectStatement) {
-        boolean strictValidation = false;
+    public Query createQuery(Statement statement, SelectStatement selectStatement, boolean strictValidation) {
         Subcube subcube = convertSubcube(selectStatement.selectSubcubeClause());
         List<Formula> formulaList = convertFormulaList(selectStatement.selectWithClauses());
         List<QueryAxisImpl> axesList = convertQueryAxisList(selectStatement.selectQueryClause());

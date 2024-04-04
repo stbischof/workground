@@ -31,13 +31,13 @@ import org.eclipse.daanse.olap.api.query.component.Update;
 
 public interface QueryProvider {
 
-    QueryComponent createQuery(Statement statement, MdxStatement selectStatement);
+    QueryComponent createQuery(Statement statement, MdxStatement selectStatement, boolean strictValidation);
 
-    Query createQuery(Statement statement, SelectStatement selectStatement);
+    Query createQuery(Statement statement, SelectStatement selectStatement, boolean strictValidation);
 
-    DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillThroughStatement);
+    DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillThroughStatement, boolean strictValidation);
 
-    Explain createExplain(Statement statement, ExplainStatement explainStatement);
+    Explain createExplain(Statement statement, ExplainStatement explainStatement, boolean strictValidation);
 
     DmvQuery createDMV(DMVStatement dmvStatement);
 
