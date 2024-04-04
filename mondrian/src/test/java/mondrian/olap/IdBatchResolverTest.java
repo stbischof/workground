@@ -41,9 +41,11 @@ import org.eclipse.daanse.olap.api.query.component.CellProperty;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.query.component.Id;
+import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.query.component.QueryAxis;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.eclipse.daanse.olap.api.query.component.Subcube;
+import org.eclipse.daanse.olap.query.base.QueryProviderImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -451,10 +453,11 @@ class IdBatchResolverTest  {
     public IdBatchResolver makeTestBatchResolver(Context context,String mdx) {
     	TestUtil.flushSchemaCache(context.getConnection());
         FactoryImpl factoryImpl = new FactoryImplTestWrapper();
-        MdxParserValidator parser = new JavaccParserValidatorImpl(factoryImpl);
+        //MdxParserValidator parser = new JavaccParserValidatorImpl(factoryImpl);
 
         RolapConnection conn = (RolapConnection) spy(
         		context.getConnection());
+        when(conn.getQueryProvider()).thenReturn(new QueryProviderWrapper());
         //when(conn.createParser()).thenReturn(parser);
 
         query = conn.parseQuery(mdx);
@@ -531,6 +534,28 @@ class IdBatchResolverTest  {
                         SubtotalVisibility.Undefined, new Id[0]);
             return new QueryTestWrapper(
                 statement, formulae, axes, subcube.getCubeName(), slicerAxis, cellProps,
+                strictValidation);
+        }
+    }
+
+    class QueryProviderWrapper extends QueryProviderImpl {
+        @Override
+        public Query createQuery(Statement statement,
+                                 Formula[] formula,
+                                 QueryAxis[] axes,
+                                 Subcube subcube,
+                                 QueryAxisImpl slicerAxis,
+                                 CellProperty[] cellProps,
+                                 boolean strictValidation) {
+
+            final QueryAxisImpl slicerAxisW =
+                slicerAxis == null || slicerAxis.getSet() == null
+                    ? null
+                    : new QueryAxisImpl(
+                    false, slicerAxis.getSet(), AxisOrdinal.StandardAxisOrdinal.SLICER,
+                    SubtotalVisibility.Undefined, new Id[0]);
+            return new QueryTestWrapper(
+                statement, formula, axes, subcube.getCubeName(), slicerAxisW, cellProps,
                 strictValidation);
         }
     }

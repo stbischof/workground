@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.api.query;
 
+import mondrian.olap.QueryAxisImpl;
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
 import org.eclipse.daanse.mdx.model.api.ExplainStatement;
@@ -21,12 +22,16 @@ import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.olap.api.Statement;
+import org.eclipse.daanse.olap.api.query.component.CellProperty;
 import org.eclipse.daanse.olap.api.query.component.DmvQuery;
 import org.eclipse.daanse.olap.api.query.component.DrillThrough;
 import org.eclipse.daanse.olap.api.query.component.Explain;
+import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.query.component.Query;
+import org.eclipse.daanse.olap.api.query.component.QueryAxis;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.eclipse.daanse.olap.api.query.component.Refresh;
+import org.eclipse.daanse.olap.api.query.component.Subcube;
 import org.eclipse.daanse.olap.api.query.component.Update;
 
 public interface QueryProvider {
@@ -44,4 +49,12 @@ public interface QueryProvider {
     Refresh createRefresh(RefreshStatement refreshStatement);
 
     Update createUpdate(UpdateStatement updateStatement);
+
+    Query createQuery(Statement statement,
+                                Formula[] formula,
+                                QueryAxis[] axes,
+                                Subcube subcube,
+                                QueryAxisImpl slicerAxis,
+                                CellProperty[] cellProps,
+                                boolean strictValidation);
 }

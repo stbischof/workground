@@ -40,6 +40,7 @@ import org.eclipse.daanse.olap.api.query.component.Explain;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.query.component.Query;
+import org.eclipse.daanse.olap.api.query.component.QueryAxis;
 import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.eclipse.daanse.olap.api.query.component.Refresh;
 import org.eclipse.daanse.olap.api.query.component.Subcube;
@@ -123,7 +124,7 @@ public class QueryProviderImpl implements QueryProvider {
         QueryAxisImpl slicerAxis = convertQueryAxis(selectStatement.selectSlicerAxisClause());
         List<CellProperty> cellProps = convertParameterList(selectStatement.selectCellPropertyListClause());
 
-        return new QueryImpl(
+        return createQuery(
             statement,
             formulaList.toArray(Formula[]::new),
             axesList.toArray(QueryAxisImpl[]::new),
@@ -133,4 +134,22 @@ public class QueryProviderImpl implements QueryProvider {
             strictValidation);
     }
 
-}
+    @Override
+    public Query createQuery(Statement statement,
+                             Formula[] formula,
+                             QueryAxis[] axes,
+                             Subcube subcube,
+                             QueryAxisImpl slicerAxis,
+                             CellProperty[] cellProps,
+                             boolean strictValidation) {
+        return new QueryImpl(
+            statement,
+            formula,
+            axes,
+            subcube,
+            slicerAxis,
+            cellProps,
+            strictValidation);
+    }
+
+    }
