@@ -17,6 +17,7 @@ import mondrian.mdx.UnresolvedFunCallImpl;
 import mondrian.olap.CellPropertyImpl;
 import mondrian.olap.FormulaImpl;
 import mondrian.olap.IdImpl;
+import mondrian.olap.MemberPropertyImpl;
 import mondrian.olap.NullLiteralImpl;
 import mondrian.olap.NumericLiteralImpl;
 import mondrian.olap.QueryAxisImpl;
@@ -37,6 +38,7 @@ import org.eclipse.daanse.mdx.model.api.expression.SymbolLiteral;
 import org.eclipse.daanse.mdx.model.api.select.Axis;
 import org.eclipse.daanse.mdx.model.api.select.CreateMemberBodyClause;
 import org.eclipse.daanse.mdx.model.api.select.CreateSetBodyClause;
+import org.eclipse.daanse.mdx.model.api.select.MemberPropertyDefinition;
 import org.eclipse.daanse.mdx.model.api.select.SelectCellPropertyListClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectDimensionPropertyListClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAsteriskClause;
@@ -212,7 +214,8 @@ public class MdxToQueryConverter {
 				if (swc instanceof CreateMemberBodyClause createMemberBodyClause) {
 					IdImpl id = getId(createMemberBodyClause.compoundId());
 					Expression exp = getExpression(createMemberBodyClause.expression());
-					formulaList.add(new FormulaImpl(id, exp, new MemberProperty[0]));
+                    List<MemberProperty> mpl = convertMemberPropertyList(createMemberBodyClause.memberPropertyDefinitions());
+					formulaList.add(new FormulaImpl(id, exp, mpl.toArray(new MemberProperty[0])));
 				}
 				if (swc instanceof CreateSetBodyClause createSetBodyClause) {
 					IdImpl id = getId(createSetBodyClause.compoundId());
@@ -224,7 +227,33 @@ public class MdxToQueryConverter {
 		return formulaList;
 	}
 
-	static Expression getExpression(MdxExpression expression) {
+    private static List<MemberProperty> convertMemberPropertyList(List<? extends MemberPropertyDefinition> memberPropertyDefinitions) {
+	    if (memberPropertyDefinitions != null) {
+            return memberPropertyDefinitions.stream().map(p -> convertMemberProperty(p)).toList();
+        }
+	    return List.of();
+    }
+
+    private static MemberProperty convertMemberProperty(MemberPropertyDefinition p) {
+        String name = getName(p.objectIdentifier());
+        Expression exp = getExpression(p.expression());
+        return new MemberPropertyImpl(name, exp);
+    }
+
+    private static String getName(ObjectIdentifier objectIdentifier) {
+	    if (
+	        objectIdentifier instanceof KeyObjectIdentifier keyObjectIdentifier
+                && keyObjectIdentifier.nameObjectIdentifiers() != null
+                && !keyObjectIdentifier.nameObjectIdentifiers().isEmpty()) {
+	        return keyObjectIdentifier.nameObjectIdentifiers().get(0).name();
+        }
+        if (objectIdentifier instanceof NameObjectIdentifier nameObjectIdentifier) {
+            return nameObjectIdentifier.name();
+        }
+        return null;
+    }
+
+    static Expression getExpression(MdxExpression expression) {
 
 		switch (expression) {
 		case CallExpression callExpression:
