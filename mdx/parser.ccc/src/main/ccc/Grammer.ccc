@@ -733,7 +733,7 @@ CreateMemberBodyClause parseCreateMemberBodyClause :
 }
 //  <CURRENTCUBE>
 //  |
-  compoundId = parseCompoundId < AS > expression = parseExpression
+  compoundId = parseCompoundId < AS > expression = parseSetMemberExpression
 
   (
     < COMMA > memberPropertyDefinition = parseMemberPropertyDefinition
@@ -767,7 +767,7 @@ FormulaExpression parseFormulaExpression :
   }
 ;
 
-MdxExpression parseSetExpression :
+MdxExpression parseSetMemberExpression :
 {
   MdxExpression expression;
 }
@@ -776,7 +776,7 @@ MdxExpression parseSetExpression :
     try {
         return new MdxParserWrapper(MdxParserUtil.stripQuotes(getToken(0).getImage(), "'", "'", "''")).parseExpression();
     } catch (Exception e) {
-        throw new ParseException("parseSetExpression error");
+        throw new ParseException("parseSetMemberExpression error");
     }
   }
   |
@@ -1465,7 +1465,7 @@ CreateSetBodyClause parseCreateSetBodyClause :
  //MemberPropertyDefinition memberPropertyDefinition = null;
 }
 
-  compoundId = parseCompoundId < AS >  expression = parseSetExpression
+  compoundId = parseCompoundId < AS >  expression = parseSetMemberExpression
   {
     return new CreateSetBodyClauseR(compoundId,expression);
   }
