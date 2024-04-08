@@ -93,7 +93,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ measures.[unit sales] }, "
             + "[Time].[Month].members"
             + "))) on 0"
-            + "from sales";
+            + " from sales";
         checkNative(context, mdx);
     }
 
@@ -114,7 +114,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ measures.[unit sales] }, "
             + "[Time].[Month].members"
             + "))) on 0"
-            + "from sales";
+            + " from sales";
         checkNotNative(context,mdx);
     }
 
@@ -253,7 +253,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ measures.[unit sales] }, "
             + "[marital status].[marital status].members"
             + ")) on 0"
-            + "from sales");
+            + " from sales");
     }
 
     @ParameterizedTest
@@ -270,7 +270,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "[marital status].[marital status].members, "
             + "{ measures.[unit sales] }"
             + ")) on 0"
-            + "from sales");
+            + " from sales");
     }
 
     @ParameterizedTest
@@ -287,7 +287,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ [gender].[all gender] }, "
             + "{ [marital status].[all marital status] } "
             + ")) on 0"
-            + "from sales");
+            + " from sales");
     }
 
     @ParameterizedTest
@@ -306,7 +306,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ [gender].[all gender] }, "
             + "{ [marital status].[all marital status] } "
             + "))) on 0"
-            + "from sales");
+            + " from sales");
     }
 
     @ParameterizedTest
@@ -325,7 +325,7 @@ class NativizeSetFunDefTest extends BatchTestCase {
             + "{ [measures].[unit sales] }, "
             + "{ [Education Level].[Education Level].members } "
             + ")) on 1"
-            + "from [warehouse and sales]";
+            + " from [warehouse and sales]";
 
         // Our setUp sets threshold at zero, so should always be native
         // if possible.

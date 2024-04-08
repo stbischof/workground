@@ -14705,7 +14705,7 @@ Intel platforms):
       String query =
       "SELECT "
         + "{[Measures].[Customer Count]} ON 0, "
-        + "{[Time].[H1 1997], [Time].[1997].[Q1]} ON 1"
+        + "{[Time].[H1 1997], [Time].[1997].[Q1]} ON 1 "
         + "FROM [Sales] "
         + "WHERE "
         + "{[Education Level].[Partial]} ";

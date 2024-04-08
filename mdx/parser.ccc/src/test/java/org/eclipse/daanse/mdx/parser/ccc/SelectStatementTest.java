@@ -30,6 +30,7 @@ import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxesClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxisClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseName;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseStatement;
+import org.eclipse.daanse.mdx.model.record.expression.CallExpressionR;
 import org.eclipse.daanse.mdx.model.record.expression.CompoundIdR;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.olap.operation.api.BracesOperationAtom;
@@ -373,6 +374,26 @@ class SelectStatementTest {
         assertThat(selectStatement.selectSlicerAxisClause()).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CompoundIdR.class);
+
+    }
+
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery3() throws MdxParserException {
+        String mdx = """
+            SELECT 
+            {[Measures].[Customer Count]} ON 0,
+            {[Time].[H1 1997], [Time].[1997].[Q1]} ON 1
+            FROM [Sales]
+            WHERE
+            {[Education Level].[Partial]}
+            """;
+
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
+        assertThat(selectStatement).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause()).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CallExpressionR.class);
 
     }
 

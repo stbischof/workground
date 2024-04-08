@@ -259,7 +259,7 @@ class SegmentBuilderTest {
             + "gender.gender.members  on 0 from sales");
         assertQueryReturns(connection,
             "select non empty [Store Size in SQFT].[Store Sqft].members on 0"
-            + "from sales",
+            + " from sales",
             "Axis #0:\n"
             + "{}\n"
             + "Axis #1:\n"
@@ -303,7 +303,7 @@ class SegmentBuilderTest {
         assertQueryReturns(connection,
             "select non empty [Store Size in SQFT].[Store Sqft].members "
             + " * [store].[store state].members  on 0"
-            + "from sales where [Product].[Food].[Produce].[Vegetables].[Fresh Vegetables]",
+            + " from sales where [Product].[Food].[Produce].[Vegetables].[Fresh Vegetables]",
             "Axis #0:\n"
             + "{[Product].[Food].[Produce].[Vegetables].[Fresh Vegetables]}\n"
             + "Axis #1:\n"
