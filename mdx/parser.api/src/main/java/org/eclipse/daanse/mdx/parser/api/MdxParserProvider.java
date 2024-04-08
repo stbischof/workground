@@ -13,8 +13,10 @@
 */
 package org.eclipse.daanse.mdx.parser.api;
 
+import java.util.Set;
+
 public interface MdxParserProvider {
 
-    MdxParser newParser(CharSequence mdx) throws MdxParserException;
+    MdxParser newParser(CharSequence mdx, Set<String> propertyWords) throws MdxParserException;
 
 }

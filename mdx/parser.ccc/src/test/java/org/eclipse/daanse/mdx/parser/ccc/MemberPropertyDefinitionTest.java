@@ -1,6 +1,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.ExpressionTest.CallExpressionTest.checkArgument;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ class MemberPropertyDefinitionTest {
 
 	@Test
 	void test1() throws MdxParserException {
-		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = [test]")
+		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = [test]", propertyWords)
 				.parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);
@@ -39,7 +40,7 @@ class MemberPropertyDefinitionTest {
 
 	@Test
 	void test2() throws MdxParserException {
-		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = 9")
+		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = 9", propertyWords)
 				.parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);
@@ -54,7 +55,7 @@ class MemberPropertyDefinitionTest {
 	@Test
 	void test3() throws MdxParserException {
 		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper(
-				"[name] = { expression1, expression2" + " }").parseMemberPropertyDefinition();
+				"[name] = { expression1, expression2" + " }", propertyWords).parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);
 		NameObjectIdentifier nameObjectIdentifier1 = (NameObjectIdentifier) memberPropertyDefinition.objectIdentifier();
@@ -71,7 +72,7 @@ class MemberPropertyDefinitionTest {
 
 	@Test
 	void test4() throws MdxParserException {
-		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = FunctionName([arg1, arg2])")
+		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = FunctionName([arg1, arg2])", propertyWords)
 				.parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);
@@ -88,7 +89,7 @@ class MemberPropertyDefinitionTest {
 
 	@Test
 	void test5() throws MdxParserException {
-		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = [x].&bar")
+		MemberPropertyDefinition memberPropertyDefinition = new MdxParserWrapper("[name] = [x].&bar", propertyWords)
 				.parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);

@@ -24,8 +24,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Set;
+
 class CubeTest {
 
+    static Set<String> propertyWords = Set.of(
+        "ORDINAL", "VALUE", "DATAMEMBER", "MEMBER_CAPTION", "FIRSTSIBLING", "CURRENTMEMBER",
+        "CURRENTORDINAL", "DIMENSION", "LASTSIBLING", "PARENT", "NEXTMEMBER", "UNIQUE_NAME",
+        "UNIQUENAME", "MEMBERS", "SIBLINGS", "ORDERKEY", "DEFAULTMEMBER", "LEVEL", "FIRSTCHILD",
+        "LASTCHILD", "CURRENT", "NAME", "CHILDREN", "PREVMEMBER", "LEVEL_NUMBER", "ALLMEMBERS",
+        "COUNT", "CAPTION", "HIERARCHY");
 	@Nested
 	class SelectSubcubeClauseNameTest {
 		@ParameterizedTest
@@ -35,7 +43,7 @@ class CubeTest {
 		void testQuoted(String cubeName) throws MdxParserException {
 			String mdx = mdxCubeNameQuoted(cubeName);
 
-			SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+			SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
 			assertThat(selectStatement).isNotNull();
 			assertThat(selectStatement.selectSubcubeClause()).isNotNull()
 					.isInstanceOfSatisfying(SelectSubcubeClauseName.class, s -> {
@@ -51,7 +59,7 @@ class CubeTest {
 		void testQuotedFail(String cubeName) throws MdxParserException {
 			String mdx = mdx_selectFromCubeName(cubeName);
 
-			MdxParserWrapper mdxParserWrapper = new MdxParserWrapper(mdx);
+			MdxParserWrapper mdxParserWrapper = new MdxParserWrapper(mdx, propertyWords);
 			assertThrows(MdxParserException.class, () -> {
 				mdxParserWrapper.parseSelectStatement();
 			});
@@ -63,7 +71,7 @@ class CubeTest {
 		void testUnquoted(String cubeName) throws MdxParserException {
 			String mdx = mdx_selectFromCubeName(cubeName);
 
-			SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+			SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
 			assertThat(selectStatement).isNotNull();
 			assertThat(selectStatement.selectSubcubeClause()).isNotNull()
 					.isInstanceOfSatisfying(SelectSubcubeClauseName.class, s -> {
@@ -82,7 +90,7 @@ class CubeTest {
 		void testUnquotedFail(String cubeName) throws MdxParserException {
 			String mdx = mdx_selectFromCubeName(cubeName);
 
-			MdxParserWrapper mdxParserWrapper = new MdxParserWrapper(mdx);
+			MdxParserWrapper mdxParserWrapper = new MdxParserWrapper(mdx, propertyWords);
 			assertThrows(MdxParserException.class, () -> {
 				mdxParserWrapper.parseSelectStatement();
 			});

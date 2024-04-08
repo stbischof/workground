@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import org.assertj.core.data.Index;
 import org.eclipse.daanse.mdx.model.api.select.SelectCellPropertyListClause;
@@ -25,7 +26,7 @@ class SelectCellPropertyListClauseTest {
 	@Test
 	void test1() throws MdxParserException {
 		SelectCellPropertyListClause selectCellPropertyListClause = new MdxParserWrapper(
-				"CELL PROPERTIES BACK_COLOR, FORE_COLOR").parseSelectCellPropertyListClause();
+				"CELL PROPERTIES BACK_COLOR, FORE_COLOR", propertyWords).parseSelectCellPropertyListClause();
 		assertThat(selectCellPropertyListClause).isNotNull();
 		assertThat(selectCellPropertyListClause.cell()).isTrue();
 		assertThat(selectCellPropertyListClause.properties()).isNotNull().hasSize(2);
@@ -36,7 +37,7 @@ class SelectCellPropertyListClauseTest {
 	@Test
 	void test2() throws MdxParserException {
 		SelectCellPropertyListClause selectCellPropertyListClause = new MdxParserWrapper(
-				"PROPERTIES BACK_COLOR, FORE_COLOR, TEST").parseSelectCellPropertyListClause();
+				"PROPERTIES BACK_COLOR, FORE_COLOR, TEST", propertyWords).parseSelectCellPropertyListClause();
 		assertThat(selectCellPropertyListClause).isNotNull();
 		assertThat(selectCellPropertyListClause.cell()).isFalse();
 		assertThat(selectCellPropertyListClause.properties()).isNotNull().hasSize(3);

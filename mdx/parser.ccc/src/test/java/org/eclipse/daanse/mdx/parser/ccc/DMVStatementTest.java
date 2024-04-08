@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkNameObjectIdentifiers;
 
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
@@ -30,7 +31,7 @@ class DMVStatementTest {
 
     @Test
     void test1() throws MdxParserException {
-        DMVStatement clause = new MdxParserWrapper("SELECT nameColumn from $SYSTEM.tableName").parseDMVStatement();
+        DMVStatement clause = new MdxParserWrapper("SELECT nameColumn from $SYSTEM.tableName", propertyWords).parseDMVStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.columns()).hasSize(1);
         assertThat(clause.columns().get(0).objectIdentifiers()).hasSize(1);
@@ -46,7 +47,7 @@ class DMVStatementTest {
     @Test
     void test2() throws MdxParserException {
         DMVStatement clause =
-            new MdxParserWrapper("SELECT nameColumn from $SYSTEM.tableName where nameColumn = \"name\"")
+            new MdxParserWrapper("SELECT nameColumn from $SYSTEM.tableName where nameColumn = \"name\"", propertyWords)
                 .parseDMVStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.columns()).hasSize(1);

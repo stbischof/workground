@@ -25,19 +25,20 @@ import org.eclipse.daanse.olap.operation.api.BracesOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PlainPropertyOperationAtom;
 import org.junit.jupiter.api.Test;
 
-class SelectQueryAxisClauseTest {
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
+class SelectQueryAxisClauseTest {
 	@Test
 	void test1() throws MdxParserException {
 		SelectQueryAxisClause selectQueryAxisClause = new MdxParserWrapper(
-				"[Customer].[Gender].[Gender].Membmers ON " + "COLUMNS").parseSelectQueryAxisClause();
+				"[Customer].[Gender].[Gender].Membmers ON " + "COLUMNS", propertyWords).parseSelectQueryAxisClause();
 		checkSelectQueryAxisClause1(selectQueryAxisClause);
 	}
 
 	@Test
 	void test2() throws MdxParserException {
 		SelectQueryAxisClause selectQueryAxisClause = new MdxParserWrapper(
-				"{[Customer].[Customer].[Aaron A. Allen], [Customer].[Customer].[Abigail Clark]} ON " + "ROWS")
+				"{[Customer].[Customer].[Aaron A. Allen], [Customer].[Customer].[Abigail Clark]} ON " + "ROWS", propertyWords)
 				.parseSelectQueryAxisClause();
 		checkSelectQueryAxisClause2(selectQueryAxisClause);
 	}

@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -55,7 +56,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionFunctionWithArrayParam() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName([arg1, arg2])").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName([arg1, arg2])", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -64,7 +65,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionFunctionWithoutParams() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName()").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName()", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).isEmpty();
@@ -72,7 +73,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionFunctionWithOneParam() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName(arg)").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName(arg)", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -81,7 +82,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionFunctionWithSeveralParams() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, arg2)").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, arg2)", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -91,7 +92,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionFunctionWithSeveralParamsWithArray() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, [arg2, arg3])").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, [arg2, arg3])", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -101,7 +102,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionEmpty() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, ,arg2)").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("FunctionName(arg1, ,arg2)", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(3);
@@ -113,7 +114,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionProperty() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.PROPERTY").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.PROPERTY", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new PlainPropertyOperationAtom("PROPERTY"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -122,21 +123,21 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionPropertyQuoted() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.&PROPERTY").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.&PROPERTY", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new QuotedPropertyOperationAtom("PROPERTY"));
 		}
 
 		@Test
 		void testCallExpressionPropertyAmpersAndQuoted() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.[&PROPERTY]").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.[&PROPERTY]", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new AmpersandQuotedPropertyOperationAtom("PROPERTY"));
 		}
 
 		@Test
 		void testCallExpressionMethod() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.FunctionName()").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.FunctionName()", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new MethodOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -148,7 +149,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionMethodWithParameter() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.FunctionName(arg)").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.FunctionName(arg)", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new MethodOperationAtom("FunctionName"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -158,7 +159,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionMethodWithParameterArray() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.FunctionName([arg1, arg2])").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.FunctionName([arg1, arg2])", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new MethodOperationAtom("FunctionName"));
 ;
@@ -169,7 +170,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionMethodWithInnerFunction() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("object.FunctionOuter(FunctionInner())").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("object.FunctionOuter(FunctionInner())", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new MethodOperationAtom("FunctionOuter"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -182,7 +183,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionTermCase() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("CASE a WHEN b THEN c END").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("CASE a WHEN b THEN c END", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(3);
@@ -193,7 +194,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionBraces1() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("{ expression }").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("{ expression }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
 			checkArgument((CallExpression) clause, 0, "expression");
@@ -201,7 +202,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionBraces2() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("{ expression1, expression2 }").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("{ expression1, expression2 }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -211,7 +212,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionBraces3() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("{ [a] : [c] }").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("{ [a] : [c] }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -227,7 +228,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionBraces4() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("{ [a].[a], [a].[b], [a].[c] }").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("{ [a].[a], [a].[b], [a].[c] }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			CallExpression callExpression = ((CallExpression) clause);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
@@ -253,7 +254,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionParentheses() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("( arg1, arg2 )").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("( arg1, arg2 )", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new ParenthesesOperationAtom());
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -263,7 +264,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionParenthesesWithArray() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("( arg1, [arg2, arg3] )").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("( arg1, [arg2, arg3] )", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new ParenthesesOperationAtom());
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -273,7 +274,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionTermPostfix() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("arg IS EMPTY").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("arg IS EMPTY", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new PostfixOperationAtom("IS EMPTY"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -282,7 +283,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionTermPrefix() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("NOT arg").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("NOT arg", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new PrefixOperationAtom("NOT"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
@@ -291,7 +292,7 @@ class ExpressionTest {
 
 		@Test
 		void testCallExpressionTermInfix() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("arg1 AND arg2").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("arg1 AND arg2", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new InfixOperationAtom("AND"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
@@ -317,7 +318,7 @@ class ExpressionTest {
 
 		@Test
 		void testNumericLiteral1() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("10").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("10", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(NumericLiteral.class);
 			NumericLiteral numericLiteral = (NumericLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo(BigDecimal.valueOf(10));
@@ -325,7 +326,7 @@ class ExpressionTest {
 
 		@Test
 		void testNumericLiteral2() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("10.25").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("10.25", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(NumericLiteral.class);
 			NumericLiteral numericLiteral = (NumericLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo(BigDecimal.valueOf(10.25));
@@ -333,7 +334,7 @@ class ExpressionTest {
 
 		@Test
 		void testNumericLiteral4() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("10e+5").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("10e+5", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(NumericLiteral.class);
 			NumericLiteral numericLiteral = (NumericLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo(new BigDecimal("10e+5"));
@@ -341,7 +342,7 @@ class ExpressionTest {
 
 		@Test
 		void testNumericLiteral5() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("10e-5").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("10e-5", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(NumericLiteral.class);
 			NumericLiteral numericLiteral = (NumericLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo(new BigDecimal("10e-5"));
@@ -349,7 +350,7 @@ class ExpressionTest {
 
 		@Test
 		void testNumericLiteral3() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("-10.25").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("-10.25", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(CallExpression.class);
 			CallExpression callExpression = (CallExpression) clause;
 			assertThat(callExpression.operationAtom()).isEqualTo(new PrefixOperationAtom("-"));
@@ -362,13 +363,13 @@ class ExpressionTest {
 		@ParameterizedTest
 		@ValueSource(strings = { "null", "Null", "NULL" })
 		void testNull(String exp) throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper(exp).parseExpression();
+			MdxExpression clause = new MdxParserWrapper(exp, propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(NullLiteral.class);
 		}
 
 		@Test
 		void testStringLiteral1() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("\"String'Literal\"").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("\"String'Literal\"", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(StringLiteral.class);
 			StringLiteral numericLiteral = (StringLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo("String'Literal");
@@ -376,7 +377,7 @@ class ExpressionTest {
 
 		@Test
 		void testStringLiteral2() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("'StringLiteral'").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("'StringLiteral'", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(StringLiteral.class);
 			StringLiteral numericLiteral = (StringLiteral) clause;
 			assertThat(numericLiteral.value()).isEqualTo("StringLiteral");
@@ -384,7 +385,7 @@ class ExpressionTest {
 
 		@Test
 		void testSymbolLiteral() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("cast(\"the_date\" as DATE)").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("cast(\"the_date\" as DATE)", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(CallExpression.class);
 			CallExpression callExpression = (CallExpression) clause;
 			assertThat(callExpression.operationAtom()).isEqualTo(new CastOperationAtom());
@@ -399,7 +400,7 @@ class ExpressionTest {
 
 		@Test
 		void testSymbolLiteral1() throws MdxParserException {
-			MdxParserWrapper parser = new MdxParserWrapper("cast(a, \"the_date\" as DATE)");
+			MdxParserWrapper parser = new MdxParserWrapper("cast(a, \"the_date\" as DATE)", propertyWords);
 			assertThrows(MdxParserException.class, () -> parser.parseExpression());
 		}
 
@@ -410,7 +411,7 @@ class ExpressionTest {
 
 		@Test
 		void testKeyObjectIdentifier() throws MdxParserException {
-			MdxExpression clause = new MdxParserWrapper("[x].&foo&[1]&bar.[y]").parseExpression();
+			MdxExpression clause = new MdxParserWrapper("[x].&foo&[1]&bar.[y]", propertyWords).parseExpression();
 			assertThat(clause).isInstanceOf(CompoundId.class);
 			CompoundId compoundId = (CompoundId) clause;
 			assertThat(compoundId.objectIdentifiers()).hasSize(3);
@@ -612,12 +613,12 @@ class ExpressionTest {
     }
 
     private void assertParseExprFails(String s) throws MdxParserException {
-        MdxParserWrapper parser = new MdxParserWrapper(s);
+        MdxParserWrapper parser = new MdxParserWrapper(s, propertyWords);
         assertThrows(MdxParserException.class, () -> parser.parseExpression());
     }
 
     private void assertParseExpr(String s) throws MdxParserException {
-        MdxExpression clause = new MdxParserWrapper(s).parseExpression();
+        MdxExpression clause = new MdxParserWrapper(s, propertyWords).parseExpression();
         assertThat(clause).isNotNull();
     }
 }

@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import java.math.BigDecimal;
 
@@ -31,7 +32,7 @@ class UpdateStatementTest {
 
 	@Test
 	void test1() throws MdxParserException {
-        UpdateStatement clause = new MdxParserWrapper("UPDATE CUBE Cube_Name SET ([Measures].[Sales Count], [Time].[Time].[1997].[Q1]) = 55, ([Measures].[Sales Count], [Time].[Time].[1997].[Q2]) = 33 USE_WEIGHTED_ALLOCATION BY 0.5").parseUpdateStatement();
+        UpdateStatement clause = new MdxParserWrapper("UPDATE CUBE Cube_Name SET ([Measures].[Sales Count], [Time].[Time].[1997].[Q1]) = 55, ([Measures].[Sales Count], [Time].[Time].[1997].[Q2]) = 33 USE_WEIGHTED_ALLOCATION BY 0.5", propertyWords).parseUpdateStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.cubeName()).isNotNull();
         assertThat(clause.cubeName().name()).isEqualTo("Cube_Name");
@@ -58,7 +59,7 @@ class UpdateStatementTest {
 
     @Test
     void test2() throws MdxParserException {
-        UpdateStatement clause = new MdxParserWrapper("UPDATE CUBE [Cube_Name] SET ([Measures].[Sales Count], [Time].[Time].[1997].[Q1]) = 55, ([Measures].[Sales Count], [Time].[Time].[1997].[Q2]) = 33 USE_WEIGHTED_ALLOCATION BY 0.5").parseUpdateStatement();
+        UpdateStatement clause = new MdxParserWrapper("UPDATE CUBE [Cube_Name] SET ([Measures].[Sales Count], [Time].[Time].[1997].[Q1]) = 55, ([Measures].[Sales Count], [Time].[Time].[1997].[Q2]) = 33 USE_WEIGHTED_ALLOCATION BY 0.5", propertyWords).parseUpdateStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.cubeName()).isNotNull();
         assertThat(clause.cubeName().name()).isEqualTo("Cube_Name");

@@ -7,13 +7,13 @@
  * Copyright (C) 2002-2005 Julian Hyde
  * Copyright (C) 2005-2017 Hitachi Vantara and others
  * All Rights Reserved.
- * 
+ *
  * For more information please visit the Project: Hitachi Vantara - Mondrian
- * 
+ *
  * ---- All changes after Fork in 2023 ------------------------
- * 
+ *
  * Project: Eclipse daanse
- * 
+ *
  * Copyright (c) 2023 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -31,6 +31,7 @@
 package org.eclipse.daanse.olap.api.function;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.daanse.olap.operation.api.OperationAtom;
 
@@ -45,9 +46,9 @@ import org.eclipse.daanse.olap.operation.api.OperationAtom;
  */
 @Deprecated
 public interface FunctionTable {
-	
+
 	List<FunctionMetaData> getFunctionMetaDatas();
-	
+
     /**
      * Returns whether a string is a reserved word.
      */
@@ -66,12 +67,14 @@ public interface FunctionTable {
      */
     List<String> getReservedWords();
 
+    Set<String> getPropertyWords();
+
     /**
      * Returns a list of {@link org.eclipse.daanse.olap.api.function.FunctionResolver} objects.
      */
     List<FunctionResolver> getResolvers();
 
-    
+
     /**
      * Returns a list of resolvers for an operator with a given name and syntax.
      * Never returns null; if there are no resolvers, returns the empty list.
@@ -109,7 +112,7 @@ public interface FunctionTable {
     public interface FunctionTableCollector {
 
     	void define(FunctionMetaData functionMetaData);
-        
+
     	/**
          * Defines a function.
          *

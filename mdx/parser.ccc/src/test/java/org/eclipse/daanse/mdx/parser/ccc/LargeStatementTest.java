@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
@@ -226,7 +227,7 @@ class LargeStatementTest {
 	@Test
 	void testTypeSelectStatement() throws MdxParserException {
 
-		MdxStatement clause = new MdxParserWrapper(MDX).parseMdxStatement();
+		MdxStatement clause = new MdxParserWrapper(MDX, propertyWords).parseMdxStatement();
 		assertThat(clause).isNotNull().isInstanceOf(SelectStatement.class);
 
 	}

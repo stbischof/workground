@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkAxis;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkNameObjectIdentifiers;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkSelectSubcubeClauseName;
@@ -42,7 +43,7 @@ class SelectSubCubeClauseTest {
 
         @Test
         void testUnQuoted() throws MdxParserException {
-            SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper("subcube").parseSelectSubcubeClause();
+            SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper("subcube", propertyWords).parseSelectSubcubeClause();
             assertThat(selectSubcubeClause).isNotNull().isInstanceOf(SelectSubcubeClauseName.class);
             SelectSubcubeClauseName selectSubcubeClauseName = (SelectSubcubeClauseName) selectSubcubeClause;
             assertThat(selectSubcubeClauseName.cubeName()).isNotNull();
@@ -53,7 +54,7 @@ class SelectSubCubeClauseTest {
 
         @Test
         void testQuoted() throws MdxParserException {
-            SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper("[subcube]").parseSelectSubcubeClause();
+            SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper("[subcube]", propertyWords).parseSelectSubcubeClause();
             assertThat(selectSubcubeClause).isNotNull().isInstanceOf(SelectSubcubeClauseName.class);
             checkSelectSubcubeClauseName((SelectSubcubeClauseName) selectSubcubeClause, "subcube",
                 ObjectIdentifier.Quoting.QUOTED);
@@ -61,7 +62,7 @@ class SelectSubCubeClauseTest {
 
         @Test
         void testEmpty() {
-            assertThrows(MdxParserException.class, () -> new MdxParserWrapper(""));
+            assertThrows(MdxParserException.class, () -> new MdxParserWrapper("", propertyWords));
         }
 
     }
@@ -72,7 +73,8 @@ class SelectSubCubeClauseTest {
         @Test
         void testSingleSubCube() throws MdxParserException {
             SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper(
-                "(SELECT {[Date].[Calendar].[Calendar Year].&[2001]} ON 0 FROM [Adventure Works])")
+                "(SELECT {[Date].[Calendar].[Calendar Year].&[2001]} ON 0 FROM [Adventure Works])",
+                propertyWords)
                 .parseSelectSubcubeClause();
             checkSelectSubcubeClauseStatement(selectSubcubeClause);
             assertThat(selectSubcubeClause).isNotNull().isInstanceOf(SelectSubcubeClauseStatement.class);
@@ -125,7 +127,8 @@ class SelectSubCubeClauseTest {
     void testMultiSubCube() throws MdxParserException {
 
         SelectSubcubeClause selectSubcubeClause = new MdxParserWrapper(
-            "(SELECT {[Date].[Calendar].[Calendar Year].&[2001]} ON 0 FROM (SELECT {test} ON 0 FROM [cube]))")
+            "(SELECT {[Date].[Calendar].[Calendar Year].&[2001]} ON 0 FROM (SELECT {test} ON 0 FROM [cube]))",
+            propertyWords)
             .parseSelectSubcubeClause();
         assertThat(selectSubcubeClause).isNotNull().isInstanceOf(SelectSubcubeClauseStatement.class);
         SelectSubcubeClauseStatement selectSubcubeClauseStatement = (SelectSubcubeClauseStatement) selectSubcubeClause;

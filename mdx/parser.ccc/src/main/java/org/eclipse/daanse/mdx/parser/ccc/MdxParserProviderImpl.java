@@ -21,6 +21,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 import java.util.Map;
+import java.util.Set;
 
 @Component(scope = ServiceScope.SINGLETON, configurationPid = MdxParserProviderImpl.PID, service = MdxParserProvider.class)
 public class MdxParserProviderImpl implements MdxParserProvider {
@@ -36,7 +37,7 @@ public class MdxParserProviderImpl implements MdxParserProvider {
     }
 
     @Override
-    public MdxParser newParser(CharSequence mdx) throws MdxParserException {
-        return new MdxParserWrapper(mdx);
+    public MdxParser newParser(CharSequence mdx, Set<String> propertyWords) throws MdxParserException {
+        return new MdxParserWrapper(mdx, propertyWords);
     }
 }

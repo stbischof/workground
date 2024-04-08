@@ -38,6 +38,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -118,7 +119,10 @@ import org.eclipse.daanse.olap.operation.api.PostfixOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PrefixOperationAtom;
 import org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper;
 {
-
+private Set<String> propertyWords;
+public void setPropertyWords(Set<String> propertyWords) {
+    this.propertyWords = propertyWords;
+}
 }
 
 
@@ -774,7 +778,7 @@ MdxExpression parseSetMemberExpression :
   < SINGLE_QUOTED_STRING >
   {
     try {
-        return new MdxParserWrapper(MdxParserUtil.stripQuotes(getToken(0).getImage(), "'", "'", "''")).parseExpression();
+        return new MdxParserWrapper(MdxParserUtil.stripQuotes(getToken(0).getImage(), "'", "'", "''"), this.propertyWords).parseExpression();
     } catch (Exception e) {
         throw new ParseException("parseSetMemberExpression error");
     }
@@ -1301,7 +1305,7 @@ MdxExpression objectIdentifierOrFuncall(MdxExpression left) :
     < RPAREN >
   )?
   {
-    return MdxParserUtil.createCall(left, objectIdentifier, argList);
+    return MdxParserUtil.createCall(left, objectIdentifier, argList, this.propertyWords);
   }
 ;
 
@@ -1408,7 +1412,7 @@ MdxExpression parseAtom :
     }
   )
   {
-    return MdxParserUtil.createCall(null, nameObjectIdentifier, expressions);
+    return MdxParserUtil.createCall(null, nameObjectIdentifier, expressions, this.propertyWords);
   }
 ;
 

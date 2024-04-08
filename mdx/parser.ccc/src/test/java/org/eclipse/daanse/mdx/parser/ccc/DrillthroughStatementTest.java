@@ -1,6 +1,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
 import org.eclipse.daanse.mdx.model.api.expression.NameObjectIdentifier;
@@ -18,7 +19,7 @@ class DrillthroughStatementTest {
 				SELECT *
 				FROM [Adventure Works]
 				""";
-		DrillthroughStatement clause = new MdxParserWrapper(mdx).parseDrillthroughStatement();
+		DrillthroughStatement clause = new MdxParserWrapper(mdx, propertyWords).parseDrillthroughStatement();
 		assertThat(clause).isNotNull().isInstanceOf(DrillthroughStatement.class);
 		assertThat(clause.firstRowSet()).isNotPresent();
 		assertThat(clause.maxRows()).isPresent().contains(10);
@@ -41,7 +42,7 @@ class DrillthroughStatementTest {
 				FROM [Adventure Works]
 				RETURN a
 				""";
-		DrillthroughStatement clause = new MdxParserWrapper(mdx).parseDrillthroughStatement();
+		DrillthroughStatement clause = new MdxParserWrapper(mdx, propertyWords).parseDrillthroughStatement();
 		assertThat(clause).isNotNull().isInstanceOf(DrillthroughStatement.class);
 		assertThat(clause.firstRowSet()).isPresent().contains(1);
 		assertThat(clause.maxRows()).isPresent().contains(10);

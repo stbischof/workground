@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkAxis;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkNameObjectIdentifiers;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkSelectSubcubeClauseName;
@@ -29,6 +30,7 @@ import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxesClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxisClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseName;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseStatement;
+import org.eclipse.daanse.mdx.model.record.expression.CompoundIdR;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.olap.operation.api.BracesOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PlainPropertyOperationAtom;
@@ -46,7 +48,7 @@ class SelectStatementTest {
                WHERE [Measures].[Internet Sales Amount]
             """;
 
-        SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
         assertThat(selectStatement).isNotNull();
         assertThat(selectStatement.selectWithClauses()).isEmpty();
         assertThat(selectStatement.selectQueryClause()).isNotNull().isInstanceOf(SelectQueryAxesClause.class);
@@ -119,7 +121,7 @@ class SelectStatementTest {
             from [Sales]
             """;
 
-        SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
         assertThat(selectStatement).isNotNull();
         assertThat(selectStatement.selectWithClauses()).isNotNull().isEmpty();
         assertThat(selectStatement.selectQueryClause()).isNotNull().isInstanceOf(SelectQueryAxesClause.class);
@@ -168,7 +170,7 @@ class SelectStatementTest {
             )
                 """;
 
-        SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
         assertThat(selectStatement).isNotNull();
         // test sub cubes
         assertThat(selectStatement.selectSubcubeClause()).isNotNull().isInstanceOf(SelectSubcubeClauseStatement.class);
@@ -359,13 +361,28 @@ class SelectStatementTest {
             """);
     }
 
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery2() throws MdxParserException {
+        String mdx = """
+            select {[customers].[name].members} on 0 from sales where gender.f
+            """;
+
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
+        assertThat(selectStatement).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause()).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull();
+        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CompoundIdR.class);
+
+    }
+
     private void assertParseQuery(String mdx) throws MdxParserException {
-        SelectStatement selectStatement = new MdxParserWrapper(mdx).parseSelectStatement();
+        SelectStatement selectStatement = new MdxParserWrapper(mdx, propertyWords).parseSelectStatement();
         assertThat(selectStatement).isNotNull();
     }
 
     private void assertParseQueryFails(String s) throws MdxParserException {
-        MdxParserWrapper parser = new MdxParserWrapper(s);
+        MdxParserWrapper parser = new MdxParserWrapper(s, propertyWords);
         assertThrows(MdxParserException.class, () -> parser.parseSelectStatement());
     }
 }

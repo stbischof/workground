@@ -29,19 +29,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class SelectSlicerAxisClauseTest {
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
+class SelectSlicerAxisClauseTest {
 	@Test
 	void test1() throws MdxParserException {
 		Optional<SelectSlicerAxisClause> selectSlicerAxisClauseOption = new MdxParserWrapper(
-				"WHERE [Measures].[Internet Sales Amount]").parseSelectSlicerAxisClause();
+				"WHERE [Measures].[Internet Sales Amount]", propertyWords).parseSelectSlicerAxisClause();
 		assertThat(selectSlicerAxisClauseOption).isPresent();
 		checkSelectSlicerAxisClause1(selectSlicerAxisClauseOption.get());
 	}
 
 	@Test
 	void test2() throws MdxParserException {
-		Optional<SelectSlicerAxisClause> selectSlicerAxisClauseOption = new MdxParserWrapper("where a=b")
+		Optional<SelectSlicerAxisClause> selectSlicerAxisClauseOption = new MdxParserWrapper("where a=b", propertyWords)
 				.parseSelectSlicerAxisClause();
 		assertThat(selectSlicerAxisClauseOption).isPresent();
 		SelectSlicerAxisClause selectSlicerAxisClause = selectSlicerAxisClauseOption.get();
@@ -68,14 +69,14 @@ class SelectSlicerAxisClauseTest {
 	@ValueSource(strings = { "where ", "where", " " })
 	void testThrows(String where) throws MdxParserException {
 
-		MdxParserWrapper parser = new MdxParserWrapper(where);
+		MdxParserWrapper parser = new MdxParserWrapper(where, propertyWords);
 		assertThrows(MdxParserException.class, () -> parser.parseSelectSlicerAxisClause());
 	}
 
     @Test
     void testThrows1() {
-        assertThrows(MdxParserException.class, () -> new MdxParserWrapper(null));
-        assertThrows(MdxParserException.class, () -> new MdxParserWrapper(""));
+        assertThrows(MdxParserException.class, () -> new MdxParserWrapper(null, propertyWords));
+        assertThrows(MdxParserException.class, () -> new MdxParserWrapper("", propertyWords));
     }
 
 	// WHERE [Measures].[Internet Sales Amount]

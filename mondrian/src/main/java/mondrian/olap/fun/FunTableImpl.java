@@ -62,7 +62,7 @@ public abstract class FunTableImpl implements FunctionTable {
 		init(builder);
 
 	}
-    	
+
     public final void init(BuilderImpl builder) {
         defineFunctions(builder);
         builder.organizeFunctions();
@@ -86,6 +86,11 @@ public abstract class FunTableImpl implements FunctionTable {
     @Override
 	public List<String> getReservedWords() {
         return reservedWordList;
+    }
+
+    @Override
+    public Set<String> getPropertyWords() {
+        return propertyWords;
     }
 
     @Override
@@ -122,7 +127,7 @@ public abstract class FunTableImpl implements FunctionTable {
         return resolvers;
     }
     public record FunctionAtomCompareKey(String name, Class<?> clazz) {
-    
+
 		public FunctionAtomCompareKey(String name, Class<?> clazz) {
 			this.name = name.toUpperCase();
 			this.clazz = clazz;
@@ -131,7 +136,7 @@ public abstract class FunTableImpl implements FunctionTable {
 		public FunctionAtomCompareKey(OperationAtom functionAtom) {
 			this(functionAtom.name(), functionAtom.getClass());
 		}
-    	
+
     };
 
     /**
@@ -157,13 +162,13 @@ public abstract class FunTableImpl implements FunctionTable {
 		public void define(FunctionResolver resolver) {
 
 			functionMetaDatas.addAll(resolver.getRepresentativeFunctionMetaDatas());
-			
+
 			OperationAtom functionAtom= resolver.getFunctionAtom();
-			
+
 			if (functionAtom instanceof PlainPropertyOperationAtom) {
 				propertyWords.add(functionAtom.name().toUpperCase());
 			}
-			
+
 			resolverList.add(resolver);
 			final List<String> reservedWordsInner = resolver.getReservedWords();
 			for (String reservedWord : reservedWordsInner) {
@@ -185,9 +190,9 @@ public abstract class FunTableImpl implements FunctionTable {
          * Indexes the collection of functions.
          */
         protected void organizeFunctions() {
-        	
+
         	Comparator<FunctionMetaData> comparatorFMD=new Comparator<FunctionMetaData>() {
-				
+
 				@Override
 				public int compare(FunctionMetaData o1, FunctionMetaData o2) {
 					//TODO:
@@ -201,8 +206,8 @@ public abstract class FunTableImpl implements FunctionTable {
                 new ArrayList<>();
             for (FunctionResolver resolver : resolverList) {
             	FunctionAtomCompareKey key=	 new FunctionAtomCompareKey(resolver.getFunctionAtom());
-            
-            	
+
+
                 List<FunctionResolver> list = mapNameToResolvers.computeIfAbsent(key, k -> new ArrayList<>());
                 list.add(resolver);
                 if (list.size() == 2) {

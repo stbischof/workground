@@ -9,12 +9,13 @@ import org.eclipse.daanse.mdx.model.api.select.SelectDimensionPropertyListClause
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.junit.jupiter.api.Test;
 
-class SelectDimensionPropertyListClauseTest {
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
+class SelectDimensionPropertyListClauseTest {
 	@Test
 	void test1() throws MdxParserException {
 		SelectDimensionPropertyListClause selectDimensionPropertyListClause = new MdxParserWrapper(
-				"DIMENSION PROPERTIES BACK_COLOR, FORE_COLOR").parseSelectDimensionPropertyListClause();
+				"DIMENSION PROPERTIES BACK_COLOR, FORE_COLOR", propertyWords).parseSelectDimensionPropertyListClause();
 		assertThat(selectDimensionPropertyListClause).isNotNull();
 		assertThat(selectDimensionPropertyListClause.properties()).isNotNull().hasSize(2);
 
@@ -34,7 +35,7 @@ class SelectDimensionPropertyListClauseTest {
     @Test
     void test2() throws MdxParserException {
         SelectDimensionPropertyListClause selectDimensionPropertyListClause = new MdxParserWrapper(
-            "DIMENSION PROPERTIES [Store].[Store].[Store Name].[Store Type]").parseSelectDimensionPropertyListClause();
+            "DIMENSION PROPERTIES [Store].[Store].[Store Name].[Store Type]", propertyWords).parseSelectDimensionPropertyListClause();
         assertThat(selectDimensionPropertyListClause).isNotNull();
         assertThat(selectDimensionPropertyListClause.properties()).isNotNull().hasSize(1);
         assertThat(selectDimensionPropertyListClause.properties().get(0).objectIdentifiers()).isNotNull().hasSize(4);

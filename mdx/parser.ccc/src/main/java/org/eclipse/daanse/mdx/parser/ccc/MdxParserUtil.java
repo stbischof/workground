@@ -15,6 +15,7 @@ package org.eclipse.daanse.mdx.parser.ccc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.daanse.mdx.model.api.expression.CompoundId;
 import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
@@ -43,7 +44,7 @@ public class MdxParserUtil {
 	}
 
 	public static MdxExpression createCall(MdxExpression left, ObjectIdentifier objectIdentifier,
-			List<MdxExpression> expressions) {
+			List<MdxExpression> expressions, Set<String> propertyWords) {
 		final String name = objectIdentifier instanceof NameObjectIdentifier nameObjectIdentifier
 				?  nameObjectIdentifier.name()
 				: null;
@@ -59,13 +60,15 @@ public class MdxParserUtil {
 		} else {
 			// Member syntax: "foo.bar"
 			// or property syntax: "foo.RESERVED_WORD"
-			
+
 			OperationAtom operationAtom;
 			boolean call = false;
 			switch (objectIdentifier.quoting()) {
 			case UNQUOTED:
 				operationAtom = new PlainPropertyOperationAtom(name);
-				call = true;
+				if (name != null && propertyWords.contains(name.toUpperCase())) {
+                    call = true;
+                }
 				break;
 			case QUOTED:
 				operationAtom = new QuotedPropertyOperationAtom(name);

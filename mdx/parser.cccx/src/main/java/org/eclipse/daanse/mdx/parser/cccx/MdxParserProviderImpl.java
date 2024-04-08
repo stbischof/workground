@@ -18,11 +18,13 @@ import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.osgi.service.component.annotations.Component;
 
+import java.util.Set;
+
 @Component(service = MdxParserProvider.class)
 public class MdxParserProviderImpl implements MdxParserProvider {
 
     @Override
-    public MdxParser newParser(CharSequence mdx) throws MdxParserException {
+    public MdxParser newParser(CharSequence mdx, Set<String> propertyWords) throws MdxParserException {
         return new MdxParserWrapper(mdx);
     }
 }

@@ -1,6 +1,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ class ReturnItemTest {
 
 	@Test
 	void test() throws MdxParserException {
-		List<ReturnItem> clauseList = new MdxParserWrapper("[a].[b]").parseReturnItems();
+		List<ReturnItem> clauseList = new MdxParserWrapper("[a].[b]", propertyWords).parseReturnItems();
 		assertThat(clauseList).isNotNull().hasSize(1);
 		CompoundId compoundId = clauseList.get(0).compoundId();
 		assertThat(compoundId.objectIdentifiers()).hasSize(2);

@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkSelectSubcubeClauseName;
 import static org.eclipse.daanse.mdx.parser.ccc.SelectQueryAxisClauseTest.checkSelectQueryAxisClause1;
 import static org.eclipse.daanse.mdx.parser.ccc.SelectQueryAxisClauseTest.checkSelectQueryAxisClause2;
@@ -40,7 +41,7 @@ class MdxStatementTest {
                WHERE [Measures].[Internet Sales Amount]
             """;
 
-        MdxStatement clause = new MdxParserWrapper(mdx).parseMdxStatement();
+        MdxStatement clause = new MdxParserWrapper(mdx, propertyWords).parseMdxStatement();
         assertThat(clause).isNotNull().isInstanceOf(SelectStatement.class);
         SelectStatement selectStatement = (SelectStatement) clause;
 
@@ -79,7 +80,7 @@ class MdxStatementTest {
                WHERE [Measures].[Internet Sales Amount]
                //comment test
             """;
-        MdxStatement clause = new MdxParserWrapper(mdx).parseMdxStatement();
+        MdxStatement clause = new MdxParserWrapper(mdx, propertyWords).parseMdxStatement();
         assertThat(clause).isNotNull().isInstanceOf(SelectStatement.class);
         SelectStatement selectStatement = (SelectStatement) clause;
 
@@ -106,7 +107,7 @@ class MdxStatementTest {
 
     @Test
     void testDrillThroughMdx() throws MdxParserException {
-        MdxStatement clause = new MdxParserWrapper("DRILLTHROUGH SELECT [Foo] on 0, [Bar] on 1 FROM [Cube]")
+        MdxStatement clause = new MdxParserWrapper("DRILLTHROUGH SELECT [Foo] on 0, [Bar] on 1 FROM [Cube]", propertyWords)
             .parseMdxStatement();
         assertThat(clause).isNotNull().isInstanceOf(MdxStatement.class);
     }

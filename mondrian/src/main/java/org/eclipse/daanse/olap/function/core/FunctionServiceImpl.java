@@ -14,12 +14,15 @@
 package org.eclipse.daanse.olap.function.core;
 
 import static java.util.Collections.synchronizedList;
+import static java.util.Collections.synchronizedSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.daanse.olap.api.function.FunctionMetaData;
@@ -48,7 +51,7 @@ public class FunctionServiceImpl implements FunctionService {
 
 	private List<FunctionMetaData> representativeFunctionMetaDatas = synchronizedList(new ArrayList<>());
 	private List<String> reservedWords = synchronizedList(new ArrayList<>());
-	private List<String> propertyWords = synchronizedList(new ArrayList<>());
+	private Set<String> propertyWords = synchronizedSet(new HashSet<>());
 
 	public FunctionServiceImpl() {
 
@@ -76,7 +79,7 @@ public class FunctionServiceImpl implements FunctionService {
 
 		addResolvers(List.of(resolver));
 	}
-	
+
 	public void addResolvers(List<FunctionResolver> resolvers) {
 
 		this.resolvers.addAll(resolvers);
@@ -94,7 +97,7 @@ public class FunctionServiceImpl implements FunctionService {
 	private void reInitialize() {
 
 		final List<FunctionMetaData> newRepresentativeFunctionMetaDatas = synchronizedList(new ArrayList<>());
-		final List<String> newPropertyWords = synchronizedList(new ArrayList<>());
+		final Set<String> newPropertyWords = synchronizedSet(new HashSet<>());
 		final List<String> newReservedWords = synchronizedList(new ArrayList<>());
 		final Map<FunctionAtomCompareKey, List<FunctionResolver>> newMapNameToResolvers = new ConcurrentHashMap<>();
 
@@ -149,7 +152,12 @@ public class FunctionServiceImpl implements FunctionService {
 		return reservedWords;
 	}
 
-	@Override
+    @Override
+    public Set<String> getPropertyWords() {
+        return propertyWords;
+    }
+
+    @Override
 	public List<FunctionResolver> getResolvers() {
 
 		return List.copyOf(resolvers);

@@ -36,9 +36,15 @@ COPYRIGHT_BLURB="""
 
 INJECT PARSER_CLASS :
   import java.util.List;
+  import java.util.Set;
   import java.util.LinkedList;
   import java.io.File;
 {
+   private Set<String> propertyWords;
+   public void setPropertyWords(Set<String> propertyWords) {
+       this.propertyWords = propertyWords;
+   }
+
    public static void main(String[] args) {
       if (args.length==0) System.err.println("No input file specified.");
       else for (int i=0; i< args.length; i++) {
@@ -60,7 +66,7 @@ INJECT PARSER_CLASS :
            }
            return;
        }
-       try { 
+       try {
           PARSER_CLASS parser = new PARSER_CLASS(file.toPath());
           Node root = parser.MdxStatement();
           if (dumpTree) {
@@ -72,7 +78,7 @@ INJECT PARSER_CLASS :
           e.printStackTrace();
        }
    }
-}  
+}
 
 INCLUDE "Lexer.inc.ccc"
 INCLUDE "Expressions.inc.ccc"

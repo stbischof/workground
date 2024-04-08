@@ -22,9 +22,11 @@ import org.eclipse.daanse.mdx.unparser.api.UnParser;
 import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
 import org.osgi.test.common.annotation.InjectService;
 
+import java.util.Set;
+
 @RequireServiceComponentRuntime
 class UnparseParsedTest {
-
+    Set<String> reservedWords = Set.of();
 	@org.junit.jupiter.api.Test
 	void testFullStatement(@InjectService MdxParserProvider mdxParserProvider, @InjectService UnParser unParser)
 			throws MdxParserException {
@@ -81,7 +83,7 @@ class UnparseParsedTest {
 				CELL PROPERTIES BACK_COLOR, FORE_COLOR, FONT_SIZE, FORMAT_STRING, VALUE, FORMATTED_VALUE
 				            """;
 
-		MdxStatement mdxStatement = mdxParserProvider.newParser(MDX).parseMdxStatement();
+		MdxStatement mdxStatement = mdxParserProvider.newParser(MDX, reservedWords).parseMdxStatement();
 		StringBuilder resultmdx = unParser.unparseMdxStatement(mdxStatement);
 		assertThat(resultmdx).isNotNull().isNotBlank();
 

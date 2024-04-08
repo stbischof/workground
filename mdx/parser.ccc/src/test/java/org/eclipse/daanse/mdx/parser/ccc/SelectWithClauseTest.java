@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 import static org.eclipse.daanse.mdx.parser.ccc.MdxTestUtils.checkNameObjectIdentifiers;
 
 import org.eclipse.daanse.mdx.model.api.expression.CallExpression;
@@ -44,7 +45,7 @@ class SelectWithClauseTest {
 					        Union([Customer].[Gender].Members, {[Customer].[Gender].&[F]})
 					""";
 
-			SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+			SelectWithClause selectWithClause = new MdxParserWrapper(mdx, propertyWords).parseSelectWithClause();
 			assertThat(selectWithClause).isNotNull().isInstanceOf(CreateSetBodyClause.class);
 			CreateSetBodyClause createSetBodyClause = (CreateSetBodyClause) selectWithClause;
 			assertThat(createSetBodyClause.compoundId()).isNotNull();
@@ -96,7 +97,7 @@ class SelectWithClauseTest {
                 AS 'TopCount([Warehouse].[Warehouse Name].MEMBERS, 5, [Measures].[Warehouse Sales])'
             """;
 
-        SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+        SelectWithClause selectWithClause = new MdxParserWrapper(mdx, propertyWords).parseSelectWithClause();
         assertThat(selectWithClause).isNotNull().isInstanceOf(CreateSetBodyClause.class);
         CreateSetBodyClause createSetBodyClause = (CreateSetBodyClause) selectWithClause;
         assertThat(createSetBodyClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
@@ -111,7 +112,7 @@ class SelectWithClauseTest {
                 AS TopCount([Warehouse].[Warehouse Name].MEMBERS, 5, [Measures].[Warehouse Sales])
             """;
 
-        SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+        SelectWithClause selectWithClause = new MdxParserWrapper(mdx, propertyWords).parseSelectWithClause();
         assertThat(selectWithClause).isNotNull().isInstanceOf(CreateSetBodyClause.class);
         CreateSetBodyClause createSetBodyClause = (CreateSetBodyClause) selectWithClause;
         assertThat(createSetBodyClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
@@ -123,7 +124,8 @@ class SelectWithClauseTest {
 
 		@Test
 		void testMeasureBodyClause() throws MdxParserException {
-			SelectWithClause selectWithClause = new MdxParserWrapper("MEASURE NOT NOT NOT NOT NOT NOT NOT")
+			SelectWithClause selectWithClause = new MdxParserWrapper("MEASURE NOT NOT NOT NOT NOT NOT NOT"
+                , propertyWords)
 					.parseSelectWithClause();
 			assertThat(selectWithClause).isNotNull().isInstanceOf(MeasureBodyClause.class);
 			MeasureBodyClause measureBodyClause = (MeasureBodyClause) selectWithClause;
@@ -136,7 +138,8 @@ class SelectWithClauseTest {
 
 		@Test
 		void testMeasureBodyClause() throws MdxParserException {
-			SelectWithClause selectWithClause = new MdxParserWrapper("CELL CALCULATION NOT NOT NOT NOT NOT NOT NOT")
+			SelectWithClause selectWithClause = new MdxParserWrapper("CELL CALCULATION NOT NOT NOT NOT NOT NOT NOT",
+                propertyWords)
 					.parseSelectWithClause();
 			assertThat(selectWithClause).isNull();
 		}
@@ -150,7 +153,7 @@ class SelectWithClauseTest {
 			String mdx = """
 					MEMBER [Measures].[Calculate Internet Sales Amount] AS M
 					""";
-			SelectWithClause selectWithClause = new MdxParserWrapper(mdx).parseSelectWithClause();
+			SelectWithClause selectWithClause = new MdxParserWrapper(mdx, propertyWords).parseSelectWithClause();
 			assertThat(selectWithClause).isNotNull().isInstanceOf(CreateMemberBodyClause.class);
 			CreateMemberBodyClause createMemberBodyClause = (CreateMemberBodyClause) selectWithClause;
 

@@ -1,6 +1,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
 import org.eclipse.daanse.mdx.model.api.ExplainStatement;
@@ -20,7 +21,7 @@ class ExplainStatementTest {
 				   FROM [Adventure Works]
 				   WHERE [Measures].[Internet Sales Amount]
 				""";
-		ExplainStatement explainStatement = new MdxParserWrapper(mdx).parseExplainStatement();
+		ExplainStatement explainStatement = new MdxParserWrapper(mdx, propertyWords).parseExplainStatement();
 		assertThat(explainStatement).isNotNull();
 		assertThat(explainStatement.mdxStatement()).isNotNull().isInstanceOf(SelectStatement.class);
 	}
@@ -35,7 +36,7 @@ class ExplainStatementTest {
 				FROM [Adventure Works]
 				RETURN a
 				""";
-		ExplainStatement explainStatement = new MdxParserWrapper(mdx).parseExplainStatement();
+		ExplainStatement explainStatement = new MdxParserWrapper(mdx, propertyWords).parseExplainStatement();
 		assertThat(explainStatement).isNotNull();
 		assertThat(explainStatement.mdxStatement()).isNotNull().isInstanceOf(DrillthroughStatement.class);
 	}

@@ -14,6 +14,7 @@
 package org.eclipse.daanse.mdx.parser.ccc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.daanse.mdx.parser.ccc.CubeTest.propertyWords;
 
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier;
@@ -24,7 +25,7 @@ class RefreshStatementTest {
 
 	@Test
 	void test1() throws MdxParserException {
-        RefreshStatement clause = new MdxParserWrapper("REFRESH CUBE Cube_Name").parseRefreshStatement();
+        RefreshStatement clause = new MdxParserWrapper("REFRESH CUBE Cube_Name", propertyWords).parseRefreshStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.cubeName()).isNotNull();
         assertThat(clause.cubeName().name()).isEqualTo("Cube_Name");
@@ -33,7 +34,7 @@ class RefreshStatementTest {
 
     @Test
     void test2() throws MdxParserException {
-        RefreshStatement clause = new MdxParserWrapper("REFRESH CUBE [Cube_Name]").parseRefreshStatement();
+        RefreshStatement clause = new MdxParserWrapper("REFRESH CUBE [Cube_Name]", propertyWords).parseRefreshStatement();
         assertThat(clause).isNotNull();
         assertThat(clause.cubeName()).isNotNull();
         assertThat(clause.cubeName().name()).isEqualTo("Cube_Name");

@@ -16,7 +16,6 @@ import java.util.List;
 import mondrian.olap.exceptions.FailedToParseQueryException;
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
-import org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Schema;
@@ -84,7 +83,7 @@ public abstract class ConnectionBase implements Connection {
         }
 
         try {
-            MdxParser parser = getContext().getMdxParserProvider().newParser(query);
+            MdxParser parser = getContext().getMdxParserProvider().newParser(query, funTable.getPropertyWords());
             MdxStatement mdxStatement  = parser.parseMdxStatement();
             return getQueryProvider().createQuery(statement, mdxStatement, strictValidation);
         } catch (Exception e) {

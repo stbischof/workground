@@ -53,7 +53,6 @@ import org.eclipse.daanse.olap.api.Locus;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.access.Role;
-import org.eclipse.daanse.olap.api.query.QueryProvider;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.query.component.QueryAxis;
@@ -64,7 +63,6 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.todo.TupleCursor;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
-import org.eclipse.daanse.olap.query.base.QueryProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -473,7 +471,7 @@ public Expression parseExpression( String expr ) {
         getLogger().debug(msg);
     }
     try {
-      MdxParser mdxParser = context.getMdxParserProvider().newParser(expr);
+      MdxParser mdxParser = context.getMdxParserProvider().newParser(expr, context.getFunctionService().getPropertyWords());
       MdxExpression expression = mdxParser.parseExpression();
       return getExpressionProvider().createExpression(expression);
     } catch ( Throwable exception ) {
