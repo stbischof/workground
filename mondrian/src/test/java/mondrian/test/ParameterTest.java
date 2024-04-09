@@ -1188,7 +1188,7 @@ class ParameterTest {
         // properties which must always return null
         Connection connection = context.getConnection();
         assertExprThrows(connection, "ParamRef(\"JdbcPassword\")", "Unknown parameter 'JdbcPassword'"); // was deleted
-        assertExprReturns(connection, "ParamRef(\"CatalogContent\")", "");
+        assertExprReturns(connection, "ParamRef(\"CatalogContent\")", "Unknown parameter 'CatalogContent'");
     }
 
 

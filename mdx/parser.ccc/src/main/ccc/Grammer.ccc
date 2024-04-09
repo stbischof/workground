@@ -780,7 +780,7 @@ MdxExpression parseSetMemberExpression :
     try {
         return new MdxParserWrapper(MdxParserUtil.stripQuotes(getToken(0).getImage(), "'", "'", "''"), this.propertyWords).parseExpression();
     } catch (Exception e) {
-        throw new ParseException("parseSetMemberExpression error");
+        throw new ParseException("parseSetMemberExpression error " + e.getMessage());
     }
   }
   |

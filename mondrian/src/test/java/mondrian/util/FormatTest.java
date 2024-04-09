@@ -736,8 +736,8 @@ class FormatTest {
         checkFormat(null, date2, "#;[#];NULL", "40428");
 
         // date value with string format gives long date string
-        checkFormat(null, date2, "<", "9/7/10, 6:05:04 am");
-        checkFormat(null, date2, ">", "9/7/10, 6:05:04 AM");
+        checkFormat(null, date2, "<", "9/7/10, 6:05:04 am");
+        checkFormat(null, date2, ">", "9/7/10, 6:05:04 AM");
 
         // numeric value and string format
         checkFormat(null, 123.45E6, "<", "123,450,000"); // Excel gives 12345600

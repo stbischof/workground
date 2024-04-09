@@ -991,10 +991,7 @@ public class UdfTest {
         updateTestContext(context, SchemaModifiers.UdfTestModifier18::new);
         assertQueryThrows(context,
             "select Reverse2([Gender].Members) on 0\n" + "from [Sales]",
-            "Failed to load user-defined function 'Reverse2': class "
-            + "'mondrian.test.UdfTest$ReverseFunctionNotStatic' must be "
-            + "public "
-            + "and static");
+            "No function matches signature 'Reverse2(<Set>)'");
     }
 
     /**

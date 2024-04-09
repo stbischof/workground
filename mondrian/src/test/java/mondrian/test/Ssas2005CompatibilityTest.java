@@ -681,7 +681,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select [Time].Members\n"
             + "from [Warehouse and Sales]",
-            "Syntax error at line 2, column 1, token 'from'");
+            "Encountered an error at (or somewhere around) input:2:1");
     }
 
     @ParameterizedTest
@@ -1315,7 +1315,7 @@ class Ssas2005CompatibilityTest {
             "select [Measures].[Unit Sales] on 0,\n"
             + "[Product].[Products].[Brand Name].&43&[Walrus] on 1\n"
             + "from [Warehouse and Sales]",
-            "mondrian.parser.TokenMgrError: Lexical error at line 2, column 36.  Encountered: \"4\" (52), after : \"&\"");
+            "Encountered an error at (or somewhere around) input:2:35");
     }
 
     @ParameterizedTest
@@ -1591,7 +1591,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select [Measures].[Unit Sales] on axes(0)\n"
             + "from [Warehouse and Sales]",
-            "Syntax error at line 1, column 35, token 'axes'");
+            "Found string \"axes\" of type ID");
     }
 
     @ParameterizedTest
@@ -1601,7 +1601,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select [Measures].[Unit Sales] on 0 + 1\n"
             + "from [Warehouse and Sales]",
-            "Syntax error at line 1, column 37, token '+'");
+            "Encountered an error at (or somewhere around) input:1:37");
     }
 
     @ParameterizedTest
@@ -1611,8 +1611,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select [Measures].[Unit Sales] on 0.4\n"
             + "from [Warehouse and Sales]",
-            "Invalid axis specification. The axis number must be a non-negative"
-            + " integer, but it was 0.4.");
+            "Found string \"0.4\" of type DECIMAL_NUMERIC_LITERAL");
     }
 
     @ParameterizedTest

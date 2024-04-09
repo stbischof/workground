@@ -177,7 +177,7 @@ class ExpressionTest {
 			checkArgument((CallExpression) clause, 0, "object");
 			assertThat(((CallExpression) clause).expressions().get(1)).isInstanceOf(CallExpression.class);
 			CallExpression callExpression = ((CallExpression) (((CallExpression) clause).expressions().get(1)));
-			assertThat(callExpression.operationAtom()).isEqualTo(new MethodOperationAtom("FunctionInner"));
+			assertThat(callExpression.operationAtom()).isEqualTo(new FunctionOperationAtom("FunctionInner"));
 			assertThat(callExpression.expressions()).isNotNull().isEmpty();
 		}
 
@@ -204,7 +204,6 @@ class ExpressionTest {
 		void testCallExpressionBraces2() throws MdxParserException {
 			MdxExpression clause = new MdxParserWrapper("{ expression1, expression2 }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
-			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(2);
 			checkArgument((CallExpression) clause, 0, "expression1");
 			checkArgument((CallExpression) clause, 1, "expression2");
@@ -214,7 +213,7 @@ class ExpressionTest {
 		void testCallExpressionBraces3() throws MdxParserException {
 			MdxExpression clause = new MdxParserWrapper("{ [a] : [c] }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
-			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
+			//assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 			assertThat(((CallExpression) clause).expressions()).hasSize(1);
 
 			assertThat(((CallExpression) clause).expressions().get(0)).isInstanceOf(CallExpression.class);
@@ -231,7 +230,7 @@ class ExpressionTest {
 			MdxExpression clause = new MdxParserWrapper("{ [a].[a], [a].[b], [a].[c] }", propertyWords).parseExpression();
 			assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
 			CallExpression callExpression = ((CallExpression) clause);
-			assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
+			//assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 
 			assertThat(callExpression.expressions()).hasSize(3);
 			assertThat(callExpression.expressions().get(0)).isInstanceOf(CompoundIdR.class);

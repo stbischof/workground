@@ -46,26 +46,24 @@ class SelectQueryAxisClauseTest {
 	// [Customer].[Gender].[Gender].Membmers ON COLUMNS
 	public static void checkSelectQueryAxisClause1(SelectQueryAxisClause selectQueryAxisClause) {
 		assertThat(selectQueryAxisClause.nonEmpty()).isFalse();
-		assertThat(selectQueryAxisClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
-		CallExpression callExpression1 = (CallExpression) selectQueryAxisClause.expression();
-		assertThat(callExpression1.operationAtom()).isEqualTo(new PlainPropertyOperationAtom("Membmers"));
-		assertThat(callExpression1.expressions()).isNotNull().hasSize(1);
-		assertThat(callExpression1.expressions().get(0)).isNotNull().isInstanceOf(CompoundId.class);
-		CompoundId compoundId1 = (CompoundId) callExpression1.expressions().get(0);
-		assertThat(compoundId1.objectIdentifiers()).hasSize(3);
+		assertThat(selectQueryAxisClause.expression()).isNotNull().isInstanceOf(CompoundId.class);
+		CompoundId compoundId1 = (CompoundId) selectQueryAxisClause.expression();
+		assertThat(compoundId1.objectIdentifiers()).hasSize(4);
 		assertThat(compoundId1.objectIdentifiers().get(0)).isInstanceOf(NameObjectIdentifier.class);
 		assertThat(compoundId1.objectIdentifiers().get(1)).isInstanceOf(NameObjectIdentifier.class);
 		assertThat(compoundId1.objectIdentifiers().get(2)).isInstanceOf(NameObjectIdentifier.class);
 		NameObjectIdentifier nObjectIdentifier1 = (NameObjectIdentifier) compoundId1.objectIdentifiers().get(0);
 		NameObjectIdentifier nObjectIdentifier2 = (NameObjectIdentifier) compoundId1.objectIdentifiers().get(1);
 		NameObjectIdentifier nObjectIdentifier3 = (NameObjectIdentifier) compoundId1.objectIdentifiers().get(2);
+		NameObjectIdentifier nObjectIdentifier4 = (NameObjectIdentifier) compoundId1.objectIdentifiers().get(3);
 		assertThat(nObjectIdentifier1.name()).isEqualTo("Customer");
 		assertThat(nObjectIdentifier1.quoting()).isEqualTo(ObjectIdentifier.Quoting.QUOTED);
 		assertThat(nObjectIdentifier2.name()).isEqualTo("Gender");
 		assertThat(nObjectIdentifier2.quoting()).isEqualTo(ObjectIdentifier.Quoting.QUOTED);
 		assertThat(nObjectIdentifier3.name()).isEqualTo("Gender");
 		assertThat(nObjectIdentifier3.quoting()).isEqualTo(ObjectIdentifier.Quoting.QUOTED);
-
+		assertThat(nObjectIdentifier4.name()).isEqualTo("Membmers");
+		assertThat(nObjectIdentifier4.quoting()).isEqualTo(ObjectIdentifier.Quoting.UNQUOTED);
 		assertThat(selectQueryAxisClause.axis()).isNotNull();
 		assertThat(selectQueryAxisClause.axis().ordinal()).isZero();
 		assertThat(selectQueryAxisClause.axis().named()).isTrue();

@@ -511,7 +511,7 @@ import mondrian.rolap.SchemaModifiers;
             "select {[Measures].[With a [bracket] inside it]} on columns,\n"
             + " {[Gender].Members} on rows\n"
             + "from [" + cubeName + "]",
-            "Syntax error at line 1, column 38, token 'inside'");
+            "Encountered an error at (or somewhere around) input:1:38");
 
         assertQueryReturns(context.getConnection(),
             "select {[Measures].[With a [bracket]] inside it]} on columns,\n"

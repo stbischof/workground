@@ -1364,7 +1364,7 @@ class DrillThroughTest {
             fail("expected error, got " + resultSet);
         } catch (Exception e) {
             checkThrowable(
-                e, "Syntax error at line 1, column 22, token '-'");
+                e, "Encountered an error at (or somewhere around) input:1:22");
         }
     }
 

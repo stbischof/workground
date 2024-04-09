@@ -103,16 +103,13 @@ class SelectStatementTest {
         assertThat(selectQueryAxisClause.nonEmpty()).isFalse();
         checkAxis(selectQueryAxisClause.axis(), 0, true);
         assertThat(selectQueryAxisClause.selectDimensionPropertyListClause()).isNull();
-        assertThat(selectQueryAxisClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
-        CallExpression callExpression = (CallExpression) selectQueryAxisClause.expression();
-        assertThat(callExpression.operationAtom()).isEqualTo(new PlainPropertyOperationAtom("Membmers"));
-        assertThat(callExpression.expressions()).hasSize(1);
-        assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(CompoundId.class);
-        CompoundId compoundId = (CompoundId) callExpression.expressions().get(0);
-        assertThat(compoundId.objectIdentifiers()).hasSize(3);
+        assertThat(selectQueryAxisClause.expression()).isNotNull().isInstanceOf(CompoundId.class);
+        CompoundId compoundId = (CompoundId) selectQueryAxisClause.expression();
+        assertThat(compoundId.objectIdentifiers()).hasSize(4);
         checkNameObjectIdentifiers(compoundId.objectIdentifiers(), 0, "Customer", ObjectIdentifier.Quoting.QUOTED);
         checkNameObjectIdentifiers(compoundId.objectIdentifiers(), 1, "Gender", ObjectIdentifier.Quoting.QUOTED);
         checkNameObjectIdentifiers(compoundId.objectIdentifiers(), 2, "Gender", ObjectIdentifier.Quoting.QUOTED);
+        checkNameObjectIdentifiers(compoundId.objectIdentifiers(), 3, "Membmers", ObjectIdentifier.Quoting.UNQUOTED);
     }
 
     @Test

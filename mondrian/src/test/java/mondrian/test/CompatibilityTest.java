@@ -123,7 +123,7 @@ class CompatibilityTest {
     		connection,
             "with member [Measures].ordinal as '1'\n"
             + " select {[Measures].ordinal} on columns from Sales",
-            "Syntax error");
+            "Encountered an error at (or somewhere around) input:1:9");
     	TestUtil.assertQueryReturns(
     		connection,
             "with member [Measures].[ordinal] as '1'\n"

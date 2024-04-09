@@ -712,7 +712,7 @@ public class BasicQueryTest {
   void testEmptyTupleSlicerFails(Context context) {
     Connection connection = context.getConnection();
     assertQueryThrows(connection, "select [Measures].[Unit Sales] on 0,\n" + "[Product].Children on 1\n"
-        + "from [Warehouse and Sales]\n" + "where ()", "Syntax error at line 4, column 8, token ')'" );
+        + "from [Warehouse and Sales]\n" + "where ()", "Encountered an error at (or somewhere around) input:4:8')'" );
   }
 
   /**
@@ -4971,13 +4971,13 @@ public class BasicQueryTest {
             + " and cannot contain gaps. Axis 1 (ROWS) is missing." );
 
     assertQueryThrows(connection, "select [Gender].Members on columns," + " [Measures].Members on foobar\n" + "from [Sales]",
-        "Syntax error at line 1, column 59, token 'foobar'" );
+        "Encountered an error at (or somewhere around) input:1:59" );
 
     assertQueryThrows(connection, "select [Gender].Members on columns," + " [Measures].Members on slicer\n" + "from [Sales]",
-        "Syntax error at line 1, column 59, token 'slicer'" );
+        "Encountered an error at (or somewhere around) input:1:59" );
 
     assertQueryThrows(connection, "select [Gender].Members on columns," + " [Measures].Members on filter\n" + "from [Sales]",
-        "Syntax error at line 1, column 59, token 'filter'" );
+        "Encountered an error at (or somewhere around) input:1:59" );
   }
 
   /**

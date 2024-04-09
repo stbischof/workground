@@ -913,7 +913,7 @@ class NamedSetTest {
         queryString =
             "with set [Foo] as ' [Store].CurrentMember  '"
             + "select {[Foo]} on columns from [Sales]";
-        pattern = "Set expression '[Foo]' must be a set";
+        pattern = "Set expression 'Foo' must be a set";
         assertQueryThrows(connection, queryString, pattern);
 
         // Formula for a named set must not be a dimension.

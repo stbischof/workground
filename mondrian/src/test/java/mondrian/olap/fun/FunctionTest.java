@@ -4449,7 +4449,7 @@ class FunctionTest {//extends FoodMartTestCase {
         + "    (Time.Month.Members * Gender.Members) as 'foo',\n"
         + "    (s.Current.Item(0).Parent, [Marital Status].[S]) > 50000) on 1\n"
         + "from [Sales]",
-      "Syntax error at line 3, column 46, token ''foo''" );
+      "Encountered an error at (or somewhere around) input:3:46" );
 
     // 'set AS numeric' is invalid
     assertQueryThrows(context.getConnection(),
@@ -4458,7 +4458,7 @@ class FunctionTest {//extends FoodMartTestCase {
         + "    (Time.Month.Members * Gender.Members) as 1234,\n"
         + "    (s.Current.Item(0).Parent, [Marital Status].[S]) > 50000) on 1\n"
         + "from [Sales]",
-      "Syntax error at line 3, column 46, token '1234'" );
+      "Encountered an error at (or somewhere around) input:3:46" );
 
     // 'numeric AS identifier' is invalid
     assertQueryThrows(context.getConnection(),
@@ -12713,7 +12713,7 @@ Intel platforms):
     // An integer constant is not allowed as a type
     assertExprThrows(context.getConnection(),
       "Cast(1 AS 5)",
-      "Syntax error at line 1, column 11, token '5'" );
+      "Encountered an error at (or somewhere around) input:1:11" );
 
     assertExprReturns(context.getConnection(), "Cast('tr' || 'ue' AS boolean)", "true" );
   }
