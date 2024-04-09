@@ -13,12 +13,27 @@
  */
 package org.eclipse.daanse.mdx.parser.api;
 
+import org.eclipse.daanse.mdx.model.api.DMVStatement;
+import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
+import org.eclipse.daanse.mdx.model.api.ExplainStatement;
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
+import org.eclipse.daanse.mdx.model.api.RefreshStatement;
+import org.eclipse.daanse.mdx.model.api.ReturnItem;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
+import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
+import org.eclipse.daanse.mdx.model.api.select.MemberPropertyDefinition;
+import org.eclipse.daanse.mdx.model.api.select.SelectCellPropertyListClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectDimensionPropertyListClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAsteriskClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxesClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxisClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectSlicerAxisClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectWithClause;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface MdxParser {
 
@@ -33,4 +48,28 @@ public interface MdxParser {
     MdxExpression parseExpression() throws MdxParserException;
 
     SelectSubcubeClause parseSelectSubcubeClause() throws MdxParserException;
+
+    DMVStatement parseDMVStatement() throws MdxParserException;
+
+    DrillthroughStatement parseDrillthroughStatement() throws MdxParserException;
+
+    ExplainStatement parseExplainStatement() throws MdxParserException;
+
+    RefreshStatement parseRefreshStatement() throws MdxParserException;
+
+    SelectWithClause parseSelectWithClause() throws MdxParserException;
+
+    MemberPropertyDefinition parseMemberPropertyDefinition() throws MdxParserException;
+
+    List<? extends ReturnItem> parseReturnItems() throws MdxParserException;
+
+    SelectCellPropertyListClause parseSelectCellPropertyListClause() throws MdxParserException;
+
+    SelectDimensionPropertyListClause parseSelectDimensionPropertyListClause() throws MdxParserException;
+
+    SelectQueryAxisClause parseSelectQueryAxisClause() throws MdxParserException;
+
+    Optional<SelectSlicerAxisClause> parseSelectSlicerAxisClause() throws MdxParserException;
+
+    UpdateStatement parseUpdateStatement() throws MdxParserException;
 }

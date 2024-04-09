@@ -1,6 +1,6 @@
 -tester: biz.aQute.tester.junit-platform
 
-# JaCoCo calculates test coverage    
+# JaCoCo calculates test coverage
 -runpath.jacoco:\
 	org.jacoco.agent,\
 	org.jacoco.agent.rt
@@ -24,6 +24,7 @@
 	bnd.identity;id='org.eclipse.daanse.mdx.parser.cccx',\
 	bnd.identity;id='org.eclipse.daanse.mdx.parser.cccx-tests',\
 	bnd.identity;id='org.eclipse.daanse.mdx.parser.api',\
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.tck',\
 	bnd.identity;id=junit-jupiter-engine,\
 	bnd.identity;id=junit-platform-launcher,\
 	bnd.identity;id='org.apache.felix.scr'

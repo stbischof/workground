@@ -261,6 +261,7 @@ public class MdxParserWrapper implements org.eclipse.daanse.mdx.parser.api.MdxPa
         }
     }
 
+    @Override
     public DMVStatement parseDMVStatement() throws MdxParserException {
         try {
             return delegate.parseDMVStatement();

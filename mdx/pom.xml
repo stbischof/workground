@@ -25,6 +25,7 @@
 		<module>parser.api</module>
 		<module>parser.ccc</module>
 		<module>parser.cccx</module>
+    	<module>parser.tck</module>
 		<module>unparser.api</module>
 		<module>unparser.simple</module>
 		<module>combinedtest</module>
