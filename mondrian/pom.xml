@@ -404,14 +404,14 @@
       <groupId>org.eclipse.daanse</groupId>
       <artifactId>org.eclipse.daanse.mdx.parser.ccc</artifactId>
       <version>${revision}</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
-        <dependency>
-            <groupId>org.eclipse.daanse</groupId>
-            <artifactId>org.eclipse.daanse.mdx.parser.ccc</artifactId>
-            <version>${revision}</version>
-            <scope>compile</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.mdx.parser.cccx</artifactId>
+      <version>${revision}</version>
+      <scope>compile</scope>
+      </dependency>
     </dependencies>
 	<build>
 		<!--

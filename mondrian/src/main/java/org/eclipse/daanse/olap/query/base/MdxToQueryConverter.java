@@ -256,12 +256,12 @@ public class MdxToQueryConverter {
     static Expression getExpression(MdxExpression expression) {
 
 		switch (expression) {
+		case CompoundId compoundId:
+			return getExpressionByCompoundId(compoundId);
 		case CallExpression callExpression:
 			return getExpressionByCallExpression(callExpression);
 		case Literal literal:
 			return getExpressionByLiteral(literal);
-		case CompoundId compoundId:
-			return getExpressionByCompoundId(compoundId);
 		case ObjectIdentifier objectIdentifier:
 			return getExpressionByObjectIdentifier(objectIdentifier);
 		}

@@ -23,8 +23,6 @@ import org.eclipse.daanse.mdx.model.api.expression.NumericLiteral;
 import org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier.Quoting;
 import org.eclipse.daanse.mdx.model.api.expression.StringLiteral;
 import org.eclipse.daanse.mdx.model.api.expression.SymbolLiteral;
-import org.eclipse.daanse.mdx.model.record.expression.CompoundIdR;
-import org.eclipse.daanse.mdx.model.record.expression.NumericLiteralR;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
@@ -230,6 +228,28 @@ class ExpressionTest {
 
 		}
 
+        @Test
+        void testCallExpression3(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+            MdxExpression clause = mdxParserProvider.newParser("[Measures].[Store Sales]- [Measures].[Store Cost]", propertyWords).parseExpression();
+            assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
+        }
+
+        @Test
+        void test1(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+            MdxExpression clause = mdxParserProvider.newParser("COALESCEEMPTY((Measures.[Profit], [Time].[Time].PREVMEMBER), Measures.[Profit])", propertyWords).parseExpression();
+            assertThat(clause).isNotNull().isInstanceOf(CallExpression.class);
+            CallExpression callExpression = (CallExpression)clause;
+            assertThat(callExpression.expressions()).isNotNull().hasSize(2);
+            assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(CallExpression.class);
+            CallExpression callExpression1 = (CallExpression)callExpression.expressions().get(0);
+            assertThat(callExpression1.expressions()).isNotNull().hasSize(2);
+            assertThat(callExpression1.expressions().get(1)).isNotNull().isInstanceOf(CallExpression.class);
+            CallExpression callExpression2 = (CallExpression) callExpression1.expressions().get(1);
+            assertThat(callExpression2.operationAtom()).isNotNull().isInstanceOf(PlainPropertyOperationAtom.class);
+            PlainPropertyOperationAtom plainPropertyOperationAtom = (PlainPropertyOperationAtom) callExpression2.operationAtom();
+            assertThat(plainPropertyOperationAtom.name()).isEqualTo("PREVMEMBER");            
+        }
+
 		@Test
 		void testCallExpressionBraces4(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
 			MdxExpression clause = mdxParserProvider.newParser("{ [a].[a], [a].[b], [a].[c] }", propertyWords).parseExpression();
@@ -238,19 +258,19 @@ class ExpressionTest {
 			//assertThat(((CallExpression) clause).operationAtom()).isEqualTo(new CaseOperationAtom("_CaseMatch"));
 
 			assertThat(callExpression.expressions()).hasSize(3);
-			assertThat(callExpression.expressions().get(0)).isInstanceOf(CompoundIdR.class);
+			assertThat(callExpression.expressions().get(0)).isInstanceOf(CompoundId.class);
 
-			CompoundIdR compoundId0 = (CompoundIdR) callExpression.expressions().get(0);
+			CompoundId compoundId0 = (CompoundId) callExpression.expressions().get(0);
 			assertThat(compoundId0.objectIdentifiers()).hasSize(2);
 			checkCompoundId(compoundId0, 2, 0, "a");
 			checkCompoundId(compoundId0, 2, 1, "a");
 
-			CompoundIdR compoundId1 = (CompoundIdR) callExpression.expressions().get(1);
+			CompoundId compoundId1 = (CompoundId) callExpression.expressions().get(1);
 			assertThat(compoundId1.objectIdentifiers()).hasSize(2);
 			checkCompoundId(compoundId1, 2, 0, "a");
 			checkCompoundId(compoundId1, 2, 1, "b");
 
-			CompoundIdR compoundId2 = (CompoundIdR) callExpression.expressions().get(2);
+			CompoundId compoundId2 = (CompoundId) callExpression.expressions().get(2);
 			assertThat(compoundId2.objectIdentifiers()).hasSize(2);
 			checkCompoundId(compoundId2, 2, 0, "a");
 			checkCompoundId(compoundId2, 2, 1, "c");
@@ -305,7 +325,7 @@ class ExpressionTest {
 		}
 
 		public static void checkArgument(CallExpression clause, int index, String arg) {
-			assertThat(clause.expressions().get(index)).isInstanceOf(CompoundIdR.class);
+			assertThat(clause.expressions().get(index)).isInstanceOf(CompoundId.class);
 			CompoundId compoundId = (CompoundId) (clause.expressions().get(index));
 			checkCompoundId(compoundId, 1, 0, arg);
 		}
@@ -359,7 +379,7 @@ class ExpressionTest {
 			CallExpression callExpression = (CallExpression) clause;
 			assertThat(callExpression.operationAtom()).isEqualTo(new PrefixOperationAtom("-"));
 			assertThat(callExpression.expressions()).hasSize(1);
-			assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(NumericLiteralR.class);
+			assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(NumericLiteral.class);
 			NumericLiteral numericLiteral = (NumericLiteral) callExpression.expressions().get(0);
 			assertThat(numericLiteral.value()).isEqualTo(BigDecimal.valueOf(10.25));
 		}
@@ -461,7 +481,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testIs(MdxParserProvider mdxParserProvider) throws MdxParserException {
+    void testIs(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
         assertParseExpr(
             """
                 [Measures].[Unit Sales] IS [Measures].[Unit Sales]

@@ -59,7 +59,7 @@ class MemberPropertyDefinitionTest {
 	@Test
 	void test3(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
 		MemberPropertyDefinition memberPropertyDefinition = mdxParserProvider.newParser(
-				"[name] = { expression1, expression2" + " }", propertyWords).parseMemberPropertyDefinition();
+				"[name] = { expression1, expression2 }", propertyWords).parseMemberPropertyDefinition();
 		assertThat(memberPropertyDefinition).isNotNull();
 		assertThat(memberPropertyDefinition.objectIdentifier()).isInstanceOf(NameObjectIdentifier.class);
 		NameObjectIdentifier nameObjectIdentifier1 = (NameObjectIdentifier) memberPropertyDefinition.objectIdentifier();

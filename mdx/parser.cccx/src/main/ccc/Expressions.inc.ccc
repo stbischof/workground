@@ -368,7 +368,7 @@ INJECT DotName :
     implements PrimaryExpression, org.eclipse.daanse.mdx.model.api.expression.CallExpression
 {
     private String name() {
-        return getChild(2) instanceof 
+        return getChild(2) instanceof
         NameObjectIdentifier noi
         ? noi.name() : null;
     }
@@ -392,7 +392,7 @@ INJECT FunctionCall :
 	import org.eclipse.daanse.olap.operation.api.OperationAtom;
     implements PrimaryExpression, org.eclipse.daanse.mdx.model.api.expression.CallExpression
 {
- 
+
 	public String name() {
 		if (getChild(0) instanceof NameObjectIdentifier noi)
 			return noi.name();
@@ -575,10 +575,19 @@ INJECT MemberPropertyDefinition :
 {
     public org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier objectIdentifier() {
         return (org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier) getChild(0);
-   }
+    }
 
    public org.eclipse.daanse.mdx.model.api.expression.MdxExpression expression() {
-      return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) getChild(2);
+        if (getChild(2) instanceof org.eclipse.daanse.mdx.model.api.expression.StringLiteral stringLiteral) {
+        System.out.println("!!!!!!!!!!!!!! " + stringLiteral.value());
+        if (stringLiteral.value().startsWith("'") && stringLiteral.value().endsWith("'"))
+        {
+            PARSER_CLASS parser = new PARSER_CLASS(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.stripQuotes(stringLiteral.value(), "'", "'", "''"));
+            parser.Expression();
+            return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) parser.peekNode();
+        }
+        }
+        return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) getChild(2);
    }
 }
 

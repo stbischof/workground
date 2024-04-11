@@ -16,17 +16,21 @@ package org.eclipse.daanse.mdx.parser.tck;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.expression.CallExpression;
 import org.eclipse.daanse.mdx.model.api.expression.CompoundId;
+import org.eclipse.daanse.mdx.model.api.expression.NameObjectIdentifier;
 import org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier;
+import org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier.Quoting;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxesClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectQueryAxisClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectQueryEmptyClause;
+import org.eclipse.daanse.mdx.model.api.select.SelectSlicerAxisClause;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseName;
 import org.eclipse.daanse.mdx.model.api.select.SelectSubcubeClauseStatement;
-import org.eclipse.daanse.mdx.model.record.expression.CallExpressionR;
-import org.eclipse.daanse.mdx.model.record.expression.CompoundIdR;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.eclipse.daanse.olap.operation.api.BracesOperationAtom;
+import org.eclipse.daanse.olap.operation.api.FunctionOperationAtom;
+import org.eclipse.daanse.olap.operation.api.ParenthesesOperationAtom;
 import org.eclipse.daanse.olap.operation.api.PlainPropertyOperationAtom;
 import org.junit.jupiter.api.Test;
 import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
@@ -377,7 +381,7 @@ class SelectStatementTest {
         assertThat(selectStatement).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause()).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull();
-        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CompoundIdR.class);
+        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CompoundId.class);
 
     }
 
@@ -397,8 +401,115 @@ class SelectStatementTest {
         assertThat(selectStatement).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause()).isNotNull();
         assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull();
-        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CallExpressionR.class);
+        assertThat(selectStatement.selectSlicerAxisClause().get().expression()).isNotNull().isInstanceOf(CallExpression.class);
 
+    }
+
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery4(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+        String mdx = """
+            SELECT NON EMPTY Hierarchize(AddCalculatedMembers({DrilldownLevel({[Dimension1.HierarchyWithHasAll].[All Dimension1.HierarchyWithHasAlls]})})) DIMENSION PROPERTIES PARENT_UNIQUE_NAME ON COLUMNS  FROM [Cube1] CELL PROPERTIES VALUE, FORMAT_STRING, LANGUAGE, BACK_COLOR, FORE_COLOR, FONT_FLAGS
+            """;
+
+        SelectStatement selectStatement = mdxParserProvider.newParser(mdx, propertyWords).parseSelectStatement();
+        assertThat(selectStatement).isNotNull();
+        assertThat(selectStatement.selectWithClauses()).isNotNull().hasSize(0);
+        assertThat(selectStatement.selectQueryClause()).isNotNull().isInstanceOf(SelectQueryAxesClause.class);
+        SelectQueryAxesClause selectQueryAxesClause = (SelectQueryAxesClause)selectStatement.selectQueryClause();
+        assertThat(selectQueryAxesClause.selectQueryAxisClauses()).isNotNull().hasSize(1);
+        assertThat(selectQueryAxesClause.selectQueryAxisClauses().get(0)).isNotNull();
+        SelectQueryAxisClause selectQueryAxisClause = selectQueryAxesClause.selectQueryAxisClauses().get(0);
+        assertThat(selectQueryAxisClause.nonEmpty()).isTrue();
+        assertThat(selectQueryAxisClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
+        CallExpression callExpression = (CallExpression)selectQueryAxisClause.expression();
+        assertThat(callExpression.expressions()).isNotNull().hasSize(1);
+        assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(CallExpression.class);;
+        CallExpression callExpression1 = (CallExpression)callExpression.expressions().get(0);
+        assertThat(callExpression1.expressions()).isNotNull().hasSize(1);
+        assertThat(callExpression1.expressions().get(0)).isNotNull().isInstanceOf(CallExpression.class);;
+
+        assertThat(callExpression.operationAtom()).isNotNull().isInstanceOf(FunctionOperationAtom.class);
+        FunctionOperationAtom functionOperationAtom = (FunctionOperationAtom)callExpression.operationAtom();
+        assertThat(functionOperationAtom.name()).isEqualTo("Hierarchize");
+        assertThat(selectQueryAxisClause.axis()).isNotNull();
+        assertThat(selectQueryAxisClause.axis().named()).isTrue();
+        assertThat(selectQueryAxisClause.axis().ordinal()).isEqualTo(0);
+
+        assertThat(selectStatement.selectSubcubeClause()).isNotNull().isInstanceOf(SelectSubcubeClauseName.class);
+        SelectSubcubeClauseName selectSubcubeClauseName = (SelectSubcubeClauseName)selectStatement.selectSubcubeClause();
+        assertThat(selectSubcubeClauseName.cubeName()).isNotNull();
+        assertThat(selectSubcubeClauseName.cubeName().name()).isEqualTo("Cube1");
+        assertThat(selectSubcubeClauseName.cubeName().quoting()).isEqualTo(Quoting.QUOTED);
+
+
+        assertThat(selectStatement.selectSlicerAxisClause()).isNotNull().isEmpty();
+        assertThat(selectStatement.selectCellPropertyListClause()).isNotNull();
+        assertThat(selectStatement.selectCellPropertyListClause().get()).isNotNull();
+        assertThat(selectStatement.selectCellPropertyListClause().get().cell()).isTrue();
+        assertThat(selectStatement.selectCellPropertyListClause().get().properties()).isNotNull().hasSize(6);
+    }
+
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery5(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+        String mdx = """
+            SELECT  FROM [Cube1] WHERE ([Measures].[Measure1])
+            """;
+        SelectStatement selectStatement = mdxParserProvider.newParser(mdx, propertyWords).parseSelectStatement();
+        assertThat(selectStatement).isNotNull();
+        assertThat(selectStatement.selectCellPropertyListClause()).isNotNull().isEmpty();
+        assertThat(selectStatement.selectQueryClause()).isNotNull().isInstanceOf(SelectQueryEmptyClause.class);
+        assertThat(selectStatement.selectSlicerAxisClause()).isNotNull().isNotEmpty();
+        assertThat(selectStatement.selectSlicerAxisClause().get()).isNotNull().isInstanceOf(SelectSlicerAxisClause.class);
+        SelectSlicerAxisClause selectSlicerAxisClause = (SelectSlicerAxisClause)selectStatement.selectSlicerAxisClause().get();
+        assertThat(selectSlicerAxisClause.expression()).isNotNull().isInstanceOf(CallExpression.class);
+        CallExpression callExpression = (CallExpression)selectSlicerAxisClause.expression();
+        assertThat(callExpression.expressions()).isNotNull().hasSize(1);
+        assertThat(callExpression.expressions().get(0)).isNotNull().isInstanceOf(CompoundId.class);
+        CompoundId compoundId = (CompoundId) callExpression.expressions().get(0);
+        assertThat(compoundId.objectIdentifiers()).isNotNull().hasSize(2);
+        assertThat(compoundId.objectIdentifiers().get(0)).isNotNull().isInstanceOf(NameObjectIdentifier.class);
+        NameObjectIdentifier nameObjectIdentifier1 = (NameObjectIdentifier) compoundId.objectIdentifiers().get(0);
+        assertThat(nameObjectIdentifier1.name()).isEqualTo("Measures");
+        assertThat(nameObjectIdentifier1.quoting()).isEqualTo(Quoting.QUOTED);
+        assertThat(compoundId.objectIdentifiers().get(1)).isNotNull().isInstanceOf(NameObjectIdentifier.class);
+        NameObjectIdentifier nameObjectIdentifier2 = (NameObjectIdentifier) compoundId.objectIdentifiers().get(1);
+        assertThat(nameObjectIdentifier2.name()).isEqualTo("Measure1");
+        assertThat(nameObjectIdentifier2.quoting()).isEqualTo(Quoting.QUOTED);
+        assertThat(callExpression.operationAtom()).isNotNull().isInstanceOf(ParenthesesOperationAtom.class);
+
+        assertThat(selectStatement.selectSubcubeClause()).isNotNull();
+        assertThat(selectStatement.selectWithClauses()).isNotNull();
+    }
+
+    @Test
+    @SuppressWarnings("java:S5961")
+    void testQuery6(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+        String mdx = """
+            WITH
+            MEMBER [Measures].[Measures].[Profit]
+            AS '[Measures].[Store Sales] - [Measures].[Store Cost]',
+            FORMAT_STRING = "$#,##0.00",
+            FORMAT_STRING = "$#,##0.00",
+            [$member_scope] = 'CUBE',
+            MEMBER_ORDINAL = 6
+            MEMBER [Measures].[Measures].[Profit last Period]
+            AS 'COALESCEEMPTY((Measures.[Profit], [Time].[Time].PREVMEMBER),    Measures.[Profit])',
+            FORMAT_STRING = "$#,##0.00",
+            FORMAT_STRING = "$#,##0.00",
+            MEMBER_ORDINAL = 18,
+            [$member_scope] = 'CUBE'
+            MEMBER [Measures].[Measures].[Profit Growth]
+            AS '([Measures].[Profit] - [Measures].[Profit last Period]) / [Measures].[Profit last Period]',
+            FORMAT_STRING = "0.0%",
+            FORMAT_STRING = "0.0%",
+            [$member_scope] = 'CUBE',
+            MEMBER_ORDINAL = 8
+            SELECT FROM [Sales]
+            """;
+        SelectStatement selectStatement = mdxParserProvider.newParser(mdx, propertyWords).parseSelectStatement();
+        assertThat(selectStatement).isNotNull();
     }
 
     private void assertParseQuery(String mdx, @InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
