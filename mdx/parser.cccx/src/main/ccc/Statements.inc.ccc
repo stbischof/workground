@@ -356,20 +356,17 @@ INJECT CreateSetBodyClause :
    }
 
    public org.eclipse.daanse.mdx.model.api.expression.MdxExpression expression() {
-      if (getChild(2) instanceof org.eclipse.daanse.mdx.model.api.expression.StringLiteral stringLiteral) {
-      if (stringLiteral.value().startsWith("'") && stringLiteral.value().endsWith("'"))
-      {
-        PARSER_CLASS parser = new PARSER_CLASS(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.stripQuotes(stringLiteral.value(), "'", "'", "''"));
-        parser.Expression();
-        return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) parser.peekNode();
-      }
-      }
       return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) getChild(2);
    }
 }
 
 CreateSetBodyClause :
   CompoundId < AS > Expression
+  {
+    if (peekNode() instanceof Expression expression) {
+      pokeNode(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.getExpression(expression, this.propertyWords));
+    }
+  }
 ;
 
 INJECT SelectCellPropertyListClause :
@@ -611,11 +608,6 @@ INJECT CreateMemberBodyClause :
   }
 
   public org.eclipse.daanse.mdx.model.api.expression.MdxExpression expression() {
-     if (getChild(2) instanceof org.eclipse.daanse.mdx.model.api.expression.StringLiteral stringLiteral) {
-       PARSER_CLASS parser = new PARSER_CLASS(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.stripQuotes(stringLiteral.value(), "'", "'", "''"));
-       parser.Expression();
-       return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) parser.peekNode();
-     }
      return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) getChild(2);
   }
 
@@ -629,6 +621,11 @@ CreateMemberBodyClause :
   CompoundId
   < AS >
   Expression
+    {
+      if (peekNode() instanceof Expression expression) {
+        pokeNode(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.getExpression(expression, this.propertyWords));
+      }
+    }
     (
      < COMMA > MemberPropertyDefinition
     )*

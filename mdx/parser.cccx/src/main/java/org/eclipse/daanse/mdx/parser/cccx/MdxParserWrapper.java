@@ -15,6 +15,7 @@ package org.eclipse.daanse.mdx.parser.cccx;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.daanse.mdx.model.api.DMVStatement;
 import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
@@ -40,7 +41,7 @@ public class MdxParserWrapper implements org.eclipse.daanse.mdx.parser.api.MdxPa
 
     private MdxParser delegate;
 
-    public MdxParserWrapper(CharSequence mdx) throws MdxParserException {
+    public MdxParserWrapper(CharSequence mdx, Set<String> propertyWords) throws MdxParserException {
 
         if (mdx == null) {
 
@@ -51,6 +52,7 @@ public class MdxParserWrapper implements org.eclipse.daanse.mdx.parser.api.MdxPa
         }
         try {
             delegate = new MdxParser(mdx);
+            delegate.setPropertyWords(propertyWords);
         } catch (Exception e) {
 
             throw new MdxParserException("statement must not be empty");

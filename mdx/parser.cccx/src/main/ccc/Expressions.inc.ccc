@@ -95,14 +95,12 @@ INJECT CompoundId :
 	import org.eclipse.daanse.olap.operation.api.PlainPropertyOperationAtom;
 	import org.eclipse.daanse.olap.operation.api.QuotedPropertyOperationAtom;
     implements Expression,
-               org.eclipse.daanse.mdx.model.api.expression.CompoundId,
-               org.eclipse.daanse.mdx.model.api.expression.CallExpression
+               org.eclipse.daanse.mdx.model.api.expression.CompoundId
 {
 	public java.util.List<org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier> objectIdentifiers() {
 		return childrenOfType(org.eclipse.daanse.mdx.model.api.expression.ObjectIdentifier.class);
 	}
 
-	@Override
 	public OperationAtom operationAtom() {
 		String lastChild = getLastChild().getSource();
 		if (lastChild.startsWith("[&")) {
@@ -356,6 +354,10 @@ PrimaryPrefix#void :
         // then just replace it with that in the tree.
         if (peekNode().getChildCount() ==1) {
           pokeNode(peekNode().getChild(0));
+        } else {
+            ObjectIdentifier oid = (ObjectIdentifier) peekNode().get(2);
+            CompoundId compoundId = (CompoundId) peekNode();
+            pokeNode(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.createCall(compoundId, this.propertyWords ));
         }
       }
 ;
@@ -578,15 +580,6 @@ INJECT MemberPropertyDefinition :
     }
 
    public org.eclipse.daanse.mdx.model.api.expression.MdxExpression expression() {
-        if (getChild(2) instanceof org.eclipse.daanse.mdx.model.api.expression.StringLiteral stringLiteral) {
-        System.out.println("!!!!!!!!!!!!!! " + stringLiteral.value());
-        if (stringLiteral.value().startsWith("'") && stringLiteral.value().endsWith("'"))
-        {
-            PARSER_CLASS parser = new PARSER_CLASS(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.stripQuotes(stringLiteral.value(), "'", "'", "''"));
-            parser.Expression();
-            return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) parser.peekNode();
-        }
-        }
         return (org.eclipse.daanse.mdx.model.api.expression.MdxExpression) getChild(2);
    }
 }
@@ -595,5 +588,10 @@ MemberPropertyDefinition :
   ObjectIdentifier
   < EQ >
   Expression
+  {
+    if (peekNode() instanceof Expression expression) {
+      pokeNode(org.eclipse.daanse.mdx.parser.cccx.MdxParserUtil.getExpression(expression, this.propertyWords));
+    }
+  }
 ;
 

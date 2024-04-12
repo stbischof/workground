@@ -25,6 +25,6 @@ public class MdxParserProviderImpl implements MdxParserProvider {
 
     @Override
     public MdxParser newParser(CharSequence mdx, Set<String> propertyWords) throws MdxParserException {
-        return new MdxParserWrapper(mdx);
+        return new MdxParserWrapper(mdx, propertyWords);
     }
 }

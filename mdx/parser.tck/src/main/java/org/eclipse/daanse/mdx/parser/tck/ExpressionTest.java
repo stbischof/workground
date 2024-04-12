@@ -247,7 +247,7 @@ class ExpressionTest {
             CallExpression callExpression2 = (CallExpression) callExpression1.expressions().get(1);
             assertThat(callExpression2.operationAtom()).isNotNull().isInstanceOf(PlainPropertyOperationAtom.class);
             PlainPropertyOperationAtom plainPropertyOperationAtom = (PlainPropertyOperationAtom) callExpression2.operationAtom();
-            assertThat(plainPropertyOperationAtom.name()).isEqualTo("PREVMEMBER");            
+            assertThat(plainPropertyOperationAtom.name()).isEqualTo("PREVMEMBER");
         }
 
 		@Test
@@ -507,6 +507,13 @@ class ExpressionTest {
     void testNull(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
         assertParseExpr("Filter({[Measures].[Foo]}, Iif(1 = 2, NULL, 'X'))", mdxParserProvider);
     }
+
+    @Test
+    void test1(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
+        assertParseExpr("[Employees].currentmember.datamember", mdxParserProvider);
+    }
+
+
 
     @Test
     void testCast(@InjectService MdxParserProvider mdxParserProvider) throws MdxParserException {
