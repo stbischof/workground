@@ -1,6 +1,6 @@
 -tester: biz.aQute.tester.junit-platform
 
-# JaCoCo calculates test coverage    
+# JaCoCo calculates test coverage
 -runpath.jacoco:\
 	org.jacoco.agent,\
 	org.jacoco.agent.rt
@@ -26,7 +26,8 @@
 	bnd.identity;id=junit-jupiter-engine,\
 	bnd.identity;id=junit-platform-launcher,\
 	bnd.identity;id='org.eclipse.daanse.mdx.unparser.simple',\
-	bnd.identity;id='org.eclipse.daanse.mdx.parser.ccc'
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.ccc',\
+	bnd.identity;id='org.eclipse.daanse.mdx.parser.cccx'
 # The following is calculated by the bnd-resolver-maven-plugin
 -runbundles: \
 	assertj-core;version='[3.24.2,3.24.3)',\
@@ -44,6 +45,7 @@
 	org.eclipse.daanse.mdx.model.record;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.parser.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.parser.ccc;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.mdx.parser.cccx;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.unparser.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.mdx.unparser.simple;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.operation.api;version='[0.0.1,0.0.2)',\

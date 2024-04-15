@@ -29,5 +29,6 @@
 		<module>unparser.api</module>
 		<module>unparser.simple</module>
 		<module>combinedtest</module>
+    	<module>performancetest</module>
 	</modules>
 </project>

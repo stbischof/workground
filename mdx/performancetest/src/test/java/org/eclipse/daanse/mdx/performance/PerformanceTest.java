@@ -1,40 +1,41 @@
 /*
-* Copyright (c) 2023 Contributors to the Eclipse Foundation.
-*
-* This program and the accompanying materials are made
-* available under the terms of the Eclipse Public License 2.0
-* which is available at https://www.eclipse.org/legal/epl-2.0/
-*
-* SPDX-License-Identifier: EPL-2.0
-*
-* Contributors:
-*   SmartCity Jena - initial
-*   Stefan Bischof (bipolis.org) - initial
-*/
-package org.eclipse.daanse.mdx.combinedtest;
-
-import static org.assertj.core.api.Assertions.assertThat;
+ * Copyright (c) 2022 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * History:
+ *  This files came from the mondrian project. Some of the Flies
+ *  (mostly the Tests) did not have License Header.
+ *  But the Project is EPL Header. 2002-2022 Hitachi Vantara.
+ *
+ * Contributors:
+ *   Hitachi Vantara.
+ *   SmartCity Jena - initial  Java 8, Junit5
+ */
+package org.eclipse.daanse.mdx.performance;
 
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.parser.api.MdxParserException;
-import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
-import org.eclipse.daanse.mdx.unparser.api.UnParser;
-import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
-import org.osgi.test.common.annotation.InjectService;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.Set;
 
-@RequireServiceComponentRuntime
-class UnparseParsedTest {
-    public static final String CCC_PROVIDER = "org.eclipse.daanse.mdx.parser.ccc.MdxParserProviderImpl";
-    public static final String CCCX_PROVIDER = "org.eclipse.daanse.mdx.parser.cccx.MdxParserProviderImpl";
-    public static Set<String> reservedWords = Set.of(
+public class PerformanceTest {
+
+    public static final Set<String> reservedWords = Set.of(
         "ORDINAL", "VALUE", "DATAMEMBER", "MEMBER_CAPTION", "FIRSTSIBLING", "CURRENTMEMBER",
         "CURRENTORDINAL", "DIMENSION", "LASTSIBLING", "PARENT", "NEXTMEMBER", "UNIQUE_NAME",
         "UNIQUENAME", "MEMBERS", "SIBLINGS", "ORDERKEY", "DEFAULTMEMBER", "LEVEL", "FIRSTCHILD",
         "LASTCHILD", "CURRENT", "NAME", "CHILDREN", "PREVMEMBER", "LEVEL_NUMBER", "ALLMEMBERS",
         "COUNT", "CAPTION", "HIERARCHY");
-    public static String MDX = """
+    public static final String MDX = """
 				//<SELECT WITH clause>
 				WITH
 				    // CELL CALCULATION <CREATE CELL CALCULATION body clause>
@@ -86,27 +87,25 @@ class UnparseParsedTest {
 				// <SELECT cell property list clause>
 				CELL PROPERTIES BACK_COLOR, FORE_COLOR, FONT_SIZE, FORMAT_STRING, VALUE, FORMATTED_VALUE
 				            """;
-	@org.junit.jupiter.api.Test
-	void testFullStatement(@InjectService(filter = "(component.name=" + CCC_PROVIDER + ")") MdxParserProvider mdxParserProvider, @InjectService UnParser unParser)
-			throws MdxParserException {
 
-		MdxStatement mdxStatement = mdxParserProvider.newParser(MDX, reservedWords).parseMdxStatement();
-		StringBuilder resultmdx = unParser.unparseMdxStatement(mdxStatement);
-		assertThat(resultmdx).isNotNull().isNotBlank();
-
-	}
-
-    @org.junit.jupiter.api.Test
-    void test(@InjectService(filter = "(component.name=" + CCC_PROVIDER + ")") MdxParserProvider cccMdxParserProvider,
-              @InjectService(filter = "(component.name=" + CCCX_PROVIDER + ")") MdxParserProvider cccxMdxParserProvider)
-        throws MdxParserException {
-
-        MdxStatement mdxStatement = cccMdxParserProvider.newParser(MDX, reservedWords).parseMdxStatement();
-        assertThat(mdxStatement).isNotNull();
-
-        mdxStatement = cccxMdxParserProvider.newParser(MDX, reservedWords).parseMdxStatement();
-        assertThat(mdxStatement).isNotNull();
-
+    @Benchmark
+    public void cccTestMethod() throws MdxParserException {
+        MdxStatement mdxStatement = new org.eclipse.daanse.mdx.parser.ccc.MdxParserWrapper(MDX, reservedWords).parseMdxStatement();
     }
 
+    @Benchmark
+    public void cccxTestMethod() throws MdxParserException {
+        MdxStatement mdxStatement = new org.eclipse.daanse.mdx.parser.cccx.MdxParserWrapper(MDX, reservedWords).parseMdxStatement();
+    }
+
+    public static void main(String... args) throws Exception {
+        Options opts = new OptionsBuilder()
+            .include(".*")
+            .warmupIterations(10)
+            .measurementIterations(10)
+            .forks(1)
+            .build();
+
+        new Runner(opts).run();
+    }
 }
