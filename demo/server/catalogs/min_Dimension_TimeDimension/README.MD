@@ -15,7 +15,7 @@ Hierarchies:
 
 Tables: "Fact"
 
-Levels: "Years, Quarters, Months"
+Levels: "Years, Quarters, Months, Week, Day"
 
 ###### Level "Years" :
 
@@ -28,6 +28,14 @@ Levels: "Years, Quarters, Months"
 ###### Level "Months" :
 
     column(s): MONTH_NAME
+
+###### Level "Week" :
+
+    column(s): WEEK_IN_MONTH
+
+###### Level "Day" :
+
+    column(s): DAY_IN_MONTH
 
 ---
 ### Cubes :
@@ -72,11 +80,15 @@ h000["_"] {
 L Years ""
 L Quarters ""
 L Months ""
+L Week ""
+L Day ""
 }
 "c0" ||--|| "d00" : "DATE_KEY-DATE_KEY"
 "d00" ||--|| "h000" : "DATE_KEY-YEAR_ID"
 "d00" ||--|| "h000" : "DATE_KEY-QTR_NAME"
 "d00" ||--|| "h000" : "DATE_KEY-MONTH_NAME"
+"d00" ||--|| "h000" : "DATE_KEY-WEEK_IN_MONTH"
+"d00" ||--|| "h000" : "DATE_KEY-DAY_IN_MONTH"
 ```
 ---
 ### Cube Matrix for Minimal_Time_Dimension:
@@ -90,7 +102,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube CubeTimeDimension: [0.1500, 0.0000]
+Cube CubeTimeDimension: [0.2500, 0.0000]
 ```
 ---
 ### Database :
@@ -108,6 +120,8 @@ string QTR_ID "✔"
 string QTR_NAME "✔"
 string MONTH_ID "✔"
 string MONTH_NAME "✔"
+int WEEK_IN_MONTH "✔"
+int DAY_IN_MONTH "✔"
 }
 
 ```
