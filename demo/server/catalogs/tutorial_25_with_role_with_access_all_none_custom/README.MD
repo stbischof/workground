@@ -4,6 +4,11 @@
 
     Cube with examples of roles with access (all, none, custom)
     role4 use SchemaGrant, CubeGrant, HierarchyGrant, MemberGrant
+    Rollup policy: (Full. Partial. Hidden.)
+    Full. The total for that member includes all children. This is the default policy if you don't specify the rollupPolicy attribute.
+    Partial. The total for that member includes only accessible children.
+    Hidden. If any of the children are inaccessible, the total is hidden.
+
   
 ### Public Dimensions:
 
@@ -40,6 +45,8 @@ Levels: "Level2"
 ##### Dimensions:
 ##### Dimension: "Dimension1 -> Dimension1":
 
+##### Dimension: "Dimension2 -> Dimension1":
+
 ---
 #### Cube "Cube2":
 
@@ -52,11 +59,19 @@ Levels: "Level2"
 
 ### Roles :##### Role: "role1"
 
+##### Role: "role11"
+
+##### Role: "role12"
+
 ##### Role: "role2"
 
 ##### Role: "role3"
 
 ##### Role: "role4"
+
+##### Role: "manager"
+
+##### Role: "role_u"
 
 ### Cube "Cube1" diagram:
 
@@ -78,6 +93,7 @@ erDiagram
 c0["Cube1"]{
 M Measure1 ""
 D Dimension1 ""
+D Dimension2 ""
 }
 d00["Dimension1"] {
 H Hierarchy1 ""
@@ -85,8 +101,16 @@ H Hierarchy1 ""
 h000["Hierarchy1"] {
 L Level2 ""
 }
+d01["Dimension1"] {
+H Hierarchy1 ""
+}
+h010["Hierarchy1"] {
+L Level2 ""
+}
 "c0" ||--|| "d00" : "KEY-KEY"
 "d00" ||--|| "h000" : "KEY-KEY"
+"c0" ||--|| "d01" : "KEY-KEY"
+"d01" ||--|| "h010" : "KEY-KEY"
 ```
 ---
 ### Cube "Cube2" diagram:
@@ -131,7 +155,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube1: [0.0500, 0.0000]
+Cube Cube1: [0.1000, 0.0000]
 Cube Cube2: [0.0500, 0.0000]
 ```
 ---

@@ -38,6 +38,9 @@
         <SQL dialect="generic">
            <![CDATA[select * from HT1]]>
          </SQL>
+        <SQL dialect="h2">
+          <![CDATA[select * from HT1]]>
+        </SQL>
       </View>
 	  <Level name="Level1" column="KEY" nameColumn="NAME" type="Integer"/>
     </Hierarchy>

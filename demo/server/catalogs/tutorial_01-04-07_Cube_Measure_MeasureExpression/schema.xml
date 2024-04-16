@@ -24,11 +24,13 @@
     <Measure aggregator="sum" name="Measure1-Sum">
       <MeasureExpression>
         <SQL dialect="generic">(select sum("MEASURE_TABLE"."VALUE") from "MEASURE_TABLE" where "MEASURE_TABLE"."FLAG" = 1)</SQL>"
+        <SQL dialect="h2">(select sum("MEASURE_TABLE"."VALUE") from "MEASURE_TABLE" where "MEASURE_TABLE"."FLAG" = 1)</SQL>"
       </MeasureExpression>
     </Measure>
     <Measure aggregator="sum" name="Measure2-Sum">
       <MeasureExpression>
         <SQL dialect="generic">(CASE WHEN "FACT"."VALUE" > 21 THEN 50 ELSE "FACT"."VALUE" END)</SQL>"
+        <SQL dialect="h2">(CASE WHEN "FACT"."VALUE" > 21 THEN 50 ELSE "FACT"."VALUE" END)</SQL>"
       </MeasureExpression>
     </Measure>
   </Cube>

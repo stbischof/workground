@@ -43,11 +43,17 @@
         <Level name="Level2">
           <KeyExpression>
             <SQL dialect="generic">
+              KEY1
+            </SQL>
+            <SQL dialect="h2">
               "KEY1" || ' ' || "KEY"
             </SQL>
           </KeyExpression>
           <CaptionExpression>
             <SQL dialect="generic">
+              KEY
+            </SQL>
+            <SQL dialect="h2">
               "KEY1" || '___' || "KEY"
             </SQL>
           </CaptionExpression>
