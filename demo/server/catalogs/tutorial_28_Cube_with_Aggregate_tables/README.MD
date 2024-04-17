@@ -8,7 +8,7 @@
   
 ### Public Dimensions:
 
-    Product, Time
+    Product
 
 ##### Dimension "Product":
 
@@ -26,30 +26,6 @@ Levels: "Product Family"
 
     column(s): PRODUCT_FAMILE
 
-##### Dimension "Time":
-
-Hierarchies:
-
-    Hierarchy0
-
-##### Hierarchy Hierarchy0:
-
-Tables: "TIME_BY_DAY"
-
-Levels: "Year, QUARTER, Month"
-
-###### Level "Year" :
-
-    column(s): THE_YEAR
-
-###### Level "QUARTER" :
-
-    column(s): QUARTER
-
-###### Level "Month" :
-
-    column(s): MONTH_OF_YEAR
-
 ---
 ### Cubes :
 
@@ -65,8 +41,6 @@ Levels: "Year, QUARTER, Month"
 ##### Dimensions:
 ##### Dimension: "Product -> Product":
 
-##### Dimension: "Time -> Time":
-
 ---
 #### Cube "Sales_Pattern":
 
@@ -76,8 +50,6 @@ Levels: "Year, QUARTER, Month"
 
 ##### Dimensions:
 ##### Dimension: "Product -> Product":
-
-##### Dimension: "Time -> Time":
 
 ### Cube "Sales" diagram:
 
@@ -98,9 +70,7 @@ Levels: "Year, QUARTER, Month"
 erDiagram
 c0["Sales"]{
 M Store_Cost ""
-M Store_Sales ""
 D Product ""
-D Time ""
 }
 d00["Product"] {
 H Product_Family ""
@@ -108,20 +78,8 @@ H Product_Family ""
 h000["Product_Family"] {
 L Product_Family ""
 }
-d01["Time"] {
-H _ ""
-}
-h010["_"] {
-L Year ""
-L QUARTER ""
-L Month ""
-}
 "c0" ||--|| "d00" : "PRODUCT_ID-PRODUCT_ID"
 "d00" ||--|| "h000" : "PRODUCT_ID-PRODUCT_FAMILE"
-"c0" ||--|| "d01" : "TIME_ID-TIME_ID"
-"d01" ||--|| "h010" : "TIME_ID-THE_YEAR"
-"d01" ||--|| "h010" : "TIME_ID-QUARTER"
-"d01" ||--|| "h010" : "TIME_ID-MONTH_OF_YEAR"
 ```
 ---
 ### Cube "Sales_Pattern" diagram:
@@ -143,9 +101,7 @@ L Month ""
 erDiagram
 c1["Sales_Pattern"]{
 M Store_Cost ""
-M Store_Sales ""
 D Product ""
-D Time ""
 }
 d10["Product"] {
 H Product_Family ""
@@ -153,20 +109,8 @@ H Product_Family ""
 h100["Product_Family"] {
 L Product_Family ""
 }
-d11["Time"] {
-H _ ""
-}
-h110["_"] {
-L Year ""
-L QUARTER ""
-L Month ""
-}
 "c1" ||--|| "d10" : "PRODUCT_ID-PRODUCT_ID"
 "d10" ||--|| "h100" : "PRODUCT_ID-PRODUCT_FAMILE"
-"c1" ||--|| "d11" : "TIME_ID-TIME_ID"
-"d11" ||--|| "h110" : "TIME_ID-THE_YEAR"
-"d11" ||--|| "h110" : "TIME_ID-QUARTER"
-"d11" ||--|| "h110" : "TIME_ID-MONTH_OF_YEAR"
 ```
 ---
 ### Cube Matrix for Cube_with_Aggregate_tables:
@@ -180,8 +124,8 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Sales: [0.2000, 0.0000]
-Cube Sales_Pattern: [0.2000, 0.0000]
+Cube Sales: [0.0500, 0.0000]
+Cube Sales_Pattern: [0.0500, 0.0000]
 ```
 ---
 ### Database :
@@ -193,28 +137,16 @@ title: Diagram;
 erDiagram
 "AGG_C_14_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int MONTH_OF_YEAR "✔"
-string QUARTER "✔"
-int THE_YEAR "✔"
-null STORE_SALES "✔"
 null STORE_COST "✔"
-null UNIT_SALES "✔"
 int FACT_COUNT "✔"
 }
 "AGG_C_SPECIAL_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int TIME_MONTH "✔"
-string TIME_QUARTER "✔"
-int TIME_YEAR "✔"
-null STORE_SALES_SUM "✔"
 null STORE_COST_SUM "✔"
 int FACT_COUNT "✔"
 }
 "AGG_LC_100_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-string QUARTER "✔"
-int THE_YEAR "✔"
-null STORE_SALES "✔"
 null STORE_COST "✔"
 int FACT_COUNT "✔"
 }
@@ -233,36 +165,18 @@ string PRODUCT_FAMILE "✔"
 }
 "SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int TIME_ID "✔"
-null STORE_SALES "✔"
 null STORE_COST "✔"
-}
-"TIME_BY_DAY✔"{
-int TIME_ID "✔"
-timestamp the_date "✔"
-string the_day "✔"
-string the_month "✔"
-int THE_YEAR "✔"
-int day_of_month "✔"
-int week_of_year "✔"
-int MONTH_OF_YEAR "✔"
-string QUARTER "✔"
-string fiscal_period "✔"
 }
 "aGG_PL_01_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int TIME_ID "✔"
-null STORE_SALES_SUM "✔"
 null STORE_COST_SUM "✔"
 int FACT_COUNT "✔"
 }
 
 "SALES_FACT_1997✔" ||--o{ "PRODUCT✔" : "PRODUCT_ID-PRODUCT_ID"
 "PRODUCT✔" ||--o{ "PRODUCT_CLASS✔" : "PRODUCT_CLASS_ID-PRODUCT_CLASS_ID"
-"SALES_FACT_1997✔" ||--o{ "TIME_BY_DAY✔" : "TIME_ID-TIME_ID"
 "SALES_FACT_1997✔" ||--o{ "PRODUCT✔" : "PRODUCT_ID-PRODUCT_ID"
 "PRODUCT✔" ||--o{ "PRODUCT_CLASS✔" : "PRODUCT_CLASS_ID-PRODUCT_CLASS_ID"
-"SALES_FACT_1997✔" ||--o{ "TIME_BY_DAY✔" : "TIME_ID-TIME_ID"
 ```
 ---
 ## Validation result for schema Cube_with_Aggregate_tables

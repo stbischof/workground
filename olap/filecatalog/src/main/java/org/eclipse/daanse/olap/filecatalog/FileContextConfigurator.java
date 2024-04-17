@@ -104,7 +104,7 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 		props.put("name", name);
 		props.put("description", theDescription);
 		props.put("catalog.path", catalog_path);
-        //props.put("useAggregates", true);
+        props.put("useAggregates", true);
 		cContext.update(props);
 	}
 
