@@ -53,10 +53,22 @@ Levels: "Year, QUARTER, Month"
 ---
 ### Cubes :
 
-    Sales
+    Sales, Sales_Pattern
 
 ---
 #### Cube "Sales":
+
+    
+
+##### Table: "SALES_FACT_1997"
+
+##### Dimensions:
+##### Dimension: "Product -> Product":
+
+##### Dimension: "Time -> Time":
+
+---
+#### Cube "Sales_Pattern":
 
     
 
@@ -112,6 +124,51 @@ L Month ""
 "d01" ||--|| "h010" : "TIME_ID-MONTH_OF_YEAR"
 ```
 ---
+### Cube "Sales_Pattern" diagram:
+
+---
+
+```mermaid
+%%{init: {
+"theme": "default",
+"themeCSS": [
+    ".er.entityBox {stroke: black;}",
+    ".er.attributeBoxEven {stroke: black;}",
+    ".er.attributeBoxOdd {stroke: black;}",
+    "[id^=entity-c] .er.entityBox { fill: lightgreen;} ",
+    "[id^=entity-d] .er.entityBox { fill: powderblue;} ",
+    "[id^=entity-h] .er.entityBox { fill: pink;} "
+]
+}}%%
+erDiagram
+c1["Sales_Pattern"]{
+M Store_Cost ""
+M Store_Sales ""
+D Product ""
+D Time ""
+}
+d10["Product"] {
+H Product_Family ""
+}
+h100["Product_Family"] {
+L Product_Family ""
+}
+d11["Time"] {
+H _ ""
+}
+h110["_"] {
+L Year ""
+L QUARTER ""
+L Month ""
+}
+"c1" ||--|| "d10" : "PRODUCT_ID-PRODUCT_ID"
+"d10" ||--|| "h100" : "PRODUCT_ID-PRODUCT_FAMILE"
+"c1" ||--|| "d11" : "TIME_ID-TIME_ID"
+"d11" ||--|| "h110" : "TIME_ID-THE_YEAR"
+"d11" ||--|| "h110" : "TIME_ID-QUARTER"
+"d11" ||--|| "h110" : "TIME_ID-MONTH_OF_YEAR"
+```
+---
 ### Cube Matrix for Cube_with_Aggregate_tables:
 ```mermaid
 quadrantChart
@@ -124,6 +181,7 @@ quadrant-3 Simple
 quadrant-4 Wide
 
 Cube Sales: [0.2000, 0.0000]
+Cube Sales_Pattern: [0.2000, 0.0000]
 ```
 ---
 ### Database :
@@ -133,21 +191,8 @@ Cube Sales: [0.2000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-"AGG_C_10_SALES_FACT_1997✔"{
-int MONTH_OF_YEAR "✔"
-string QUARTER "✔"
-int THE_YEAR "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
-int CUSTOMER_COUNT "✔"
-int FACT_COUNT "✔"
-}
 "AGG_C_14_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int CUSTOMER_ID "✔"
-int STORE_ID "✔"
-int PROMOTION_ID "✔"
 int MONTH_OF_YEAR "✔"
 string QUARTER "✔"
 int THE_YEAR "✔"
@@ -158,70 +203,19 @@ int FACT_COUNT "✔"
 }
 "AGG_C_SPECIAL_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int PROMOTION_ID "✔"
-int CUSTOMER_ID "✔"
-int STORE_ID "✔"
 int TIME_MONTH "✔"
 string TIME_QUARTER "✔"
 int TIME_YEAR "✔"
 null STORE_SALES_SUM "✔"
 null STORE_COST_SUM "✔"
-null UNIT_SALES_SUM "✔"
-int FACT_COUNT "✔"
-}
-"AGG_LC_06_SALES_FACT_1997✔"{
-int TIME_ID "✔"
-string city "✔"
-string state_province "✔"
-string country "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
 int FACT_COUNT "✔"
 }
 "AGG_LC_100_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-int CUSTOMER_ID "✔"
 string QUARTER "✔"
 int THE_YEAR "✔"
 null STORE_SALES "✔"
 null STORE_COST "✔"
-null UNIT_SALES "✔"
-int FACT_COUNT "✔"
-}
-"AGG_LL_01_SALES_FACT_1997✔"{
-int PRODUCT_ID "✔"
-int TIME_ID "✔"
-int CUSTOMER_ID "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
-int FACT_COUNT "✔"
-}
-"AGG_L_03_SALES_FACT_1997✔"{
-int TIME_ID "✔"
-int CUSTOMER_ID "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
-int FACT_COUNT "✔"
-}
-"AGG_L_04_SALES_FACT_1997✔"{
-int TIME_ID "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
-int CUSTOMER_COUNT "✔"
-int FACT_COUNT "✔"
-}
-"AGG_L_05_SALES_FACT_1997✔"{
-int PRODUCT_ID "✔"
-int CUSTOMER_ID "✔"
-int PROMOTION_ID "✔"
-int STORE_ID "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
 int FACT_COUNT "✔"
 }
 "PRODUCT✔"{
@@ -229,17 +223,6 @@ int PRODUCT_CLASS_ID "✔"
 int PRODUCT_ID "✔"
 string brand_name "✔"
 string product_name "✔"
-long SKU "✔"
-null SRP "✔"
-null gross_weight "✔"
-null net_weight "✔"
-int recyclable_package "✔"
-int low_fat "✔"
-int units_per_case "✔"
-int cases_per_pallet "✔"
-null shelf_width "✔"
-null shelf_height "✔"
-null shelf_depth "✔"
 }
 "PRODUCT_CLASS✔"{
 int PRODUCT_CLASS_ID "✔"
@@ -251,12 +234,8 @@ string PRODUCT_FAMILE "✔"
 "SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
 int TIME_ID "✔"
-int CUSTOMER_ID "✔"
-int PROMOTION_ID "✔"
-int STORE_ID "✔"
 null STORE_SALES "✔"
 null STORE_COST "✔"
-null UNIT_SALES "✔"
 }
 "TIME_BY_DAY✔"{
 int TIME_ID "✔"
@@ -270,31 +249,17 @@ int MONTH_OF_YEAR "✔"
 string QUARTER "✔"
 string fiscal_period "✔"
 }
-"aGG_G_MS_PCAT_SALES_FACT_1997✔"{
-string GENDER "✔"
-string MARITAL_STATUS "✔"
-string PRODUCT_FAMILE "✔"
-string PRODUCT_DEPARTMENT "✔"
-string PRODUCT_CATEGORY "✔"
-int MONTH_OF_YEAR "✔"
-string QUARTER "✔"
-int THE_YEAR "✔"
-null STORE_SALES "✔"
-null STORE_COST "✔"
-null UNIT_SALES "✔"
-int CUSTOMER_COUNT "✔"
-int FACT_COUNT "✔"
-}
 "aGG_PL_01_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
 int TIME_ID "✔"
-int CUSTOMER_ID "✔"
 null STORE_SALES_SUM "✔"
 null STORE_COST_SUM "✔"
-null UNIT_SALES_SUM "✔"
 int FACT_COUNT "✔"
 }
 
+"SALES_FACT_1997✔" ||--o{ "PRODUCT✔" : "PRODUCT_ID-PRODUCT_ID"
+"PRODUCT✔" ||--o{ "PRODUCT_CLASS✔" : "PRODUCT_CLASS_ID-PRODUCT_CLASS_ID"
+"SALES_FACT_1997✔" ||--o{ "TIME_BY_DAY✔" : "TIME_ID-TIME_ID"
 "SALES_FACT_1997✔" ||--o{ "PRODUCT✔" : "PRODUCT_ID-PRODUCT_ID"
 "PRODUCT✔" ||--o{ "PRODUCT_CLASS✔" : "PRODUCT_CLASS_ID-PRODUCT_CLASS_ID"
 "SALES_FACT_1997✔" ||--o{ "TIME_BY_DAY✔" : "TIME_ID-TIME_ID"
