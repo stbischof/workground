@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import jakarta.xml.soap.SOAPHeader;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.AuthenticationModeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
@@ -484,6 +485,59 @@ public class Convert {
         }
         return null;
     }
+
+    public static Optional<Session> getSession(SOAPElement soapHeader) {
+        NodeList nl = soapHeader.getElementsByTagName("Session");
+        if (nl != null && nl.getLength() > 0) {
+            NamedNodeMap nnm = nl.item(0).getAttributes();
+            org.w3c.dom.Node n = nnm.getNamedItem("SessionId");
+            org.w3c.dom.Node n1 = nnm.getNamedItem("mustUnderstand");
+            String sId = null;
+            Integer mustUnderstand = null;
+            if (n != null) {
+                sId = n.getNodeValue();
+            }
+            if (n1 != null) {
+                mustUnderstand = toInteger(n1.getNodeValue());
+            }
+            return Optional.of(new SessionR(sId, mustUnderstand));
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<EndSession> getEndSession(SOAPElement soapHeader) {
+        NodeList nl = soapHeader.getElementsByTagName("EndSession");
+        if (nl != null && nl.getLength() > 0) {
+            NamedNodeMap nnm = nl.item(0).getAttributes();
+            org.w3c.dom.Node n = nnm.getNamedItem("SessionId");
+            org.w3c.dom.Node n1 = nnm.getNamedItem("mustUnderstand");
+            String sId = null;
+            Integer mustUnderstand = null;
+            if (n != null) {
+                sId = n.getNodeValue();
+            }
+            if (n1 != null) {
+                mustUnderstand = toInteger(n1.getNodeValue());
+            }
+            return Optional.of(new EndSessionR(sId, mustUnderstand));
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<BeginSession> getBeginSession(SOAPElement soapHeader) {
+        NodeList nl = soapHeader.getElementsByTagName("BeginSession");
+        if (nl != null && nl.getLength() > 0) {
+            NamedNodeMap nnm = nl.item(0).getAttributes();
+            org.w3c.dom.Node n = nnm.getNamedItem("mustUnderstand");
+            Integer mustUnderstand = null;
+            if (n != null) {
+                mustUnderstand = toInteger(n.getNodeValue());
+            }
+            return Optional.of(new BeginSessionR(mustUnderstand));
+        }
+        return Optional.empty();
+    }
+
 
     private static Command getCommand(NodeList nl) {
         for (int i = 0; i < nl.getLength(); i++) {
@@ -7435,5 +7489,4 @@ public class Convert {
     private static BigInteger toBigInteger(String it) {
         return it != null ? new BigInteger(it) : null;
     }
-
 }

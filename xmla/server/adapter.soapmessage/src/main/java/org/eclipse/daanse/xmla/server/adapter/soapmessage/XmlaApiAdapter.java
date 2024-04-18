@@ -23,7 +23,6 @@ import jakarta.xml.soap.SOAPHeader;
 import jakarta.xml.soap.SOAPHeaderElement;
 import jakarta.xml.soap.SOAPMessage;
 import jakarta.xml.soap.SOAPPart;
-
 import org.eclipse.daanse.xmla.api.RequestMetaData;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsRequest;
@@ -90,6 +89,7 @@ import org.eclipse.daanse.xmla.api.execute.clearcache.ClearCacheResponse;
 import org.eclipse.daanse.xmla.api.execute.statement.StatementRequest;
 import org.eclipse.daanse.xmla.api.execute.statement.StatementResponse;
 import org.eclipse.daanse.xmla.api.xmla.Command;
+import org.eclipse.daanse.xmla.api.xmla.Session;
 import org.eclipse.daanse.xmla.model.record.discover.PropertiesR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.catalogs.DbSchemaCatalogsRequestR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.catalogs.DbSchemaCatalogsRestrictionsR;
@@ -157,8 +157,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class XmlaApiAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(XmlaApiAdapter.class);
@@ -196,14 +199,14 @@ public class XmlaApiAdapter {
     private static final String MDSCHEMA_SETS = "MDSCHEMA_SETS";
     private static final String MDSCHEMA_KPIS = "MDSCHEMA_KPIS";
     private static final String MDSCHEMA_MEASUREGROUPS = "MDSCHEMA_MEASUREGROUPS";
-
+    private Set<String> sessions = new HashSet<>();
 
     public SOAPMessage handleRequest(SOAPMessage messageRequest,RequestMetaData metaData) {
         try {
             SOAPMessage messageResponse = MessageFactory.newInstance().createMessage();
             SOAPPart soapPartResponse = messageResponse.getSOAPPart();
             SOAPEnvelope envelopeResponse = soapPartResponse.getEnvelope();
-            
+
             envelopeResponse.addNamespaceDeclaration(Constants.MSXMLA.PREFIX, Constants.MSXMLA.NS_URN);
             envelopeResponse.addNamespaceDeclaration(Constants.ROWSET.PREFIX, Constants.ROWSET.NS_URN);
             envelopeResponse.addNamespaceDeclaration(Constants.MDDATASET.PREFIX, Constants.MDDATASET.NS_URN);
@@ -213,12 +216,13 @@ public class XmlaApiAdapter {
             envelopeResponse.addNamespaceDeclaration(Constants.XSI.PREFIX, Constants.XSI.NS_URN);
 
             SOAPBody bodyResponse = envelopeResponse.getBody();
-            //TODO real session id
-            SOAPHeader header = envelopeResponse.getHeader();
-            QName session = new QName("urn:schemas-microsoft-com:xml-analysis", "Session");
-            SOAPHeaderElement sessionElement = header.addHeaderElement(session);
-            sessionElement.addAttribute(new QName("SessionId"), "29fvrtwjn9hx");
-
+            Optional<Session> ses = SessionUtil.getSession(messageRequest.getSOAPHeader(), sessions);
+            if (ses.isPresent()) {
+                SOAPHeader header = envelopeResponse.getHeader();
+                QName session = new QName("urn:schemas-microsoft-com:xml-analysis", "Session");
+                SOAPHeaderElement sessionElement = header.addHeaderElement(session);
+                sessionElement.addAttribute(new QName("SessionId"), ses.get().sessionId());
+            }
             handleBody(messageRequest.getSOAPBody(), bodyResponse, metaData);
             return messageResponse;
         } catch (SOAPException e) {
