@@ -17,6 +17,7 @@ import jakarta.xml.soap.SOAPMessage;
 import jakarta.xml.ws.Provider;
 import org.eclipse.daanse.ws.api.whiteboard.annotations.RequireSoapWhiteboard;
 import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.AuthenticationModeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ClientCacheRefreshPolicyEnum;
@@ -249,10 +250,12 @@ class ClientDiscoverTest {
             Optional.of(AuthenticationModeEnum.AUTHENTICATED)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverDataSourcesRequest dataSourcesRequest = new DiscoverDataSourcesRequestR(properties, restrictions);
 
         List<DiscoverDataSourcesResponseRow> rows = client.discover()
-                .dataSources(dataSourcesRequest);
+                .dataSources(dataSourcesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -311,10 +314,12 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverEnumeratorsRestrictionsR restrictions = new DiscoverEnumeratorsRestrictionsR(Optional.of("FoodMart"));
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverEnumeratorsRequest discoverEnumeratorsRequest = new DiscoverEnumeratorsRequestR(properties, restrictions);
 
         List<DiscoverEnumeratorsResponseRow> rows = client.discover()
-            .discoverEnumerators(discoverEnumeratorsRequest);
+            .discoverEnumerators(discoverEnumeratorsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -360,10 +365,12 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverKeywordsRestrictionsR restrictions = new DiscoverKeywordsRestrictionsR(Optional.of("Keyword"));
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverKeywordsRequest discoverKeywordsRequest = new DiscoverKeywordsRequestR(properties, restrictions);
 
         List<DiscoverKeywordsResponseRow> rows = client.discover()
-            .discoverKeywords(discoverKeywordsRequest);
+            .discoverKeywords(discoverKeywordsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -404,10 +411,12 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverLiteralsRestrictionsR restrictions = new DiscoverLiteralsRestrictionsR(Optional.of("LiteralName"));
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverLiteralsRequest discoverLiteralsRequest = new DiscoverLiteralsRequestR(properties, restrictions);
 
         List<DiscoverLiteralsResponseRow> rows = client.discover()
-            .discoverLiterals(discoverLiteralsRequest);
+            .discoverLiterals(discoverLiteralsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -453,10 +462,12 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverPropertiesRestrictionsR restrictions = new DiscoverPropertiesRestrictionsR(Optional.of("PropertyName"));
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverPropertiesRequest discoverPropertiesRequest = new DiscoverPropertiesRequestR(properties, restrictions);
 
         List<DiscoverPropertiesResponseRow> rows = client.discover()
-            .discoverProperties(discoverPropertiesRequest);
+            .discoverProperties(discoverPropertiesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -503,10 +514,12 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DiscoverSchemaRowsetsRestrictionsR restrictions = new DiscoverSchemaRowsetsRestrictionsR(Optional.of("SchemaName"));
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverSchemaRowsetsRequest discoverSchemaRowsetsRequest = new DiscoverSchemaRowsetsRequestR(properties, restrictions);
 
         List<DiscoverSchemaRowsetsResponseRow> rows = client.discover()
-            .discoverSchemaRowsets(discoverSchemaRowsetsRequest);
+            .discoverSchemaRowsets(discoverSchemaRowsetsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -581,10 +594,12 @@ class ClientDiscoverTest {
             Optional.of(ObjectExpansionEnum.EXPAND_OBJECT)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DiscoverXmlMetaDataRequest discoverXmlMetaDataRequest = new DiscoverXmlMetaDataRequestR(properties, restrictions);
 
         List<DiscoverXmlMetaDataResponseRow> rows = client.discover()
-            .xmlMetaData(discoverXmlMetaDataRequest);
+            .xmlMetaData(discoverXmlMetaDataRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -653,10 +668,11 @@ class ClientDiscoverTest {
         properties.addProperty(PropertyListElementDefinition.CONTENT, "SchemaData");
         DbSchemaCatalogsRestrictionsR restrictions = new DbSchemaCatalogsRestrictionsR(Optional.of("CatalogName"));
 
+        UserPrincipal userPrincipal = null;
         DbSchemaCatalogsRequest dbSchemaCatalogsRequest = new DbSchemaCatalogsRequestR(properties, restrictions);
 
         List<DbSchemaCatalogsResponseRow> rows = client.discover()
-            .dbSchemaCatalogs(dbSchemaCatalogsRequest,metaData);
+            .dbSchemaCatalogs(dbSchemaCatalogsRequest, metaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -717,10 +733,13 @@ class ClientDiscoverTest {
             Optional.of(ColumnOlapTypeEnum.ATTRIBUTE)
         );
 
+
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaColumnsRequest dbSchemaColumnsRequest = new DbSchemaColumnsRequestR(properties, restrictions);
 
         List<DbSchemaColumnsResponseRow> rows = client.discover()
-            .dbSchemaColumns(dbSchemaColumnsRequest);
+            .dbSchemaColumns(dbSchemaColumnsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -802,10 +821,12 @@ class ClientDiscoverTest {
             Optional.of(true)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaProviderTypesRequest dbSchemaProviderTypesRequest = new DbSchemaProviderTypesRequestR(properties, restrictions);
 
         List<DbSchemaProviderTypesResponseRow> rows = client.discover()
-            .dbSchemaProviderTypes(dbSchemaProviderTypesRequest);
+            .dbSchemaProviderTypes(dbSchemaProviderTypesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -874,10 +895,12 @@ class ClientDiscoverTest {
             "SchemaOwner"
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaSchemataRequest dbSchemaSchemataRequest = new DbSchemaSchemataRequestR(properties, restrictions);
 
         List<DbSchemaSchemataResponseRow> rows = client.discover()
-            .dbSchemaSchemata(dbSchemaSchemataRequest);
+            .dbSchemaSchemata(dbSchemaSchemataRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -931,10 +954,12 @@ class ClientDiscoverTest {
             TableTypeEnum.TABLE
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaSourceTablesRequest dbSchemaSourceTablesRequest = new DbSchemaSourceTablesRequestR(properties, restrictions);
 
         List<DbSchemaSourceTablesResponseRow> rows = client.discover()
-            .dbSchemaSourceTables(dbSchemaSourceTablesRequest);
+            .dbSchemaSourceTables(dbSchemaSourceTablesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -991,10 +1016,12 @@ class ClientDiscoverTest {
             Optional.of("TableType")
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaTablesRequest dbSchemaTablesRequest = new DbSchemaTablesRequestR(properties, restrictions);
 
         List<DbSchemaTablesResponseRow> rows = client.discover()
-            .dbSchemaTables(dbSchemaTablesRequest);
+            .dbSchemaTables(dbSchemaTablesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1057,10 +1084,12 @@ class ClientDiscoverTest {
             TableTypeEnum.TABLE
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         DbSchemaTablesInfoRequest dbSchemaTablesInfoRequest = new DbSchemaTablesInfoRequestR(properties, restrictions);
 
         List<DbSchemaTablesInfoResponseRow> rows = client.discover()
-            .dbSchemaTablesInfo(dbSchemaTablesInfoRequest);
+            .dbSchemaTablesInfo(dbSchemaTablesInfoRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1133,10 +1162,12 @@ class ClientDiscoverTest {
             Optional.of(CubeSourceEnum.CUBE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaActionsRequest mdSchemaActionsRequest = new MdSchemaActionsRequestR(properties, restrictions);
 
         List<MdSchemaActionsResponseRow> rows = client.discover()
-            .mdSchemaActions(mdSchemaActionsRequest);
+            .mdSchemaActions(mdSchemaActionsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1215,10 +1246,12 @@ class ClientDiscoverTest {
             Optional.of(CubeSourceEnum.CUBE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaCubesRequest mdSchemaCubesRequest = new MdSchemaCubesRequestR(properties, restrictions);
 
         List<MdSchemaCubesResponseRow> rows = client.discover()
-            .mdSchemaCubes(mdSchemaCubesRequest);
+            .mdSchemaCubes(mdSchemaCubesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1297,10 +1330,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaDimensionsRequest mdSchemaDimensionsRequest = new MdSchemaDimensionsRequestR(properties, restrictions);
 
         List<MdSchemaDimensionsResponseRow> rows = client.discover()
-            .mdSchemaDimensions(mdSchemaDimensionsRequest);
+            .mdSchemaDimensions(mdSchemaDimensionsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1378,10 +1413,12 @@ class ClientDiscoverTest {
             Optional.of("LibraryName")
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaFunctionsRequest mdSchemaFunctionsRequest = new MdSchemaFunctionsRequestR(properties, restrictions);
 
         List<MdSchemaFunctionsResponseRow> rows = client.discover()
-            .mdSchemaFunctions(mdSchemaFunctionsRequest);
+            .mdSchemaFunctions(mdSchemaFunctionsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1460,10 +1497,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaHierarchiesRequest mdSchemaHierarchiesRequest = new MdSchemaHierarchiesRequestR(properties, restrictions);
 
         List<MdSchemaHierarchiesResponseRow> rows = client.discover()
-            .mdSchemaHierarchies(mdSchemaHierarchiesRequest);
+            .mdSchemaHierarchies(mdSchemaHierarchiesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1555,10 +1594,12 @@ class ClientDiscoverTest {
             Optional.of(CubeSourceEnum.CUBE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaKpisRequest mdSchemaKpisRequest = new MdSchemaKpisRequestR(properties, restrictions);
 
         List<MdSchemaKpisResponseRow> rows = client.discover()
-            .mdSchemaKpis(mdSchemaKpisRequest);
+            .mdSchemaKpis(mdSchemaKpisRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1639,10 +1680,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaLevelsRequest mdSchemaLevelsRequest = new MdSchemaLevelsRequestR(properties, restrictions);
 
         List<MdSchemaLevelsResponseRow> rows = client.discover()
-            .mdSchemaLevels(mdSchemaLevelsRequest);
+            .mdSchemaLevels(mdSchemaLevelsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1733,10 +1776,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaMeasureGroupDimensionsRequest mdSchemaMeasureGroupDimensionsRequest = new MdSchemaMeasureGroupDimensionsRequestR(properties, restrictions);
 
         List<MdSchemaMeasureGroupDimensionsResponseRow> rows = client.discover()
-            .mdSchemaMeasureGroupDimensions(mdSchemaMeasureGroupDimensionsRequest);
+            .mdSchemaMeasureGroupDimensions(mdSchemaMeasureGroupDimensionsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1808,10 +1853,12 @@ class ClientDiscoverTest {
             Optional.of("MeasureGroupName")
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaMeasureGroupsRequest mdSchemaMeasureGroupsRequest = new MdSchemaMeasureGroupsRequestR(properties, restrictions);
 
         List<MdSchemaMeasureGroupsResponseRow> rows = client.discover()
-            .mdSchemaMeasureGroups(mdSchemaMeasureGroupsRequest);
+            .mdSchemaMeasureGroups(mdSchemaMeasureGroupsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1876,10 +1923,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaMeasuresRequest mdSchemaMeasuresRequest = new MdSchemaMeasuresRequestR(properties, restrictions);
 
         List<MdSchemaMeasuresResponseRow> rows = client.discover()
-            .mdSchemaMeasures(mdSchemaMeasuresRequest);
+            .mdSchemaMeasures(mdSchemaMeasuresRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -1970,10 +2019,12 @@ class ClientDiscoverTest {
             Optional.of(TreeOpEnum.CHILDREN)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaMembersRequest mdSchemaMembersRequest = new MdSchemaMembersRequestR(properties, restrictions);
 
         List<MdSchemaMembersResponseRow> rows = client.discover()
-            .mdSchemaMembers(mdSchemaMembersRequest);
+            .mdSchemaMembers(mdSchemaMembersRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -2076,10 +2127,12 @@ class ClientDiscoverTest {
             Optional.of(VisibilityEnum.VISIBLE)
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaPropertiesRequest mdSchemaPropertiesRequest = new MdSchemaPropertiesRequestR(properties, restrictions);
 
         List<MdSchemaPropertiesResponseRow> rows = client.discover()
-            .mdSchemaProperties(mdSchemaPropertiesRequest);
+            .mdSchemaProperties(mdSchemaPropertiesRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();
@@ -2177,10 +2230,12 @@ class ClientDiscoverTest {
             Optional.of("HierarchyUniqueName")
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         MdSchemaSetsRequest mdSchemaSetsRequest = new MdSchemaSetsRequestR(properties, restrictions);
 
         List<MdSchemaSetsResponseRow> rows = client.discover()
-            .mdSchemaSets(mdSchemaSetsRequest);
+            .mdSchemaSets(mdSchemaSetsRequest, requestMetaData, userPrincipal);
 
         assertThat(rows).isNotNull().hasSize(1);
         assertThat(rows.get(0)).isNotNull();

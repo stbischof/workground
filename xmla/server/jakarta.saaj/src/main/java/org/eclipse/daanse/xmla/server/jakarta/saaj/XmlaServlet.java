@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.daanse.common.jakarta.servlet.soap.AbstractSoapServlet;
 import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.model.record.RequestMetaDataR;
 import org.eclipse.daanse.xmla.server.adapter.soapmessage.XmlaApiAdapter;
@@ -50,9 +51,6 @@ public class XmlaServlet extends AbstractSoapServlet {
 				LOGGER.debug("SoapMessage in:", prettyPrint(soapMessage).toString());
 			}
 
-			SOAPHeader header = soapMessage.getSOAPHeader();
-			SOAPBody body = soapMessage.getSOAPBody();
-
 			MimeHeaders m = soapMessage.getMimeHeaders();
 			String[] s = m.getHeader("User-agent");
 
@@ -62,8 +60,9 @@ public class XmlaServlet extends AbstractSoapServlet {
 			}
 
 			RequestMetaData metaData = new RequestMetaDataR(oUserAgent);
+            UserPrincipal userPrincipal = null;
 
-			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, metaData);
+			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, metaData, userPrincipal);
 
 			LOGGER.debug("SoapMessage out:", prettyPrint(returnMessage).toString());
 

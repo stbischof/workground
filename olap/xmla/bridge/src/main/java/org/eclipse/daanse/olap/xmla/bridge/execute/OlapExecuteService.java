@@ -54,6 +54,8 @@ import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DBSchemaDiscoverService;
 import org.eclipse.daanse.olap.xmla.bridge.discover.MDSchemaDiscoverService;
 import org.eclipse.daanse.olap.xmla.bridge.discover.OtherDiscoverService;
+import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.common.properties.Content;
 import org.eclipse.daanse.xmla.api.common.properties.Format;
 import org.eclipse.daanse.xmla.api.common.properties.OperationNames;
@@ -176,13 +178,13 @@ public class OlapExecuteService implements ExecuteService {
     }
 
     @Override
-    public AlterResponse alter(AlterRequest statementRequest) {
+    public AlterResponse alter(AlterRequest statementRequest, RequestMetaData metaData, UserPrincipal userPrincipal) {
         //TODO we use schema provider. need discus how change schema
         return new AlterResponseR(new EmptyresultR(null, null));
     }
 
     @Override
-    public CancelResponse cancel(CancelRequest cancel) {
+    public CancelResponse cancel(CancelRequest cancel, RequestMetaData metaData, UserPrincipal userPrincipal) {
         List<Context> contexts = contextsListSupplyer.get();
         //TODO: store the connection for your session and use it.
         for (Context context : contexts) {
@@ -221,13 +223,15 @@ public class OlapExecuteService implements ExecuteService {
     }
 
     @Override
-    public ClearCacheResponse clearCache(ClearCacheRequest clearCacheRequest) {
+    public ClearCacheResponse clearCache(ClearCacheRequest clearCacheRequest,
+                                         RequestMetaData metaData, UserPrincipal userPrincipal) {
         // TODO clear cache was not implemented in old mondrian
         return new ClearCacheResponseR(new EmptyresultR(null, null));
     }
 
 	@Override
-	public StatementResponse statement(StatementRequest statementRequest) {
+	public StatementResponse statement(StatementRequest statementRequest,
+                                       RequestMetaData metaData, UserPrincipal userPrincipal) {
 
 		Optional<String> oCatalog = statementRequest.properties().catalog();
 
@@ -267,7 +271,7 @@ public class OlapExecuteService implements ExecuteService {
         Statement statement = context.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
         if ((mdx != null) && (mdx.length() != 0)) {
-            
+
             //TODO: not double execute , we have QueryComponent query
             CellSet cellSet = statement.executeQuery(query);
 //            CellSet cellSet = statement.executeQuery(statementRequest.command().statement());

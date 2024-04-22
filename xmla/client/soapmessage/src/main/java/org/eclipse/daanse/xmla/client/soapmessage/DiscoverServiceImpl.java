@@ -17,6 +17,7 @@ import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
 
 import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.discover.DiscoverService;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsRequest;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsResponseRow;
@@ -119,7 +120,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaCatalogsResponseRow> dbSchemaCatalogs(DbSchemaCatalogsRequest dbSchemaCatalogsRequest,RequestMetaData metaData) {
+    public List<DbSchemaCatalogsResponseRow> dbSchemaCatalogs(DbSchemaCatalogsRequest dbSchemaCatalogsRequest,
+                                                              RequestMetaData metaData,
+                                                              UserPrincipal userPrincipal) {
 
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaCatalogsRequestConsumer(dbSchemaCatalogsRequest);
@@ -132,7 +135,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaTablesResponseRow> dbSchemaTables(DbSchemaTablesRequest dbSchemaTablesRequest) {
+    public List<DbSchemaTablesResponseRow> dbSchemaTables(DbSchemaTablesRequest dbSchemaTablesRequest,
+                                                          RequestMetaData metaData,
+                                                          UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaTablesRequestConsumer(dbSchemaTablesRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -145,8 +150,9 @@ public class DiscoverServiceImpl implements DiscoverService {
 
     @Override
     public List<DiscoverEnumeratorsResponseRow> discoverEnumerators(
-        DiscoverEnumeratorsRequest discoverEnumeratorsRequest
-    ) {
+        DiscoverEnumeratorsRequest discoverEnumeratorsRequest,
+        RequestMetaData metaData,
+        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverEnumeratorsRequestConsumer(discoverEnumeratorsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -158,7 +164,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DiscoverKeywordsResponseRow> discoverKeywords(DiscoverKeywordsRequest discoverKeywordsRequest) {
+    public List<DiscoverKeywordsResponseRow> discoverKeywords(DiscoverKeywordsRequest discoverKeywordsRequest,
+            RequestMetaData metaData,
+            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverKeywordsRequestConsumer(discoverKeywordsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -170,7 +178,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DiscoverLiteralsResponseRow> discoverLiterals(DiscoverLiteralsRequest discoverLiteralsRequest) {
+    public List<DiscoverLiteralsResponseRow> discoverLiterals(DiscoverLiteralsRequest discoverLiteralsRequest,
+            RequestMetaData metaData,
+            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverLiteralsRequestConsumer(discoverLiteralsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -182,7 +192,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DiscoverPropertiesResponseRow> discoverProperties(DiscoverPropertiesRequest discoverPropertiesRequest) {
+    public List<DiscoverPropertiesResponseRow> discoverProperties(DiscoverPropertiesRequest discoverPropertiesRequest,
+                                                                  RequestMetaData metaData,
+                                                                  UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverPropertiesRequestConsumer(discoverPropertiesRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -195,8 +207,9 @@ public class DiscoverServiceImpl implements DiscoverService {
 
     @Override
     public List<DiscoverSchemaRowsetsResponseRow> discoverSchemaRowsets(
-        DiscoverSchemaRowsetsRequest discoverSchemaRowsetsRequest
-    ) {
+        DiscoverSchemaRowsetsRequest discoverSchemaRowsetsRequest,
+        RequestMetaData metaData,
+        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverSchemaRowsetsRequestConsumer(discoverSchemaRowsetsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -208,7 +221,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest mdSchemaActionsRequest) {
+    public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest mdSchemaActionsRequest,
+                                                            RequestMetaData metaData,
+                                                            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaActionsRequestConsumer(mdSchemaActionsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -220,7 +235,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest mdSchemaCubesRequest) {
+    public List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest mdSchemaCubesRequest,
+                                                        RequestMetaData metaData,
+                                                        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaCubesRequestConsumer(mdSchemaCubesRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -232,7 +249,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest mdSchemaDimensionsRequest) {
+    public List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest mdSchemaDimensionsRequest,
+                                                                  RequestMetaData metaData,
+                                                                  UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaDimensionsRequestConsumer(mdSchemaDimensionsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -244,7 +263,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaFunctionsResponseRow> mdSchemaFunctions(MdSchemaFunctionsRequest mdSchemaFunctionsRequest) {
+    public List<MdSchemaFunctionsResponseRow> mdSchemaFunctions(MdSchemaFunctionsRequest mdSchemaFunctionsRequest,
+                                                                RequestMetaData metaData,
+                                                                UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaFunctionsRequestConsumer(mdSchemaFunctionsRequest);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -256,7 +277,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaHierarchiesResponseRow> mdSchemaHierarchies(MdSchemaHierarchiesRequest requestApi) {
+    public List<MdSchemaHierarchiesResponseRow> mdSchemaHierarchies(MdSchemaHierarchiesRequest requestApi,
+                                                                    RequestMetaData metaData,
+                                                                    UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaHierarchiesRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -268,7 +291,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DiscoverDataSourcesResponseRow> dataSources(DiscoverDataSourcesRequest requestApi) {
+    public List<DiscoverDataSourcesResponseRow> dataSources(DiscoverDataSourcesRequest requestApi,
+                                                            RequestMetaData metaData,
+                                                            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = createDiscoverDataSourcesRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -280,7 +305,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DiscoverXmlMetaDataResponseRow> xmlMetaData(DiscoverXmlMetaDataRequest requestApi) {
+    public List<DiscoverXmlMetaDataResponseRow> xmlMetaData(DiscoverXmlMetaDataRequest requestApi,
+                                                            RequestMetaData metaData,
+                                                            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDiscoverXmlMetaDataRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -292,7 +319,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaColumnsResponseRow> dbSchemaColumns(DbSchemaColumnsRequest requestApi) {
+    public List<DbSchemaColumnsResponseRow> dbSchemaColumns(DbSchemaColumnsRequest requestApi,
+                                                            RequestMetaData metaData,
+                                                            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaColumnsRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -304,7 +333,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaProviderTypesResponseRow> dbSchemaProviderTypes(DbSchemaProviderTypesRequest requestApi) {
+    public List<DbSchemaProviderTypesResponseRow> dbSchemaProviderTypes(DbSchemaProviderTypesRequest requestApi,
+                                                                        RequestMetaData metaData,
+                                                                        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaProviderTypesRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -316,7 +347,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaSchemataResponseRow> dbSchemaSchemata(DbSchemaSchemataRequest requestApi) {
+    public List<DbSchemaSchemataResponseRow> dbSchemaSchemata(DbSchemaSchemataRequest requestApi,
+                                                              RequestMetaData metaData,
+                                                              UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaSchemataRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -328,7 +361,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaLevelsResponseRow> mdSchemaLevels(MdSchemaLevelsRequest requestApi) {
+    public List<MdSchemaLevelsResponseRow> mdSchemaLevels(MdSchemaLevelsRequest requestApi,
+                                                          RequestMetaData metaData,
+                                                          UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaLevelsRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -341,8 +376,9 @@ public class DiscoverServiceImpl implements DiscoverService {
 
     @Override
     public List<MdSchemaMeasureGroupDimensionsResponseRow> mdSchemaMeasureGroupDimensions(
-        MdSchemaMeasureGroupDimensionsRequest requestApi
-    ) {
+        MdSchemaMeasureGroupDimensionsRequest requestApi,
+        RequestMetaData metaData,
+        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaMeasureGroupDimensionsRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -354,7 +390,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest requestApi) {
+    public List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest requestApi,
+                                                              RequestMetaData metaData,
+                                                              UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaMeasuresRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -366,7 +404,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest requestApi) {
+    public List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest requestApi,
+                                                            RequestMetaData metaData,
+                                                            UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaMembersRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -378,7 +418,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaPropertiesResponseRow> mdSchemaProperties(MdSchemaPropertiesRequest requestApi) {
+    public List<MdSchemaPropertiesResponseRow> mdSchemaProperties(MdSchemaPropertiesRequest requestApi,
+                                                                  RequestMetaData metaData,
+                                                                  UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaPropertiesRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -390,7 +432,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaSetsResponseRow> mdSchemaSets(MdSchemaSetsRequest requestApi) {
+    public List<MdSchemaSetsResponseRow> mdSchemaSets(MdSchemaSetsRequest requestApi,
+                                                      RequestMetaData metaData,
+                                                      UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaSetsRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -402,7 +446,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaKpisResponseRow> mdSchemaKpis(MdSchemaKpisRequest requestApi) {
+    public List<MdSchemaKpisResponseRow> mdSchemaKpis(MdSchemaKpisRequest requestApi,
+                                                      RequestMetaData metaData,
+                                                      UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaKpisRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -414,7 +460,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<MdSchemaMeasureGroupsResponseRow> mdSchemaMeasureGroups(MdSchemaMeasureGroupsRequest requestApi) {
+    public List<MdSchemaMeasureGroupsResponseRow> mdSchemaMeasureGroups(MdSchemaMeasureGroupsRequest requestApi,
+                                                                        RequestMetaData metaData,
+                                                                        UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createMdSchemaMeasureGroupsRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -426,7 +474,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaSourceTablesResponseRow> dbSchemaSourceTables(DbSchemaSourceTablesRequest requestApi) {
+    public List<DbSchemaSourceTablesResponseRow> dbSchemaSourceTables(DbSchemaSourceTablesRequest requestApi,
+                                                                      RequestMetaData metaData,
+                                                                      UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaSourceTablesRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);
@@ -439,7 +489,9 @@ public class DiscoverServiceImpl implements DiscoverService {
     }
 
     @Override
-    public List<DbSchemaTablesInfoResponseRow> dbSchemaTablesInfo(DbSchemaTablesInfoRequest requestApi) {
+    public List<DbSchemaTablesInfoResponseRow> dbSchemaTablesInfo(DbSchemaTablesInfoRequest requestApi,
+                                                                  RequestMetaData metaData,
+                                                                  UserPrincipal userPrincipal) {
         try {
             Consumer<SOAPMessage> msg = DiscoverConsumers.createDbSchemaTablesInfoRequestConsumer(requestApi);
             SOAPMessage message = soapClient.callSoapWebService(Optional.of(SOAP_ACTION_DISCOVER), msg);

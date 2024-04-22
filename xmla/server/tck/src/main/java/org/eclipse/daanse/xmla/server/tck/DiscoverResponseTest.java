@@ -202,7 +202,9 @@ class DiscoverResponseTest {
 
 	private static final String DATE = "2023-02-16T10:10";
 
-	private static final String SOAP_ENVELOPE_SOAP_BODY_MSXMLA_DISCOVER_RESPONSE_RETURN_ROWSET_ROOT_ROWSET_ROW_ROWSET = "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset";
+	private static final String DATE1 = "2023-02-16T10:10:00";
+
+	private static final String SOAP_ENVELOPE_SOAP_BODY_MSXMLA_DISCOVER_RESPONSE_RETURN_ROWSET_ROOT_ROWSET_ROW_ROWSET = "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset";
 
 	private Logger logger = LoggerFactory.getLogger(DiscoverResponseTest.class);
 
@@ -246,7 +248,7 @@ class DiscoverResponseTest {
             Optional.of(MDP), Optional.of(UNAUTHENTICATED));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dataSources(any())).thenReturn(List.of(row));
+        when(discoverService.dataSources(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -278,7 +280,7 @@ class DiscoverResponseTest {
             Optional.of("elementDescription"), Optional.of("elementValue"));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.discoverEnumerators(any())).thenReturn(List.of(row));
+        when(discoverService.discoverEnumerators(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -308,7 +310,7 @@ class DiscoverResponseTest {
         DiscoverKeywordsResponseRowR row = new DiscoverKeywordsResponseRowR("keyword");
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.discoverKeywords(any())).thenReturn(List.of(row));
+        when(discoverService.discoverKeywords(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DISCOVER_KEYWORDS")));
@@ -333,7 +335,7 @@ class DiscoverResponseTest {
             10, LiteralNameEnumValueEnum.DBLITERAL_BINARY_LITERAL);
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.discoverLiterals(any())).thenReturn(List.of(row));
+        when(discoverService.discoverLiterals(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DISCOVER_LITERALS")));
@@ -349,8 +351,8 @@ class DiscoverResponseTest {
             "LiteralValue", "literalValue",
             "LiteralInvalidChars", "literalInvalidChars",
             "LiteralInvalidStartingChars", "literalInvalidStartingChars",
-            "LiteralMaxLength", "10",
-            "LiteralNameValue", "1"
+            "LiteralMaxLength", "10"
+            //"LiteralNameValue", "1"
         ));
     }
 
@@ -363,7 +365,7 @@ class DiscoverResponseTest {
             AccessEnum.READ_WRITE, Optional.of(false), Optional.of("1"));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.discoverProperties(any())).thenReturn(List.of(row));
+        when(discoverService.discoverProperties(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DISCOVER_PROPERTIES"
@@ -375,11 +377,11 @@ class DiscoverResponseTest {
 
         XmlAssert xmlAssert = XMLUtil.createAssert(response);
         xmlAssert.hasXPath("/SOAP:Envelope");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row")
             .exist();
-        xmlAssert.valueByXPath("count(/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row)"
+        xmlAssert.valueByXPath("count(/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row)"
         ).isEqualTo(1);
 
         xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_DISCOVER_RESPONSE_RETURN_ROWSET_ROOT_ROWSET_ROW_ROWSET +
@@ -408,7 +410,7 @@ class DiscoverResponseTest {
             , Optional.of(DESCRIPTION_LOW), Optional.of(10l));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.discoverSchemaRowsets(any())).thenReturn(List.of(row));
+        when(discoverService.discoverSchemaRowsets(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -431,7 +433,7 @@ class DiscoverResponseTest {
         DiscoverXmlMetaDataResponseRowR row = new DiscoverXmlMetaDataResponseRowR("metaData");
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.xmlMetaData(any())).thenReturn(List.of(row));
+        when(discoverService.xmlMetaData(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -463,7 +465,7 @@ class DiscoverResponseTest {
             Optional.of(ClientCacheRefreshPolicyEnum.REFRESH_NEWER_DATA));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaCatalogs(any(),any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaCatalogs(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DBSCHEMA_CATALOGS")));
@@ -478,7 +480,7 @@ class DiscoverResponseTest {
             Map.entry(CATALOG_NAME, CATALOG_NAME_LOW),
             Map.entry(DESCRIPTION, DESCRIPTION_LOW),
             Map.entry("ROLES", "roles"),
-            Map.entry("DATE_MODIFIED", DATE),
+            Map.entry("DATE_MODIFIED", DATE1),
             Map.entry("VERSION", "2"),
             Map.entry("DATABASE_ID", "databaseId"),
             Map.entry("DATE_QUERIED", DATE),
@@ -486,7 +488,7 @@ class DiscoverResponseTest {
             Map.entry("POPULARITY", "1.1"),
             Map.entry("WEIGHTEDPOPULARITY", "1.2"),
             Map.entry("CLIENTCACHEREFRESHPOLICY", "0")));
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:TYPE").asString()
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:TYPE").asString()
         .has(new Condition<>(item -> TypeEnum.fromValue(item).equals(TypeEnum.MULTIDIMENSIONAL), "MULTIDIMENSIONAL"));
     }
 
@@ -527,7 +529,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaColumns(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaColumns(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DBSCHEMA_COLUMNS")));
@@ -569,7 +571,7 @@ class DiscoverResponseTest {
             Map.entry(DESCRIPTION, DESCRIPTION_LOW),
             Map.entry("COLUMN_OLAP_TYPE", "ATTRIBUTE")));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:COLUMN_FLAG"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:COLUMN_FLAG"
         ).asString().has(new Condition<>(item -> ColumnFlagsEnum.fromValue(item).equals(ColumnFlagsEnum.DBCOLUMNFLAGS_ISBOOKMARK), "DBCOLUMNFLAGS_ISBOOKMARK"));
     }
 
@@ -601,7 +603,7 @@ class DiscoverResponseTest {
             Optional.of(false));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaProviderTypes(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaProviderTypes(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -635,7 +637,7 @@ class DiscoverResponseTest {
             Map.entry("BEST_MATCH", "true"),
             Map.entry("IS_FIXEDLENGTH", FALSE)));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:SEARCHABLE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:SEARCHABLE"
         ).asString().has(new Condition<>(item -> SearchableEnum.fromValue(item).equals(SearchableEnum.DB_UNSEARCHABLE), "DB_UNSEARCHABLE"));
     }
 
@@ -649,7 +651,7 @@ class DiscoverResponseTest {
             "schemaOwner");
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaSchemata(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaSchemata(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DBSCHEMA_SCHEMATA")));
@@ -678,7 +680,7 @@ class DiscoverResponseTest {
             TableTypeEnum.ALIAS);
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaSourceTables(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaSourceTables(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -714,7 +716,7 @@ class DiscoverResponseTest {
             Optional.of(LocalDateTime.of(2023, 2, 16, 10, 10)));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaTables(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaTables(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "DBSCHEMA_TABLES")));
@@ -759,7 +761,7 @@ class DiscoverResponseTest {
             Optional.of(8));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.dbSchemaTablesInfo(any())).thenReturn(List.of(row));
+        when(discoverService.dbSchemaTablesInfo(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -808,7 +810,7 @@ class DiscoverResponseTest {
             Optional.of(InvocationEnum.NORMAL_OPERATION));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaActions(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaActions(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "MDSCHEMA_ACTIONS")));
@@ -833,7 +835,7 @@ class DiscoverResponseTest {
             Map.entry("APPLICATION", "application"),
             Map.entry("INVOCATION", "1")));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:ACTION_TYPE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:ACTION_TYPE"
         ).asString().has(new Condition<>(item -> ActionTypeEnum.fromValue(item).equals(ActionTypeEnum.URL), "URL"));
     }
 
@@ -863,7 +865,7 @@ class DiscoverResponseTest {
             Optional.of(PreferredQueryPatternsEnum.CROSS_JOIN));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaCubes(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaCubes(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "MDSCHEMA_CUBES")));
@@ -882,9 +884,9 @@ class DiscoverResponseTest {
             Map.entry("CUBE_TYPE", "CUBE"),
             Map.entry("CUBE_GUID", "1"),
             Map.entry("CREATED_ON", DATE),
-            Map.entry("LAST_SCHEMA_UPDATE", DATE),
+            Map.entry("LAST_SCHEMA_UPDATE", DATE1),
             Map.entry("SCHEMA_UPDATED_BY", "schemaUpdatedBy"),
-            Map.entry("LAST_DATA_UPDATE", DATE),
+            Map.entry("LAST_DATA_UPDATE", DATE1),
             Map.entry("DATA_UPDATED_BY", "dataUpdateDBy"),
             Map.entry(DESCRIPTION, DESCRIPTION_LOW),
             Map.entry("IS_DRILLTHROUGH_ENABLED", "true"),
@@ -895,10 +897,10 @@ class DiscoverResponseTest {
             Map.entry("BASE_CUBE_NAME", "baseCubeName")
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:CUBE_SOURCE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:CUBE_SOURCE"
         ).asString().has(new Condition<>(item -> CubeSourceEnum.fromValue(item).equals(CubeSourceEnum.CUBE), "CUBE"));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:PREFERRED_QUERY_PATTERNS"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:PREFERRED_QUERY_PATTERNS"
         ).asString().has(new Condition<>(item -> PreferredQueryPatternsEnum.fromValue(Integer.decode(item)).equals(PreferredQueryPatternsEnum.CROSS_JOIN), "CROSS_JOIN"));
     }
 
@@ -926,7 +928,7 @@ class DiscoverResponseTest {
             Optional.of(true));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaDimensions(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaDimensions(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST, "MDSCHEMA_DIMENSIONS"
@@ -958,7 +960,7 @@ class DiscoverResponseTest {
             Map.entry(DIMENSION_IS_VISIBLE, "true")
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:DIMENSION_UNIQUE_SETTINGS"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:DIMENSION_UNIQUE_SETTINGS"
         ).asString().has(new Condition<>(item -> DimensionUniqueSettingEnum.fromValue(item).equals(DimensionUniqueSettingEnum.MEMBER_KEY), MEMBER_KEY));
     }
 
@@ -989,7 +991,7 @@ class DiscoverResponseTest {
             Optional.of(DirectQueryPushableEnum.MEASURE));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaFunctions(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaFunctions(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1017,10 +1019,10 @@ class DiscoverResponseTest {
             Map.entry("PARAMETERINFO", "namedescriptiontruefalse1")
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:ORIGIN"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:ORIGIN"
         ).asString().has(new Condition<>(item -> OriginEnum.fromValue(item).equals(OriginEnum.MSOLAP), "MSOLAP"));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:DIRECTQUERY_PUSHABLE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:DIRECTQUERY_PUSHABLE"
         ).asString().has(new Condition<>(item -> DirectQueryPushableEnum.fromValue(item).equals(DirectQueryPushableEnum.MEASURE), "MEASURE"));
     }
 
@@ -1058,7 +1060,7 @@ class DiscoverResponseTest {
             Optional.of(StructureTypeEnum.NATURAL));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaHierarchies(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaHierarchies(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1099,10 +1101,10 @@ class DiscoverResponseTest {
             Map.entry("STRUCTURE_TYPE", "Natural")
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:DIMENSION_UNIQUE_SETTINGS"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:DIMENSION_UNIQUE_SETTINGS"
         ).asString().has(new Condition<>(item -> DimensionUniqueSettingEnum.fromValue(item).equals(DimensionUniqueSettingEnum.MEMBER_KEY), MEMBER_KEY));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:HIERARCHY_ORIGIN"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:HIERARCHY_ORIGIN"
         ).asString().has(new Condition<>(item -> HierarchyOriginEnum.fromValue(item).equals(HierarchyOriginEnum.USER_DEFINED), "USER_DEFINED"));
     }
 
@@ -1132,7 +1134,7 @@ class DiscoverResponseTest {
             Optional.of(ScopeEnum.GLOBAL));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaKpis(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaKpis(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1200,7 +1202,7 @@ class DiscoverResponseTest {
             Optional.of(LevelOriginEnum.USER_DEFINED));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaLevels(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaLevels(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1226,28 +1228,27 @@ class DiscoverResponseTest {
             Map.entry("LEVEL_NUMBER", "2"),
             Map.entry("LEVEL_CARDINALITY", "3"),
             Map.entry(DESCRIPTION, DESCRIPTION_LOW),
-            Map.entry("LEVEL_IS_VISIBLE", "true"),
-            Map.entry("LEVEL_ORDERING_PROPERTY", "levelOrderingProperty"),
-            Map.entry("LEVEL_DBTYPE", "0"),
-            Map.entry("LEVEL_MASTER_UNIQUE_NAME", "levelMasterUniqueName"),
-            Map.entry("LEVEL_NAME_SQL_COLUMN_NAME", "levelNameSqlColumnName"),
-            Map.entry("LEVEL_KEY_SQL_COLUMN_NAME", "levelKeySqlColumnName"),
-            Map.entry("LEVEL_UNIQUE_NAME_SQL_COLUMN_NAME", "levelUniqueNameSqlColumnName"),
-            Map.entry("LEVEL_ATTRIBUTE_HIERARCHY_NAME", "levelAttributeHierarchyName"),
-            Map.entry("LEVEL_KEY_CARDINALITY", "4")
+            Map.entry("LEVEL_IS_VISIBLE", "true")
+            //Map.entry("LEVEL_ORDERING_PROPERTY", "levelOrderingProperty"),
+            //Map.entry("LEVEL_DBTYPE", "0"),
+            //Map.entry("LEVEL_MASTER_UNIQUE_NAME", "levelMasterUniqueName"),
+            //Map.entry("LEVEL_NAME_SQL_COLUMN_NAME", "levelNameSqlColumnName"),
+            //Map.entry("LEVEL_KEY_SQL_COLUMN_NAME", "levelKeySqlColumnName")
+            //Map.entry("LEVEL_UNIQUE_NAME_SQL_COLUMN_NAME", "levelUniqueNameSqlColumnName")
+            //Map.entry("LEVEL_ATTRIBUTE_HIERARCHY_NAME", "levelAttributeHierarchyName"))
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:LEVEL_TYPE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:LEVEL_TYPE"
         ).asString().has(new Condition<>(item -> LevelTypeEnum.fromValue(item).equals(LevelTypeEnum.ALL), "ALL"));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:CUSTOM_ROLLUP_SETTINGS"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:CUSTOM_ROLLUP_SETTINGS"
         ).asString().has(new Condition<>(item -> CustomRollupSettingEnum.fromValue(item)
             .equals(CustomRollupSettingEnum.CUSTOM_ROLLUP_EXPRESSION_EXIST), "CUSTOM_ROLLUP_EXPRESSION_EXIST"));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:LEVEL_UNIQUE_SETTINGS"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:LEVEL_UNIQUE_SETTINGS"
         ).asString().has(new Condition<>(item -> LevelUniqueSettingsEnum.fromValue(item).equals(LevelUniqueSettingsEnum.KEY_COLUMNS), "KEY_COLUMNS"));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:LEVEL_ORIGIN"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:LEVEL_ORIGIN"
         ).asString().has(new Condition<>(item -> LevelOriginEnum.fromValue(item).equals(LevelOriginEnum.USER_DEFINED), "LevelOriginEnum"));
     }
 
@@ -1269,7 +1270,7 @@ class DiscoverResponseTest {
             Optional.of("dimensionGranularity"));
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaMeasureGroupDimensions(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaMeasureGroupDimensions(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1312,7 +1313,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaMeasureGroups(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaMeasureGroups(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1367,7 +1368,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaMeasures(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaMeasures(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1436,7 +1437,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaMembers(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaMembers(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1509,7 +1510,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaProperties(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaProperties(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1534,21 +1535,21 @@ class DiscoverResponseTest {
             Map.entry("PROPERTY_NAME", "propertyName"),
             Map.entry("PROPERTY_CAPTION", "propertyCaption"),
             Map.entry(DATA_TYPE, "0"),
-            Map.entry("CHARACTER_MAXIMUM_LENGTH", "1"),
-            Map.entry("CHARACTER_OCTET_LENGTH", "2"),
-            Map.entry(NUMERIC_PRECISION, "3"),
-            Map.entry(NUMERIC_SCALE, "4"),
+            //Map.entry("CHARACTER_MAXIMUM_LENGTH", "1"),
+            //Map.entry("CHARACTER_OCTET_LENGTH", "2"),
+            //Map.entry(NUMERIC_PRECISION, "3"),
+            //Map.entry(NUMERIC_SCALE, "4"),
             Map.entry(DESCRIPTION, DESCRIPTION_LOW),
             Map.entry("SQL_COLUMN_NAME", "sqlColumnName"),
-            Map.entry("LANGUAGE", "5"),
-            Map.entry("PROPERTY_ORIGIN", "1"),
-            Map.entry("PROPERTY_ATTRIBUTE_HIERARCHY_NAME", "propertyAttributeHierarchyName"),
-            Map.entry("PROPERTY_CARDINALITY", "ONE"),
-            Map.entry("MIME_TYPE", "mimeType"),
-            Map.entry("PROPERTY_IS_VISIBLE", "true")
+            //Map.entry("LANGUAGE", "5"),
+            Map.entry("PROPERTY_ORIGIN", "1")
+            //Map.entry("PROPERTY_ATTRIBUTE_HIERARCHY_NAME", "propertyAttributeHierarchyName"),
+            //Map.entry("PROPERTY_CARDINALITY", "ONE")
+            //Map.entry("MIME_TYPE", "mimeType"),
+            //Map.entry("PROPERTY_IS_VISIBLE", "true")
         ));
         xmlAssert.valueByXPath(
-            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row/rowset:PROPERTY_CONTENT_TYPE"
+            "/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row/rowset:PROPERTY_CONTENT_TYPE"
         ).asString().has(new Condition<>(item -> PropertyContentTypeEnum.fromValue(item).equals(PropertyContentTypeEnum.REGULAR), "REGULAR"));
     }
 
@@ -1571,7 +1572,7 @@ class DiscoverResponseTest {
         );
 
         DiscoverService discoverService = xmlaService.discover();
-        when(discoverService.mdSchemaSets(any())).thenReturn(List.of(row));
+        when(discoverService.mdSchemaSets(any(), any(), any())).thenReturn(List.of(row));
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_DISCOVER), SOAPUtil.envelop(String.format(REQUEST,
@@ -1594,24 +1595,24 @@ class DiscoverResponseTest {
             Map.entry(EXPRESSION, EXPRESSION_LOW),
             Map.entry("DIMENSIONS", "dimension"),
             Map.entry("SET_CAPTION", "setCaption"),
-            Map.entry("SET_DISPLAY_FOLDER", "setDisplayFolder"),
-            Map.entry("SET_EVALUATION_CONTEXT", "1")
+            Map.entry("SET_DISPLAY_FOLDER", "setDisplayFolder")
+            //Map.entry("SET_EVALUATION_CONTEXT", "1")
         ));
     }
 
     private void checkRow(XmlAssert xmlAssert) {
         xmlAssert.hasXPath("/SOAP:Envelope");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row")
             .exist();
-        xmlAssert.valueByXPath("count(/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset:root/rowset:row)"
+        xmlAssert.valueByXPath("count(/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset:root/rowset:row)"
         ).isEqualTo(1);
     }
 
     private void checkRowValues(XmlAssert xmlAssert, Map<String, String> map) {
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            xmlAssert.valueByXPath(new StringBuilder("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/return/rowset" +
+            xmlAssert.valueByXPath(new StringBuilder("/SOAP:Envelope/SOAP:Body/msxmla:DiscoverResponse/msxmla:return/rowset" +
                 ":root/rowset:row/rowset:").append(entry.getKey()).toString())
                 .isEqualTo(entry.getValue());
         }

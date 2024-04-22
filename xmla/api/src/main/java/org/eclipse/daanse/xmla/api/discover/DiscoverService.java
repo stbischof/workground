@@ -16,6 +16,7 @@ package org.eclipse.daanse.xmla.api.discover;
 import java.util.List;
 
 import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsRequest;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsResponseRow;
@@ -77,7 +78,7 @@ import org.eclipse.daanse.xmla.api.execute.ExecuteService;
  * The {@link DiscoverService} gives access to all discover methods of the
  * {@link XmlaService}. The execute methods could be found in the
  * {@link ExecuteService}.
- * 
+ *
  * @see {@link ExecuteService}
  */
 public interface DiscoverService {
@@ -88,7 +89,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverDataSourcesResponseRow> dataSources(DiscoverDataSourcesRequest request);
+	List<DiscoverDataSourcesResponseRow> dataSources(DiscoverDataSourcesRequest request,
+                                                     RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns the catalogs that are accessible on the server.
@@ -96,7 +98,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaCatalogsResponseRow> dbSchemaCatalogs(DbSchemaCatalogsRequest request, RequestMetaData metaData);
+	List<DbSchemaCatalogsResponseRow> dbSchemaCatalogs(DbSchemaCatalogsRequest request,
+                                                       RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the structure of cubes within a database. Perspectives are also
@@ -105,7 +108,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaColumnsResponseRow> dbSchemaColumns(DbSchemaColumnsRequest request);
+	List<DbSchemaColumnsResponseRow> dbSchemaColumns(DbSchemaColumnsRequest request,
+                                                     RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the properties of members and cell properties.
@@ -113,7 +117,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaProviderTypesResponseRow> dbSchemaProviderTypes(DbSchemaProviderTypesRequest request);
+	List<DbSchemaProviderTypesResponseRow> dbSchemaProviderTypes(DbSchemaProviderTypesRequest request,
+                                                                 RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * identifies the (base) data types supported by the server.
@@ -121,7 +126,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaSchemataResponseRow> dbSchemaSchemata(DbSchemaSchemataRequest request);
+	List<DbSchemaSchemataResponseRow> dbSchemaSchemata(DbSchemaSchemataRequest request,
+                                                       RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 *
@@ -129,7 +135,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaSourceTablesResponseRow> dbSchemaSourceTables(DbSchemaSourceTablesRequest request);
+	List<DbSchemaSourceTablesResponseRow> dbSchemaSourceTables(DbSchemaSourceTablesRequest request,
+                                                               RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns dimensions, measure groups, or schema rowsets exposed as tables.
@@ -137,15 +144,17 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaTablesResponseRow> dbSchemaTables(DbSchemaTablesRequest request);
+	List<DbSchemaTablesResponseRow> dbSchemaTables(DbSchemaTablesRequest request,
+                                                   RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
-	 * 
+	 *
 	 *
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DbSchemaTablesInfoResponseRow> dbSchemaTablesInfo(DbSchemaTablesInfoRequest request);
+	List<DbSchemaTablesInfoResponseRow> dbSchemaTablesInfo(DbSchemaTablesInfoRequest request,
+                                                           RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns a row for each measure, each cube dimension attribute, and each
@@ -155,7 +164,8 @@ public interface DiscoverService {
 	 * @return the list
 	 */
 	// discover
-	List<DiscoverEnumeratorsResponseRow> discoverEnumerators(DiscoverEnumeratorsRequest request);
+	List<DiscoverEnumeratorsResponseRow> discoverEnumerators(DiscoverEnumeratorsRequest request,
+                                                             RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns information about keywords that are reserved by the XMLA server.
@@ -163,7 +173,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverKeywordsResponseRow> discoverKeywords(DiscoverKeywordsRequest request);
+	List<DiscoverKeywordsResponseRow> discoverKeywords(DiscoverKeywordsRequest request,
+                                                       RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns information about literals supported by the server.
@@ -171,7 +182,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverLiteralsResponseRow> discoverLiterals(DiscoverLiteralsRequest request);
+	List<DiscoverLiteralsResponseRow> discoverLiterals(DiscoverLiteralsRequest request,
+                                                       RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns a list of information and values about the properties that are
@@ -180,7 +192,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverPropertiesResponseRow> discoverProperties(DiscoverPropertiesRequest request);
+	List<DiscoverPropertiesResponseRow> discoverProperties(DiscoverPropertiesRequest request,
+                                                           RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns the names, restrictions, description, and other information for all
@@ -189,7 +202,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverSchemaRowsetsResponseRow> discoverSchemaRowsets(DiscoverSchemaRowsetsRequest request);
+	List<DiscoverSchemaRowsetsResponseRow> discoverSchemaRowsets(DiscoverSchemaRowsetsRequest request,
+                                                                 RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the actions that can be available to the client application.
@@ -198,7 +212,8 @@ public interface DiscoverService {
 	 * @return the list
 	 */
 	// md
-	List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request);
+	List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request,
+                                                     RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the structure of cubes within a database. Perspectives are also
@@ -207,7 +222,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest request);
+	List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest request,
+                                                 RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the dimensions within a database.
@@ -215,7 +231,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest request);
+	List<MdSchemaDimensionsResponseRow> mdSchemaDimensions(MdSchemaDimensionsRequest request,
+                                                           RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns information about the functions that are currently available for use
@@ -224,7 +241,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaFunctionsResponseRow> mdSchemaFunctions(MdSchemaFunctionsRequest request);
+	List<MdSchemaFunctionsResponseRow> mdSchemaFunctions(MdSchemaFunctionsRequest request,
+                                                         RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes each hierarchy within a particular dimension.
@@ -232,7 +250,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaHierarchiesResponseRow> mdSchemaHierarchies(MdSchemaHierarchiesRequest request);
+	List<MdSchemaHierarchiesResponseRow> mdSchemaHierarchies(MdSchemaHierarchiesRequest request,
+                                                             RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the KPIs within a database
@@ -240,7 +259,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaKpisResponseRow> mdSchemaKpis(MdSchemaKpisRequest request);
+	List<MdSchemaKpisResponseRow> mdSchemaKpis(MdSchemaKpisRequest request,
+                                               RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes each level within a particular hierarchy.
@@ -248,7 +268,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaLevelsResponseRow> mdSchemaLevels(MdSchemaLevelsRequest request);
+	List<MdSchemaLevelsResponseRow> mdSchemaLevels(MdSchemaLevelsRequest request,
+                                                   RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * enumerates the dimensions of measure groups.
@@ -257,7 +278,8 @@ public interface DiscoverService {
 	 * @return the list
 	 */
 	List<MdSchemaMeasureGroupDimensionsResponseRow> mdSchemaMeasureGroupDimensions(
-			MdSchemaMeasureGroupDimensionsRequest request);
+			MdSchemaMeasureGroupDimensionsRequest request,
+            RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the MeasureGroups within a database
@@ -265,7 +287,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaMeasureGroupsResponseRow> mdSchemaMeasureGroups(MdSchemaMeasureGroupsRequest request);
+	List<MdSchemaMeasureGroupsResponseRow> mdSchemaMeasureGroups(MdSchemaMeasureGroupsRequest request,
+                                                                 RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the members within a database
@@ -273,7 +296,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest request);
+	List<MdSchemaMeasuresResponseRow> mdSchemaMeasures(MdSchemaMeasuresRequest request,
+                                                       RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the members within a database
@@ -281,7 +305,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest request);
+	List<MdSchemaMembersResponseRow> mdSchemaMembers(MdSchemaMembersRequest request,
+                                                     RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes the properties of members and cell properties.
@@ -289,7 +314,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaPropertiesResponseRow> mdSchemaProperties(MdSchemaPropertiesRequest request);
+	List<MdSchemaPropertiesResponseRow> mdSchemaProperties(MdSchemaPropertiesRequest request,
+                                                           RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * describes any sets that are currently defined in a database, including
@@ -298,7 +324,8 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<MdSchemaSetsResponseRow> mdSchemaSets(MdSchemaSetsRequest request);
+	List<MdSchemaSetsResponseRow> mdSchemaSets(MdSchemaSetsRequest request,
+                                               RequestMetaData metaData, UserPrincipal userPrincipal);
 
 	/**
 	 * returns a rowset with one row and one column. The single cell in the rowset
@@ -307,5 +334,6 @@ public interface DiscoverService {
 	 * @param request the request
 	 * @return the list
 	 */
-	List<DiscoverXmlMetaDataResponseRow> xmlMetaData(DiscoverXmlMetaDataRequest request);
+	List<DiscoverXmlMetaDataResponseRow> xmlMetaData(DiscoverXmlMetaDataRequest request,
+                                                     RequestMetaData metaData, UserPrincipal userPrincipal);
 }

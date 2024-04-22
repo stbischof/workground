@@ -31,8 +31,12 @@ import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ContextGroup;
+import org.eclipse.daanse.olap.api.element.Cube;
+import org.eclipse.daanse.olap.api.element.Dimension;
+import org.eclipse.daanse.olap.api.element.Hierarchy;
+import org.eclipse.daanse.olap.api.element.Level;
+import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -97,6 +101,12 @@ class DbSchemaDiscoverServiceTest {
     private MappingSchema schema2;
 
     @Mock
+    private Schema schem1;
+
+    @Mock
+    private Schema schem2;
+
+    @Mock
     private MappingRole role1;
 
     @Mock
@@ -109,16 +119,34 @@ class DbSchemaDiscoverServiceTest {
     private MappingCube cube2;
 
     @Mock
+    private Cube cub1;
+
+    @Mock
+    private Cube cub2;
+
+    @Mock
     private MappingPrivateDimension dimension1;
 
     @Mock
     private MappingPrivateDimension dimension2;
 
     @Mock
+    private Dimension dim1;
+
+    @Mock
+    private Dimension dim2;
+
+    @Mock
     private MappingHierarchy hierarchy1;
 
     @Mock
     private MappingHierarchy hierarchy2;
+
+    @Mock
+    private Hierarchy hierar1;
+
+    @Mock
+    private Hierarchy hierar2;
 
     @Mock
     private MappingMeasure measure;
@@ -409,115 +437,108 @@ class DbSchemaDiscoverServiceTest {
     @Test
     void dbSchemaTables() {
         when(cls.get()).thenReturn(List.of(context1, context2));
-
+        org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);
+        when(con.getSchemas()).thenAnswer(setupDummyListAnswer(schem1, schem2));
         DbSchemaTablesRequest request = mock(DbSchemaTablesRequest.class);
         DbSchemaTablesRestrictions restrictions = mock(DbSchemaTablesRestrictions.class);
-        MappingLevel level1 = mock(MappingLevel.class);
-        MappingLevel level2 = mock(MappingLevel.class);
-        when(level1.name()).thenReturn("level1Name");
-        when(level1.description()).thenReturn("level1Description");
-        when(level2.name()).thenReturn("level2Name");
+        Level level1 = mock(Level.class);
+        Level level2 = mock(Level.class);
+        when(level1.getName()).thenReturn("level1Name");
+        when(level1.getDescription()).thenReturn("level1Description");
+        when(level2.getName()).thenReturn("level2Name");
 
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.tableCatalog()).thenReturn(Optional.of("foo"));
 
-        when(schema2.name()).thenReturn("schema2Name");
-        when(schema2.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schem2.getName()).thenReturn("schema2Name");
+        when(schem2.getCubes()).thenAnswer(setupDummyArrayAnswer(cub1, cub2));
 
-        when(hierarchy1.levels()).thenAnswer(setupDummyListAnswer(level1, level2));
-        when(hierarchy1.name()).thenReturn("hierarchy1Name");
+        when(hierar1.getLevels()).thenAnswer(setupDummyArrayAnswer(level1, level2));
+        when(hierar1.getName()).thenReturn("hierarchy1Name");
 
-        when(dimension1.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy1, hierarchy2));
+        when(dim1.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierar1, hierar2));
+        when(dim2.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierar1, hierar2));
 
-        when(cube1.name()).thenReturn("cube1Name");
-        when(cube1.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimension1, dimension2));
+        when(cub1.getName()).thenReturn("cube1Name");
+        when(cub1.getDimensions()).thenAnswer(setupDummyArrayAnswer(dim1, dim2));
 
-        when(cube2.name()).thenReturn("cube2Name");
-        when(cube2.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimension1, dimension2));
-
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+        when(cub2.getName()).thenReturn("cube2Name");
+        when(cub2.getDimensions()).thenAnswer(setupDummyArrayAnswer(dim1, dim2));
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getConnection()).thenReturn(con);
 
         List<DbSchemaTablesResponseRow> rows = service.dbSchemaTables(request);
         verify(context1, times(1)).getName();
-        assertThat(rows).isNotNull().hasSize(6);
+        assertThat(rows).isNotNull().hasSize(10);
         checkDbSchemaTablesResponseRow(rows.get(0), "foo", "schema2Name", "cube1Name", "TABLE", "foo - cube1Name Cube");
         checkDbSchemaTablesResponseRow(rows.get(1), "foo", "schema2Name", "cube1Name:hierarchy1Name:level1Name",
             "SYSTEM TABLE", "level1Description");
         checkDbSchemaTablesResponseRow(rows.get(2), "foo", "schema2Name", "cube1Name:hierarchy1Name:level2Name",
-            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");
-        checkDbSchemaTablesResponseRow(rows.get(3), "foo", "schema2Name", "cube2Name", "TABLE", "foo - cube2Name Cube");
-        checkDbSchemaTablesResponseRow(rows.get(4), "foo", "schema2Name", "cube2Name:hierarchy1Name:level1Name",
+            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");     
+        checkDbSchemaTablesResponseRow(rows.get(3), "foo", "schema2Name", "cube1Name:hierarchy1Name:level1Name",
             "SYSTEM TABLE", "level1Description");
-        checkDbSchemaTablesResponseRow(rows.get(5), "foo", "schema2Name", "cube2Name:hierarchy1Name:level2Name",
-            "SYSTEM TABLE", "schema2Name - cube2Name Cube - hierarchy1Name Hierarchy - level2Name Level");
+        checkDbSchemaTablesResponseRow(rows.get(4), "foo", "schema2Name", "cube1Name:hierarchy1Name:level2Name",
+            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");
     }
 
     @Test
     void dbSchemaTablesWithDimensionUsage() {
+    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);
+    	when(con.getSchemas()).thenAnswer(setupDummyListAnswer(schem1, schem2));
         when(cls.get()).thenReturn(List.of(context1, context2));
 
         DbSchemaTablesRequest request = mock(DbSchemaTablesRequest.class);
         DbSchemaTablesRestrictions restrictions = mock(DbSchemaTablesRestrictions.class);
-        MappingDimensionUsage dimensionUsage1 = mock(MappingDimensionUsage.class);
-        MappingDimensionUsage dimensionUsage2 = mock(MappingDimensionUsage.class);
-        when(dimensionUsage1.source()).thenReturn("dimension1Name");
-        when(dimensionUsage2.source()).thenReturn("dimension2Name");
 
-        MappingLevel level1 = mock(MappingLevel.class);
-        MappingLevel level2 = mock(MappingLevel.class);
-        when(level1.name()).thenReturn("level1Name");
-        when(level1.description()).thenReturn("level1Description");
-        when(level2.name()).thenReturn("level2Name");
+        Level level1 = mock(Level.class);
+        Level level2 = mock(Level.class);
+        when(level1.getName()).thenReturn("level1Name");
+        when(level1.getDescription()).thenReturn("level1Description");
+        when(level2.getName()).thenReturn("level2Name");
 
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.tableCatalog()).thenReturn(Optional.of("foo"));
 
-        when(schema2.name()).thenReturn("schema2Name");
-        when(schema2.dimensions()).thenAnswer(setupDummyListAnswer(dimension1, dimension2));
-        when(schema2.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schem2.getName()).thenReturn("schema2Name");
+        when(schem2.getCubes()).thenAnswer(setupDummyArrayAnswer(cub1, cub2));
 
-        when(hierarchy1.levels()).thenAnswer(setupDummyListAnswer(level1, level2));
-        when(hierarchy1.name()).thenReturn("hierarchy1Name");
+        when(hierar1.getLevels()).thenAnswer(setupDummyArrayAnswer(level1, level2));
+        when(hierar1.getName()).thenReturn("hierarchy1Name");
 
-        when(dimension1.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy1, hierarchy2));
-        when(dimension1.name()).thenReturn("dimension1Name");
-        when(dimension2.name()).thenReturn("dimension2Name");
+        when(dim1.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierar1, hierar2));
+        when(dim1.getName()).thenReturn("dimension1Name");
+        when(dim2.getName()).thenReturn("dimension2Name");
+        when(dim2.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierar1));
 
-        when(cube1.name()).thenReturn("cube1Name");
-        when(cube1.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimensionUsage1, dimensionUsage2));
+        when(cub1.getName()).thenReturn("cube1Name");
+        when(cub1.getDimensions()).thenAnswer(setupDummyArrayAnswer(dim1, dim2));
 
-        when(cube2.name()).thenReturn("cube2Name");
-        when(cube2.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimensionUsage1, dimensionUsage2));
-
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
-
+        when(cub2.getName()).thenReturn("cube2Name");
+        when(cub2.getDimensions()).thenAnswer(setupDummyArrayAnswer(dim1, dim2));
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getConnection()).thenReturn(con);
 
         List<DbSchemaTablesResponseRow> rows = service.dbSchemaTables(request);
         verify(context1, times(1)).getName();
-        assertThat(rows).isNotNull().hasSize(6);
+        assertThat(rows).isNotNull().hasSize(10);
         checkDbSchemaTablesResponseRow(rows.get(0), "foo", "schema2Name", "cube1Name", "TABLE", "foo - cube1Name Cube");
         checkDbSchemaTablesResponseRow(rows.get(1), "foo", "schema2Name", "cube1Name:hierarchy1Name:level1Name",
             "SYSTEM TABLE", "level1Description");
         checkDbSchemaTablesResponseRow(rows.get(2), "foo", "schema2Name", "cube1Name:hierarchy1Name:level2Name",
-            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");
-        checkDbSchemaTablesResponseRow(rows.get(3), "foo", "schema2Name", "cube2Name", "TABLE", "foo - cube2Name Cube");
-        checkDbSchemaTablesResponseRow(rows.get(4), "foo", "schema2Name", "cube2Name:hierarchy1Name:level1Name",
+            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");        
+        checkDbSchemaTablesResponseRow(rows.get(3), "foo", "schema2Name", "cube1Name:hierarchy1Name:level1Name",
             "SYSTEM TABLE", "level1Description");
-        checkDbSchemaTablesResponseRow(rows.get(5), "foo", "schema2Name", "cube2Name:hierarchy1Name:level2Name",
-            "SYSTEM TABLE", "schema2Name - cube2Name Cube - hierarchy1Name Hierarchy - level2Name Level");
+        checkDbSchemaTablesResponseRow(rows.get(4), "foo", "schema2Name", "cube1Name:hierarchy1Name:level2Name",
+            "SYSTEM TABLE", "schema2Name - cube1Name Cube - hierarchy1Name Hierarchy - level2Name Level");
     }
 
     @Test
     void dbSchemaTablesWithRestriction() {
+    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);
+        when(con.getSchemas()).thenAnswer(setupDummyListAnswer(schem1, schem2));
         when(cls.get()).thenReturn(List.of(context1, context2));
 
         DbSchemaTablesRequest request = mock(DbSchemaTablesRequest.class);
@@ -529,19 +550,21 @@ class DbSchemaDiscoverServiceTest {
         when(restrictions.tableCatalog()).thenReturn(Optional.of("foo"));
         when(restrictions.tableType()).thenReturn(Optional.of("TABLE"));
 
-        when(schema2.name()).thenReturn("schema2Name");
-        when(schema2.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schem2.getName()).thenReturn("schema2Name");
+        when(schem2.getCubes()).thenAnswer(setupDummyArrayAnswer(cub1, cub2));
 
-        when(cube1.name()).thenReturn("cube1Name");
+        when(cub1.getName()).thenReturn("cube1Name");
 
-        when(cube2.name()).thenReturn("cube2Name");
+        when(cub2.getName()).thenReturn("cube2Name");
 
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+
+
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+
+
+        when(context2.getConnection()).thenReturn(con);
 
         List<DbSchemaTablesResponseRow> rows = service.dbSchemaTables(request);
         verify(context1, times(1)).getName();
@@ -632,4 +655,16 @@ class DbSchemaDiscoverServiceTest {
         };
         return answer;
     }
+
+    private static <N> Answer<N[]> setupDummyArrayAnswer(N... values) {
+
+        Answer<N[]> answer = new Answer<>() {
+            @Override
+            public N[] answer(InvocationOnMock invocation) throws Throwable {
+                return values;
+            }
+        };
+        return answer;
+    }
+
 }

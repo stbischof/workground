@@ -16,6 +16,8 @@ package org.eclipse.daanse.xmla.client.soapmessage;
 import jakarta.xml.soap.SOAPMessage;
 import jakarta.xml.ws.Provider;
 import org.eclipse.daanse.ws.api.whiteboard.annotations.RequireSoapWhiteboard;
+import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.common.properties.AxisFormat;
 import org.eclipse.daanse.xmla.api.common.properties.PropertyListElementDefinition;
 import org.eclipse.daanse.xmla.api.engine200.WarningColumn;
@@ -140,10 +142,12 @@ class ClientExecuteTest {
             true
         );
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         CancelRequest cancelRequest = new CancelRequestR(properties, parameters, command);
 
         CancelResponse response = client.execute()
-            .cancel(cancelRequest);
+            .cancel(cancelRequest, requestMetaData, userPrincipal);
         assertThat(response).isNotNull();
         assertThat(response.emptyresult()).isNotNull();
         Emptyresult emptyresult = response.emptyresult();
@@ -221,10 +225,12 @@ class ClientExecuteTest {
             "miningStructurePermissionID");
         ClearCache command = new ClearCacheR(objectReference);
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         ClearCacheRequest clearCacheRequest = new ClearCacheRequestR(properties, parameters, command);
 
         ClearCacheResponse response = client.execute()
-            .clearCache(clearCacheRequest);
+            .clearCache(clearCacheRequest, requestMetaData, userPrincipal);
         assertThat(response).isNotNull();
         assertThat(response.emptyresult()).isNotNull();
         Emptyresult emptyresult = response.emptyresult();
@@ -316,11 +322,13 @@ class ClientExecuteTest {
         List<ExecuteParameter> parameters = List.of();
         StatementR command = new StatementR("select [Measures].[Sales Count] on 0, non empty [Store].[Store State]" +
             ".members on 1 from [Sales]");
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
 
         StatementRequest statementRequest = new StatementRequestR(properties, parameters, command, null);
 
         StatementResponse response = client.execute()
-            .statement(statementRequest);
+            .statement(statementRequest, requestMetaData, userPrincipal);
         assertThat(response).isNotNull();
         assertThat(response.mdDataSet()).isNotNull();
         Mddataset mddataset = response.mdDataSet();
@@ -533,10 +541,12 @@ class ClientExecuteTest {
             true,
             ObjectExpansion.EXPAND_FULL);
 
+        RequestMetaData requestMetaData = null;
+        UserPrincipal userPrincipal = null;
         AlterRequest alterRequest = new AlterRequestR(properties, parameters, command);
 
         AlterResponse response = client.execute()
-            .alter(alterRequest);
+            .alter(alterRequest, requestMetaData, userPrincipal);
         assertThat(response).isNotNull();
         assertThat(response.emptyresult()).isNotNull();
         assertThat(response.emptyresult().exception()).isNotNull();

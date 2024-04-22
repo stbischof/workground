@@ -20,6 +20,7 @@ import java.util.Optional;
 import org.eclipse.daanse.ws.api.whiteboard.annotations.RequireSoapWhiteboard;
 import org.eclipse.daanse.ws.api.whiteboard.prototypes.SOAPWhiteboardEndpoint;
 import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.model.record.RequestMetaDataR;
 import org.eclipse.daanse.xmla.server.adapter.soapmessage.XmlaApiAdapter;
@@ -89,9 +90,10 @@ public class XmlaWebserviceProvider implements Provider<SOAPMessage> {
 		}
 
 		RequestMetaData metaData = new RequestMetaDataR(oUserAgent);
+        UserPrincipal userPrincipal = null;
 
 		LOGGER.debug("===== The provider got a request =====");
-		return wsAdapter.handleRequest(request, metaData);
+		return wsAdapter.handleRequest(request, metaData, userPrincipal);
 	}
 
 	private SOAPFault getFault(Exception ex) {

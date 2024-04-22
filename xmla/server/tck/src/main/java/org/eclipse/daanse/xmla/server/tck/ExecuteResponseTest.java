@@ -200,7 +200,7 @@ class ExecuteResponseTest {
         StatementResponseR row = new StatementResponseR(mdDataSet, null);
 
         ExecuteService executeService = xmlaService.execute();
-        when(executeService.statement(any())).thenReturn(row);
+        when(executeService.statement(any(), any(), any())).thenReturn(row);
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_EXECUTE), SOAPUtil.envelop(STATEMENT_REQUEST));
@@ -225,7 +225,7 @@ class ExecuteResponseTest {
         StatementResponseR row = new StatementResponseR(null, rowSet);
 
         ExecuteService executeService = xmlaService.execute();
-        when(executeService.statement(any())).thenReturn(row);
+        when(executeService.statement(any(), any(), any())).thenReturn(row);
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_EXECUTE), SOAPUtil.envelop(STATEMENT_REQUEST));
@@ -246,7 +246,7 @@ class ExecuteResponseTest {
         EmptyresultR emptyresult = new EmptyresultR(exception, messages);
         AlterResponseR alterResponse = new AlterResponseR(emptyresult);
         ExecuteService executeService = xmlaService.execute();
-        when(executeService.alter(any())).thenReturn(alterResponse);
+        when(executeService.alter(any(), any(), any())).thenReturn(alterResponse);
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_EXECUTE), SOAPUtil.envelop(ALTER_REQUEST));
@@ -267,7 +267,7 @@ class ExecuteResponseTest {
         EmptyresultR emptyresult = new EmptyresultR(exception, messages);
         ClearCacheResponse alterResponse = new ClearCacheResponseR(emptyresult);
         ExecuteService executeService = xmlaService.execute();
-        when(executeService.clearCache(any())).thenReturn(alterResponse);
+        when(executeService.clearCache(any(), any(), any())).thenReturn(alterResponse);
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_EXECUTE), SOAPUtil.envelop(CLEAR_CACHE_REQUEST));
@@ -288,7 +288,7 @@ class ExecuteResponseTest {
         EmptyresultR emptyresult = new EmptyresultR(exception, messages);
         CancelResponse cancelResponse = new CancelResponseR(emptyresult);
         ExecuteService executeService = xmlaService.execute();
-        when(executeService.cancel(any())).thenReturn(cancelResponse);
+        when(executeService.cancel(any(), any(), any())).thenReturn(cancelResponse);
 
         SOAPMessage response = SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL,
             Optional.of(Constants.SOAP_ACTION_EXECUTE), SOAPUtil.envelop(CANCEL_REQUEST));
@@ -314,78 +314,78 @@ class ExecuteResponseTest {
     }
 
     private void checkMessages(XmlAssert xmlAssert, String ns) {
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error")
             .exist().haveAttribute("Description", DESCRIPTION)
             .haveAttribute("HelpFile", "helpFile")
             .haveAttribute("Source", "source");
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/Start")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/Start")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/Start")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/Start")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/Start/Line")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/Start/Line")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/Start/Line")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/Start/Line")
             .isEqualTo("1");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/Start/Column")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/Start/Column")
             .isEqualTo("2");
 
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/End")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/End")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/End/Line")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/End/Line")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/End/Line")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/End/Line")
             .isEqualTo("3");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/End/Column")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/End/Column")
             .isEqualTo("4");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/LineOffset")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/LineOffset")
             .isEqualTo("1");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/TextLength")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/TextLength")
             .isEqualTo("2");
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningColumn")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningColumn")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningColumn/Dimension")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningColumn/Dimension")
             .isEqualTo(DIMENSION);
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningColumn/Attribute")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningColumn/Attribute")
             .isEqualTo(ATTRIBUTE);
 
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningMeasure")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningMeasure")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningMeasure/Cube")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningMeasure/Cube")
             .isEqualTo("cube");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningMeasure/MeasureGroup")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningMeasure/MeasureGroup")
             .isEqualTo(MEASURE_GROUP);
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/SourceObject/engine200:WarningMeasure/MeasureName")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/SourceObject/engine200:WarningMeasure/MeasureName")
             .isEqualTo(MEASURE_NAME);
 
 
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject")
             .exist();
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningColumn")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningColumn")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningColumn/Dimension")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningColumn/Dimension")
             .isEqualTo(DIMENSION);
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningColumn/Attribute")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningColumn/Attribute")
             .isEqualTo(ATTRIBUTE);
 
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningMeasure")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningMeasure")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/Cube")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/Cube")
             .isEqualTo("cube");
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/MeasureGroup")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/MeasureGroup")
             .isEqualTo(MEASURE_GROUP);
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/MeasureName")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/DependsOnObject/engine200:WarningMeasure/MeasureName")
             .isEqualTo(MEASURE_NAME);
 
-        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/RowNumber")
+        xmlAssert.nodesByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/RowNumber")
             .exist();
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Location/RowNumber")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Location/RowNumber")
             .isEqualTo("3");
 
-        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/Messages/Error/Callstack")
+        xmlAssert.valueByXPath(SOAP_ENVELOPE_SOAP_BODY_MSXMLA_EXECUTE_RESPONSE_MSXMLA_RETURN + ns + ":root/mddataset:Messages/Error/Callstack")
             .isEqualTo("callstack");
 
     }
@@ -429,7 +429,7 @@ class ExecuteResponseTest {
     }
 
     private void checkRow(XmlAssert xmlAssert) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
             .withZone(ZoneId.systemDefault());
         xmlAssert.hasXPath("/SOAP:Envelope");
         xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse").exist();
@@ -438,66 +438,70 @@ class ExecuteResponseTest {
         xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root")
             .exist();
 
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube")
             .exist();
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube/CubeName")
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube/mddataset:CubeName")
             .isEqualTo("cubeName");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube/engine:LastDataUpdate")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube/mddataset:LastDataUpdate")
             .exist();
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube/engine:LastDataUpdate")
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube/mddataset:LastDataUpdate")
             .isEqualTo(formatter.format(Instant.ofEpochMilli(2000l)));
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube/engine:LastSchemaUpdate")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube/mddataset:LastSchemaUpdate")
             .exist();
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CubeInfo/Cube/engine:LastSchemaUpdate")
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CubeInfo/mddataset:Cube/mddataset:LastSchemaUpdate")
             .isEqualTo(formatter.format(Instant.ofEpochMilli(2000l)));
 
 
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/AxesInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:AxesInfo")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/AxesInfo/AxisInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:AxesInfo/mddataset:AxisInfo")
             .exist().haveAttribute("name", "name");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/AxesInfo/AxisInfo/HierarchyInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:AxesInfo/mddataset:AxisInfo/mddataset:HierarchyInfo")
             .exist().haveAttribute("name", "name");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/AxesInfo/AxisInfo/HierarchyInfo/tagName")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:AxesInfo/mddataset:AxisInfo/mddataset:HierarchyInfo/mddataset:tagName")
             .exist().haveAttribute("name", "name").haveAttribute("type", VALUE2);
 
 
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CellInfo")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CellInfo")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/OlapInfo/CellInfo/tagName")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:OlapInfo/mddataset:CellInfo/mddataset:tagName")
             .exist().haveAttribute("name", "name").haveAttribute("type", VALUE2);
 
 
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/Axes")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes")
         .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/Axes/Axis")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes/mddataset:Axis")
             .exist().haveAttribute("name", "name");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/Axes/Axis/Members")
-            .exist().haveAttribute("Hierarchy", HIERARCHY);
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/Axes/Axis/Members/Member")
-            .exist().haveAttribute("Hierarchy", HIERARCHY);
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/Axes/Axis/Members/Member/tagName")
-            .exist().haveAttribute("name", "name").haveAttribute("type", VALUE2);
-
-
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes/mddataset:Axis/mddataset:Members")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes/mddataset:Axis/mddataset:Members/mddataset:Member")
+            .exist().haveAttribute("Hierarchy", HIERARCHY);
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes/mddataset:Axis/mddataset:Members/mddataset:Member/mddataset:tagName")
+            .exist().haveAttribute("type", VALUE2);
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:Axes/mddataset:Axis/mddataset:Members/mddataset:Member/mddataset:tagName")
+        .asString().isEqualTo("name");
+
+
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData")
+            .exist();
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell")
             .exist().haveAttribute("CellOrdinal", "1");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell/Value")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:Value")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell/Value")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:Value")
             .haveAttribute("type", "xsd:int");
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell/Value")
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:Value")
             .asInt().isEqualTo(10);
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell/Value/Error")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:Value/mddataset:Error")
             .exist().haveAttribute("Description", DESCRIPTION).haveAttribute("ErrorCode", "1");
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/CellData/Cell/tagName")
-            .exist().haveAttribute("name", "name").haveAttribute("type", VALUE2);
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:tagName")
+            .exist().haveAttribute("type", VALUE2);
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/mddataset:root/mddataset:CellData/mddataset:Cell/mddataset:tagName")
+        .asString().isEqualTo("name");
 
         checkException(xmlAssert, "mddataset");
 
@@ -513,11 +517,11 @@ class ExecuteResponseTest {
             .exist();
         xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/tagName")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/rowset:tagName")
             .exist();
-        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/tagName")
+        xmlAssert.nodesByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/rowset:tagName")
             .exist().haveAttribute("type", "xsd:int");
-        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/tagName")
+        xmlAssert.valueByXPath("/SOAP:Envelope/SOAP:Body/msxmla:ExecuteResponse/msxmla:return/rowset:root/rowset:row/rowset:tagName")
             .asString().isEqualTo("value");
     }
 

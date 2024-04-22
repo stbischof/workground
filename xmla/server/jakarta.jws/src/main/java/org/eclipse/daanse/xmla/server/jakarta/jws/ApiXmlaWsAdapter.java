@@ -100,7 +100,7 @@ import static org.eclipse.daanse.xmla.api.common.properties.OperationNames.*;
 
 public class ApiXmlaWsAdapter implements WsAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiXmlaWsAdapter.class);
-	XmlaService xmlaService;
+	private final XmlaService xmlaService;
 
 	public ApiXmlaWsAdapter(XmlaService xmlaService) {
 		this.xmlaService = xmlaService;
@@ -188,161 +188,161 @@ public class ApiXmlaWsAdapter implements WsAdapter {
 
 	private ExecuteResponse handleCancel(Execute requestWs) {
 		CancelRequest requestApi = Convert.fromCancel(requestWs);
-		CancelResponse responseApi = xmlaService.execute().cancel(requestApi);
+		CancelResponse responseApi = xmlaService.execute().cancel(requestApi, null, null);
 		return Convert.toCancel(responseApi);
 	}
 
 	private ExecuteResponse handleClearCache(Execute requestWs) {
 		ClearCacheRequest requestApi = Convert.fromClearCache(requestWs);
-		ClearCacheResponse responseApi = xmlaService.execute().clearCache(requestApi);
+		ClearCacheResponse responseApi = xmlaService.execute().clearCache(requestApi, null, null);
 		return Convert.toClearCache(responseApi);
 	}
 
 	private ExecuteResponse handleAlter(Execute requestWs) {
 		AlterRequest requestApi = Convert.fromAlter(requestWs);
-		AlterResponse responseApi = xmlaService.execute().alter(requestApi);
+		AlterResponse responseApi = xmlaService.execute().alter(requestApi, null, null);
 		return Convert.toAlter(responseApi);
 	}
 
 	private ExecuteResponse handleStatement(Execute requestWs) throws JAXBException, IOException {
 		StatementRequest requestApi = Convert.fromStatement(requestWs);
-		StatementResponse responseApi = xmlaService.execute().statement(requestApi);
+		StatementResponse responseApi = xmlaService.execute().statement(requestApi, null, null);
 		return Convert.toStatement(responseApi);
 	}
 
 	private DiscoverResponse handleDbSchemaCatalogs(Discover requestWs) throws JAXBException, IOException {
-		
+
 		RequestMetaData metaData= new RequestMetaData() {
-			
+
 			@Override
 			public Optional<String> userAgent() {
 				return Optional.empty();
 			}
-			
+
 
 		};
-		
+
 		DbSchemaCatalogsRequest requestApi = Convert.fromDiscoverDbSchemaCatalogs(requestWs);
-		List<DbSchemaCatalogsResponseRow> responseApi = xmlaService.discover().dbSchemaCatalogs(requestApi,metaData);
+		List<DbSchemaCatalogsResponseRow> responseApi = xmlaService.discover().dbSchemaCatalogs(requestApi,metaData, null);
 		return Convert.toDiscoverDbSchemaCatalogs(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverProperties(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverPropertiesRequest requestApi = Convert.fromDiscoverProperties(requestWs);
-		List<DiscoverPropertiesResponseRow> responseApi = xmlaService.discover().discoverProperties(requestApi);
+		List<DiscoverPropertiesResponseRow> responseApi = xmlaService.discover().discoverProperties(requestApi, null, null);
 		return Convert.toDiscoverProperties(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverSchemaRowsets(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverSchemaRowsetsRequest requestApi = Convert.fromDiscoverSchemaRowsets(requestWs);
-		List<DiscoverSchemaRowsetsResponseRow> responseApi = xmlaService.discover().discoverSchemaRowsets(requestApi);
+		List<DiscoverSchemaRowsetsResponseRow> responseApi = xmlaService.discover().discoverSchemaRowsets(requestApi, null, null);
 		return Convert.toDiscoverSchemaRowsets(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverEnumerators(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverEnumeratorsRequest requestApi = Convert.fromDiscoverEnumerators(requestWs);
-		List<DiscoverEnumeratorsResponseRow> responseApi = xmlaService.discover().discoverEnumerators(requestApi);
+		List<DiscoverEnumeratorsResponseRow> responseApi = xmlaService.discover().discoverEnumerators(requestApi, null, null);
 		return Convert.toDiscoverEnumerators(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverKeywords(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverKeywordsRequest requestApi = Convert.fromDiscoverKeywords(requestWs);
-		List<DiscoverKeywordsResponseRow> responseApi = xmlaService.discover().discoverKeywords(requestApi);
+		List<DiscoverKeywordsResponseRow> responseApi = xmlaService.discover().discoverKeywords(requestApi, null, null);
 		return Convert.toDiscoverKeywords(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverLiterals(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverLiteralsRequest requestApi = Convert.fromDiscoverLiterals(requestWs);
-		List<DiscoverLiteralsResponseRow> responseApi = xmlaService.discover().discoverLiterals(requestApi);
+		List<DiscoverLiteralsResponseRow> responseApi = xmlaService.discover().discoverLiterals(requestApi, null, null);
 		return Convert.toDiscoverLiterals(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaTables(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaTablesRequest requestApi = Convert.fromDiscoverDbSchemaTables(requestWs);
-		List<DbSchemaTablesResponseRow> responseApi = xmlaService.discover().dbSchemaTables(requestApi);
+		List<DbSchemaTablesResponseRow> responseApi = xmlaService.discover().dbSchemaTables(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaTables(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaActions(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaActionsRequest requestApi = Convert.fromDiscoverMdSchemaActions(requestWs);
-		List<MdSchemaActionsResponseRow> responseApi = xmlaService.discover().mdSchemaActions(requestApi);
+		List<MdSchemaActionsResponseRow> responseApi = xmlaService.discover().mdSchemaActions(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaActions(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaCubes(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaCubesRequest requestApi = Convert.fromDiscoverMdSchemaCubes(requestWs);
-		List<MdSchemaCubesResponseRow> responseApi = xmlaService.discover().mdSchemaCubes(requestApi);
+		List<MdSchemaCubesResponseRow> responseApi = xmlaService.discover().mdSchemaCubes(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaCubes(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaDimensions(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaDimensionsRequest requestApi = Convert.fromDiscoverMdSchemaDimensions(requestWs);
-		List<MdSchemaDimensionsResponseRow> responseApi = xmlaService.discover().mdSchemaDimensions(requestApi);
+		List<MdSchemaDimensionsResponseRow> responseApi = xmlaService.discover().mdSchemaDimensions(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaDimensions(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaFunctions(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaFunctionsRequest requestApi = Convert.fromDiscoverMdSchemaFunctions(requestWs);
-		List<MdSchemaFunctionsResponseRow> responseApi = xmlaService.discover().mdSchemaFunctions(requestApi);
+		List<MdSchemaFunctionsResponseRow> responseApi = xmlaService.discover().mdSchemaFunctions(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaFunctions(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaHierarchies(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaHierarchiesRequest requestApi = Convert.fromDiscoverMdSchemaHierarchies(requestWs);
-		List<MdSchemaHierarchiesResponseRow> responseApi = xmlaService.discover().mdSchemaHierarchies(requestApi);
+		List<MdSchemaHierarchiesResponseRow> responseApi = xmlaService.discover().mdSchemaHierarchies(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaHierarchies(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDataSources(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverDataSourcesRequest requestApi = Convert.fromDiscoverDataSources(requestWs);
-		List<DiscoverDataSourcesResponseRow> responseApi = xmlaService.discover().dataSources(requestApi);
+		List<DiscoverDataSourcesResponseRow> responseApi = xmlaService.discover().dataSources(requestApi, null, null);
 		return Convert.toDiscoverDataSources(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverXmlMetaData(Discover requestWs) throws JAXBException, IOException {
 
 		DiscoverXmlMetaDataRequest requestApi = Convert.fromDiscoverXmlMetaData(requestWs);
-		List<DiscoverXmlMetaDataResponseRow> responseApi = xmlaService.discover().xmlMetaData(requestApi);
+		List<DiscoverXmlMetaDataResponseRow> responseApi = xmlaService.discover().xmlMetaData(requestApi, null, null);
 		return Convert.toDiscoverXmlMetaData(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaColumns(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaColumnsRequest requestApi = Convert.fromDiscoverDbSchemaColumns(requestWs);
-		List<DbSchemaColumnsResponseRow> responseApi = xmlaService.discover().dbSchemaColumns(requestApi);
+		List<DbSchemaColumnsResponseRow> responseApi = xmlaService.discover().dbSchemaColumns(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaColumns(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaProviderTypes(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaProviderTypesRequest requestApi = Convert.fromDiscoverDbSchemaProviderTypes(requestWs);
-		List<DbSchemaProviderTypesResponseRow> responseApi = xmlaService.discover().dbSchemaProviderTypes(requestApi);
+		List<DbSchemaProviderTypesResponseRow> responseApi = xmlaService.discover().dbSchemaProviderTypes(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaProviderTypes(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaSchemata(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaSchemataRequest requestApi = Convert.fromDiscoverDbSchemaSchemata(requestWs);
-		List<DbSchemaSchemataResponseRow> responseApi = xmlaService.discover().dbSchemaSchemata(requestApi);
+		List<DbSchemaSchemataResponseRow> responseApi = xmlaService.discover().dbSchemaSchemata(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaSchemata(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaLevels(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaLevelsRequest requestApi = Convert.fromDiscoverMdSchemaLevels(requestWs);
-		List<MdSchemaLevelsResponseRow> responseApi = xmlaService.discover().mdSchemaLevels(requestApi);
+		List<MdSchemaLevelsResponseRow> responseApi = xmlaService.discover().mdSchemaLevels(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaLevels(responseApi);
 	}
 
@@ -352,63 +352,63 @@ public class ApiXmlaWsAdapter implements WsAdapter {
 		MdSchemaMeasureGroupDimensionsRequest requestApi = Convert
 				.fromDiscoverMdSchemaMeasureGroupDimensions(requestWs);
 		List<MdSchemaMeasureGroupDimensionsResponseRow> responseApi = xmlaService.discover()
-				.mdSchemaMeasureGroupDimensions(requestApi);
+				.mdSchemaMeasureGroupDimensions(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaMeasureGroupDimensions(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaMeasures(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaMeasuresRequest requestApi = Convert.fromDiscoverMdSchemaMeasures(requestWs);
-		List<MdSchemaMeasuresResponseRow> responseApi = xmlaService.discover().mdSchemaMeasures(requestApi);
+		List<MdSchemaMeasuresResponseRow> responseApi = xmlaService.discover().mdSchemaMeasures(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaMeasures(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaMembers(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaMembersRequest requestApi = Convert.fromDiscoverMdSchemaMembers(requestWs);
-		List<MdSchemaMembersResponseRow> responseApi = xmlaService.discover().mdSchemaMembers(requestApi);
+		List<MdSchemaMembersResponseRow> responseApi = xmlaService.discover().mdSchemaMembers(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaMembers(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaProperties(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaPropertiesRequest requestApi = Convert.fromDiscoverMdSchemaProperties(requestWs);
-		List<MdSchemaPropertiesResponseRow> responseApi = xmlaService.discover().mdSchemaProperties(requestApi);
+		List<MdSchemaPropertiesResponseRow> responseApi = xmlaService.discover().mdSchemaProperties(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaProperties(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaSets(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaSetsRequest requestApi = Convert.fromDiscoverMdSchemaSets(requestWs);
-		List<MdSchemaSetsResponseRow> responseApi = xmlaService.discover().mdSchemaSets(requestApi);
+		List<MdSchemaSetsResponseRow> responseApi = xmlaService.discover().mdSchemaSets(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaSets(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaKpis(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaKpisRequest requestApi = Convert.fromDiscoverMdSchemaKpis(requestWs);
-		List<MdSchemaKpisResponseRow> responseApi = xmlaService.discover().mdSchemaKpis(requestApi);
+		List<MdSchemaKpisResponseRow> responseApi = xmlaService.discover().mdSchemaKpis(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaKpis(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverMdSchemaMeasureGroups(Discover requestWs) throws JAXBException, IOException {
 
 		MdSchemaMeasureGroupsRequest requestApi = Convert.fromDiscoverMdSchemaMeasureGroups(requestWs);
-		List<MdSchemaMeasureGroupsResponseRow> responseApi = xmlaService.discover().mdSchemaMeasureGroups(requestApi);
+		List<MdSchemaMeasureGroupsResponseRow> responseApi = xmlaService.discover().mdSchemaMeasureGroups(requestApi, null, null);
 		return Convert.toDiscoverMdSchemaMeasureGroups(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaSourceTables(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaSourceTablesRequest requestApi = Convert.fromDiscoverDbSchemaSourceTables(requestWs);
-		List<DbSchemaSourceTablesResponseRow> responseApi = xmlaService.discover().dbSchemaSourceTables(requestApi);
+		List<DbSchemaSourceTablesResponseRow> responseApi = xmlaService.discover().dbSchemaSourceTables(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaSourceTables(responseApi);
 	}
 
 	private DiscoverResponse handleDiscoverDbSchemaTablesInfo(Discover requestWs) throws JAXBException, IOException {
 
 		DbSchemaTablesInfoRequest requestApi = Convert.fromDiscoverDbSchemaTablesInfo(requestWs);
-		List<DbSchemaTablesInfoResponseRow> responseApi = xmlaService.discover().dbSchemaTablesInfo(requestApi);
+		List<DbSchemaTablesInfoResponseRow> responseApi = xmlaService.discover().dbSchemaTablesInfo(requestApi, null, null);
 		return Convert.toDiscoverDbSchemaTablesInfo(responseApi);
 	}
 

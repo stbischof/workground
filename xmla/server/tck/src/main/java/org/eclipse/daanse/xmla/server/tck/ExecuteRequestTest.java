@@ -13,12 +13,15 @@
  */
 package org.eclipse.daanse.xmla.server.tck;
 
+import org.eclipse.daanse.xmla.api.RequestMetaData;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.api.execute.ExecuteService;
 import org.eclipse.daanse.xmla.api.execute.alter.AlterRequest;
 import org.eclipse.daanse.xmla.api.execute.cancel.CancelRequest;
 import org.eclipse.daanse.xmla.api.execute.clearcache.ClearCacheRequest;
 import org.eclipse.daanse.xmla.api.execute.statement.StatementRequest;
+import org.eclipse.daanse.xmla.api.execute.statement.StatementResponse;
 import org.eclipse.daanse.xmla.api.xmla.ColumnBinding;
 import org.eclipse.daanse.xmla.api.xmla.DataSourceViewBinding;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +48,7 @@ import static org.eclipse.daanse.xmla.server.tck.TestRequests.ALTER_REQUEST;
 import static org.eclipse.daanse.xmla.server.tck.TestRequests.CANCEL_REQUEST;
 import static org.eclipse.daanse.xmla.server.tck.TestRequests.CLEAR_CACHE_REQUEST;
 import static org.eclipse.daanse.xmla.server.tck.TestRequests.STATEMENT_REQUEST;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,7 +77,8 @@ class ExecuteRequestTest {
     void beforaEach() {
         XmlaService xmlaService = mock(XmlaService.class);
         ExecuteService executeService = mock(ExecuteService.class);
-
+        StatementResponse statementResponse = mock(StatementResponse.class); 
+        when(executeService.statement(any(), any(), any())).thenReturn(statementResponse);
         when(xmlaService.execute()).thenReturn(executeService);
 
         bc.registerService(XmlaService.class, xmlaService, FrameworkUtil
@@ -83,12 +88,13 @@ class ExecuteRequestTest {
     @Test
     void testStatement(@InjectService XmlaService xmlaService) {
         ArgumentCaptor<StatementRequest> captor = ArgumentCaptor.forClass(StatementRequest.class);
-
+        ArgumentCaptor<RequestMetaData> rm = ArgumentCaptor.forClass(RequestMetaData.class);
+        ArgumentCaptor<UserPrincipal> up = ArgumentCaptor.forClass(UserPrincipal.class);
         SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL, Optional.of(Constants.SOAP_ACTION_EXECUTE),
             SOAPUtil.envelop(STATEMENT_REQUEST));
 
         ExecuteService executeService = xmlaService.execute();
-        verify(executeService, (times(1))).statement(captor.capture());
+        verify(executeService, (times(1))).statement(captor.capture(), rm.capture(), up.capture());
 
         StatementRequest request = captor.getValue();
         assertThat(request).isNotNull()
@@ -116,12 +122,13 @@ class ExecuteRequestTest {
     @Test
     void testClearcache(@InjectService XmlaService xmlaService) {
         ArgumentCaptor<ClearCacheRequest> captor = ArgumentCaptor.forClass(ClearCacheRequest.class);
-
+        ArgumentCaptor<RequestMetaData> rm = ArgumentCaptor.forClass(RequestMetaData.class);
+        ArgumentCaptor<UserPrincipal> up = ArgumentCaptor.forClass(UserPrincipal.class);
         SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL, Optional.of(Constants.SOAP_ACTION_EXECUTE),
             SOAPUtil.envelop(CLEAR_CACHE_REQUEST));
 
         ExecuteService executeService = xmlaService.execute();
-        verify(executeService, (times(1))).clearCache(captor.capture());
+        verify(executeService, (times(1))).clearCache(captor.capture(), rm.capture(), up.capture());
 
         ClearCacheRequest request = captor.getValue();
         assertThat(request).isNotNull()
@@ -170,12 +177,13 @@ class ExecuteRequestTest {
     @Test
     void testCancel(@InjectService XmlaService xmlaService) {
         ArgumentCaptor<CancelRequest> captor = ArgumentCaptor.forClass(CancelRequest.class);
-
+        ArgumentCaptor<RequestMetaData> rm = ArgumentCaptor.forClass(RequestMetaData.class);
+        ArgumentCaptor<UserPrincipal> up = ArgumentCaptor.forClass(UserPrincipal.class);
         SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL, Optional.of(Constants.SOAP_ACTION_EXECUTE),
             SOAPUtil.envelop(CANCEL_REQUEST));
 
         ExecuteService executeService = xmlaService.execute();
-        verify(executeService, (times(1))).cancel(captor.capture());
+        verify(executeService, (times(1))).cancel(captor.capture(), rm.capture(), up.capture());
 
         CancelRequest request = captor.getValue();
         assertThat(request).isNotNull()
@@ -204,13 +212,15 @@ class ExecuteRequestTest {
     @Test
     void testAlter(@InjectService XmlaService xmlaService) {
         ArgumentCaptor<AlterRequest> captor = ArgumentCaptor.forClass(AlterRequest.class);
+        ArgumentCaptor<RequestMetaData> rm = ArgumentCaptor.forClass(RequestMetaData.class);
+        ArgumentCaptor<UserPrincipal> up = ArgumentCaptor.forClass(UserPrincipal.class);
         Duration duration = Duration.parse("-PT1S");
 
         SOAPUtil.callSoapWebService(Constants.SOAP_ENDPOINT_URL, Optional.of(Constants.SOAP_ACTION_EXECUTE),
             SOAPUtil.envelop(ALTER_REQUEST));
 
         ExecuteService executeService = xmlaService.execute();
-        verify(executeService, (times(1))).alter(captor.capture());
+        verify(executeService, (times(1))).alter(captor.capture(), rm.capture(), up.capture());
 
         AlterRequest request = captor.getValue();
         assertThat(request).isNotNull()
