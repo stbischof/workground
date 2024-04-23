@@ -3545,6 +3545,17 @@ public class RolapCube extends CubeBase {
         return null;
     }
 
+    @Override
+    public List<Member> getLevelMembers(Level level, boolean includeCalculated) {
+        return getSchemaReader().withLocus().getLevelMembers(level, true);
+    }
+
+    @Override
+    public int getLevelCardinality(
+        Level level, boolean approximate, boolean materialize){
+        return getSchemaReader().withLocus().getLevelCardinality(level, approximate, materialize);
+    }
+
     public Context getContext() {
         return context;
     }

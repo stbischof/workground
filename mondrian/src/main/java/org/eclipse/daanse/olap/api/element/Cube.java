@@ -121,4 +121,24 @@ public interface Cube extends OlapElement, MetaElement {
     void createNamedSet(Formula formula);
 
     DrillThroughAction getDefaultDrillThroughAction();
+
+    /**
+     * Returns the members of a level, optionally including calculated members.
+     */
+    List<Member> getLevelMembers(Level level, boolean includeCalculated);
+
+    /**
+     * Returns the number of members in a level, returning an approximation if
+     * acceptable.
+     *
+     * @param level Level
+     * @param approximate Whether an approximation is acceptable
+     * @param materialize Whether to go to disk if no approximation
+     *   for the count is available and the members are not in
+     *   cache. If false, returns {@link Integer#MIN_VALUE} if value
+     *   is not in cache.
+     */
+    int getLevelCardinality(
+        Level level, boolean approximate, boolean materialize);
+
 }

@@ -23,10 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import mondrian.rolap.RolapCube;
+
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
-import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -1007,7 +1006,7 @@ public class Utils {
             if (oLevelUniqueName.isPresent()) {
                 Optional<Level> l = lookupLevel(cube, oLevelUniqueName.get());
                 if (l.isPresent()) {
-                    List<Member> members = ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(l.get(), true);
+                    List<Member> members = cube.getLevelMembers(l.get(), true);
                     return getMdSchemaMembersResponseRow(catalogName, schemaName, cube, members,
                         oMemberUniqueName, oMemberType, emitInvisibleMembers);
                 }
@@ -1069,7 +1068,7 @@ public class Utils {
             }
 
             Level level = levels[levelNumber];
-            List<Member> members = ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(level, true);
+            List<Member> members = cube.getLevelMembers(level, true);
             return getMdSchemaMembersResponseRow(catalogName, schemaName, cube, members,
                 oMemberUniqueName, oMemberType, emitInvisibleMembers);
         } else {
@@ -1079,7 +1078,7 @@ public class Utils {
             // now cached in the SchemaReader.
             List<Level> levels = hierarchy.getLevels() == null ? List.of() : Arrays.asList(hierarchy.getLevels());
             return levels.stream().map(l -> getMdSchemaMembersResponseRow(catalogName, schemaName, cube,
-                ((RolapCube)cube).getSchemaReader().withLocus().getLevelMembers(l, true), oMemberUniqueName, oMemberType, emitInvisibleMembers)).
+                cube.getLevelMembers(l, true), oMemberUniqueName, oMemberType, emitInvisibleMembers)).
                 flatMap(Collection::stream).toList();
         }
 
@@ -1356,8 +1355,7 @@ public class Utils {
         // Added by TWI to returned cached row numbers
 
         //int n = getExtra(connection).getLevelCardinality(lastLevel);
-        SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
-        int n = lastLevel == null ? 0 : schemaReader.getLevelCardinality(lastLevel, true, true);
+        int n = lastLevel == null ? 0 : cube.getLevelCardinality(lastLevel, true, true);
         int dimensionCardinality = n + 1;
         boolean isVirtual = false;
         // SQL Server always returns false
@@ -1571,8 +1569,7 @@ public class Utils {
                 // According to microsoft this is:
                 //   "The number of members in the level."
                 //int levelCardinality = extra.getLevelCardinality(level); //TODO
-                SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
-                int levelCardinality = schemaReader.getLevelCardinality(level, true, true);
+                int levelCardinality = cube.getLevelCardinality(level, true, true);
 
                 return (MdSchemaLevelsResponseRow) new MdSchemaLevelsResponseRowR(
                     Optional.ofNullable(catalogName),
@@ -1941,8 +1938,7 @@ oHierarchyName)
             );
         }
 
-        SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
-        final List<Member> levelMembers = schemaReader.getLevelMembers(
+        final List<Member> levelMembers = cube.getLevelMembers(
                     hierarchy.getLevels()[0], true);
         return new MdSchemaHierarchiesResponseRowR(
             Optional.ofNullable(catalogName),
@@ -1982,9 +1978,8 @@ oHierarchyName)
     private static int getHierarchyCardinality(Cube cube, Hierarchy hierarchy) {
         int cardinality = 0;
         if (hierarchy.getLevels() != null) {
-            SchemaReader schemaReader = ((RolapCube)cube).getSchemaReader().withLocus();
             for (Level level : hierarchy.getLevels()) {
-                cardinality += schemaReader.getLevelCardinality(level, true, true);
+                cardinality += cube.getLevelCardinality(level, true, true);
             }
         }
         return cardinality;

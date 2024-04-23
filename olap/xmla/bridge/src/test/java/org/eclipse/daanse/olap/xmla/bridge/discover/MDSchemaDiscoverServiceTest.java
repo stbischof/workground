@@ -31,7 +31,7 @@ import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ContextGroup;
 import org.eclipse.daanse.olap.api.DataType;
-import org.eclipse.daanse.olap.api.SchemaReader;
+import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
@@ -111,8 +111,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import mondrian.rolap.RolapCube;
-
 @ExtendWith(MockitoExtension.class)
 class MDSchemaDiscoverServiceTest {
 
@@ -147,10 +145,10 @@ class MDSchemaDiscoverServiceTest {
     private MappingCube mappingCube2;
 
     @Mock
-    private RolapCube cube1;
+    private Cube cube1;
 
     @Mock
-    private RolapCube cube2;
+    private Cube cube2;
 
 
     @Mock
@@ -208,13 +206,13 @@ class MDSchemaDiscoverServiceTest {
 
     @Test
     void mdSchemaCubes() {
-    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);        
+    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);
     	when(con.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
         when(cls.get()).thenReturn(List.of(context1, context2));
 
         MdSchemaCubesRequest request = mock(MdSchemaCubesRequest.class);
         MdSchemaCubesRestrictions restrictions = mock(MdSchemaCubesRestrictions.class);
-        Properties properties = mock(Properties.class); 
+        Properties properties = mock(Properties.class);
         when(properties.catalog()).thenReturn(Optional.empty());
         when(request.restrictions()).thenReturn(restrictions);
         when(request.properties()).thenReturn(properties);
@@ -235,7 +233,7 @@ class MDSchemaDiscoverServiceTest {
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-                
+
         when(context2.getConnection()).thenReturn(con);
 
         List<MdSchemaCubesResponseRow> rows = service.mdSchemaCubes(request);
@@ -302,13 +300,9 @@ class MDSchemaDiscoverServiceTest {
         when(cube2.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
         //when(cube2.getDescription()).thenReturn("cube2description");
 
-        SchemaReader schemaReader = mock(SchemaReader.class);
-        Member member = mock(Member.class);
-        when(schemaReader.withLocus()).thenReturn(schemaReader);
-        when(schemaReader.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));                
-        when(cube1.getSchemaReader()).thenReturn(schemaReader);
-        when(cube2.getSchemaReader()).thenReturn(schemaReader);
 
+        Member member = mock(Member.class);
+        when(cube1.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
 
         when(schema1.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
         when(schema2.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
@@ -459,14 +453,12 @@ class MDSchemaDiscoverServiceTest {
         when(dimension2.getUniqueName()).thenReturn("dimension2UniqueName");
         when(dimension2.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierarchy1, hierarchy2));
 
-        SchemaReader schemaReader = mock(SchemaReader.class);
-        when(schemaReader.withLocus()).thenReturn(schemaReader);
         Member member = mock(Member.class);
-        when(schemaReader.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
-        when(schemaReader.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
-        when(cube1.getSchemaReader()).thenReturn(schemaReader);
-        when(cube2.getSchemaReader()).thenReturn(schemaReader);
-        
+        when(cube1.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
+        when(cube1.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
+        when(cube2.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
+        when(cube2.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
+
         when(cube1.getName()).thenReturn("cube1Name");
         when(cube2.getName()).thenReturn("cube2Name");
         when(cube1.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
@@ -608,14 +600,10 @@ class MDSchemaDiscoverServiceTest {
         when(cube2.getName()).thenReturn("cube2Name");
         when(cube1.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
         when(cube2.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
-        SchemaReader schemaReader = mock(SchemaReader.class);
-        when(schemaReader.withLocus()).thenReturn(schemaReader);
         Member member = mock(Member.class);
-        when(schemaReader.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
-        when(cube1.getSchemaReader()).thenReturn(schemaReader);
-        when(cube2.getSchemaReader()).thenReturn(schemaReader);
+        when(cube1.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
+        when(cube2.getLevelCardinality(any(), eq(true), eq(true))).thenReturn(1);
 
-        
         when(schema1.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
         when(schema2.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
 
@@ -842,8 +830,8 @@ class MDSchemaDiscoverServiceTest {
 
     @Test
     void mdSchemaMembers() {
-    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);        
-    	
+    	org.eclipse.daanse.olap.api.Connection con = mock(org.eclipse.daanse.olap.api.Connection.class);
+
         when(cls.get()).thenReturn(List.of(context1, context2));
 
         MdSchemaMembersRequest request = mock(MdSchemaMembersRequest.class);
@@ -860,38 +848,35 @@ class MDSchemaDiscoverServiceTest {
         when(schema2.getName()).thenReturn("schema2Name");
 
         when(level1.getUniqueName()).thenReturn("level1UniqueName");
-        
+
         when(hierarchy1.getUniqueName()).thenReturn("hierarchy1UniqueName");
-        
+
         when(hierarchy1.getDimension()).thenReturn(dimension1);
-        
+
         when(hierarchy1.getLevels()).thenAnswer(setupDummyArrayAnswer(level1, level2));
         when(hierarchy2.getLevels()).thenAnswer(setupDummyArrayAnswer(level1, level2));
 
         when(dimension1.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierarchy1, hierarchy2));
         when(dimension2.getHierarchies()).thenAnswer(setupDummyArrayAnswer(hierarchy1, hierarchy2));
         when(dimension1.getUniqueName()).thenReturn("dimension1UniqueName");
-       
+
         when(cube1.getName()).thenReturn("cube1Name");
         when(cube2.getName()).thenReturn("cube2Name");
-        
+
         when(cube1.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
         when(cube2.getDimensions()).thenAnswer(setupDummyArrayAnswer(dimension1, dimension2));
-        SchemaReader schemaReader = mock(SchemaReader.class);
         Member member = mock(Member.class);
         when(member.getUniqueName()).thenReturn("memberUniqueName");
         when(member.getName()).thenReturn("measure1Name");
         when(member.getDescription()).thenReturn("measure1Description");
         when(member.getCaption()).thenReturn("measure1Caption");
-        
+
         when(member.getLevel()).thenReturn(level1);
-        when(schemaReader.withLocus()).thenReturn(schemaReader);
-        when(schemaReader.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));                
-        when(cube1.getSchemaReader()).thenReturn(schemaReader);
-        when(cube2.getSchemaReader()).thenReturn(schemaReader);
-        
+        when(cube1.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
+        when(cube2.getLevelMembers(any(), eq(true))).thenAnswer(setupDummyListAnswer(member));
+
         when(level1.getHierarchy()).thenReturn(hierarchy1);
-        
+
         when(schema1.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
         when(schema2.getCubes()).thenAnswer(setupDummyArrayAnswer(cube1, cube2));
 
