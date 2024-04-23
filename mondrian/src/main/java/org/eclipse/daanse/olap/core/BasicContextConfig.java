@@ -29,7 +29,7 @@ public interface BasicContextConfig {
 
     Integer QUERY_LIMIT = 40;
     String SEGMENT_CACHE = null;
-    Boolean ENABLE_TOTAL_COUNT = true;
+    Boolean ENABLE_TOTAL_COUNT = false;
     Integer SEGMENT_CACHE_MANAGER_NUMBER_CACHE_THREADS = 100;
     Integer CELL_BATCH_SIZE = -1;
     Integer ROLAP_CONNECTION_SHEPHERD_NB_THREADS = 20;
