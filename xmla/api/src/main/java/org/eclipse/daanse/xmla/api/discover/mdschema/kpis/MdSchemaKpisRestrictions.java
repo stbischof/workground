@@ -60,6 +60,6 @@ public interface MdSchemaKpisRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    //@Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 4)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = "xsd:int", order = 4)
     Optional<CubeSourceEnum> cubeSource();
 }

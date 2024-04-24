@@ -16,11 +16,13 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
@@ -35,7 +37,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="Cube", propOrder = { "fact", "dimensionUsageOrDimensions", "measures", "calculatedMembers",
-		"namedSets", "drillThroughActions", "writebackTables", "actions" })
+		"namedSets", "drillThroughActions", "writebackTables", "kpis", "actions" })
 public class CubeImpl extends AbstractMainElement implements MappingCube {
 
 	@XmlElements({ @XmlElement(name = "DimensionUsage", type = DimensionUsageImpl.class),
@@ -51,7 +53,9 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	protected List<MappingDrillThroughAction> drillThroughActions;
 	@XmlElement(name = "WritebackTable", type = WritebackTableImpl.class)
 	protected List<MappingWritebackTable> writebackTables;
-
+    @XmlElement(name = "Kpi", type = KpiImpl.class)
+    @XmlElementWrapper(name = "Kpis")
+    protected List<MappingKpi> kpis;
 	@XmlAttribute(name = "defaultMeasure")
 	protected String defaultMeasure;
 	@XmlAttribute(name = "cache")
@@ -171,6 +175,14 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 		return actions;
 	}
 
+    @Override
+    public List<MappingKpi> kpis() {
+        if (kpis == null) {
+            kpis = new ArrayList<>();
+        }
+        return kpis;
+    }
+
 	public void setDimensionUsageOrDimensions(List<MappingCubeDimension> dimensionUsageOrDimensions) {
 		this.dimensionUsageOrDimensions = dimensionUsageOrDimensions;
 	}
@@ -202,4 +214,9 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	public void setActions(List<MappingAction> actions) {
 		this.actions = actions;
 	}
+
+    public void setKpis(List<MappingKpi> kpis) {
+        this.kpis = kpis;
+    }
+
 }

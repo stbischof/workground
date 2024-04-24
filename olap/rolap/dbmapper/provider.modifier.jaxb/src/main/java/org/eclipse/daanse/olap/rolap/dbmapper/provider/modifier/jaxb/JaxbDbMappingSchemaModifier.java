@@ -46,6 +46,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
@@ -64,6 +65,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -115,6 +117,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HintImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.InlineTableImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.KpiImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.LevelImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MeasureImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MemberGrantImpl;
@@ -131,6 +134,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ScriptImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TranslationImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.UnionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.UserDefinedFunctionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ValueImpl;
@@ -267,7 +271,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
         List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
-        MappingRelation fact, List<MappingAction> actions
+        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
     ) {
         CubeImpl cube = new CubeImpl();
         cube.setName(name);
@@ -286,7 +290,64 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         cube.setCache(cache);
         cube.setFact(fact);
         cube.setActions(actions);
+        cube.setKpis(kpis);
         return cube;
+    }
+
+    @Override
+    protected MappingKpi new_MappingKpi(
+        String name,
+        String description,
+        List<MappingAnnotation> annotations,
+        String id,
+        List<MappingTranslation> translations,
+        String displayFolder,
+        String associatedMeasureGroupID,
+        String value,
+        String goal,
+        String status,
+        String trend,
+        String weight,
+        String trendGraphic,
+        String statusGraphic,
+        String currentTimeMember,
+        String parentKpiID
+    ) {
+        KpiImpl kpi = new KpiImpl();
+        kpi.setName(name);
+        kpi.setDescription(description);
+        kpi.setAnnotations(annotations);
+        kpi.setId(id);
+        kpi.setTranslations(translations);
+        kpi.setDisplayFolder(displayFolder);
+        kpi.setAssociatedMeasureGroupID(associatedMeasureGroupID);
+        kpi.setValue(value);
+        kpi.setGoal(goal);
+        kpi.setStatus(status);
+        kpi.setTrend(trend);
+        kpi.setWeight(weight);
+        kpi.setTrendGraphic(trendGraphic);
+        kpi.setStatusGraphic(statusGraphic);
+        kpi.setCurrentTimeMember(currentTimeMember);
+        kpi.setParentKpiID(parentKpiID);
+        return kpi;
+    }
+
+    @Override
+    protected MappingTranslation new_MappingTranslation(
+        long language,
+        String caption,
+        String description,
+        String displayFolder,
+        List<MappingAnnotation> annotations
+    ) {
+        TranslationImpl translation = new TranslationImpl();
+        translation.setLanguage(language);
+        translation.setCaption(caption);
+        translation.setDescription(description);
+        translation.setDisplayFolder(displayFolder);
+        translation.setAnnotations(annotations);
+        return translation;
     }
 
     @Override

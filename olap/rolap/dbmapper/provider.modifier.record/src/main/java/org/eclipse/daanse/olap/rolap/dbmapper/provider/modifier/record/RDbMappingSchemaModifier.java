@@ -46,6 +46,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
@@ -64,6 +65,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -115,6 +117,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HintR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.KpiR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MemberGrantR;
@@ -131,6 +134,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ScriptR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TranslationR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.UnionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.UserDefinedFunctionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
@@ -145,21 +149,23 @@ import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.AbstractDbMappin
 
 public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
 
-	public RDbMappingSchemaModifier(MappingSchema mappingSchema) {
-		super(mappingSchema);
-	}
+    public RDbMappingSchemaModifier(MappingSchema mappingSchema) {
+        super(mappingSchema);
+    }
 
     @Override
-	protected MappingSchema new_Schema(String name, String description, String measuresCaption, String defaultRole,
-                                       List<MappingAnnotation> annotations, List<MappingParameter> parameters,
-                                       List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
-                                       List<MappingNamedSet> namedSets, List<MappingRole> roles,
-                                       List<MappingUserDefinedFunction> userDefinedFunctions,
-                                       Optional<MappingDocumentation> documentation) {
-		MappingSchema mappingSchemaNew = new SchemaR(name, description,annotations, measuresCaption, defaultRole,
-				parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
-		return mappingSchemaNew;
-	}
+    protected MappingSchema new_Schema(
+        String name, String description, String measuresCaption, String defaultRole,
+        List<MappingAnnotation> annotations, List<MappingParameter> parameters,
+        List<MappingPrivateDimension> dimensions, List<MappingCube> cubes, List<MappingVirtualCube> virtualCubes,
+        List<MappingNamedSet> namedSets, List<MappingRole> roles,
+        List<MappingUserDefinedFunction> userDefinedFunctions,
+        Optional<MappingDocumentation> documentation
+    ) {
+        MappingSchema mappingSchemaNew = new SchemaR(name, description, annotations, measuresCaption, defaultRole,
+            parameters, dimensions, cubes, virtualCubes, namedSets, roles, userDefinedFunctions, documentation);
+        return mappingSchemaNew;
+    }
 
     @Override
     protected Optional<MappingDocumentation> new_Documentation(String documentation) {
@@ -167,64 +173,132 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-	protected AnnotationR new_Annotation(String name, String content) {
-		return new AnnotationR(name, content);
-	}
+    protected AnnotationR new_Annotation(String name, String content) {
+        return new AnnotationR(name, content);
+    }
 
     @Override
-	protected ParameterR new_parameter(String name, String description, ParameterTypeEnum type, boolean modifiable,
-			String defaultValue) {
-		return new ParameterR(name, description, type, modifiable, defaultValue);
-	}
+    protected ParameterR new_parameter(
+        String name, String description, ParameterTypeEnum type, boolean modifiable,
+        String defaultValue
+    ) {
+        return new ParameterR(name, description, type, modifiable, defaultValue);
+    }
 
     @Override
-	protected PrivateDimensionR new_PrivateDimension(String name, DimensionTypeEnum type, String caption,
-                                                     String description, String foreignKey, List<MappingAnnotation> annotations,
-                                                     List<MappingHierarchy> hierarchies, boolean visible, String usagePrefix) {
-		return new PrivateDimensionR(name,description,annotations,caption,visible, type,   foreignKey,
-				hierarchies,  usagePrefix);
-	}
+    protected PrivateDimensionR new_PrivateDimension(
+        String name, DimensionTypeEnum type, String caption,
+        String description, String foreignKey, List<MappingAnnotation> annotations,
+        List<MappingHierarchy> hierarchies, boolean visible, String usagePrefix
+    ) {
+        return new PrivateDimensionR(name, description, annotations, caption, visible, type, foreignKey,
+            hierarchies, usagePrefix);
+    }
 
     @Override
-	protected HierarchyR new_Hierarchy(String name, String caption, String description,
-			List<MappingAnnotation> annotations, List<MappingLevel> levels,
-			List<MappingMemberReaderParameter> memberReaderParameters, boolean hasAll, String allMemberName,
-			String allMemberCaption, String allLevelName, String primaryKey, String primaryKeyTable,
-			String defaultMember, String memberReaderClass, String uniqueKeyLevelName, boolean visible,
-			String displayFolder, MappingRelationOrJoin relation, String origin) {
-		return new HierarchyR(name,  description, annotations,caption, visible,levels, memberReaderParameters, hasAll,
-				allMemberName, allMemberCaption, allLevelName, primaryKey, primaryKeyTable, defaultMember,
-				memberReaderClass, uniqueKeyLevelName,  displayFolder, relation, origin);
-	}
+    protected HierarchyR new_Hierarchy(
+        String name, String caption, String description,
+        List<MappingAnnotation> annotations, List<MappingLevel> levels,
+        List<MappingMemberReaderParameter> memberReaderParameters, boolean hasAll, String allMemberName,
+        String allMemberCaption, String allLevelName, String primaryKey, String primaryKeyTable,
+        String defaultMember, String memberReaderClass, String uniqueKeyLevelName, boolean visible,
+        String displayFolder, MappingRelationOrJoin relation, String origin
+    ) {
+        return new HierarchyR(name, description, annotations, caption, visible, levels, memberReaderParameters, hasAll,
+            allMemberName, allMemberCaption, allLevelName, primaryKey, primaryKeyTable, defaultMember,
+            memberReaderClass, uniqueKeyLevelName, displayFolder, relation, origin);
+    }
 
     @Override
-	protected MemberReaderParameterR new_MemberReaderParameter(String name, String value) {
-		return new MemberReaderParameterR(name, value);
-	}
+    protected MemberReaderParameterR new_MemberReaderParameter(String name, String value) {
+        return new MemberReaderParameterR(name, value);
+    }
 
     @Override
-	protected MappingCube new_Cube(String name, String caption, String description, String defaultMeasure,
-			List<MappingAnnotation> annotations, List<MappingCubeDimension> dimensionUsageOrDimensions,
-			List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
-			List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
-			List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
-			MappingRelation fact, List<MappingAction> actions) {
-		return new CubeR(name,  description, annotations,caption, visible,defaultMeasure,  dimensionUsageOrDimensions, measures,
-				calculatedMembers, namedSets, drillThroughActions, writebackTables, enabled, cache,  fact,
-				actions);
-	}
+    protected MappingCube new_Cube(
+        String name, String caption, String description, String defaultMeasure,
+        List<MappingAnnotation> annotations, List<MappingCubeDimension> dimensionUsageOrDimensions,
+        List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
+        List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
+        List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
+        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
+    ) {
+        return new CubeR(name, description, annotations, caption, visible, defaultMeasure, dimensionUsageOrDimensions
+            , measures,
+            calculatedMembers, namedSets, drillThroughActions, writebackTables, enabled, cache, fact,
+            actions, kpis);
+    }
 
     @Override
-	protected MappingAction new_MappingAction(String name, String caption, String description,
-			List<MappingAnnotation> annotations) {
-		return new ActionR(name,  description, annotations,caption);
-	}
+    protected MappingKpi new_MappingKpi(
+        String name,
+        String description,
+        List<MappingAnnotation> annotations,
+        String id,
+        List<MappingTranslation> translations,
+        String displayFolder,
+        String associatedMeasureGroupID,
+        String value,
+        String goal,
+        String status,
+        String trend,
+        String weight,
+        String trendGraphic,
+        String statusGraphic,
+        String currentTimeMember,
+        String parentKpiID
+    ) {
+        return new KpiR(
+            name,
+            description,
+            annotations,
+            id,
+            translations,
+            displayFolder,
+            associatedMeasureGroupID,
+            value,
+            goal,
+            status,
+            trend,
+            weight,
+            trendGraphic,
+            statusGraphic,
+            currentTimeMember,
+            parentKpiID
+        );
+    }
 
     @Override
-	protected MappingRole new_MappingRole(List<MappingAnnotation> annotations, List<MappingSchemaGrant> schemaGrants,
-			MappingUnion union, String name) {
-		return new RoleR(name,null,annotations, schemaGrants, union);
-	}
+    protected MappingTranslation new_MappingTranslation(
+        long language,
+        String caption,
+        String description,
+        String displayFolder,
+        List<MappingAnnotation> annotations
+    ) {
+        return new TranslationR(
+            language,
+            caption,
+            description,
+            displayFolder,
+            annotations);
+    }
+
+    @Override
+    protected MappingAction new_MappingAction(
+        String name, String caption, String description,
+        List<MappingAnnotation> annotations
+    ) {
+        return new ActionR(name, description, annotations, caption);
+    }
+
+    @Override
+    protected MappingRole new_MappingRole(
+        List<MappingAnnotation> annotations, List<MappingSchemaGrant> schemaGrants,
+        MappingUnion union, String name
+    ) {
+        return new RoleR(name, null, annotations, schemaGrants, union);
+    }
 
     @Override
     protected MappingFormula new_Formula(String cdata) {
@@ -262,10 +336,10 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         MappingFormula formulaElement
     ) {
         return new CalculatedMemberR(name,
-        		description,
-        		annotations,
-        		caption,
-        		visible,
+            description,
+            annotations,
+            caption,
+            visible,
             formatString,
             dimension,
             displayFolder,
@@ -311,7 +385,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
             visible,
             cubeName,
             foreignKey
-            );
+        );
     }
 
     @Override
@@ -347,7 +421,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
             virtualCubeMeasures,
             calculatedMembers,
             namedSets
-            );
+        );
     }
 
     @Override
@@ -368,13 +442,15 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingNamedSet new_NamedSet(String name,
-                                           String caption,
-                                           String description,
-                                           String formula,
-                                           List<MappingAnnotation> annotations,
-                                           String displayFolder,
-                                           MappingFormula formulaElement) {
+    protected MappingNamedSet new_NamedSet(
+        String name,
+        String caption,
+        String description,
+        String formula,
+        List<MappingAnnotation> annotations,
+        String displayFolder,
+        MappingFormula formulaElement
+    ) {
         return new NamedSetR(
             name,
             description,
@@ -415,21 +491,25 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingSQL new_SQL(String content,
-                                 String dialect) {
+    protected MappingSQL new_SQL(
+        String content,
+        String dialect
+    ) {
         return new SQLR(content, dialect);
     }
 
     @Override
-    protected MappingAggTable new_AggName(String name,
-                                          MappingAggColumnName aggFactCount,
-                                          List<MappingAggMeasure> aggMeasures,
-                                          List<MappingAggColumnName> aggIgnoreColumns,
-                                          List<MappingAggForeignKey> aggForeignKeys,
-                                          List<MappingAggLevel> aggLevels,
-                                          boolean ignorecase,
-                                          List<MappingAggMeasureFactCount> measuresFactCounts,
-                                          String approxRowCount) {
+    protected MappingAggTable new_AggName(
+        String name,
+        MappingAggColumnName aggFactCount,
+        List<MappingAggMeasure> aggMeasures,
+        List<MappingAggColumnName> aggIgnoreColumns,
+        List<MappingAggForeignKey> aggForeignKeys,
+        List<MappingAggLevel> aggLevels,
+        boolean ignorecase,
+        List<MappingAggMeasureFactCount> measuresFactCounts,
+        String approxRowCount
+    ) {
         return new AggNameR(
             name,
             aggFactCount,
@@ -444,13 +524,15 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingAggLevel new_AggLevel(String column,
-                                           String name,
-                                           String ordinalColumn,
-                                           String nameColumn,
-                                           String captionColumn,
-                                           Boolean collapsed,
-                                           List<MappingAggLevelProperty> properties) {
+    protected MappingAggLevel new_AggLevel(
+        String column,
+        String name,
+        String ordinalColumn,
+        String nameColumn,
+        String captionColumn,
+        Boolean collapsed,
+        List<MappingAggLevelProperty> properties
+    ) {
         return new AggLevelR(
             column,
             name,
@@ -463,15 +545,19 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingAggMeasure new_AggMeasure(String column,
-                                               String name,
-                                               String rollupType) {
+    protected MappingAggMeasure new_AggMeasure(
+        String column,
+        String name,
+        String rollupType
+    ) {
         return new AggMeasureR(column, name, rollupType);
     }
 
     @Override
-    protected MappingAggForeignKey new_AggForeignKey(String factColumn,
-                                                     String aggColumn) {
+    protected MappingAggForeignKey new_AggForeignKey(
+        String factColumn,
+        String aggColumn
+    ) {
         return new AggForeignKeyR(factColumn, aggColumn);
     }
 
@@ -481,14 +567,18 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingValue new_Value(String column,
-                                     String content) {
+    protected MappingValue new_Value(
+        String column,
+        String content
+    ) {
         return new ValueR(column, content);
     }
 
     @Override
-    protected MappingColumnDef new_ColumnDef(String name,
-                                             TypeEnum type) {
+    protected MappingColumnDef new_ColumnDef(
+        String name,
+        TypeEnum type
+    ) {
         return new ColumnDefR(name, type);
     }
 
@@ -503,12 +593,14 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingHierarchyGrant new_HierarchyGrant(String hierarchy,
-                                                       AccessEnum access,
-                                                       String topLevel,
-                                                       String bottomLevel,
-                                                       String rollupPolicy,
-                                                       List<MappingMemberGrant> memberGrants) {
+    protected MappingHierarchyGrant new_HierarchyGrant(
+        String hierarchy,
+        AccessEnum access,
+        String topLevel,
+        String bottomLevel,
+        String rollupPolicy,
+        List<MappingMemberGrant> memberGrants
+    ) {
         return new HierarchyGrantR(
             hierarchy,
             access,
@@ -534,8 +626,10 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingHint new_Hint(String content,
-                                   String type) {
+    protected MappingHint new_Hint(
+        String content,
+        String type
+    ) {
         return new HintR(content, type);
     }
 
@@ -565,7 +659,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingAggExclude> aggExcludes,
         boolean ignorecase,
         List<MappingAggMeasureFactCount> measuresFactCounts
-    ){
+    ) {
         return new AggPatternR(
             pattern,
             aggFactCount,
@@ -591,15 +685,19 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingTable new_Table(String schema, String name, String alias,
-                                     List<MappingHint> hints, MappingSQL sql,
-                                     List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables) {
+    protected MappingTable new_Table(
+        String schema, String name, String alias,
+        List<MappingHint> hints, MappingSQL sql,
+        List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
+    ) {
         return new TableR(schema, name, alias, hints, sql, aggExcludes, aggTables);
     }
 
     @Override
-    protected MappingRelation new_View(String alias,
-                                       List<MappingSQL> sqls) {
+    protected MappingRelation new_View(
+        String alias,
+        List<MappingSQL> sqls
+    ) {
         return new ViewR(alias, sqls);
     }
 
@@ -626,9 +724,11 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         );
     }
 
-    protected MappingClosure new_Closure(MappingTable table,
-                                         String parentColumn,
-                                         String childColumn) {
+    protected MappingClosure new_Closure(
+        MappingTable table,
+        String parentColumn,
+        String childColumn
+    ) {
         return new ClosureR(table, parentColumn, childColumn);
     }
 
@@ -694,11 +794,13 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingJoin new_Join(List<MappingRelationOrJoin> relations,
-                                   String leftAlias,
-                                   String leftKey,
-                                   String rightAlias,
-                                   String rightKey) {
+    protected MappingJoin new_Join(
+        List<MappingRelationOrJoin> relations,
+        String leftAlias,
+        String leftKey,
+        String rightAlias,
+        String rightKey
+    ) {
         return new JoinR(relations,
             leftAlias,
             leftKey,
@@ -710,7 +812,8 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     protected MappingUserDefinedFunction new_UserDefinedFunction(
         String name,
         String className,
-        MappingScript script) {
+        MappingScript script
+    ) {
         return new UserDefinedFunctionR(name, className, script);
     }
 
@@ -748,8 +851,8 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingDrillThroughElement> drillThroughElements
     ) {
         return new DrillThroughActionR(name,
-        		description,
-        		annotations,
+            description,
+            annotations,
             caption,
             defaultt,
             drillThroughElements);
@@ -764,45 +867,46 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     protected MappingDrillThroughElement new_DrillThroughAttribute(
         String dimension,
         String level,
-        String hierarchy) {
+        String hierarchy
+    ) {
         return new DrillThroughAttributeR(dimension,
             level,
             hierarchy);
     }
 
     protected MappingMeasure new_Measure(
-            String name,
-            String column,
-            MeasureDataTypeEnum datatype,
-            String formatString,
-            String aggregator,
-            String formatter,
-            String caption,
-            String description,
-            boolean visible,
-            String displayFolder,
-            List<MappingAnnotation> annotations,
-            MappingExpressionView measureExpression,
-            List<MappingCalculatedMemberProperty> calculatedMemberProperties,
-            MappingElementFormatter cellFormatter,
-            String backColor
-        ) {
-            return new MeasureR(name,
-            		description,
-            		annotations,
-            		caption,
-            		visible,
-                column,
-                datatype,
-                formatString,
-                aggregator,
-                formatter,
-                displayFolder,
-                measureExpression,
-                calculatedMemberProperties,
-                cellFormatter,
-                backColor);
-        }
+        String name,
+        String column,
+        MeasureDataTypeEnum datatype,
+        String formatString,
+        String aggregator,
+        String formatter,
+        String caption,
+        String description,
+        boolean visible,
+        String displayFolder,
+        List<MappingAnnotation> annotations,
+        MappingExpressionView measureExpression,
+        List<MappingCalculatedMemberProperty> calculatedMemberProperties,
+        MappingElementFormatter cellFormatter,
+        String backColor
+    ) {
+        return new MeasureR(name,
+            description,
+            annotations,
+            caption,
+            visible,
+            column,
+            datatype,
+            formatString,
+            aggregator,
+            formatter,
+            displayFolder,
+            measureExpression,
+            calculatedMemberProperties,
+            cellFormatter,
+            backColor);
+    }
 
     @Override
     protected MappingWritebackTable new_WritebackTable(
@@ -838,13 +942,14 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
             caption,
             visible,
             foreignKey
-            );
+        );
     }
 
     protected MappingExpressionView new_ExpressionView(
         List<MappingSQL> sqls,
         String table,
-        String name) {
+        String name
+    ) {
         return new ExpressionViewR(
             sqls,
             table,

@@ -49,4 +49,6 @@ public interface MappingCube {
     MappingRelation fact();
 
     List<MappingAction> actions();
+
+    List<MappingKpi> kpis();
 }

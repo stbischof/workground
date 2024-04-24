@@ -21,6 +21,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
@@ -41,11 +42,12 @@ public record CubeR(String name,
                     Boolean enabled,
                     Boolean cache,
                     MappingRelation fact,
-                    List<MappingAction> actions
+                    List<MappingAction> actions,
+                    List<MappingKpi> kpis
                     )
         implements MappingCube {
-	
-	
+
+
 
 
 	public  CubeR(String name,
@@ -63,7 +65,8 @@ public record CubeR(String name,
             Boolean enabled,
             Boolean cache,
             MappingRelation fact,
-            List<MappingAction> actions
+            List<MappingAction> actions,
+            List<MappingKpi> kpis
             ) {
 				this.name = name;
 				this.description = description;
@@ -81,10 +84,7 @@ public record CubeR(String name,
 				this.cache = cache == null ? Boolean.TRUE : cache;
 				this.fact = fact;
 				this.actions = actions == null ? List.of() : actions;
-		
-		
-		
-		
+                this.kpis = kpis == null ? List.of() : kpis;
 	}
 
 }

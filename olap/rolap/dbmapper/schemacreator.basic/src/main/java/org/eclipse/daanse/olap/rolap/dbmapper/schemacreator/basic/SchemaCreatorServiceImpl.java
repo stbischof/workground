@@ -590,6 +590,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             true,
             true,
             fact,
+            List.of(),
             List.of());
     }
 

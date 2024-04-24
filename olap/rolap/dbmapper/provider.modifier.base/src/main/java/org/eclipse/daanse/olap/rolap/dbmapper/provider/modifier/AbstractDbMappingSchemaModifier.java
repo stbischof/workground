@@ -54,6 +54,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
@@ -72,6 +73,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -463,10 +465,11 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             boolean visible = cubeVisible(cube);
             MappingRelation fact = cubeFact(cube);
             List<MappingAction> actions = cubeActions(cube);
+            List<MappingKpi> kpis = cubeKpis(cube);
 
             return new_Cube(name, caption, description, defaultMeasure, annotations, dimensionUsageOrDimensions, measures,
                 calculatedMembers, namedSets, drillThroughActions, writebackTables, enabled, cache, visible, fact,
-                actions);
+                actions, kpis);
         }
         return null;
     }
@@ -477,16 +480,178 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
         List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
-        MappingRelation fact, List<MappingAction> actions
+        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
     );
 
     protected List<MappingAction> cubeActions(MappingCube cube) {
         return actions(cube.actions());
     }
 
+    protected List<MappingKpi> cubeKpis(MappingCube cube) {
+        return kpis(cube.kpis());
+    }
+
+    protected List<MappingKpi> kpis(List<MappingKpi> kpis) {
+        return kpis.stream().map(this::kpi).toList();
+    }
+
     protected List<MappingAction> actions(List<MappingAction> actions) {
         return actions.stream().map(this::action).toList();
     }
+
+    protected MappingKpi kpi(MappingKpi kpi) {
+        if (kpi != null) {
+            String name = kpiName(kpi);
+            String description = kpiDescription(kpi);
+            List<MappingAnnotation> annotations = kpiAnnotations(kpi);
+            String id = kpiId(kpi);
+            List<MappingTranslation> translations = kpiTranslations(kpi);
+            String displayFolder = kpiDisplayFolder(kpi);
+            String associatedMeasureGroupID = kpiAssociatedMeasureGroupID(kpi);
+            String value = kpiValue(kpi);
+            String goal = kpiGoal(kpi);
+            String status = kpiStatus(kpi);
+            String trend = kpiTrend(kpi);
+            String weight = kpiWeight(kpi);
+            String trendGraphic = kpiTrendGraphic(kpi);
+            String statusGraphic = kpiStatusGraphic(kpi);
+            String currentTimeMember = kpiCurrentTimeMember(kpi);
+            String parentKpiID = kpiParentKpiID(kpi);
+
+            return new_MappingKpi(name, description, annotations,
+                id, translations, displayFolder, associatedMeasureGroupID,
+                value, goal, status, trend, weight, trendGraphic, statusGraphic,
+                currentTimeMember, parentKpiID);
+        }
+        return null;
+    }
+
+    protected abstract MappingKpi new_MappingKpi(
+        String name,
+        String description,
+        List<MappingAnnotation> annotations,
+        String id,
+        List<MappingTranslation> translations,
+        String displayFolder,
+        String associatedMeasureGroupID,
+        String value,
+        String goal,
+        String status,
+        String trend,
+        String weight,
+        String trendGraphic,
+        String statusGraphic,
+        String currentTimeMember,
+        String parentKpiID
+    );
+
+    private String kpiName(MappingKpi kpi) {
+        return kpi.name();
+    }
+
+    private String kpiDescription(MappingKpi kpi) {
+        return kpi.description();
+    }
+
+    private List<MappingAnnotation> kpiAnnotations(MappingKpi kpi) {
+        return annotations(kpi.annotations());
+    }
+
+    private String kpiId(MappingKpi kpi) {
+        return kpi.id();
+    }
+
+    private String kpiAssociatedMeasureGroupID(MappingKpi kpi) {
+        return kpi.associatedMeasureGroupID();
+    }
+
+    private String kpiValue(MappingKpi kpi) {
+        return kpi.value();
+    }
+
+    private String kpiGoal(MappingKpi kpi) {
+        return kpi.goal();
+    }
+
+    private String kpiStatus(MappingKpi kpi) {
+        return kpi.status();
+    }
+
+    private String kpiTrend(MappingKpi kpi) {
+        return kpi.trend();
+    }
+
+    private String kpiWeight(MappingKpi kpi) {
+        return kpi.weight();
+    }
+
+    private String kpiTrendGraphic(MappingKpi kpi) {
+        return kpi.trendGraphic();
+    }
+
+    private String kpiStatusGraphic(MappingKpi kpi) {
+        return kpi.statusGraphic();
+    }
+
+    private String kpiCurrentTimeMember(MappingKpi kpi) {
+        return kpi.currentTimeMember();
+    }
+
+    private String kpiParentKpiID(MappingKpi kpi) {
+        return kpi.parentKpiID();
+    }
+
+    private String kpiDisplayFolder(MappingKpi kpi) {
+        return kpi.displayFolder();
+    }
+
+    private List<MappingTranslation> kpiTranslations(MappingKpi kpi) {
+        return translations(kpi.translations());
+    }
+
+    private List<MappingTranslation> translations(List<MappingTranslation> translations) {
+        if (translations != null) {
+            return translations.stream().map(this::translation).toList();
+        }
+        return null;
+    }
+
+    private MappingTranslation translation(MappingTranslation translation) {
+        if  (translation != null) {
+            long language = translationLanguage(translation);
+            String caption = translationCaption(translation);
+            String description = translationDescription(translation);
+            String displayFolder = translationDisplayFolder(translation);
+            List<MappingAnnotation> annotations = translationAnnotations(translation);
+            return new_MappingTranslation(language,
+                caption, description, displayFolder, annotations);
+        }
+        return null;
+    }
+
+    protected abstract MappingTranslation new_MappingTranslation(
+        long language, String caption, String description, String displayFolder, List<MappingAnnotation> annotations);
+
+    protected List<MappingAnnotation> translationAnnotations(MappingTranslation translation) {
+        return annotations(translation.annotations());
+    }
+
+    protected String translationDescription(MappingTranslation translation){
+           return translation.description();
+    }
+
+    protected String translationCaption(MappingTranslation translation){
+        return translation.caption();
+    }
+
+    protected String translationDisplayFolder(MappingTranslation translation){
+        return translation.displayFolder();
+    }
+
+    protected long translationLanguage(MappingTranslation translation){
+        return translation.language();
+    }
+
 
     protected MappingAction action(MappingAction action) {
         if (action != null) {

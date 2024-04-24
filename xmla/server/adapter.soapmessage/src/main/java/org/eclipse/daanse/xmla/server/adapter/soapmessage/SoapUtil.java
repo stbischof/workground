@@ -430,7 +430,7 @@ public class SoapUtil {
     }
 
     public static void toMdSchemaKpis(List<MdSchemaKpisResponseRow> rows, SOAPBody body) throws SOAPException {
-        SOAPElement root = addDiscoverPropertiesRoot(body);
+        SOAPElement root = addMdSchemaKpiRoot(body);
 
         for (MdSchemaKpisResponseRow mdSchemaKpisResponseRow : rows) {
             addMdSchemaKpisResponseRow(root, mdSchemaKpisResponseRow);
@@ -2289,6 +2289,33 @@ public class SoapUtil {
         addElement(s, "DESCRIPTION", "xsd:string", "0");
         addElement(s, "IS_WRITE_ENABLED", "xsd:boolean", "0");
         addElement(s, "MEASUREGROUP_CAPTION", "xsd:string", "0");
+        return seRoot;
+    }
+
+
+    private static SOAPElement addMdSchemaKpiRoot(SOAPBody body) throws SOAPException {
+        SOAPElement seRoot = prepareRootElement(body);
+        SOAPElement schema = fillRoot(seRoot);
+        SOAPElement s = prepareSequenceElement(schema);
+        addElement(s, "CATALOG_NAME", "xsd:string", "0");
+        addElement(s, "SCHEMA_NAME", "xsd:string", "0");
+        addElement(s, "CUBE_NAME", "xsd:string", null);
+        addElement(s, "MEASUREGROUP_NAME", "xsd:string", "0");
+        addElement(s, "KPI_NAME", "xsd:string", "0");
+        addElement(s, "KPI_CAPTION", "xsd:string", "0");
+        addElement(s, "KPI_DESCRIPTION", "xsd:string", "0");
+        addElement(s, "KPI_DISPLAY_FOLDER", "xsd:string", "0");
+        addElement(s, "KPI_VALUE", "xsd:string", "0");
+        addElement(s, "KPI_GOAL", "xsd:string", "0");
+        addElement(s, "KPI_STATUS", "xsd:string", "0");
+        addElement(s, "KPI_TREND", "xsd:string", "0");
+        addElement(s, "KPI_STATUS_GRAPHIC", "xsd:string", "0");
+        addElement(s, "KPI_TREND_GRAPHIC", "xsd:string", "0");
+        addElement(s, "KPI_WEIGHT", "xsd:string", "0");
+        addElement(s, "KPI_CURRENT_TIME_MEMBER", "xsd:string", "0");
+        addElement(s, "KPI_PARENT_KPI_NAME", "xsd:string", "0");
+        addElement(s, "ANNOTATIONS", "xsd:string", "0");
+        addElement(s, "SCOPE", "xsd:int", "0");
         return seRoot;
     }
 

@@ -44,6 +44,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
@@ -100,6 +101,7 @@ import org.eclipse.daanse.xmla.model.record.discover.mdschema.cubes.MdSchemaCube
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.demensions.MdSchemaDimensionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.functions.MdSchemaFunctionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.hierarchies.MdSchemaHierarchiesResponseRowR;
+import org.eclipse.daanse.xmla.model.record.discover.mdschema.kpis.MdSchemaKpisResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.levels.MdSchemaLevelsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.measuregroupdimensions.MdSchemaMeasureGroupDimensionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.measuregroups.MdSchemaMeasureGroupsResponseRowR;
@@ -852,14 +854,12 @@ public class Utils {
         Optional<String> oCubeName,
         Optional<String> oKpiName
     ) {
-        List<Schema> schemas = context.getConnection().getSchemas();
-        if (schemas != null) {
-            return getSchemasWithFilter(schemas, oSchemaName).stream()
-                .map(s -> getMdSchemaKpisResponseRow(context.getName(), s, oCubeName, oKpiName))
-                .flatMap(Collection::stream)
-                .toList();
-        }
-        return List.of();
+        List<DatabaseMappingSchemaProvider> schemas =
+            getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName);
+        return schemas.stream().map(dsp -> {
+            MappingSchema schema = dsp.get();
+            return getMdSchemaKpisResponseRow(context.getName(), schema, oCubeName, oKpiName);
+        }).flatMap(Collection::stream).toList();
     }
 
     static List<MdSchemaSetsResponseRow> getMdSchemaSetsResponseRow(
@@ -954,11 +954,55 @@ public class Utils {
 
     private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(
         String catalogName,
-        Schema schema,
+        MappingSchema schema,
         Optional<String> oCubeName,
         Optional<String> oKpiName
     ) {
-        return List.of();
+        return getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
+            .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.name(), c, oKpiName))
+            .flatMap(Collection::stream)
+            .toList();
+    }
+
+    private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, MappingCube c, Optional<String> oKpiName) {
+        return getMappingKpiWithFilter(c.kpis(), oKpiName).stream()
+            .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.name(), kpi))
+            .toList();
+
+    }
+
+    private static MdSchemaKpisResponseRow getMdSchemaKpisResponseRow(String catalogName, String schemaName, String cubeName, MappingKpi kpi) {
+        if (kpi != null) {
+            return new MdSchemaKpisResponseRowR(
+                Optional.ofNullable(catalogName),
+                Optional.ofNullable(schemaName),
+                Optional.ofNullable(cubeName),
+                Optional.ofNullable(cubeName),
+                Optional.ofNullable(kpi.name()),
+                Optional.ofNullable(kpi.name()),
+                Optional.ofNullable(kpi.description()),
+                Optional.ofNullable(kpi.displayFolder()),
+                Optional.ofNullable(kpi.value()),
+                Optional.ofNullable(kpi.goal()),
+                Optional.ofNullable(kpi.status()),
+                Optional.ofNullable(kpi.trend()),
+                Optional.ofNullable(kpi.statusGraphic()),
+                Optional.ofNullable(kpi.trendGraphic()),
+                Optional.ofNullable(kpi.weight()),
+                Optional.ofNullable(kpi.currentTimeMember()),
+                Optional.ofNullable(kpi.parentKpiID()),
+                Optional.empty(),
+                Optional.of(ScopeEnum.GLOBAL)
+            );
+        }
+        return null;
+    }
+
+    private static List<MappingKpi> getMappingKpiWithFilter(List<MappingKpi> kpis, Optional<String> oKpiName) {
+        if (oKpiName.isPresent()) {
+            return kpis.stream().filter(k -> oKpiName.get().equals(k.name())).toList();
+        }
+        return kpis;
     }
 
     private static List<MdSchemaMembersResponseRow> getMdSchemaMembersResponseRow(

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*********************************************************************
+* Copyright (c) 2024 Contributors to the Eclipse Foundation.
+*
+* This program and the accompanying materials are made
+* available under the terms of the Eclipse Public License 2.0
+* which is available at https://www.eclipse.org/legal/epl-2.0/
+*
+* SPDX-License-Identifier: EPL-2.0
+**********************************************************************/
+-->
+<Schema
+  name="Minimal_Cubes_With_KPI"
+  description="dfsdfdsfdsf dsg">
+  <Documentation>
+		<![CDATA[
+		A mininmal cube with Kpi
+		]]>
+  </Documentation>
+  -->
+  <Cube name="CubeKPI">
+    <Table name="Fact" />
+    <Measure aggregator="sum" name="Measure1-Sum" column="VALUE" />
+    <Measure aggregator="count" name="Measure2-Count"
+      column="VALUE" />
+    <CalculatedMember name="MeasureValue"
+      dimension="Measures"
+      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <CalculatedMember name="MeasureGoal"
+                      dimension="Measures"
+                      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <CalculatedMember name="MeasureStatus"
+                      dimension="Measures"
+                      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <CalculatedMember name="MeasureTrend"
+                      dimension="Measures"
+                      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <CalculatedMember name="MeasureWeight"
+                      dimension="Measures"
+                      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <CalculatedMember name="MeasureCurrentTimeMember"
+                      dimension="Measures"
+                      formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="0.0%"/>
+    </CalculatedMember>
+    <Kpis>
+      <Kpi name="Kpi1" description = "Kpi1Description" caption="Kpi1caption" >
+        <DisplayFolder>Kpi1</DisplayFolder>
+        <AssociatedMeasureGroupID>Kpi1MeasureGroupID</AssociatedMeasureGroupID>
+        <Value>[Measures].[MeasureValue]</Value>
+        <Goal>[Measures].[MeasureGoal]</Goal>
+        <Status>[Measures].[MeasureStatus]</Status>
+        <Trend>[Measures].[MeasureTrend]</Trend>
+        <Weight>[Measures].[MeasureWeight]</Weight>
+        <CurrentTimeMember>[Measures].[MeasureCurrentTimeMember]</CurrentTimeMember>
+      </Kpi>
+    </Kpis>
+  </Cube>
+</Schema>
