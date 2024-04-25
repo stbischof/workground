@@ -46,7 +46,9 @@ import org.eclipse.daanse.olap.operation.api.FunctionOperationAtom;
 import org.eclipse.daanse.olap.operation.api.MethodOperationAtom;
 import org.eclipse.daanse.olap.operation.api.OperationAtom;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.xmla.bridge.ContextsSupplyerImpl;
 import org.eclipse.daanse.xmla.api.common.enums.DimensionCardinalityEnum;
@@ -142,7 +144,16 @@ class MDSchemaDiscoverServiceTest {
     private MappingCube mappingCube1;
 
     @Mock
+    private MappingVirtualCube mappingVirtualCube1;
+
+    @Mock
     private MappingCube mappingCube2;
+
+    @Mock
+    private MappingKpi mappingKpi1;
+
+    @Mock
+    private MappingKpi mappingKpi2;
 
     @Mock
     private Cube cube1;
@@ -544,18 +555,87 @@ class MDSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(connection.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
+        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+
+
+        when(dmsp1.get()).thenReturn(mappingSchema1);
+        when(dmsp2.get()).thenReturn(mappingSchema2);
+        when(mappingSchema1.name()).thenReturn("schema1Name");
+        when(mappingSchema2.name()).thenReturn("schema2Name");
+
+
+        when(mappingSchema1.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
+        when(mappingSchema2.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
+        when(mappingSchema2.virtualCubes()).thenAnswer(setupDummyListAnswer(mappingVirtualCube1));
+
+        when(mappingCube1.name()).thenReturn("cube1Name");
+        when(mappingCube2.name()).thenReturn("cube2Name");
+        when(mappingVirtualCube1.name()).thenReturn("virtualCube1Name");
+
+
+        when(mappingCube1.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+        when(mappingCube2.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+        when(mappingVirtualCube1.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+
+
+        when(mappingKpi1.name()).thenReturn("kpi1Name");
+
+        when(mappingKpi1.caption()).thenReturn("kpi1Caption");
+        when(mappingKpi1.description()).thenReturn("kpi1Description");
+        when(mappingKpi1.displayFolder()).thenReturn("kpi1DisplayFolder");
+
+        when(mappingKpi1.value()).thenReturn("kpi1Value");
+        when(mappingKpi1.goal()).thenReturn("kpi1Goal");
+        when(mappingKpi1.status()).thenReturn("kpi1Status");
+        when(mappingKpi1.trend()).thenReturn("kpi1Trend");
+        when(mappingKpi1.weight()).thenReturn("kpi1Weight");
+        when(mappingKpi1.trendGraphic()).thenReturn("kpi1TrendGraphic");
+        when(mappingKpi1.statusGraphic()).thenReturn("kpi1StatusGraphic");
+        when(mappingKpi1.currentTimeMember()).thenReturn("kpi1CurrentTimeMember");
+        when(mappingKpi1.parentKpiID()).thenReturn("kpi1ParentKpiID");
+
+        when(mappingKpi2.name()).thenReturn("kpi2name");
+
+        when(mappingKpi2.caption()).thenReturn("kpi2caption");
+        when(mappingKpi2.description()).thenReturn("kpi2description");
+        when(mappingKpi2.displayFolder()).thenReturn("kpi2DisplayFolder");
+
+        when(mappingKpi2.value()).thenReturn("kpi2Value");
+        when(mappingKpi2.goal()).thenReturn("kpi2Goal");
+        when(mappingKpi2.status()).thenReturn("kpi2Status");
+        when(mappingKpi2.trend()).thenReturn("kpi2Trend");
+        when(mappingKpi2.weight()).thenReturn("kpi2Weight");
+        when(mappingKpi2.trendGraphic()).thenReturn("kpi2TrendGraphic");
+        when(mappingKpi2.statusGraphic()).thenReturn("kpi2StatusGraphic");
+        when(mappingKpi2.currentTimeMember()).thenReturn("kpi2CurrentTimeMember");
+        when(mappingKpi2.parentKpiID()).thenReturn("kpi2ParentKpiID");
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
 
-        when(context2.getConnection()).thenReturn(connection);
 
         List<MdSchemaKpisResponseRow> rows = service.mdSchemaKpis(request);
         verify(context1, times(1)).getName();
         verify(context2, times(3)).getName();
-        assertThat(rows).isNotNull().hasSize(0);
-
+        assertThat(rows).isNotNull().hasSize(10);
+        checkMdSchemaKpisResponseRow(rows.get(0),
+            "foo", "schema1Name", "cube1Name",
+            "cube1Name",
+            "kpi1Name",
+            "kpi1Caption",
+            "kpi1Description",
+            "kpi1DisplayFolder",
+            "kpi1Value",
+            "kpi1Goal",
+            "kpi1Status",
+            "kpi1Trend",
+            "kpi1StatusGraphic",
+            "kpi1TrendGraphic",
+            "kpi1Weight",
+            "kpi1CurrentTimeMember",
+            "kpi1ParentKpiID",
+            ScopeEnum.GLOBAL
+        );
     }
 
     @Test
@@ -1119,6 +1199,49 @@ class MDSchemaDiscoverServiceTest {
         assertThat(row.isReadWrite()).contains(false);
         assertThat(row.isVirtual()).contains(false);
         assertThat(row.structure()).contains(StructureEnum.HIERARCHY_FULLY_BALANCED);
+    }
+
+
+    private void checkMdSchemaKpisResponseRow(
+        MdSchemaKpisResponseRow row,
+        String catalogName,
+        String schemaName,
+        String cubeName,
+        String measureGroupName,
+        String kpiName,
+        String kpiCaption,
+        String kpiDescription,
+        String kpiDisplayFolder,
+        String kpiValue,
+        String kpiGoal,
+        String kpiStatus,
+        String kpiTrend,
+        String kpiStatusGraphic,
+        String kpiTrendGraphic,
+        String kpiWight,
+        String kpiCurrentTimeMember,
+        String kpiParentKpiName,
+        ScopeEnum scope
+    ) {
+        assertThat(row).isNotNull();
+        assertThat(row.catalogName()).contains(catalogName);
+        assertThat(row.schemaName()).contains(schemaName);
+        assertThat(row.cubeName()).contains(cubeName);
+        assertThat(row.measureGroupName()).contains(measureGroupName);
+        assertThat(row.kpiName()).contains(kpiName);
+        assertThat(row.kpiCaption()).contains(kpiCaption);
+        assertThat(row.kpiDescription()).contains(kpiDescription);
+        assertThat(row.kpiDisplayFolder()).contains(kpiDisplayFolder);
+        assertThat(row.kpiValue()).contains(kpiValue);
+        assertThat(row.kpiGoal()).contains(kpiGoal);
+        assertThat(row.kpiStatus()).contains(kpiStatus);
+        assertThat(row.kpiTrend()).contains(kpiTrend);
+        assertThat(row.kpiStatusGraphic()).contains(kpiStatusGraphic);
+        assertThat(row.kpiTrendGraphic()).contains(kpiTrendGraphic);
+        assertThat(row.kpiWight()).contains(kpiWight);
+        assertThat(row.kpiCurrentTimeMember()).contains(kpiCurrentTimeMember);
+        assertThat(row.kpiParentKpiName()).contains(kpiParentKpiName);
+        assertThat(row.scope()).contains(scope);
     }
 
     private void checkMdSchemaLevelsResponseRow(
