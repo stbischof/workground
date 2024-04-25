@@ -298,6 +298,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     protected MappingKpi new_MappingKpi(
         String name,
         String description,
+        String caption,
         List<MappingAnnotation> annotations,
         String id,
         List<MappingTranslation> translations,
@@ -316,6 +317,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         KpiImpl kpi = new KpiImpl();
         kpi.setName(name);
         kpi.setDescription(description);
+        kpi.setCaption(caption);
         kpi.setAnnotations(annotations);
         kpi.setId(id);
         kpi.setTranslations(translations);
@@ -483,7 +485,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         boolean enabled, List<MappingAnnotation> annotations, List<MappingCubeUsage> cubeUsages,
         List<MappingVirtualCubeDimension> virtualCubeDimensions,
         List<MappingVirtualCubeMeasure> virtualCubeMeasures, List<MappingCalculatedMember> calculatedMembers,
-        List<MappingNamedSet> namedSets, boolean visible
+        List<MappingNamedSet> namedSets, List<MappingKpi> kpis, boolean visible
     ) {
         VirtualCubeImpl virtualCube = new VirtualCubeImpl();
         virtualCube.setName(name);
@@ -499,6 +501,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         virtualCube.setVirtualCubeMeasures(virtualCubeMeasures);
         virtualCube.setCalculatedMembers(calculatedMembers);
         virtualCube.setNamedSets(namedSets);
+        virtualCube.setKpis(kpis);
         return virtualCube;
     }
 

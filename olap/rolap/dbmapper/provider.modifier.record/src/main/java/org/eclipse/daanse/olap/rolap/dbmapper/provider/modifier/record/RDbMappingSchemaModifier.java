@@ -233,6 +233,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     protected MappingKpi new_MappingKpi(
         String name,
         String description,
+        String caption,
         List<MappingAnnotation> annotations,
         String id,
         List<MappingTranslation> translations,
@@ -251,6 +252,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         return new KpiR(
             name,
             description,
+            caption,
             annotations,
             id,
             translations,
@@ -406,6 +408,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingVirtualCubeMeasure> virtualCubeMeasures,
         List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets,
+        List<MappingKpi> kpis,
         boolean visible
     ) {
         return new VirtualCubeR(
@@ -420,7 +423,8 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
             virtualCubeDimensions,
             virtualCubeMeasures,
             calculatedMembers,
-            namedSets
+            namedSets,
+            kpis
         );
     }
 

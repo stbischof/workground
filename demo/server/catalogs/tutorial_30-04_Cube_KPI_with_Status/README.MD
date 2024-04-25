@@ -1,9 +1,9 @@
 # Documentation
-### CatalogName : tutorial_30_Cube_KPI
-### Schema Minimal_Cubes_With_KPI : 
+### CatalogName : tutorial_30-04_Cube_KPI_with_Status
+### Schema Minimal_Cubes_With_KPI_Status : 
 
 		
-		A mininmal cube with Kpi
+		A minimal cube with Kpi with Status property only
 
 		A KPI has four important properties which are value, goal, status and trend.
 		Let's explain this by means of Profit Margin with the below calculation.
@@ -70,15 +70,12 @@ erDiagram
 c0["CubeKPI"]{
 M Measure1-Sum ""
 M Measure2-Count ""
-CM CalculatedValue ""
-CM CalculatedGoal ""
 CM CalculatedStatus ""
-CM CalculatedTrend ""
-CM CalculatedValue1 ""
+CM CalculatedValue ""
 }
 ```
 ---
-### Cube Matrix for Minimal_Cubes_With_KPI:
+### Cube Matrix for Minimal_Cubes_With_KPI_Status:
 ```mermaid
 quadrantChart
 title Cube Matrix

@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
@@ -34,7 +35,8 @@ public record VirtualCubeR(String name,
                            List<MappingVirtualCubeDimension> virtualCubeDimensions,
                            List<MappingVirtualCubeMeasure> virtualCubeMeasures,
                            List<MappingCalculatedMember> calculatedMembers,
-                           List<MappingNamedSet> namedSets
+                           List<MappingNamedSet> namedSets,
+                           List<MappingKpi> kpis
 ) implements MappingVirtualCube {
 
     public VirtualCubeR(
@@ -49,7 +51,8 @@ public record VirtualCubeR(String name,
         List<MappingVirtualCubeDimension> virtualCubeDimensions,
         List<MappingVirtualCubeMeasure> virtualCubeMeasures,
         List<MappingCalculatedMember> calculatedMembers,
-        List<MappingNamedSet> namedSets
+        List<MappingNamedSet> namedSets,
+        List<MappingKpi> kpis
     ) {
         this.name = name;
         this.description = description;
@@ -63,6 +66,7 @@ public record VirtualCubeR(String name,
         this.virtualCubeMeasures = virtualCubeMeasures == null ? List.of() : virtualCubeMeasures;
         this.calculatedMembers = calculatedMembers == null ? List.of() : calculatedMembers;
         this.namedSets = namedSets == null ? List.of() : namedSets;
+        this.kpis = kpis == null ? List.of() : kpis;
     }
 
 }

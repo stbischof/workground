@@ -22,6 +22,8 @@ public interface MappingKpi {
 
     String description();
 
+    String caption();
+
     List<MappingTranslation> translations();
 
     String displayFolder();

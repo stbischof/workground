@@ -21,6 +21,7 @@ import java.util.List;
 
 public record KpiR(String name,
                    String description,
+                   String caption,
                    List<MappingAnnotation> annotations,
                    String id,
                    List<MappingTranslation> translations,

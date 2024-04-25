@@ -30,6 +30,8 @@ public interface MappingVirtualCube {
 
     List<MappingNamedSet> namedSets();
 
+    List<MappingKpi> kpis();
+
     Boolean enabled();
 
     String name();

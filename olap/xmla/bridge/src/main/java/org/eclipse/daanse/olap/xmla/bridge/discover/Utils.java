@@ -49,6 +49,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
@@ -555,6 +556,16 @@ public class Utils {
         return cubes;
     }
 
+    private static List<MappingVirtualCube> getMappingVirtualCubeWithFilter(List<MappingVirtualCube> cubes, Optional<String> cubeName) {
+        if (cubes != null) {
+            if (cubeName.isPresent()) {
+                return cubes.stream().filter(c -> cubeName.get().equals(c.name())).toList();
+            }
+            return cubes;
+        }
+        return List.of();
+    }
+
     static boolean isDataTypeCond(XmlaConstants.DBType wstr, Optional<LevelDbTypeEnum> oLevelDbType) {
         if (oLevelDbType.isPresent()) {
             return wstr.xmlaOrdinal() == oLevelDbType.get().ordinal();
@@ -958,10 +969,18 @@ public class Utils {
         Optional<String> oCubeName,
         Optional<String> oKpiName
     ) {
-        return getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
+        List<MdSchemaKpisResponseRow> result = new ArrayList<>();
+        result.addAll(getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
             .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.name(), c, oKpiName))
             .flatMap(Collection::stream)
-            .toList();
+            .toList());
+
+        result.addAll(getMappingVirtualCubeWithFilter(schema.virtualCubes(), oCubeName).stream()
+            .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.name(), c, oKpiName))
+            .flatMap(Collection::stream)
+            .toList());
+
+        return result;
     }
 
     private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, MappingCube c, Optional<String> oKpiName) {
@@ -969,6 +988,12 @@ public class Utils {
             .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.name(), kpi))
             .toList();
 
+    }
+
+    private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, MappingVirtualCube c, Optional<String> oKpiName) {
+        return getMappingKpiWithFilter(c.kpis(), oKpiName).stream()
+            .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.name(), kpi))
+            .toList();
     }
 
     private static MdSchemaKpisResponseRow getMdSchemaKpisResponseRow(String catalogName, String schemaName, String cubeName, MappingKpi kpi) {
@@ -979,7 +1004,7 @@ public class Utils {
                 Optional.ofNullable(cubeName),
                 Optional.ofNullable(cubeName),
                 Optional.ofNullable(kpi.name()),
-                Optional.ofNullable(kpi.name()),
+                Optional.ofNullable(kpi.caption()),
                 Optional.ofNullable(kpi.description()),
                 Optional.ofNullable(kpi.displayFolder()),
                 Optional.ofNullable(kpi.value()),

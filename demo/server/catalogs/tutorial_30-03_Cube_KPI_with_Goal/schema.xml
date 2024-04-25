@@ -11,11 +11,11 @@
 **********************************************************************/
 -->
 <Schema
-  name="Minimal_Cubes_With_KPI"
-  description="dfsdfdsfdsf dsg">
+  name="Minimal_Cubes_With_KPI_Goal"
+  description="Minimal Cubes With KPI with Goal property only">
   <Documentation>
 		<![CDATA[
-		A mininmal cube with Kpi
+		A minimal cube with Kpi with Goal property only
 
 		A KPI has four important properties which are value, goal, status and trend.
 		Let's explain this by means of Profit Margin with the below calculation.
@@ -55,28 +55,14 @@
     <Table name="Fact" />
     <Measure aggregator="sum" name="Measure1-Sum" column="VALUE"/>
     <Measure aggregator="count" name="Measure2-Count" column="VALUE" />
-    <CalculatedMember name="CalculatedValue" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
     <CalculatedMember name="CalculatedGoal" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
-    <CalculatedMember name="CalculatedStatus" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
-    <CalculatedMember name="CalculatedTrend" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
-    <CalculatedMember name="CalculatedValue1" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
+    <CalculatedMember name="CalculatedValue" dimension="Measures" visible="false" formula="[Measures].[Measure1-Sum] / [Measures].[Measure2-Count]"/>
 
     <Kpis>
       <Kpi name="Kpi1" description = "Kpi with all parameters" caption="Kpi1caption" >
-        <AssociatedMeasureGroupID>Kpi1MeasureGroupID</AssociatedMeasureGroupID>
+        <AssociatedMeasureGroupID>Kpi2MeasureGroupID</AssociatedMeasureGroupID>
         <Value>[Measures].[CalculatedValue]</Value>
         <Goal>[Measures].[CalculatedGoal]</Goal>
-        <Status>[Measures].[CalculatedStatus]</Status>
-        <Trend>[Measures].[CalculatedTrend]</Trend>
-        <Weight>[Measures].[CalculatedValue]</Weight>
-        <CurrentTimeMember>[Measures].[CalculatedValue]</CurrentTimeMember>
-        <DisplayFolder>Kpi1Folder1\Kpi1Folder2</DisplayFolder>
-        <StatusGraphic>Cylinder</StatusGraphic>
-        <TrendGraphic>Smiley Face</TrendGraphic>
-      </Kpi>
-      <Kpi name="Kpi2" description = "Kpi with one parameter" caption="Kpi2caption" >
-        <AssociatedMeasureGroupID>Kpi2MeasureGroupID</AssociatedMeasureGroupID>
-        <Value>[Measures].[CalculatedValue1]</Value>
         <DisplayFolder>Kpi1Folder1\Kpi1Folder3</DisplayFolder>
       </Kpi>
     </Kpis>

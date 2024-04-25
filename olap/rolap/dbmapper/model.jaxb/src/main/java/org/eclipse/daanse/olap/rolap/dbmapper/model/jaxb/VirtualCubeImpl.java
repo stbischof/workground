@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
@@ -32,7 +33,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {  "cubeUsages", "virtualCubeDimensions", "virtualCubeMeasures",
-		"calculatedMembers", "namedSets" })
+		"calculatedMembers", "namedSets", "kpis"})
 public class VirtualCubeImpl  extends AbstractMainElement  implements MappingVirtualCube {
 
 	@XmlElementWrapper(name = "CubeUsages", required = true)
@@ -49,7 +50,12 @@ public class VirtualCubeImpl  extends AbstractMainElement  implements MappingVir
 	@XmlAttribute(name = "enabled")
 	protected Boolean enabled;
 
-	@XmlAttribute(name = "defaultMeasure")
+    @XmlElement(name = "Kpi", type = KpiImpl.class)
+    @XmlElementWrapper(name = "Kpis")
+    protected List<MappingKpi> kpis;
+
+
+    @XmlAttribute(name = "defaultMeasure")
 	protected String defaultMeasure;
 
 	@XmlAttribute(name = "visible")
@@ -123,7 +129,12 @@ public class VirtualCubeImpl  extends AbstractMainElement  implements MappingVir
 		return visible;
 	}
 
-	public void setVisible(boolean visible) {
+    @Override
+    public List<MappingKpi> kpis() {
+        return kpis;
+    }
+
+    public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
@@ -142,4 +153,8 @@ public class VirtualCubeImpl  extends AbstractMainElement  implements MappingVir
 	public void setNamedSets(List<MappingNamedSet> namedSets) {
 		this.namedSets = namedSets;
 	}
+
+    public void setKpis(List<MappingKpi> kpis) {
+        this.kpis = kpis;
+    }
 }

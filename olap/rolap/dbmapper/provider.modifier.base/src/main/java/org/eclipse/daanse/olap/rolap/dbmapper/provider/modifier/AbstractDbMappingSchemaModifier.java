@@ -503,6 +503,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         if (kpi != null) {
             String name = kpiName(kpi);
             String description = kpiDescription(kpi);
+            String caption = kpiCaption(kpi);
             List<MappingAnnotation> annotations = kpiAnnotations(kpi);
             String id = kpiId(kpi);
             List<MappingTranslation> translations = kpiTranslations(kpi);
@@ -518,7 +519,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             String currentTimeMember = kpiCurrentTimeMember(kpi);
             String parentKpiID = kpiParentKpiID(kpi);
 
-            return new_MappingKpi(name, description, annotations,
+            return new_MappingKpi(name, description, caption, annotations,
                 id, translations, displayFolder, associatedMeasureGroupID,
                 value, goal, status, trend, weight, trendGraphic, statusGraphic,
                 currentTimeMember, parentKpiID);
@@ -529,6 +530,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     protected abstract MappingKpi new_MappingKpi(
         String name,
         String description,
+        String caption,
         List<MappingAnnotation> annotations,
         String id,
         List<MappingTranslation> translations,
@@ -551,6 +553,10 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     private String kpiDescription(MappingKpi kpi) {
         return kpi.description();
+    }
+
+    private String kpiCaption(MappingKpi kpi) {
+        return kpi.caption();
     }
 
     private List<MappingAnnotation> kpiAnnotations(MappingKpi kpi) {
@@ -805,6 +811,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             List<MappingVirtualCubeMeasure> virtualCubeMeasures = virtualCubeVirtualCubeMeasure(virtualCube);
             List<MappingCalculatedMember> calculatedMembers = virtualCubeCalculatedMember(virtualCube);
             List<MappingNamedSet> namedSets = virtualCubeNamedSet(virtualCube);
+            List<MappingKpi> kpis = virtualCubeKpis(virtualCube);
             boolean enabled = virtualCubeEnabled(virtualCube);
             String name = virtualCubeName(virtualCube);
             String defaultMeasure = virtualCubeDefaultMeasure(virtualCube);
@@ -824,6 +831,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
                 virtualCubeMeasures,
                 calculatedMembers,
                 namedSets,
+                kpis,
                 visible);
         }
         return null;
@@ -855,6 +863,10 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected List<MappingNamedSet> virtualCubeNamedSet(MappingVirtualCube virtualCube) {
         return namedSets(virtualCube.namedSets());
+    }
+
+    protected List<MappingKpi> virtualCubeKpis(MappingVirtualCube virtualCube) {
+        return kpis(virtualCube.kpis());
     }
 
     protected List<MappingCalculatedMember> virtualCubeCalculatedMember(MappingVirtualCube virtualCube) {
@@ -1241,6 +1253,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         List<MappingVirtualCubeMeasure> virtualCubeMeasures,
         List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets,
+        List<MappingKpi> kpis,
         boolean visible
     );
 
