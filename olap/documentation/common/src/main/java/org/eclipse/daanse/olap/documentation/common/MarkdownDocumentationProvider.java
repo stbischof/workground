@@ -32,6 +32,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
@@ -736,6 +737,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
                     writer.write(ENTER);
                 }
+                for (MappingKpi cm : cube.kpis()) {
+                    String description = cm.description() == null ? EMPTY_STRING : cm.description();
+                    String kpiName =  prepare(cm.name());
+                    writer.write(STR."KPI \{kpiName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
                 writer.write("}");
                 writer.write(ENTER);
 
@@ -804,6 +811,12 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     String description = cm.description() == null ? EMPTY_STRING : cm.description();
                     String calculatedMemberName =  prepare(cm.name());
                     writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
+                    writer.write(ENTER);
+                }
+                for (MappingKpi kpi : virtualCube.kpis()) {
+                    String description = kpi.description() == null ? EMPTY_STRING : kpi.description();
+                    String kpiName =  prepare(kpi.name());
+                    writer.write(STR."KPI \{kpiName} \"\{description}\"");
                     writer.write(ENTER);
                 }
                 writer.write("}");

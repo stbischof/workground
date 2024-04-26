@@ -74,6 +74,10 @@ M Measure-Sum1 ""
 M Measure-Sum2 ""
 M Measure-Sum3 ""
 M Measure-Sum4 ""
+KPI Kpi1 "Kpi with time parameters"
+KPI Kpi21 "Kpi2_1"
+KPI Kpi22 "Kpi2_2"
+KPI Kpi3 "Kpi3"
 }
 ```
 ---

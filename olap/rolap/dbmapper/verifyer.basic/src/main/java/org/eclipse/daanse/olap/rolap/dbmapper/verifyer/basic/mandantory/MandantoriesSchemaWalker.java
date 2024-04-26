@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -42,6 +41,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
@@ -151,6 +151,69 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
             }
         }
+    }
+
+    @Override
+    protected void checkKpi(MappingKpi kpi, MappingCube cube) {
+        super.checkKpi(kpi, cube);
+        if (kpi != null) {
+            if (isEmpty(kpi.name())) {
+                String msg = String.format(KPI_NAME_MUST_BE_SET, orNotSet(cube.name()));
+                results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+
+            }
+            if (isEmpty(kpi.value())) {
+                String msg = String.format(KPI_VALUE_MUST_BE_SET, orNotSet(kpi.name()), orNotSet(cube.name()));
+                results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+            } else {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Value");
+            }
+
+            if (!isEmpty(kpi.goal())) {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Goal");
+            }
+            if (!isEmpty(kpi.status())) {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Status");
+            }
+
+            if (!isEmpty(kpi.trend())) {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Trend");
+            }
+
+            if (!isEmpty(kpi.weight())) {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Weight");
+            }
+
+            if (!isEmpty(kpi.currentTimeMember())) {
+                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "CurrentTimeMember");
+            }
+
+        }
+    }
+
+    private void checkMeasureCalculationName(String value, MappingCube cube, String kpiName, String paramName) {
+        String[] values = value.split("\\.");
+        if (values.length != 2) {
+            String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+            results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+        } else {
+            if (!"[Measures]".equals(values[0])) {
+                String msg = String.format(KPI_PARAM_MUST_START_MEASURE, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+            }
+            if (!(values[1].startsWith("[") && values[1].endsWith("]"))) {
+                String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+            } else {
+                String mesName = values[1].substring(1, values[1].length() - 1);
+                if (!(cube.measures().stream().anyMatch(m -> mesName.equals(m.name()))
+                    || cube.calculatedMembers().stream().anyMatch(m -> mesName.equals(m.name())))) {
+                    String msg = String.format(MEASURE_WITH_NAME_FOR_PARAM_FOR_KPI_FOR_CUBE, mesName, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                    results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
+                }
+            }
+        }
+
     }
 
     @Override

@@ -23,6 +23,7 @@ public class SchemaWalkerMessages {
     public static final String VIRTUAL_CUBE_DIMENSIONS = "Virtual Cube Dimensions";
     public static final String VIRTUAL_CUBE_MEASURE = "Virtual Cube Measure";
     public static final String MEASURE = "Measure";
+    public static final String KPI = "KPI";
     public static final String HIERARCHY = "Hierarchy";
     public static final String PROPERTY = "Property";
     public static final String CUBE_DIMENSION = "Cube Dimension";
@@ -130,7 +131,12 @@ public class SchemaWalkerMessages {
     public static final String FACT_NAME_MUST_BE_SET = "Fact name must be set for cube with name %s";
     public static final String CUBE_WITH_NAME_MUST_CONTAIN = "Cube with name %s must contain %s";
     public static final String MEASURE_NAME_MUST_BE_SET = "Measure name must be set for cube with name %s";
+    public static final String KPI_NAME_MUST_BE_SET = "KPI name must be set for cube with name %s";
     public static final String MEASURE_AGGREGATOR_MUST_BE_SET = "Measure Aggregator must be set for cube with name %s";
+    public static final String KPI_VALUE_MUST_BE_SET = "KPI value must be set for KPI with name %s for cube with name %s";
+    public static final String KPI_PARAM_WRONG = "KPI %s have wrong format for KPI with name %s for cube with name %s";
+    public static final String KPI_PARAM_MUST_START_MEASURE = "KPI %s should start from '[measure].' for KPI with name %s for cube with name %s";
+    public static final String MEASURE_WITH_NAME_FOR_PARAM_FOR_KPI_FOR_CUBE = "Measure or calculated member %s absent for KPI %s for KPI with name %s for cube with name %s";
     public static final String PRIMARY_KEY_TABLE_AND_PRIMARY_KEY_MUST_BE_SET_FOR_JOIN =
         "Hierarchy: PrimaryKeyTable and PrimaryKey must be set for Join in dimension with name %s";
     public static final String PRIMARY_KEY_TABLE_MUST_BE_SET_FOR_JOIN =
@@ -267,6 +273,7 @@ public class SchemaWalkerMessages {
     public static final String VIRTUAL_CUBE_MUST_CONTAIN_DESCRIPTION = "Virtual Cube must contain description";
     public static final String CUBE_MUST_CONTAIN_DESCRIPTION = "Cube must contain description";
     public static final String MEASURE_MUST_CONTAIN_DESCRIPTION = "Measure must contain description";
+    public static final String KPI_MUST_CONTAIN_DESCRIPTION = "KPI must contain description";
     public static final String CALCULATED_MEMBER_PROPERTY_MUST_CONTAIN_DESCRIPTION =
         "CalculatedMemberProperty must contain description";
     public static final String CALCULATED_MEMBER_MUST_CONTAIN_DESCRIPTION = "CalculatedMember must contain description";

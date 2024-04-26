@@ -60,6 +60,11 @@ public interface DescriptionVerifierConfig {
         return null;
     }
 
+    @AttributeDefinition(description = "kpi")
+    default Level kpi() {
+        return null;
+    }
+
     @AttributeDefinition(description = "namedSet")
     default Level namedSet() {
         return null;

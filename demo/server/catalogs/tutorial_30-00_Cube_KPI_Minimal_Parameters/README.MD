@@ -69,6 +69,7 @@
 erDiagram
 c0["CubeKPI"]{
 M Measure1-Sum ""
+KPI Kpi1 "Kpi with all parameters"
 }
 ```
 ---

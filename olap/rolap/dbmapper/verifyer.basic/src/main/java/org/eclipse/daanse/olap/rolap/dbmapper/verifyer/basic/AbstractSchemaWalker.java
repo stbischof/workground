@@ -54,6 +54,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberReaderParameter;
@@ -70,6 +71,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSharedDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
@@ -111,6 +113,7 @@ public abstract class AbstractSchemaWalker {
             checkNamedSetList(cube.namedSets());
             checkDrillThroughActionList(cube.drillThroughActions());
             checkWritebackTableList(cube.writebackTables());
+            checkKpiList(cube.kpis(), cube);
             if (cube.actions() != null) {
                 cube.actions().forEach(this::checkAction);
             }
@@ -158,6 +161,13 @@ public abstract class AbstractSchemaWalker {
             checkCalculatedMemberPropertyList(measure.calculatedMemberProperties());
             checkExpressionView(measure.measureExpression());
             checkElementFormatter(measure.cellFormatter());
+        }
+    }
+
+    protected void checkKpi(MappingKpi kpi, MappingCube cube) {
+        if (kpi != null) {
+            checkAnnotationList(kpi.annotations());
+            checkTranslationList(kpi.translations());
         }
     }
 
@@ -488,6 +498,10 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
+    protected void checkTranslation(MappingTranslation annotation) {
+        //empty
+    }
+
     protected void checkRole(MappingRole role, MappingSchema schema) {
         if (role != null) {
             checkAnnotationList(role.annotations());
@@ -780,6 +794,12 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
+    private void checkTranslationList(List<? extends MappingTranslation> list) {
+        if (list != null) {
+            list.forEach(this::checkTranslation);
+        }
+    }
+
     private void checkParameterList(List<? extends MappingParameter> list) {
         if (list != null) {
             list.forEach(this::checkParameter);
@@ -795,6 +815,12 @@ public abstract class AbstractSchemaWalker {
     private void checkMeasureList(List<? extends MappingMeasure> list, MappingCube cube) {
         if (list != null) {
             list.forEach(m -> checkMeasure(m, cube));
+        }
+    }
+
+    private void checkKpiList(List<? extends MappingKpi> list, MappingCube cube) {
+        if (list != null) {
+            list.forEach(k -> checkKpi(k, cube));
         }
     }
 

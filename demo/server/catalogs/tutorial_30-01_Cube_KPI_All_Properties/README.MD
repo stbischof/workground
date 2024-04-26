@@ -74,6 +74,7 @@ CM CalculatedValue ""
 CM CalculatedGoal ""
 CM CalculatedStatus ""
 CM CalculatedTrend ""
+KPI Kpi1 "Kpi with all parameters"
 }
 ```
 ---

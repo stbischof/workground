@@ -27,6 +27,8 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.DRILL_THROUGH_ACTION_MUST_CONTAIN_DESCRIPTION;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.HIERARCHY;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.HIERARCHY_MUST_CONTAIN_DESCRIPTION;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.KPI;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.KPI_MUST_CONTAIN_DESCRIPTION;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.LEVEL;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.LEVEL_MUST_CONTAIN_DESCRIPTION;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.MEASURE;
@@ -53,6 +55,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
@@ -126,6 +129,16 @@ public class DescriptionWalker extends AbstractSchemaWalker {
         if (lavel != null && (measure.description() == null || measure.description()
                 .isEmpty())) {
             results.add(new VerificationResultR(MEASURE, MEASURE_MUST_CONTAIN_DESCRIPTION, lavel, Cause.SCHEMA));
+        }
+    }
+
+    @Override
+    protected void checkKpi(MappingKpi kpi, MappingCube cube) {
+        super.checkKpi(kpi, cube);
+        Level lavel = config.kpi();
+        if (lavel != null && (kpi.description() == null || kpi.description()
+            .isEmpty())) {
+            results.add(new VerificationResultR(KPI, KPI_MUST_CONTAIN_DESCRIPTION, lavel, Cause.SCHEMA));
         }
     }
 

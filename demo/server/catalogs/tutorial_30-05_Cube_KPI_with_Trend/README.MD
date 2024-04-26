@@ -72,6 +72,7 @@ M Measure1-Sum ""
 M Measure2-Count ""
 CM CalculatedTrend ""
 CM CalculatedValue ""
+KPI Kpi1 "Kpi with all parameters"
 }
 ```
 ---

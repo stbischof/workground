@@ -168,6 +168,7 @@ D Cube1Dimension1 ""
 D Cube2Dimension1 ""
 CM CalculatedValue ""
 CM CalculatedTrend ""
+KPI Kpi1 "Kpi with all parameters"
 }
 d20["Dimension1"] {
 H HierarchyWithoutHasAll ""

@@ -71,6 +71,7 @@ c0["CubeKPI"]{
 M Measure1-Sum ""
 M Measure2-Count ""
 CM CalculatedValue ""
+KPI Kpi "Kpi with value parameter"
 }
 ```
 ---
