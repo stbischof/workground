@@ -813,11 +813,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
                     writer.write(ENTER);
                 }
-                for (MappingKpi kpi : virtualCube.kpis()) {
-                    String description = kpi.description() == null ? EMPTY_STRING : kpi.description();
-                    String kpiName =  prepare(kpi.name());
-                    writer.write(STR."KPI \{kpiName} \"\{description}\"");
-                    writer.write(ENTER);
+                if (virtualCube.kpis() != null) {
+                	for (MappingKpi kpi : virtualCube.kpis()) {
+                		String description = kpi.description() == null ? EMPTY_STRING : kpi.description();
+                		String kpiName =  prepare(kpi.name());
+                		writer.write(STR."KPI \{kpiName} \"\{description}\"");
+                		writer.write(ENTER);
+                	}
                 }
                 writer.write("}");
                 writer.write(ENTER);

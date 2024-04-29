@@ -225,8 +225,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
                 results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
             } else {
                 String mesName = values[1].substring(1, values[1].length() - 1);
-                if (!(measureNames.stream().anyMatch(m -> mesName.equals(cubeName))
-                    || calculatedMemberNames.stream().anyMatch(m -> mesName.equals(cubeName)))) {
+                if (!(measureNames.stream().anyMatch(m -> mesName.equals(m))
+                    || calculatedMemberNames.stream().anyMatch(m -> mesName.equals(m)))) {
                     String msg = String.format(MEASURE_WITH_NAME_FOR_PARAM_FOR_KPI_FOR_CUBE, mesName, paramName, orNotSet(kpiName), orNotSet(cubeName));
                     results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
                 }
