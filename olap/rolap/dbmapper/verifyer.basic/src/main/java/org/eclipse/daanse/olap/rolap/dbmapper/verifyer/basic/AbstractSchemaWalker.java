@@ -15,7 +15,6 @@ package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic;
 
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.NOT_SET;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +164,13 @@ public abstract class AbstractSchemaWalker {
     }
 
     protected void checkKpi(MappingKpi kpi, MappingCube cube) {
+        if (kpi != null) {
+            checkAnnotationList(kpi.annotations());
+            checkTranslationList(kpi.translations());
+        }
+    }
+
+    protected void checkKpi(MappingKpi kpi, MappingVirtualCube cube) {
         if (kpi != null) {
             checkAnnotationList(kpi.annotations());
             checkTranslationList(kpi.translations());
@@ -418,6 +424,8 @@ public abstract class AbstractSchemaWalker {
             checkVirtualCubeMeasureList(virtCube.virtualCubeMeasures(), virtCube, schema);
 
             checkNamedSetList(virtCube.namedSets());
+
+            checkKpiList(virtCube.kpis(), virtCube);
 
             //CalculatedMember
             if (virtCube.calculatedMembers() != null) {
@@ -819,6 +827,12 @@ public abstract class AbstractSchemaWalker {
     }
 
     private void checkKpiList(List<? extends MappingKpi> list, MappingCube cube) {
+        if (list != null) {
+            list.forEach(k -> checkKpi(k, cube));
+        }
+    }
+
+    private void checkKpiList(List<? extends MappingKpi> list, MappingVirtualCube cube) {
         if (list != null) {
             list.forEach(k -> checkKpi(k, cube));
         }

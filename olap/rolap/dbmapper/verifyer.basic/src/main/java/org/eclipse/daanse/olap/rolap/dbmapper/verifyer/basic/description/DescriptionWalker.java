@@ -143,6 +143,16 @@ public class DescriptionWalker extends AbstractSchemaWalker {
     }
 
     @Override
+    protected void checkKpi(MappingKpi kpi, MappingVirtualCube cube) {
+        super.checkKpi(kpi, cube);
+        Level lavel = config.kpi();
+        if (lavel != null && (kpi.description() == null || kpi.description()
+            .isEmpty())) {
+            results.add(new VerificationResultR(KPI, KPI_MUST_CONTAIN_DESCRIPTION, lavel, Cause.SCHEMA));
+        }
+    }
+
+    @Override
     protected void checkCalculatedMemberProperty(MappingCalculatedMemberProperty calculatedMemberProperty) {
         super.checkCalculatedMemberProperty(calculatedMemberProperty);
         Level lavel = config.calculatedMemberProperty();

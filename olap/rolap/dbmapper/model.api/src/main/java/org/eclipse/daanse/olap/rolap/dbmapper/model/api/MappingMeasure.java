@@ -17,15 +17,11 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
 
-public interface MappingMeasure {
-
-    List<MappingAnnotation> annotations();
+public interface MappingMeasure extends MappingBaseInterface{
 
     MappingExpressionView measureExpression();
 
     List<MappingCalculatedMemberProperty> calculatedMemberProperties();
-
-    String name();
 
     String column();
 
@@ -36,10 +32,6 @@ public interface MappingMeasure {
     String aggregator();
 
     String formatter();
-
-    String caption();
-
-    String description();
 
     Boolean visible();
 

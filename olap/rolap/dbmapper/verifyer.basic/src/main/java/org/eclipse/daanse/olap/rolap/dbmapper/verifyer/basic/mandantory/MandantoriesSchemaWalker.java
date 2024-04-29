@@ -156,59 +156,78 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkKpi(MappingKpi kpi, MappingCube cube) {
         super.checkKpi(kpi, cube);
+        List<String> measureNames = cube.measures() != null ?
+            cube.measures().stream().map(MappingMeasure::name).toList() : List.of();
+        List<String> calculatedMemberNames = cube.calculatedMembers() != null ?
+            cube.calculatedMembers().stream().map(MappingCalculatedMember::name).toList() : List.of();
+        checkKpi(kpi, cube.name(), measureNames, calculatedMemberNames);
+    }
+
+    @Override
+    protected void checkKpi(MappingKpi kpi, MappingVirtualCube cube) {
+        super.checkKpi(kpi, cube);
+        List<String> measureNames = cube.virtualCubeMeasures() != null ?
+            cube.virtualCubeMeasures().stream().map(MappingVirtualCubeMeasure::name).toList() : List.of();
+        List<String> calculatedMemberNames = cube.calculatedMembers() != null ?
+            cube.calculatedMembers().stream().map(MappingCalculatedMember::name).toList() : List.of();
+        checkKpi(kpi, cube.name(), measureNames, calculatedMemberNames);
+    }
+
+    private void checkKpi(MappingKpi kpi, String cubeName, List<String> measureNames, List<String> calculatedMemberNames) {
         if (kpi != null) {
             if (isEmpty(kpi.name())) {
-                String msg = String.format(KPI_NAME_MUST_BE_SET, orNotSet(cube.name()));
+                String msg = String.format(KPI_NAME_MUST_BE_SET, orNotSet(cubeName));
                 results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
 
             }
+
             if (isEmpty(kpi.value())) {
-                String msg = String.format(KPI_VALUE_MUST_BE_SET, orNotSet(kpi.name()), orNotSet(cube.name()));
+                String msg = String.format(KPI_VALUE_MUST_BE_SET, orNotSet(kpi.name()), orNotSet(cubeName));
                 results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
             } else {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Value");
+                checkMeasureCalculationName(kpi.value(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "Value");
             }
 
             if (!isEmpty(kpi.goal())) {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Goal");
+                checkMeasureCalculationName(kpi.goal(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "Goal");
             }
             if (!isEmpty(kpi.status())) {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Status");
+                checkMeasureCalculationName(kpi.status(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "Status");
             }
 
             if (!isEmpty(kpi.trend())) {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Trend");
+                checkMeasureCalculationName(kpi.trend(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "Trend");
             }
 
             if (!isEmpty(kpi.weight())) {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "Weight");
+                checkMeasureCalculationName(kpi.weight(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "Weight");
             }
 
             if (!isEmpty(kpi.currentTimeMember())) {
-                checkMeasureCalculationName(kpi.value(), cube, kpi.name(), "CurrentTimeMember");
+                checkMeasureCalculationName(kpi.currentTimeMember(), cubeName, measureNames, calculatedMemberNames, kpi.name(), "CurrentTimeMember");
             }
 
         }
     }
 
-    private void checkMeasureCalculationName(String value, MappingCube cube, String kpiName, String paramName) {
+    private void checkMeasureCalculationName(String value, String cubeName, List<String> measureNames,  List<String> calculatedMemberNames, String kpiName, String paramName) {
         String[] values = value.split("\\.");
         if (values.length != 2) {
-            String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+            String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cubeName));
             results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
         } else {
             if (!"[Measures]".equals(values[0])) {
-                String msg = String.format(KPI_PARAM_MUST_START_MEASURE, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                String msg = String.format(KPI_PARAM_MUST_START_MEASURE, paramName, orNotSet(kpiName), orNotSet(cubeName));
                 results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
             }
             if (!(values[1].startsWith("[") && values[1].endsWith("]"))) {
-                String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                String msg = String.format(KPI_PARAM_WRONG, paramName, orNotSet(kpiName), orNotSet(cubeName));
                 results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
             } else {
                 String mesName = values[1].substring(1, values[1].length() - 1);
-                if (!(cube.measures().stream().anyMatch(m -> mesName.equals(m.name()))
-                    || cube.calculatedMembers().stream().anyMatch(m -> mesName.equals(m.name())))) {
-                    String msg = String.format(MEASURE_WITH_NAME_FOR_PARAM_FOR_KPI_FOR_CUBE, mesName, paramName, orNotSet(kpiName), orNotSet(cube.name()));
+                if (!(measureNames.stream().anyMatch(m -> mesName.equals(cubeName))
+                    || calculatedMemberNames.stream().anyMatch(m -> mesName.equals(cubeName)))) {
+                    String msg = String.format(MEASURE_WITH_NAME_FOR_PARAM_FOR_KPI_FOR_CUBE, mesName, paramName, orNotSet(kpiName), orNotSet(cubeName));
                     results.add(new VerificationResultR(KPI, msg, ERROR, Cause.SCHEMA));
                 }
             }
