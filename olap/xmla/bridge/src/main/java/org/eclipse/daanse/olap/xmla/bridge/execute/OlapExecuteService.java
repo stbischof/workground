@@ -301,11 +301,12 @@ public class OlapExecuteService implements ExecuteService {
 
 		if (transactionCommand.getCommand() == Command.BEGIN) {
 			Scenario scenario = context.createScenario();
-			throw new UnsupportedOperationException("");
+            context.getConnection().setScenario(scenario);
+
 		} else if (transactionCommand.getCommand() == Command.ROLLBACK) {
-			throw new UnsupportedOperationException("");
+			context.getConnection().setScenario(null);
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
-			throw new UnsupportedOperationException("");
+			context.getConnection().setScenario(null);
 		}
         return new StatementResponseR(null, null);
     }

@@ -29,7 +29,7 @@ public class TransactionCommandImpl extends AbstractQueryPart implements Transac
 
     private final Command command;
 
-    TransactionCommandImpl(Command command)
+    public TransactionCommandImpl(Command command)
     {
         this.command = command;
     }

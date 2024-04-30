@@ -434,6 +434,10 @@ MdxStatement parseMdxStatement :
   	mdxStatement = parseDrillthroughStatement
     |
     mdxStatement = parseExplainStatement
+    |
+    mdxStatement = parseRefreshStatement
+    |
+    mdxStatement = parseUpdateStatement
 )
   < EOF >
   {

@@ -31,6 +31,8 @@ import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.UpdateStatement;
+import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
+import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.query.QueryProvider;
 import org.eclipse.daanse.olap.api.query.component.CellProperty;
@@ -53,6 +55,7 @@ import mondrian.olap.QueryAxisImpl;
 import mondrian.olap.QueryImpl;
 import mondrian.olap.RefreshImpl;
 import mondrian.olap.UpdateImpl;
+import org.eclipse.daanse.olap.api.query.component.UpdateClause;
 
 public class QueryProviderImpl implements QueryProvider {
 
@@ -74,6 +77,9 @@ public class QueryProviderImpl implements QueryProvider {
         if (mdxStatement instanceof RefreshStatement refreshStatement) {
             return createRefresh(refreshStatement);
         }
+        if (mdxStatement instanceof UpdateStatement updateStatement) {
+            return createUpdate(updateStatement);
+        }
         return null;
     }
 
@@ -84,7 +90,40 @@ public class QueryProviderImpl implements QueryProvider {
 
     @Override
     public Update createUpdate(UpdateStatement updateStatement) {
-        return new UpdateImpl(convertName(updateStatement.cubeName()), List.of());
+        return new UpdateImpl(convertName(updateStatement.cubeName()), convertUpdateClauses(updateStatement.updateClauses()));
+    }
+
+    private List<UpdateClause> convertUpdateClauses(List<org.eclipse.daanse.mdx.model.api.select.UpdateClause> updateClauses) {
+        if (updateClauses != null) {
+            return updateClauses.stream().map(this::convertUpdateClause).toList();
+        }
+        return List.of();
+    }
+
+    private UpdateClause convertUpdateClause(org.eclipse.daanse.mdx.model.api.select.UpdateClause updateClause) {
+        Expression tuple = MdxToQueryConverter.getExpression(updateClause.tupleExp());
+        Expression value = MdxToQueryConverter.getExpression(updateClause.valueExp());
+        UpdateImpl.Allocation allocation = convertAllocation(updateClause.allocation());
+        Expression weight = MdxToQueryConverter.getExpression(updateClause.weight());
+        return  new UpdateImpl.UpdateClauseImpl(tuple, value, allocation, weight);
+    }
+
+    private UpdateImpl.Allocation convertAllocation(Allocation allocation) {
+        if (allocation != null) {
+            switch (allocation) {
+                case NO_ALLOCATION:
+                    return UpdateImpl.Allocation.NO_ALLOCATION;
+                case USE_EQUAL_ALLOCATION:
+                    return UpdateImpl.Allocation.USE_EQUAL_ALLOCATION;
+                case USE_EQUAL_INCREMENT:
+                    return UpdateImpl.Allocation.USE_EQUAL_ALLOCATION;
+                case USE_WEIGHTED_ALLOCATION:
+                    return UpdateImpl.Allocation.USE_WEIGHTED_ALLOCATION;
+                case USE_WEIGHTED_INCREMENT:
+                    return UpdateImpl.Allocation.USE_WEIGHTED_INCREMENT;
+            }
+        }
+        return null;
     }
 
     @Override

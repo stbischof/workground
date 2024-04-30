@@ -42,9 +42,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
+import mondrian.olap.TransactionCommandImpl;
 import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
 import org.eclipse.daanse.mdx.parser.api.MdxParser;
 import org.eclipse.daanse.olap.api.CacheControl;
+import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.Context;
@@ -449,8 +451,18 @@ public QueryComponent parseStatement(String query ) {
         null );
     LocusImpl.push( locus );
     try {
-      QueryComponent queryPart =
-        parseStatement( statement, query, context.getFunctionService(), false );
+      QueryComponent queryPart;
+        //TODO migrate to parser
+        if ("BEGIN TRANSACTION".equalsIgnoreCase(query)) {
+            queryPart = new TransactionCommandImpl(Command.BEGIN);
+        } else if ("COMMIT TRANSACTION".equalsIgnoreCase(query)) {
+            queryPart = new TransactionCommandImpl(Command.COMMIT);
+        } else if ("ROLLBACK TRANSACTION".equalsIgnoreCase(query)) {
+            queryPart = new TransactionCommandImpl(Command.ROLLBACK);
+        } else{
+            queryPart =
+                parseStatement(statement, query, context.getFunctionService(), false);
+        }
       if ( queryPart instanceof QueryImpl q) {
           q.setOwnStatement( true );
         statement = null;

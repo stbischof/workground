@@ -201,8 +201,7 @@ public class BasicContext extends AbstractBasicContext {
 
 	@Override
 	public Scenario createScenario() {
-		// TODO
-		return null;
+        return getConnection().createScenario();
 	}
 
 	@Override
