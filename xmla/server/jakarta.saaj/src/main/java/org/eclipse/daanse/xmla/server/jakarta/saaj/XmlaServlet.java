@@ -59,10 +59,9 @@ public class XmlaServlet extends AbstractSoapServlet {
 				oUserAgent = Optional.of(s[0]);
 			}
 
-			RequestMetaData metaData = new RequestMetaDataR(oUserAgent);
-            UserPrincipal userPrincipal = null;
+			RequestMetaData metaData = new RequestMetaDataR(oUserAgent);            
 
-			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, metaData, userPrincipal);
+			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, metaData);
 
 			LOGGER.debug("SoapMessage out:", prettyPrint(returnMessage).toString());
 

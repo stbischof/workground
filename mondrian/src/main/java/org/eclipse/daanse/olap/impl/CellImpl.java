@@ -130,7 +130,7 @@ public class CellImpl implements Cell {
         final RolapMember[] members = result.getCellMembers(coordinates);
         for (int i = 0; i < members.length; i++) {
             Member member = members[i];
-            if (mondrian.rolap.ScenarioImpl.isScenario(member.getHierarchy())) {
+            if (ScenarioImpl.isScenario(member.getHierarchy())) {
                 scenario =
                     (org.eclipse.daanse.olap.api.result.Scenario) member.getPropertyValue(mondrian.olap.Property.SCENARIO.name);
                 members[i] = (RolapMember) member.getHierarchy().getAllMember();

@@ -202,7 +202,7 @@ public class XmlaApiAdapter {
     private static final String MDSCHEMA_MEASUREGROUPS = "MDSCHEMA_MEASUREGROUPS";
     private Set<String> sessions = new HashSet<>();
 
-    public SOAPMessage handleRequest(SOAPMessage messageRequest,RequestMetaData metaData, UserPrincipal userPrincipal) {
+    public SOAPMessage handleRequest(SOAPMessage messageRequest,RequestMetaData metaData) {
         try {
             SOAPMessage messageResponse = MessageFactory.newInstance().createMessage();
             SOAPPart soapPartResponse = messageResponse.getSOAPPart();
@@ -217,12 +217,19 @@ public class XmlaApiAdapter {
             envelopeResponse.addNamespaceDeclaration(Constants.XSI.PREFIX, Constants.XSI.NS_URN);
 
             SOAPBody bodyResponse = envelopeResponse.getBody();
+            UserPrincipal userPrincipal = null;
             Optional<Session> ses = SessionUtil.getSession(messageRequest.getSOAPHeader(), sessions);
             if (ses.isPresent()) {
                 SOAPHeader header = envelopeResponse.getHeader();
                 QName session = new QName("urn:schemas-microsoft-com:xml-analysis", "Session");
                 SOAPHeaderElement sessionElement = header.addHeaderElement(session);
                 sessionElement.addAttribute(new QName("SessionId"), ses.get().sessionId());
+                userPrincipal = new UserPrincipal() {
+                    @Override
+                    public Session getSession() {
+                        return ses.get();
+                    }
+                };
             }
             handleBody(messageRequest.getSOAPBody(), bodyResponse, metaData, userPrincipal);
             return messageResponse;
@@ -648,9 +655,10 @@ public class XmlaApiAdapter {
                                      PropertiesR properties,
                                      List<ExecuteParameter> parameters,
                                      SOAPBody responseBody)  throws SOAPException {
+        String sessionId = userPrincipal != null && userPrincipal.getSession() != null ? userPrincipal.getSession().sessionId() : null;
         StatementRequest statementRequest = new StatementRequestR(properties,
             parameters,
-            statement, null);
+            statement, sessionId);
         StatementResponse statementResponse = xmlaService.execute().statement(statementRequest, metaData, userPrincipal);
         SoapUtil.toStatementResponse(statementResponse, responseBody);
     }

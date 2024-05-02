@@ -31,6 +31,7 @@ import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 
 import mondrian.olap.SolveOrderMode;
 import mondrian.olap.Util;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
 
 /**
  * Context at the root of a tree of evaluators.

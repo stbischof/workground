@@ -13,7 +13,10 @@
  */
 package org.eclipse.daanse.xmla.api;
 
+import org.eclipse.daanse.xmla.api.xmla.Session;
+
 public interface UserPrincipal {
+    Session getSession();
 
 
 }

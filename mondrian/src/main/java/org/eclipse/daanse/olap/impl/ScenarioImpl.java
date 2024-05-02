@@ -180,7 +180,7 @@ public class ScenarioImpl implements Scenario {
      * @param member Wrapper member
      * @return Wrapped scenario
      */
-    static Scenario forMember(final RolapMember member) {
+    public static Scenario forMember(final RolapMember member) {
         if (isScenario(member.getHierarchy())) {
             final Formula formula = ((RolapCalculatedMember) member)
                 .getFormula();
@@ -201,7 +201,7 @@ public class ScenarioImpl implements Scenario {
      *
      * @param schema Schema
      */
-    void register(RolapSchema schema) {
+    public void register(RolapSchema schema) {
         // Add a value to the [Scenario] dimension of every cube that has
         // writeback enabled.
         for (RolapCube cube : schema.getCubeList()) {

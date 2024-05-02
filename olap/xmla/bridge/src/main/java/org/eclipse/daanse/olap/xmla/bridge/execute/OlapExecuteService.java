@@ -254,7 +254,7 @@ public class OlapExecuteService implements ExecuteService {
 					} else if (queryComponent instanceof Refresh refresh) {
 						return executeRefresh(context, refresh);
 					} else if (queryComponent instanceof Update update) {
-						return executeUpdate(context, update);
+						return executeUpdate(context, statementRequest, update);
 					} else if (queryComponent instanceof TransactionCommand transactionCommand) {
 						return executeTransactionCommand(context, statementRequest, transactionCommand);
 					} else if (queryComponent instanceof Query query){
@@ -268,7 +268,11 @@ public class OlapExecuteService implements ExecuteService {
 	}
 
     private StatementResponse executeQuery(Context context, StatementRequest statementRequest, Query query) {
-        Statement statement = context.getConnection().createStatement();
+        Session session = Session.getWithoutCheck(statementRequest.sessionId());
+        if (session != null) {
+            query.getConnection().setScenario(session.getScenario());
+        }
+        Statement statement = query.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
         if ((mdx != null) && (mdx.length() != 0)) {
 
@@ -298,22 +302,25 @@ public class OlapExecuteService implements ExecuteService {
         TransactionCommand transactionCommand
     ) {
         String sessionId = statementRequest.sessionId();
-
 		if (transactionCommand.getCommand() == Command.BEGIN) {
+            Session session = Session.create(sessionId);
 			Scenario scenario = context.createScenario();
-            context.getConnection().setScenario(scenario);
-
+            session.setScenario(scenario);
 		} else if (transactionCommand.getCommand() == Command.ROLLBACK) {
-			context.getConnection().setScenario(null);
+            Session session = Session.get(sessionId);
+            session.setScenario(null);
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
-			context.getConnection().setScenario(null);
-		}
+            Session session = Session.get(sessionId);
+            session.setScenario(null);
+        }
         return new StatementResponseR(null, null);
     }
 
-    private StatementResponse executeUpdate(Context context, Update update) {
-        Scenario scenario = context.createScenario();
+    private StatementResponse executeUpdate(Context context, StatementRequest statementRequest, Update update) {
+        Session session = Session.get(statementRequest.sessionId());
+        Scenario scenario = session.getScenario();
         Connection connection = context.getConnection();
+        connection.setScenario(scenario);
         for (UpdateClause updateClause : update.getUpdateClauses()) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);

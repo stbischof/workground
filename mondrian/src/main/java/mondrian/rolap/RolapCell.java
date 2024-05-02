@@ -53,6 +53,7 @@ import org.eclipse.daanse.olap.api.query.component.UnresolvedFunCall;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Position;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
 import org.slf4j.Logger;
 
 import mondrian.mdx.MdxVisitorImpl;
@@ -778,7 +779,7 @@ public class RolapCell implements Cell {
             return;
         }
         double doubleNewValue = ((Number) newValue).doubleValue();
-        ((org.eclipse.daanse.olap.impl.ScenarioImpl) scenario).setCellValue(
+        scenario.setCellValue(
             result.getExecution().getMondrianStatement()
                 .getMondrianConnection(),
             Arrays.asList(members),

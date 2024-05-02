@@ -26,6 +26,7 @@ import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.calc.api.Calc;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

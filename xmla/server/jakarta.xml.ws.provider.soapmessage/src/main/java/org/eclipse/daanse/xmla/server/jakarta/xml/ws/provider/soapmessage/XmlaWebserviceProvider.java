@@ -90,10 +90,9 @@ public class XmlaWebserviceProvider implements Provider<SOAPMessage> {
 		}
 
 		RequestMetaData metaData = new RequestMetaDataR(oUserAgent);
-        UserPrincipal userPrincipal = null;
 
 		LOGGER.debug("===== The provider got a request =====");
-		return wsAdapter.handleRequest(request, metaData, userPrincipal);
+		return wsAdapter.handleRequest(request, metaData);
 	}
 
 	private SOAPFault getFault(Exception ex) {
