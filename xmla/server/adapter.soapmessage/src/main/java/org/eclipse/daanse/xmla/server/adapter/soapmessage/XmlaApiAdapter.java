@@ -161,6 +161,7 @@ import javax.xml.namespace.QName;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -202,7 +203,7 @@ public class XmlaApiAdapter {
     private static final String MDSCHEMA_MEASUREGROUPS = "MDSCHEMA_MEASUREGROUPS";
     private Set<String> sessions = new HashSet<>();
 
-    public SOAPMessage handleRequest(SOAPMessage messageRequest,RequestMetaData metaData) {
+    public SOAPMessage handleRequest(SOAPMessage messageRequest, Map<String, Object> headers) {
         try {
             SOAPMessage messageResponse = MessageFactory.newInstance().createMessage();
             SOAPPart soapPartResponse = messageResponse.getSOAPPart();
@@ -224,13 +225,8 @@ public class XmlaApiAdapter {
                 QName session = new QName("urn:schemas-microsoft-com:xml-analysis", "Session");
                 SOAPHeaderElement sessionElement = header.addHeaderElement(session);
                 sessionElement.addAttribute(new QName("SessionId"), ses.get().sessionId());
-                userPrincipal = new UserPrincipal() {
-                    @Override
-                    public Session getSession() {
-                        return ses.get();
-                    }
-                };
             }
+            RequestMetaData metaData = RequestMetaDataUtils.getRequestMetaData(headers, ses);
             handleBody(messageRequest.getSOAPBody(), bodyResponse, metaData, userPrincipal);
             return messageResponse;
         } catch (SOAPException e) {
@@ -655,7 +651,7 @@ public class XmlaApiAdapter {
                                      PropertiesR properties,
                                      List<ExecuteParameter> parameters,
                                      SOAPBody responseBody)  throws SOAPException {
-        String sessionId = userPrincipal != null && userPrincipal.getSession() != null ? userPrincipal.getSession().sessionId() : null;
+        String sessionId = metaData != null && metaData.sessionId() != null ? metaData.sessionId().get() : null;
         StatementRequest statementRequest = new StatementRequestR(properties,
             parameters,
             statement, sessionId);

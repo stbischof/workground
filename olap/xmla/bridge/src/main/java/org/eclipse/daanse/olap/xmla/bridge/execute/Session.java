@@ -15,8 +15,12 @@ package org.eclipse.daanse.olap.xmla.bridge.execute;
 
 import org.eclipse.daanse.olap.api.result.Scenario;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Session
 {
@@ -24,7 +28,6 @@ public class Session
     private java.time.LocalDateTime checkInTime = null;
     private String sessionId;
 
-    /*
     static Timer timer = new Timer(true);
     static TimerTask timerTask = new TimerTask() {
         public void run() {
@@ -34,6 +37,7 @@ public class Session
                 java.time.Duration duration = java.time.Duration.between(
                         session.checkInTime,
                         java.time.LocalDateTime.now());
+                //TODO use configuration parameter 3600
                 if(duration.getSeconds() >
                         3600) {
                     toRemove.add(entry.getKey());
@@ -48,7 +52,7 @@ public class Session
     {
         timer.scheduleAtFixedRate(timerTask, 0, 60*1000);
     }
-    */
+
 
     private Session(String sessionId)
     {

@@ -1,19 +1,11 @@
 
 package org.eclipse.daanse.xmla.server.jakarta.saaj;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Optional;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-
+import jakarta.servlet.Servlet;
+import jakarta.xml.soap.MimeHeader;
+import jakarta.xml.soap.SOAPMessage;
 import org.eclipse.daanse.common.jakarta.servlet.soap.AbstractSoapServlet;
-import org.eclipse.daanse.xmla.api.RequestMetaData;
-import org.eclipse.daanse.xmla.api.UserPrincipal;
 import org.eclipse.daanse.xmla.api.XmlaService;
-import org.eclipse.daanse.xmla.model.record.RequestMetaDataR;
 import org.eclipse.daanse.xmla.server.adapter.soapmessage.XmlaApiAdapter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -23,11 +15,14 @@ import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.Servlet;
-import jakarta.xml.soap.MimeHeaders;
-import jakarta.xml.soap.SOAPBody;
-import jakarta.xml.soap.SOAPHeader;
-import jakarta.xml.soap.SOAPMessage;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @HttpWhiteboardServletPattern("/xmla")
 @Component(service = Servlet.class, scope = ServiceScope.PROTOTYPE)
@@ -50,18 +45,10 @@ public class XmlaServlet extends AbstractSoapServlet {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("SoapMessage in:", prettyPrint(soapMessage).toString());
 			}
+            Iterable<MimeHeader> iterable = () -> soapMessage.getMimeHeaders().getAllHeaders();
+            Map<String, Object> map = StreamSupport.stream(iterable.spliterator(), true).collect(Collectors.toMap(MimeHeader::getName, MimeHeader::getValue, (oldValue, newValue) -> oldValue));
 
-			MimeHeaders m = soapMessage.getMimeHeaders();
-			String[] s = m.getHeader("User-agent");
-
-			Optional<String> oUserAgent = Optional.empty();
-			if (s != null && s.length > 0) {
-				oUserAgent = Optional.of(s[0]);
-			}
-
-			RequestMetaData metaData = new RequestMetaDataR(oUserAgent);            
-
-			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, metaData);
+			SOAPMessage returnMessage = wsAdapter.handleRequest(soapMessage, map);
 
 			LOGGER.debug("SoapMessage out:", prettyPrint(returnMessage).toString());
 

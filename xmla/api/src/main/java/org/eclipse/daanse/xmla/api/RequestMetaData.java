@@ -5,7 +5,5 @@ import java.util.Optional;
 public interface RequestMetaData {
 
 	Optional<String> userAgent();
-
-
-
+    Optional<String> sessionId();
 }

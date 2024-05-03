@@ -219,6 +219,10 @@ public class ApiXmlaWsAdapter implements WsAdapter {
 				return Optional.empty();
 			}
 
+            @Override
+            public Optional<String> sessionId() {
+                return Optional.empty();
+            }
 
 		};
 
