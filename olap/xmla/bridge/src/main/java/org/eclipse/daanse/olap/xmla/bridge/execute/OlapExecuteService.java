@@ -333,7 +333,8 @@ public class OlapExecuteService implements ExecuteService {
                     .append(tupleString)
                     .append(" ON 0 FROM ")
                     .append(update.getCubeName())
-                    .append(" CELL PROPERTIES CELL_ORDINAL").toString()
+                    //.append(" CELL PROPERTIES CELL_ORDINAL")
+                    .toString()
             );
             CellSetAxis axis = cellSet.getAxes().get(0);
             if (axis.getPositionCount() == 0) {

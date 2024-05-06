@@ -116,7 +116,7 @@ public class QueryProviderImpl implements QueryProvider {
                 case USE_EQUAL_ALLOCATION:
                     return UpdateImpl.Allocation.USE_EQUAL_ALLOCATION;
                 case USE_EQUAL_INCREMENT:
-                    return UpdateImpl.Allocation.USE_EQUAL_ALLOCATION;
+                    return UpdateImpl.Allocation.USE_EQUAL_INCREMENT;
                 case USE_WEIGHTED_ALLOCATION:
                     return UpdateImpl.Allocation.USE_WEIGHTED_ALLOCATION;
                 case USE_WEIGHTED_INCREMENT:

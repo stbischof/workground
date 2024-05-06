@@ -3,6 +3,7 @@ package org.eclipse.daanse.olap.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Evaluator;
@@ -38,6 +39,10 @@ public class ScenarioImpl implements Scenario {
 
     private final List<ScenarioImpl.WritebackCell> writebackCells =
         new ArrayList<>();
+
+    public java.util.Map<List<RolapMember>, WritebackCell> writebackCellMap =
+        new java.util.HashMap<List<RolapMember>, WritebackCell>();
+
 
     private RolapMember member;
 
@@ -156,20 +161,27 @@ public class ScenarioImpl implements Scenario {
         // TODO: add a mechanism for persisting the overrides to a file.
         //
         // FIXME: make thread-safe
-        writebackCells.add(
-            new ScenarioImpl.WritebackCell(
+        WritebackCell writebackCell =
+            new WritebackCell(
                 baseCube,
-                new ArrayList<>(members),
+                new ArrayList<RolapMember>(members),
                 constrainedColumnsBitKey,
                 compactKeyValues,
                 newValue,
                 currentValue,
-                allocationPolicy));
+                allocationPolicy);
+        writebackCells.add(writebackCell);
+        writebackCellMap.put(members, writebackCell);
     }
 
     @Override
     public String getId() {
         return Integer.toString(id);
+    }
+
+    @Override
+    public Map<List<RolapMember>, WritebackCell> getWritebackCellMap() {
+        return writebackCellMap;
     }
 
     /**
@@ -331,7 +343,9 @@ public class ScenarioImpl implements Scenario {
      * <p>In future, a {@link ScenarioImpl} could be persisted by
      * serializing all {@code WritebackCell}s to a file.
      */
-    private static class WritebackCell {
+    public static class WritebackCell {
+
+
         private final double newValue;
         private final double currentValue;
         private final AllocationPolicy allocationPolicy;
@@ -386,6 +400,26 @@ public class ScenarioImpl implements Scenario {
                 final int ordinal = hierarchy.getOrdinalInCube();
                 membersByOrdinal[ordinal] = member;
             }
+        }
+
+        public double getNewValue() {
+            return newValue;
+        }
+
+        public double getCurrentValue() {
+            return currentValue;
+        }
+
+        public AllocationPolicy getAllocationPolicy() {
+            return allocationPolicy;
+        }
+
+        public Member[] getMembersByOrdinal() {
+            return membersByOrdinal;
+        }
+
+        public double getAtomicCellCount() {
+            return atomicCellCount;
         }
 
         /**
@@ -446,6 +480,7 @@ public class ScenarioImpl implements Scenario {
                 return ScenarioImpl.CellRelation.EQUAL;
             }
         }
+
     }
 
     /**
@@ -581,4 +616,5 @@ public class ScenarioImpl implements Scenario {
             }
         }
     }
+
 }

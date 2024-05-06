@@ -1,10 +1,12 @@
 package org.eclipse.daanse.olap.api.result;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.daanse.olap.api.Connection;
 
 import mondrian.rolap.RolapMember;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
 
 /**
  * Context for a set of writeback operations.
@@ -34,6 +36,8 @@ public interface Scenario {
      * @return Unique identifier of this Scenario.
      */
     String getId();
+
+    Map<List<RolapMember>, ScenarioImpl.WritebackCell> getWritebackCellMap();
 
     void setCellValue(
         Connection connection,

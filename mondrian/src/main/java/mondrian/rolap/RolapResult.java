@@ -47,6 +47,7 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Position;
+import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 import org.eclipse.daanse.olap.calc.api.todo.TupleCursor;
@@ -54,6 +55,7 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleIterable;
 import org.eclipse.daanse.olap.calc.api.todo.TupleIterator;
 import org.eclipse.daanse.olap.calc.api.todo.TupleIteratorCalc;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
+import org.eclipse.daanse.olap.impl.ScenarioCalc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1030,6 +1032,10 @@ public Cell getCell( int[] pos ) {
     }
 
     CellInfo ci = cellInfos.lookup( pos );
+    Scenario scenario = getQuery().getConnection().getScenario();
+    if (scenario != null) {
+        ci.value = new ScenarioCalc(scenario, ci.value).evaluate(evaluator);
+    }
     if ( ci.value == null ) {
       for ( int i = 0; i < pos.length; i++ ) {
         int po = pos[i];
