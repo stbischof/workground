@@ -651,7 +651,7 @@ public class XmlaApiAdapter {
                                      PropertiesR properties,
                                      List<ExecuteParameter> parameters,
                                      SOAPBody responseBody)  throws SOAPException {
-        String sessionId = metaData != null && metaData.sessionId() != null ? metaData.sessionId().get() : null;
+        String sessionId = metaData != null && metaData.sessionId() != null && metaData.sessionId().isPresent() ? metaData.sessionId().get() : null;
         StatementRequest statementRequest = new StatementRequestR(properties,
             parameters,
             statement, sessionId);

@@ -1033,8 +1033,9 @@ public Cell getCell( int[] pos ) {
 
     CellInfo ci = cellInfos.lookup( pos );
     Scenario scenario = getQuery().getConnection().getScenario();
-    if (scenario != null) {
-        ci.value = new ScenarioCalc(scenario, ci.value).evaluate(evaluator);
+    if (scenario != null && scenario.isChangeFlag()) {
+        List<Member> ml = getPositionMembers(pos);
+        ci.value = new ScenarioCalc(scenario, ci.value, ml).evaluate(evaluator);
     }
     if ( ci.value == null ) {
       for ( int i = 0; i < pos.length; i++ ) {
@@ -1049,7 +1050,19 @@ public Cell getCell( int[] pos ) {
     return new RolapCell( this, pos.clone(), ci );
   }
 
-  private TupleIterable executeAxis( Evaluator evaluator, QueryAxis queryAxis, Calc axisCalc, boolean construct,
+    private List<Member> getPositionMembers(int[] pos) {
+        List<Member> result = new ArrayList<>();
+        for ( int i = 0; i < pos.length; i++ ) {
+            int po = pos[i];
+            if ( po < 0 || po >= axes[i].getPositions().size() ) {
+                throw Util.newError( "coordinates out of range" );
+            }
+            result.addAll(axes[i].getPositions().get(po));
+        }
+        return result;
+    }
+
+    private TupleIterable executeAxis( Evaluator evaluator, QueryAxis queryAxis, Calc axisCalc, boolean construct,
       AxisMemberList axisMembers ) {
     if ( queryAxis == null ) {
       // Create an axis containing one position with no members (not

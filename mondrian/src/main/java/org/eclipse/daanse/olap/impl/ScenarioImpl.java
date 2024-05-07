@@ -37,6 +37,8 @@ public class ScenarioImpl implements Scenario {
 
     private final int id;
 
+    private boolean changeFlag = true;
+
     private final List<ScenarioImpl.WritebackCell> writebackCells =
         new ArrayList<>();
 
@@ -182,6 +184,16 @@ public class ScenarioImpl implements Scenario {
     @Override
     public Map<List<RolapMember>, WritebackCell> getWritebackCellMap() {
         return writebackCellMap;
+    }
+
+    @Override
+    public boolean isChangeFlag() {
+        return changeFlag;
+    }
+
+    @Override
+    public void setChangeFlag(boolean changeFlag) {
+        this.changeFlag = changeFlag;
     }
 
     /**

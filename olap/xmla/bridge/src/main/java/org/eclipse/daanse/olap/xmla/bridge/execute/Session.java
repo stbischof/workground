@@ -62,7 +62,7 @@ public class Session
     public static Session create(String sessionId)
     {
         if(sessions.containsKey(sessionId)) {
-            throw new RuntimeException("Session with id \"" + sessionId + "\" already exists.");
+        	sessions.remove(sessionId);            
         }
 
         Session session = new Session(sessionId);

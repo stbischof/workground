@@ -47,20 +47,22 @@ public class AuthFilter implements Filter {
 
     protected boolean authenticated(HttpServletRequest request) {
         request.setAttribute(AUTHENTICATION_TYPE, HttpServletRequest.BASIC_AUTH);
-
+        boolean success = false;
         String authHeader = request.getHeader("Authorization");
-        String usernameAndPassword = new String(Base64.getDecoder().decode(authHeader.substring(6).getBytes()));
+        if (authHeader != null) {
+        	String usernameAndPassword = new String(Base64.getDecoder().decode(authHeader.substring(6).getBytes()));
 
-        int userNameIndex = usernameAndPassword.indexOf(":");
-        String username = usernameAndPassword.substring(0, userNameIndex);
-        String password = usernameAndPassword.substring(userNameIndex + 1);
+        	int userNameIndex = usernameAndPassword.indexOf(":");
+        	String username = usernameAndPassword.substring(0, userNameIndex);
+        	String password = usernameAndPassword.substring(userNameIndex + 1);
 
 
-        boolean success = (username.equals(ADMIN) && password
-            .equals(ADMIN));
-        if (success) {
-            request.setAttribute(REMOTE_USER, ADMIN);
-            request.setAttribute("ROLE", ADMIN);
+        	success = (username.equals(ADMIN) && password
+        			.equals(ADMIN));
+        	if (success) {
+        		request.setAttribute(REMOTE_USER, ADMIN);
+        		request.setAttribute("ROLE", ADMIN);
+        	}
         }
         return success;
     }

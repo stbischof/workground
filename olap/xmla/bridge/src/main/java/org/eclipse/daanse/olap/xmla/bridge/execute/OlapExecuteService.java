@@ -270,7 +270,9 @@ public class OlapExecuteService implements ExecuteService {
     private StatementResponse executeQuery(Context context, StatementRequest statementRequest, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         if (session != null) {
-            query.getConnection().setScenario(session.getScenario());
+            Scenario scenario = session.getScenario();
+            scenario.setChangeFlag(true);
+            query.getConnection().setScenario(scenario);
         }
         Statement statement = query.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
@@ -278,7 +280,10 @@ public class OlapExecuteService implements ExecuteService {
 
             //TODO: not double execute , we have QueryComponent query
             CellSet cellSet = statement.executeQuery(query);
-//            CellSet cellSet = statement.executeQuery(statementRequest.command().statement());
+            if (query.getConnection().getScenario() != null) {
+                query.getConnection().getScenario().setChangeFlag(false);
+            }
+//          CellSet cellSet = statement.executeQuery(statementRequest.command().statement());
 
             Optional<Content> content = statementRequest.properties().content();
             boolean omitDefaultSlicerInfo = false;
@@ -678,7 +683,13 @@ public class OlapExecuteService implements ExecuteService {
         Statement statement;
         ResultSet resultSet = null;
         try {
+            Session session = Session.getWithoutCheck(statementRequest.sessionId());
             connection = context.getConnection();
+            if (session != null) {
+                Scenario scenario = session.getScenario();
+                scenario.setChangeFlag(true);
+                connection.setScenario(scenario);
+            }
             statement = connection.createStatement();
             resultSet = statement.executeQuery(
                 statementRequest.command().statement(),
@@ -686,6 +697,10 @@ public class OlapExecuteService implements ExecuteService {
                 tabFields,
                 rowCountSlot);
             int rowCount = enableRowCount ? rowCountSlot[0] : -1;
+            if (session != null) {
+                Scenario scenario = session.getScenario();
+                scenario.setChangeFlag(false);
+            }
             return Convertor.toStatementResponseRowSet(resultSet, rowCount);
         } catch (Exception e) {
         	e.printStackTrace();

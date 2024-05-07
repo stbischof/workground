@@ -19,10 +19,14 @@ import mondrian.olap.type.ScalarType;
 import mondrian.rolap.RolapEvaluator;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.result.Scenario;
+import org.eclipse.daanse.olap.api.element.Member;
+
+import java.util.List;
 
 public class ScenarioCalc extends GenericCalc {
     private final Scenario scenario;
     private final Object o;
+    List<Member> ms;
 
     /**
      * Creates a ScenarioCalc.
@@ -30,10 +34,11 @@ public class ScenarioCalc extends GenericCalc {
      * @param scenario Scenario whose writeback values should be substituted
      * for the values stored in the database.
      */
-    public ScenarioCalc(Scenario scenario, Object o) {
+    public ScenarioCalc(Scenario scenario, Object o, List<Member> ms) {
         super(ScalarType.INSTANCE);
         this.scenario = scenario;
         this.o = o;
+        this.ms = ms;
     }
 
     /**
@@ -53,7 +58,8 @@ public class ScenarioCalc extends GenericCalc {
         // First, evaluate in the null scenario.
         final int savepoint = evaluator.savepoint();
         try {
-
+            //final Object o = evaluator.evaluateCurrent();
+            evaluator.setContext(ms.toArray(Member[]::new));
             double d =
                 o instanceof Number
                     ? ((Number) o).doubleValue()
