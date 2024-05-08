@@ -590,9 +590,16 @@ public class SegmentCacheManager {
    * @return Segment with data, or null if not in cache
    */
   public SegmentWithData peek( final CellRequest request ) {
+    Locus locus = null;
+    try {
+        locus = LocusImpl.peek();
+    } catch (Exception e) {
+        locus = new LocusImpl( new ExecutionImpl(getContext().getConnection().getInternalStatement(), getContext().getConfig().executeDurationValue()), null, "Loading cells" );
+        LocusImpl.push( locus );
+    }
     final SegmentCacheManager.PeekResponse response =
       execute(
-        new PeekCommand( request, LocusImpl.peek() ) );
+        new PeekCommand( request, locus ) );
     for ( SegmentHeader header : response.headerMap.keySet() ) {
       final SegmentBody body = compositeCache.get( header );
       if ( body != null ) {

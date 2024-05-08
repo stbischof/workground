@@ -37,7 +37,7 @@ public class ScenarioImpl implements Scenario {
 
     private final int id;
 
-    private boolean changeFlag = true;
+    private boolean changeFlag = false;
 
     private final List<ScenarioImpl.WritebackCell> writebackCells =
         new ArrayList<>();

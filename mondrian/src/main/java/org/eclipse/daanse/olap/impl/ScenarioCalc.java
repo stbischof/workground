@@ -59,7 +59,7 @@ public class ScenarioCalc extends GenericCalc {
         final int savepoint = evaluator.savepoint();
         try {
             //final Object o = evaluator.evaluateCurrent();
-            evaluator.setContext(ms.toArray(Member[]::new));
+            evaluator.setContext(ms);
             double d =
                 o instanceof Number
                     ? ((Number) o).doubleValue()
@@ -96,6 +96,7 @@ public class ScenarioCalc extends GenericCalc {
                                 d = writebackCell.getNewValue()
                                     * atomicCellCount
                                     / writebackCell.getAtomicCellCount();
+                                d = writebackCell.getNewValue() * ((Number)(evaluator.evaluateCurrent())).doubleValue() / writebackCell.getCurrentValue();
                                 break;
                             case EQUAL_INCREMENT:
                                 d += writebackCell.getOffset()

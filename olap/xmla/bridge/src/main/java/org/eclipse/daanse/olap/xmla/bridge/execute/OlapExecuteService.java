@@ -269,9 +269,10 @@ public class OlapExecuteService implements ExecuteService {
 
     private StatementResponse executeQuery(Context context, StatementRequest statementRequest, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
+        try {
         if (session != null) {
             Scenario scenario = session.getScenario();
-            scenario.setChangeFlag(true);
+            scenario.setChangeFlag(false);
             query.getConnection().setScenario(scenario);
         }
         Statement statement = query.getConnection().createStatement();
@@ -281,7 +282,7 @@ public class OlapExecuteService implements ExecuteService {
             //TODO: not double execute , we have QueryComponent query
             CellSet cellSet = statement.executeQuery(query);
             if (query.getConnection().getScenario() != null) {
-                query.getConnection().getScenario().setChangeFlag(false);
+                query.getConnection().getScenario().setChangeFlag(true);
             }
 //          CellSet cellSet = statement.executeQuery(statementRequest.command().statement());
 
@@ -300,6 +301,12 @@ public class OlapExecuteService implements ExecuteService {
             return Convertor.toStatementResponseRowSet(cellSet);
         }
         return null;
+        }
+        finally {
+            if (query.getConnection().getScenario() != null) {
+                query.getConnection().getScenario().setChangeFlag(false);
+            }
+        }
     }
 
     private StatementResponse executeTransactionCommand(
@@ -682,12 +689,12 @@ public class OlapExecuteService implements ExecuteService {
         Connection connection = null;
         Statement statement;
         ResultSet resultSet = null;
+        Session session = Session.getWithoutCheck(statementRequest.sessionId());
         try {
-            Session session = Session.getWithoutCheck(statementRequest.sessionId());
             connection = context.getConnection();
             if (session != null) {
                 Scenario scenario = session.getScenario();
-                scenario.setChangeFlag(true);
+                scenario.setChangeFlag(false);
                 connection.setScenario(scenario);
             }
             statement = connection.createStatement();
@@ -699,7 +706,7 @@ public class OlapExecuteService implements ExecuteService {
             int rowCount = enableRowCount ? rowCountSlot[0] : -1;
             if (session != null) {
                 Scenario scenario = session.getScenario();
-                scenario.setChangeFlag(false);
+                scenario.setChangeFlag(true);
             }
             return Convertor.toStatementResponseRowSet(resultSet, rowCount);
         } catch (Exception e) {
@@ -711,6 +718,10 @@ public class OlapExecuteService implements ExecuteService {
                 HSB_DRILL_THROUGH_SQL_FAULT_FS,
                 e);
         } finally {
+            if (session != null) {
+                Scenario scenario = session.getScenario();
+                scenario.setChangeFlag(false);
+            }
             if (resultSet != null) {
                 try {
                     resultSet.close();
