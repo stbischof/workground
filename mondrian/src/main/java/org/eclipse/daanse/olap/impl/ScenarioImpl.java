@@ -2,6 +2,7 @@ package org.eclipse.daanse.olap.impl;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +38,10 @@ public class ScenarioImpl implements Scenario {
 
     private final int id;
 
-    private boolean changeFlag = false;
+    private boolean changeFlag = true;
 
     private final List<ScenarioImpl.WritebackCell> writebackCells =
-        new ArrayList<>();
-
-    public java.util.Map<List<RolapMember>, WritebackCell> writebackCellMap =
-        new java.util.HashMap<List<RolapMember>, WritebackCell>();
+        new LinkedList<>();
 
 
     private RolapMember member;
@@ -173,7 +171,6 @@ public class ScenarioImpl implements Scenario {
                 currentValue,
                 allocationPolicy);
         writebackCells.add(writebackCell);
-        writebackCellMap.put(members, writebackCell);
     }
 
     @Override
@@ -182,8 +179,8 @@ public class ScenarioImpl implements Scenario {
     }
 
     @Override
-    public Map<List<RolapMember>, WritebackCell> getWritebackCellMap() {
-        return writebackCellMap;
+    public List<WritebackCell> getWritebackCells() {
+        return writebackCells;
     }
 
     @Override

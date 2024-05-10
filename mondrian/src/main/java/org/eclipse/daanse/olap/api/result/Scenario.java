@@ -37,7 +37,7 @@ public interface Scenario {
      */
     String getId();
 
-    Map<List<RolapMember>, ScenarioImpl.WritebackCell> getWritebackCellMap();
+    List<ScenarioImpl.WritebackCell> getWritebackCells();
 
     boolean isChangeFlag();
 

@@ -76,7 +76,7 @@ public class ScenarioCalc extends GenericCalc {
             // writebacks. If so, order is important.
             int changeCount = 0;
             for (ScenarioImpl.WritebackCell writebackCell
-                : scenario.getWritebackCellMap().values())
+                : scenario.getWritebackCells())
             {
                 ((Number)(evaluator.evaluateCurrent())).doubleValue(); // don't remove that
                 LOGGER.debug("++++++++++++++++++ " + ((Number)(evaluator.evaluateCurrent())).doubleValue());

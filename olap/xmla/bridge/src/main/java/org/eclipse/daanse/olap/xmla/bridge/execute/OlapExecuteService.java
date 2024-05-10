@@ -330,49 +330,55 @@ public class OlapExecuteService implements ExecuteService {
 
     private StatementResponse executeUpdate(Context context, StatementRequest statementRequest, Update update) {
         Session session = Session.get(statementRequest.sessionId());
-        Scenario scenario = session.getScenario();
-        Connection connection = context.getConnection();
-        connection.setScenario(scenario);
-        for (UpdateClause updateClause : update.getUpdateClauses()) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);
-            updateClause.getTupleExp().unparse(pw);
-            String tupleString = sw.toString();
-
-            Statement pstmt = connection.createStatement();
-            CellSet cellSet = pstmt.executeQuery(
-                new StringBuilder("SELECT ")
-                    .append(tupleString)
-                    .append(" ON 0 FROM ")
-                    .append(update.getCubeName())
-                    //.append(" CELL PROPERTIES CELL_ORDINAL")
-                    .toString()
-            );
-            CellSetAxis axis = cellSet.getAxes().get(0);
-            if (axis.getPositionCount() == 0) {
-                //Empty tuple exception
+        if (session != null) {
+            Scenario scenario = session.getScenario();
+            if (scenario != null) {
+                scenario.setChangeFlag(true);
             }
-            if (axis.getPositionCount() == 1) {
-                //More than one tuple exception
+
+            Connection connection = context.getConnection();
+            connection.setScenario(scenario);
+            for (UpdateClause updateClause : update.getUpdateClauses()) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);
+                updateClause.getTupleExp().unparse(pw);
+                String tupleString = sw.toString();
+
+                Statement pstmt = connection.createStatement();
+                CellSet cellSet = pstmt.executeQuery(
+                    new StringBuilder("SELECT ")
+                        .append(tupleString)
+                        .append(" ON 0 FROM ")
+                        .append(update.getCubeName())
+                        //.append(" CELL PROPERTIES CELL_ORDINAL")
+                        .toString()
+                );
+                CellSetAxis axis = cellSet.getAxes().get(0);
+                if (axis.getPositionCount() == 0) {
+                    //Empty tuple exception
+                }
+                if (axis.getPositionCount() == 1) {
+                    //More than one tuple exception
+                }
+                Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
+
+                sw = new StringWriter();
+                pw = new mondrian.mdx.QueryPrintWriter(sw);
+                updateClause.getValueExp().unparse(pw);
+                String valueString = sw.toString();
+
+                pstmt = connection.createStatement();
+                cellSet = pstmt.executeQuery(
+                    new StringBuilder("WITH MEMBER [Measures].[m1] AS ")
+                        .append(valueString)
+                        .append(" SELECT [Measures].[m1] ON 0 FROM ")
+                        .append(update.getCubeName())
+                        .append(" CELL PROPERTIES VALUE").toString()
+                );
+                Cell cell = cellSet.getCell(Arrays.asList(0));
+
+                writeBackCell.setValue(scenario, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION);
             }
-            Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
-
-            sw = new StringWriter();
-            pw = new mondrian.mdx.QueryPrintWriter(sw);
-            updateClause.getValueExp().unparse(pw);
-            String valueString = sw.toString();
-
-            pstmt = connection.createStatement();
-            cellSet = pstmt.executeQuery(
-                new StringBuilder("WITH MEMBER [Measures].[m1] AS ")
-                    .append(valueString)
-                    .append(" SELECT [Measures].[m1] ON 0 FROM ")
-                    .append(update.getCubeName())
-                    .append(" CELL PROPERTIES VALUE").toString()
-            );
-            Cell cell = cellSet.getCell(Arrays.asList(0));
-
-            writeBackCell.setValue(scenario, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION);
         }
         return new StatementResponseR(null, null);
     }
