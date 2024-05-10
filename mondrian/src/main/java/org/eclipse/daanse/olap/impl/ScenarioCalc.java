@@ -20,10 +20,13 @@ import mondrian.rolap.RolapEvaluator;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.api.element.Member;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class ScenarioCalc extends GenericCalc {
+    static final Logger LOGGER = LoggerFactory.getLogger(ScenarioCalc.class);
     private final Scenario scenario;
     private final Object o;
     List<Member> ms;
@@ -75,33 +78,37 @@ public class ScenarioCalc extends GenericCalc {
             for (ScenarioImpl.WritebackCell writebackCell
                 : scenario.getWritebackCellMap().values())
             {
+                ((Number)(evaluator.evaluateCurrent())).doubleValue(); // don't remove that
+                LOGGER.debug("++++++++++++++++++ " + ((Number)(evaluator.evaluateCurrent())).doubleValue());
                 ScenarioImpl.CellRelation relation =
                     writebackCell.getRelationTo(evaluator.getMembers());
                 switch (relation) {
                     case ABOVE:
                         // This cell is below the writeback cell. Value is
                         // determined by allocation policy.
-                        double atomicCellCount =
-                            evaluateAtomicCellCount((RolapEvaluator) evaluator);
-                        if (atomicCellCount == 0d) {
+                        //double atomicCellCount =
+                        //    evaluateAtomicCellCount((RolapEvaluator) evaluator);
+                        //if (atomicCellCount == 0d) {
                             // Sometimes the value comes back zero if the cache
                             // is not ready. Switch to 1, which at least does
                             // not give divide-by-zero. We will be invoked again
                             // for the correct answer when the cache has been
                             // populated.
-                            atomicCellCount = 1d;
-                        }
+                        //    atomicCellCount = 1d;
+                        //}
                         switch (writebackCell.getAllocationPolicy()) {
                             case EQUAL_ALLOCATION:
-                                d = writebackCell.getNewValue()
-                                    * atomicCellCount
-                                    / writebackCell.getAtomicCellCount();
+                            	//System.out.println("*********************** " + ((Number)(evaluator.evaluateCurrent())).doubleValue());
+                                //d = writebackCell.getNewValue()
+                                //    * atomicCellCount
+                                //    / writebackCell.getAtomicCellCount();
                                 d = writebackCell.getNewValue() * ((Number)(evaluator.evaluateCurrent())).doubleValue() / writebackCell.getCurrentValue();
                                 break;
                             case EQUAL_INCREMENT:
-                                d += writebackCell.getOffset()
-                                    * atomicCellCount
-                                    / writebackCell.getAtomicCellCount();
+                                //d += writebackCell.getOffset()
+                                //    * atomicCellCount
+                                //    / writebackCell.getAtomicCellCount();
+                            	d += writebackCell.getOffset() * ((Number)(evaluator.evaluateCurrent())).doubleValue() / writebackCell.getCurrentValue();
                                 break;
                             default:
                                 throw Util.unexpected(
