@@ -168,6 +168,7 @@ public class OlapExecuteService implements ExecuteService {
     private final DBSchemaDiscoverService dbSchemaService;
     private final MDSchemaDiscoverService mdSchemaService;
     private final OtherDiscoverService otherDiscoverService;
+    private final CommitService commitService;
 
     public OlapExecuteService(ContextListSupplyer contextsListSupplyer, ContextGroupXmlaServiceConfig config) {
         this.contextsListSupplyer = contextsListSupplyer;
@@ -175,6 +176,7 @@ public class OlapExecuteService implements ExecuteService {
         dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
         mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer);
         otherDiscoverService = new OtherDiscoverService(contextsListSupplyer, config);
+        commitService = new CommitService();
     }
 
     @Override
@@ -272,8 +274,10 @@ public class OlapExecuteService implements ExecuteService {
         try {
         if (session != null) {
             Scenario scenario = session.getScenario();
-            scenario.setChangeFlag(false);
-            query.getConnection().setScenario(scenario);
+            if(scenario != null) {
+            	scenario.setChangeFlag(false);
+            	query.getConnection().setScenario(scenario);
+            }
         }
         Statement statement = query.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
@@ -323,7 +327,9 @@ public class OlapExecuteService implements ExecuteService {
             session.setScenario(null);
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
             Session session = Session.get(sessionId);
-            session.setScenario(null);
+            Scenario scenario = session.getScenario();
+            commitService.commit(scenario);
+            scenario.getWritebackCells().clear();            
         }
         return new StatementResponseR(null, null);
     }

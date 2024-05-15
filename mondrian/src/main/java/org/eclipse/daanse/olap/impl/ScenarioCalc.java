@@ -78,8 +78,11 @@ public class ScenarioCalc extends GenericCalc {
             for (ScenarioImpl.WritebackCell writebackCell
                 : scenario.getWritebackCells())
             {
-                ((Number)(evaluator.evaluateCurrent())).doubleValue(); // don't remove that
-                LOGGER.debug("++++++++++++++++++ " + ((Number)(evaluator.evaluateCurrent())).doubleValue());
+                double current = d;
+                LOGGER.debug("++++++++++++++++++ "
+                	+ " " + d
+                    + " " + writebackCell.getCurrentValue()
+                    + " " + writebackCell.getNewValue() );
                 ScenarioImpl.CellRelation relation =
                     writebackCell.getRelationTo(evaluator.getMembers());
                 switch (relation) {
@@ -102,13 +105,13 @@ public class ScenarioCalc extends GenericCalc {
                                 //d = writebackCell.getNewValue()
                                 //    * atomicCellCount
                                 //    / writebackCell.getAtomicCellCount();
-                                d = writebackCell.getNewValue() * ((Number)(evaluator.evaluateCurrent())).doubleValue() / writebackCell.getCurrentValue();
+                                d = writebackCell.getNewValue() * current / writebackCell.getCurrentValue();
                                 break;
                             case EQUAL_INCREMENT:
                                 //d += writebackCell.getOffset()
                                 //    * atomicCellCount
                                 //    / writebackCell.getAtomicCellCount();
-                            	d += writebackCell.getOffset() * ((Number)(evaluator.evaluateCurrent())).doubleValue() / writebackCell.getCurrentValue();
+                            	d += writebackCell.getOffset() * current / writebackCell.getCurrentValue();
                                 break;
                             default:
                                 throw Util.unexpected(
