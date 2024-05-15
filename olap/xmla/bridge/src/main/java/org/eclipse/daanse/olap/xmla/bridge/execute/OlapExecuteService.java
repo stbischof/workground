@@ -13,20 +13,7 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.execute;
 
-import static mondrian.xmla.XmlaConstants.CLIENT_FAULT_FC;
-import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_CODE;
-import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_FAULT_FS;
-import static mondrian.xmla.XmlaConstants.SERVER_FAULT_FC;
-import static mondrian.xmla.XmlaConstants.USM_DOM_PARSE_FAULT_FS;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
+import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -157,7 +144,19 @@ import org.eclipse.daanse.xmla.model.record.execute.statement.StatementResponseR
 import org.eclipse.daanse.xmla.model.record.mddataset.RowSetR;
 import org.eclipse.daanse.xmla.model.record.xmla_empty.EmptyresultR;
 
-import mondrian.xmla.XmlaException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static mondrian.xmla.XmlaConstants.CLIENT_FAULT_FC;
+import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_CODE;
+import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_FAULT_FS;
+import static mondrian.xmla.XmlaConstants.SERVER_FAULT_FC;
+import static mondrian.xmla.XmlaConstants.USM_DOM_PARSE_FAULT_FS;
 
 public class OlapExecuteService implements ExecuteService {
 
@@ -277,6 +276,15 @@ public class OlapExecuteService implements ExecuteService {
             if(scenario != null) {
             	scenario.setChangeFlag(false);
             	query.getConnection().setScenario(scenario);
+            	if (scenario.getWritebackCells().isEmpty()) {
+                    //List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
+                    //scenario.getWritebackCells().addAll(wbl);
+            	}
+            } else {
+                scenario = query.getConnection().createScenario();
+                query.getConnection().setScenario(scenario);
+                //List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
+                //scenario.getWritebackCells().addAll(wbl);
             }
         }
         Statement statement = query.getConnection().createStatement();
@@ -329,7 +337,7 @@ public class OlapExecuteService implements ExecuteService {
             Session session = Session.get(sessionId);
             Scenario scenario = session.getScenario();
             commitService.commit(scenario);
-            scenario.getWritebackCells().clear();            
+            scenario.getWritebackCells().clear();
         }
         return new StatementResponseR(null, null);
     }

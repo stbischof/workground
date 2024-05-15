@@ -1,21 +1,5 @@
 package org.eclipse.daanse.olap.impl;
 
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.daanse.olap.api.Connection;
-import org.eclipse.daanse.olap.api.Evaluator;
-import org.eclipse.daanse.olap.api.element.Hierarchy;
-import org.eclipse.daanse.olap.api.element.Member;
-import org.eclipse.daanse.olap.api.query.component.Formula;
-import org.eclipse.daanse.olap.api.result.AllocationPolicy;
-import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.api.result.Scenario;
-import org.eclipse.daanse.olap.calc.api.Calc;
-
 import mondrian.calc.impl.GenericCalc;
 import mondrian.mdx.ResolvedFunCallImpl;
 import mondrian.olap.QueryImpl;
@@ -33,6 +17,19 @@ import mondrian.rolap.RolapMember;
 import mondrian.rolap.RolapSchema;
 import mondrian.rolap.RolapStar;
 import mondrian.rolap.RolapStoredMeasure;
+import org.eclipse.daanse.olap.api.Connection;
+import org.eclipse.daanse.olap.api.Evaluator;
+import org.eclipse.daanse.olap.api.element.Hierarchy;
+import org.eclipse.daanse.olap.api.element.Member;
+import org.eclipse.daanse.olap.api.query.component.Formula;
+import org.eclipse.daanse.olap.api.result.AllocationPolicy;
+import org.eclipse.daanse.olap.api.result.Result;
+import org.eclipse.daanse.olap.api.result.Scenario;
+import org.eclipse.daanse.olap.calc.api.Calc;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ScenarioImpl implements Scenario {
 
@@ -372,14 +369,15 @@ public class ScenarioImpl implements Scenario {
          * @param currentValue Current value
          * @param allocationPolicy Allocation policy
          */
-        WritebackCell(
+        public WritebackCell(
             RolapCube cube,
             List<RolapMember> members,
             BitKey constrainedColumnsBitKey,
             Object[] keyValues,
             double newValue,
             double currentValue,
-            AllocationPolicy allocationPolicy)
+            AllocationPolicy allocationPolicy
+        )
         {
             assert keyValues.length == constrainedColumnsBitKey.cardinality();
 //            discard(cube); // not used currently
