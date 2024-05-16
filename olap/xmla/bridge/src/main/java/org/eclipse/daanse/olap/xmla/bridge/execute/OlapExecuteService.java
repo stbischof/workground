@@ -36,6 +36,7 @@ import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.api.result.Scenario;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DBSchemaDiscoverService;
@@ -167,7 +168,7 @@ public class OlapExecuteService implements ExecuteService {
     private final DBSchemaDiscoverService dbSchemaService;
     private final MDSchemaDiscoverService mdSchemaService;
     private final OtherDiscoverService otherDiscoverService;
-    private final CommitService commitService;
+    private final WriteBackService commitService;
 
     public OlapExecuteService(ContextListSupplyer contextsListSupplyer, ContextGroupXmlaServiceConfig config) {
         this.contextsListSupplyer = contextsListSupplyer;
@@ -175,7 +176,7 @@ public class OlapExecuteService implements ExecuteService {
         dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
         mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer);
         otherDiscoverService = new OtherDiscoverService(contextsListSupplyer, config);
-        commitService = new CommitService();
+        commitService = new WriteBackService();
     }
 
     @Override
@@ -277,14 +278,14 @@ public class OlapExecuteService implements ExecuteService {
             	scenario.setChangeFlag(false);
             	query.getConnection().setScenario(scenario);
             	if (scenario.getWritebackCells().isEmpty()) {
-                    //List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
-                    //scenario.getWritebackCells().addAll(wbl);
+                    List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
+                    scenario.getWritebackCells().addAll(wbl);
             	}
             } else {
                 scenario = query.getConnection().createScenario();
                 query.getConnection().setScenario(scenario);
-                //List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
-                //scenario.getWritebackCells().addAll(wbl);
+                List<ScenarioImpl.WritebackCell> wbl = commitService.getWritebackCellList(query.getCube());
+                scenario.getWritebackCells().addAll(wbl);
             }
         }
         Statement statement = query.getConnection().createStatement();
@@ -336,7 +337,7 @@ public class OlapExecuteService implements ExecuteService {
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
             Session session = Session.get(sessionId);
             Scenario scenario = session.getScenario();
-            commitService.commit(scenario);
+            commitService.commit(scenario, context.getConnection());
             scenario.getWritebackCells().clear();
         }
         return new StatementResponseR(null, null);
