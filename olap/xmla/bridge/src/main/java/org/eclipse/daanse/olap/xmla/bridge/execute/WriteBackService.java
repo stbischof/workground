@@ -44,43 +44,33 @@ import java.util.stream.Collectors;
 
 public class WriteBackService {
 
-    public void commit(Scenario scenario, Connection connection) {
-        //TODO
-        List<ScenarioImpl.WritebackCell> wbcs = scenario.getWritebackCells();
-        for (ScenarioImpl.WritebackCell wbc : wbcs) {
-            System.out.println(wbc.getCurrentValue() + " " + wbc.getNewValue() + " " + wbc.getOffset());
-            Member[] members = wbc.getMembersByOrdinal();
-            RolapBaseCubeMeasure rolapBaseCubeMeasure = (RolapBaseCubeMeasure) members[0];
-            System.out.println("Cube " + rolapBaseCubeMeasure.getCube().getName());
-            System.out.println("Measure " + rolapBaseCubeMeasure.getUniqueName());
-            RolapCube rolapCube = rolapBaseCubeMeasure.getCube();
-            Dimension[] dimensions = rolapCube.getDimensions();
-
-            if (members != null) {
-                for (Member member : members) {
-                    if (member instanceof RolapCubeMember rolapCubeMember) {
-                        System.out.println(rolapCubeMember.getHierarchy().getUniqueName());
-                        System.out.println(rolapCubeMember.getLevel().getUniqueName());
-                        System.out.println(member.getUniqueName());
-                        String[] ns = member.getUniqueName().split("\\.");
-                        for (Hierarchy hierarchy : rolapCube.getHierarchies()) {
-                            if (ns[0].equals(hierarchy.getUniqueName())) {
-                                Level[] ls = hierarchy.getLevels();
-                                for (int i = 1; i < ns.length; i++) {
-                                    Level l = ls[i - 1];
-                                    List<Member> mbs = rolapCube.getLevelMembers(l, false);
-                                    for (Member m : mbs) {
-                                        System.out.println(m.getUniqueName() + " " + m.getName());
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
+    public void commit(Scenario scenario, Connection con) {
+        DataSource dataSource = con.getDataSource();
+        try (final java.sql.Connection connection = dataSource.getConnection(); final Statement statement = connection.createStatement()) {
+            //TODO add cube as method parameter
+            statement.execute("delete from write_back_data");
+            List<ScenarioImpl.WritebackCell> wbcs = scenario.getWritebackCells();
+            for (ScenarioImpl.WritebackCell wbc : wbcs) {
+                Member[] members = wbc.getMembersByOrdinal();
+                if (members != null && members.length > 0 &&  members[0] instanceof RolapBaseCubeMeasure rolapBaseCubeMeasure) {
+                    Cube cube = rolapBaseCubeMeasure.getCube();
+                    String membersString = getMembersString(members);
+                    statement.executeUpdate("INSERT INTO write_back_data(currentValue, newValue, allocationPolicy, CUBE_NAME, memberUniqueNames) values("
+                        + wbc.getCurrentValue() + ", "
+                        + wbc.getNewValue() + ", '"
+                        + wbc.getAllocationPolicy().name() + "', '"
+                        + cube.getName() + "', '"
+                        + membersString + "')");
                 }
             }
-
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    private String getMembersString(Member[] members) {
+        return Arrays.stream(members).map(String::valueOf).collect(Collectors.joining(","));
     }
 
     public List<ScenarioImpl.WritebackCell> getWritebackCellList(Cube cube) {
@@ -142,12 +132,13 @@ public class WriteBackService {
     private Optional<RolapMember> getRolapHierarchy(Level[] levels, List<String> memberNames, RolapCube cube) {
         Optional<Member> result = Optional.empty();
         if (levels.length >= memberNames.size()) {
-            Level l = levels[0];
             for (int i = 0; i < memberNames.size(); i++) {
                 int index = i;
-                result = cube.getLevelMembers(l, false).stream().filter(m -> m.getName().equals(memberNames.get(index))).findFirst();
-                if (result.isPresent()) {
-                    l = result.get().getLevel();
+                for (Level l : levels) {
+                	result = cube.getLevelMembers(l, false).stream().filter(m -> m.getName().equals(memberNames.get(index))).findFirst();
+                	if (result.isPresent()) {
+                		break;
+                	}
                 }
             }
         }
