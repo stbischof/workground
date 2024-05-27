@@ -84,4 +84,9 @@ public class JoinR implements MappingJoin {
         this.rightKey = rightKey;
     }
 
+    @Override
+    public void setRelations(List<MappingRelationOrJoin> relations) {
+        this.relations  = relations;
+    }
+
 }

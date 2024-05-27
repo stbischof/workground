@@ -39,10 +39,6 @@ public interface Scenario {
 
     List<ScenarioImpl.WritebackCell> getWritebackCells();
 
-    boolean isChangeFlag();
-
-    void setChangeFlag(boolean flag);
-
     void setCellValue(
         Connection connection,
         List<RolapMember> members,

@@ -47,7 +47,6 @@ import org.eclipse.daanse.olap.api.query.component.ResolvedFunCall;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Position;
-import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.Calc;
 import org.eclipse.daanse.olap.calc.api.compiler.ParameterSlot;
 import org.eclipse.daanse.olap.calc.api.todo.TupleCursor;
@@ -55,7 +54,6 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleIterable;
 import org.eclipse.daanse.olap.calc.api.todo.TupleIterator;
 import org.eclipse.daanse.olap.calc.api.todo.TupleIteratorCalc;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
-import org.eclipse.daanse.olap.impl.ScenarioCalc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1032,11 +1030,6 @@ public Cell getCell( int[] pos ) {
     }
 
     CellInfo ci = cellInfos.lookup( pos );
-    Scenario scenario = getQuery().getConnection().getScenario();
-    if (scenario != null && scenario.isChangeFlag()) {
-        List<Member> ml = getPositionMembers(pos);
-        ci.value = new ScenarioCalc(scenario, ci.value, ml).evaluate(evaluator);
-    }
     if ( ci.value == null ) {
       for ( int i = 0; i < pos.length; i++ ) {
         int po = pos[i];
@@ -1050,19 +1043,7 @@ public Cell getCell( int[] pos ) {
     return new RolapCell( this, pos.clone(), ci );
   }
 
-    private List<Member> getPositionMembers(int[] pos) {
-        List<Member> result = new ArrayList<>();
-        for ( int i = 0; i < pos.length; i++ ) {
-            int po = pos[i];
-            if ( po < 0 || po >= axes[i].getPositions().size() ) {
-                throw Util.newError( "coordinates out of range" );
-            }
-            result.addAll(axes[i].getPositions().get(po));
-        }
-        return result;
-    }
-
-    private TupleIterable executeAxis( Evaluator evaluator, QueryAxis queryAxis, Calc axisCalc, boolean construct,
+  private TupleIterable executeAxis( Evaluator evaluator, QueryAxis queryAxis, Calc axisCalc, boolean construct,
       AxisMemberList axisMembers ) {
     if ( queryAxis == null ) {
       // Create an axis containing one position with no members (not

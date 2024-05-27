@@ -92,6 +92,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -256,7 +257,7 @@ class MandantoriesVerifyerTest {
         when(virtualCube.namedSets()).thenAnswer(setupDummyListAnswer(namedSet));
         when(virtualCube.cubeUsages()).thenAnswer(setupDummyListAnswer(cubeUsage));
         when(cube.actions()).thenAnswer(setupDummyListAnswer(action));
-        when(cube.writebackTables()).thenAnswer(setupDummyListAnswer(writebackTable));
+        when(cube.writebackTable()).thenReturn(Optional.of(writebackTable));
         when(writebackTable.columns()).thenAnswer(setupDummyListAnswer(writebackAttribute, writebackMeasure));
         when(cube.drillThroughActions()).thenAnswer(setupDummyListAnswer(drillThroughAction));
         when(drillThroughAction.drillThroughElements()).thenAnswer(setupDummyListAnswer(drillThroughMeasure,

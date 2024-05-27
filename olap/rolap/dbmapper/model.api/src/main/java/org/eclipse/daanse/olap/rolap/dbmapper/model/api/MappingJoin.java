@@ -34,4 +34,6 @@ public non-sealed interface MappingJoin extends MappingRelationOrJoin {
     void setRightAlias(String leftAlias);
 
     void setRightKey(String leftKey);
+
+    void setRelations(List<MappingRelationOrJoin> list);
 }

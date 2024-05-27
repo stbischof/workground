@@ -610,6 +610,10 @@ public class RolapHierarchy extends HierarchyBase {
         return relation;
     }
 
+    public void setRelation(MappingRelationOrJoin relation) {
+        this.relation = relation;
+    }
+
     public MappingHierarchy getXmlHierarchy() {
         return xmlHierarchy;
     }

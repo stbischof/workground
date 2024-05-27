@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
@@ -38,7 +39,7 @@ public record CubeR(String name,
                     List<MappingCalculatedMember> calculatedMembers,
                     List<MappingNamedSet> namedSets,
                     List<MappingDrillThroughAction> drillThroughActions,
-                    List<MappingWritebackTable> writebackTables,
+                    Optional<MappingWritebackTable> writebackTable,
                     Boolean enabled,
                     Boolean cache,
                     MappingRelation fact,
@@ -61,7 +62,7 @@ public record CubeR(String name,
             List<MappingCalculatedMember> calculatedMembers,
             List<MappingNamedSet> namedSets,
             List<MappingDrillThroughAction> drillThroughActions,
-            List<MappingWritebackTable> writebackTables,
+            Optional<MappingWritebackTable> writebackTable,
             Boolean enabled,
             Boolean cache,
             MappingRelation fact,
@@ -79,7 +80,7 @@ public record CubeR(String name,
 				this.calculatedMembers = calculatedMembers == null ? List.of() : calculatedMembers;
 				this.namedSets = namedSets == null ? List.of() : namedSets;
 				this.drillThroughActions = drillThroughActions == null ? List.of() : drillThroughActions;
-				this.writebackTables = writebackTables == null ? List.of() : writebackTables;
+				this.writebackTable = writebackTable;
 				this.enabled = enabled == null ? Boolean.TRUE : enabled;
 				this.cache = cache == null ? Boolean.TRUE : cache;
 				this.fact = fact;

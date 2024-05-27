@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -147,7 +148,7 @@ public class RolapCube extends CubeBase {
     private final RolapHierarchy measuresHierarchy;
 
     /** For SQL generator. Fact table. */
-    final MappingRelation fact;
+    private MappingRelation fact;
 
     /** Schema reader which can see this cube and nothing else. */
     private SchemaReader schemaReader;
@@ -203,8 +204,8 @@ public class RolapCube extends CubeBase {
     final List<AbstractRolapAction> actionList =
             new ArrayList<>();
 
-    final List<RolapWritebackTable> writebackTableList =
-            new ArrayList<>();
+    private Optional<RolapWritebackTable> writebackTable = Optional.empty();
+
     /**
      * Used for virtual cubes.
      * Contains a list of all base cubes related to a virtual cube
@@ -273,7 +274,7 @@ public class RolapCube extends CubeBase {
         this.context = context;
 
         if (! isVirtual()) {
-            this.star = schema.getRolapStarRegistry().getOrCreateStar(fact);
+            this.star = schema.getRolapStarRegistry().getOrCreateStar(getFact());
             // only set if different from default (so that if two cubes share
             // the same fact table, either can turn off caching and both are
             // effected).
@@ -370,12 +371,12 @@ public class RolapCube extends CubeBase {
             mappingCube.dimensionUsageOrDimensions(),
             RolapHierarchy.createMetadataMap(mappingCube.annotations()), context);
 
-        if (fact == null) {
+        if (getFact() == null) {
             throw Util.newError(
                 new StringBuilder("Must specify fact table of cube '").append(getName()).append("'").toString());
         }
 
-        if (getAlias(fact) == null) {
+        if (getAlias(getFact()) == null) {
             throw Util.newError(
                 new StringBuilder("Must specify alias for fact table of cube '").append(getName())
                 .append("'").toString());
@@ -538,7 +539,8 @@ public class RolapCube extends CubeBase {
             }
         }
 
-        for(MappingWritebackTable writebackTable: mappingCube.writebackTables()) {
+        if (mappingCube.writebackTable() != null && mappingCube.writebackTable().isPresent()) {
+            MappingWritebackTable writebackTable = mappingCube.writebackTable().get();
             List<RolapWritebackColumn> columns = new ArrayList<>();
 
             for(MappingWritebackColumn writebackColumn: writebackTable.columns()) {
@@ -590,7 +592,7 @@ public class RolapCube extends CubeBase {
                     writebackTable.schema(),
                     columns
             );
-            this.writebackTableList.add(rolapWritebackTable);
+            this.writebackTable = Optional.of(rolapWritebackTable);
         }
     }
 
@@ -616,7 +618,7 @@ public class RolapCube extends CubeBase {
                     mappingCube.name(), mappingMeasure.name());
             }
             measureExp = new ColumnR(
-                getAlias(fact), mappingMeasure.column());
+                getAlias(getFact()), mappingMeasure.column());
         } else if (mappingMeasure.measureExpression() != null) {
             measureExp = mappingMeasure.measureExpression();
         } else if (mappingMeasure.aggregator().equals("count")) {
@@ -1668,7 +1670,7 @@ public class RolapCube extends CubeBase {
         register();
     }
 
-    private void register() {
+    public void register() {
         if (isVirtual()) {
             return;
         }
@@ -1744,6 +1746,10 @@ public class RolapCube extends CubeBase {
      * Returns this cube's underlying star schema.
      */
     public RolapStar getStar() {
+        if (star.getFactTable().getRelation().equals(getFact())) {
+            return star;
+        }
+        star = schema.makeRolapStar(getFact());
         return star;
     }
 
@@ -2770,9 +2776,14 @@ public class RolapCube extends CubeBase {
     /**
      * Returns this cube's fact table, null if the cube is virtual.
      */
-    public MappingRelationOrJoin getFact() {
+    public MappingRelation getFact() {
         return fact;
     }
+
+    public void setFact(MappingRelation fact) {
+        this.fact = fact;
+    }
+
 
     /**
      * Returns whether this cube is virtual. We use the fact that virtual cubes
@@ -3559,5 +3570,9 @@ public class RolapCube extends CubeBase {
 
     public Context getContext() {
         return context;
+    }
+
+    public Optional<RolapWritebackTable> getWritebackTable() {
+        return writebackTable;
     }
 }

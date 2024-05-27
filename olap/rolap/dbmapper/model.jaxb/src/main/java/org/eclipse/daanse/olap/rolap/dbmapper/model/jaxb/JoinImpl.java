@@ -91,6 +91,7 @@ public class JoinImpl implements MappingJoin {
         this.rightKey = value;
     }
 
+    @Override
     public void setRelations(List<MappingRelationOrJoin> relations) {
         this.relations = relations;
     }

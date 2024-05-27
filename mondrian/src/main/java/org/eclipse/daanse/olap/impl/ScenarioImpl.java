@@ -38,11 +38,8 @@ public class ScenarioImpl implements Scenario {
 
     private final int id;
 
-    private boolean changeFlag = true;
-
     private final List<ScenarioImpl.WritebackCell> writebackCells =
-        new LinkedList<>();
-
+        new ArrayList<>();
 
     private RolapMember member;
 
@@ -181,16 +178,6 @@ public class ScenarioImpl implements Scenario {
     @Override
     public List<WritebackCell> getWritebackCells() {
         return writebackCells;
-    }
-
-    @Override
-    public boolean isChangeFlag() {
-        return changeFlag;
-    }
-
-    @Override
-    public void setChangeFlag(boolean changeFlag) {
-        this.changeFlag = changeFlag;
     }
 
     /**
@@ -489,7 +476,6 @@ public class ScenarioImpl implements Scenario {
                 return ScenarioImpl.CellRelation.EQUAL;
             }
         }
-
     }
 
     /**
@@ -625,5 +611,4 @@ public class ScenarioImpl implements Scenario {
             }
         }
     }
-
 }

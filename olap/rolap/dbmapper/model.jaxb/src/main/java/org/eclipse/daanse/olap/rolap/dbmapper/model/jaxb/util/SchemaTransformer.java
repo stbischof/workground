@@ -76,7 +76,7 @@ public class SchemaTransformer {
         cube.setCalculatedMembers(List.of());
         cube.setNamedSets(List.of());
         cube.setDrillThroughActions(List.of());
-        cube.setWritebackTables(List.of());
+        cube.setWritebackTable(null);
         cube.setEnabled(c.enabled());
         cube.setCache(c.cache());
         cube.setVisible(c.visible());

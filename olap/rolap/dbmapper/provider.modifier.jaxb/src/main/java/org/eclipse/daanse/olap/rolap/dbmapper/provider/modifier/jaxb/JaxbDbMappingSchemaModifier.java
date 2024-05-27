@@ -270,7 +270,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingAnnotation> annotations, List<MappingCubeDimension> dimensionUsageOrDimensions,
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
-        List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
+        Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
         MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
     ) {
         CubeImpl cube = new CubeImpl();
@@ -285,7 +285,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         cube.setCalculatedMembers(calculatedMembers);
         cube.setNamedSets(namedSets);
         cube.setDrillThroughActions(drillThroughActions);
-        cube.setWritebackTables(writebackTables);
+        cube.setWritebackTable(writebackTable.orElse(null));
         cube.setEnabled(enabled);
         cube.setCache(cache);
         cube.setFact(fact);

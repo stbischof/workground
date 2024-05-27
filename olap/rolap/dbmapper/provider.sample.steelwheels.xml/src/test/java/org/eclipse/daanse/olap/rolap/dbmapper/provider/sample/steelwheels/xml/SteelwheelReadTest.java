@@ -481,7 +481,7 @@ class SteelwheelReadTest {
         assertNotNull(cube.drillThroughActions());
         assertNotNull(cube.namedSets());
         //assertNull(cube.view());
-        assertNotNull(cube.writebackTables());
+        assertNotNull(cube.writebackTable());
         assertTrue(cube.cache());
         assertTrue(cube.enabled());
         assertNotNull(cube.measures());
@@ -712,7 +712,7 @@ class SteelwheelReadTest {
         assertNotNull(cube.drillThroughActions());
         assertNotNull(cube.namedSets());
         //assertNull(cube.view());
-        assertNotNull(cube.writebackTables());
+        assertNotNull(cube.writebackTable());
         assertTrue(cube.cache());
         assertTrue(cube.enabled());
         assertNotNull(cube.measures());

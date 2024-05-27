@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.xml.bind.annotation.XmlElementWrapper;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
@@ -37,7 +38,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="Cube", propOrder = { "fact", "dimensionUsageOrDimensions", "measures", "calculatedMembers",
-		"namedSets", "drillThroughActions", "writebackTables", "kpis", "actions" })
+		"namedSets", "drillThroughActions", "writebackTable", "kpis", "actions" })
 public class CubeImpl extends AbstractMainElement implements MappingCube {
 
 	@XmlElements({ @XmlElement(name = "DimensionUsage", type = DimensionUsageImpl.class),
@@ -52,7 +53,7 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	@XmlElement(name = "DrillThroughAction", type = DrillThroughActionImpl.class)
 	protected List<MappingDrillThroughAction> drillThroughActions;
 	@XmlElement(name = "WritebackTable", type = WritebackTableImpl.class)
-	protected List<MappingWritebackTable> writebackTables;
+	protected MappingWritebackTable writebackTable;
     @XmlElement(name = "Kpi", type = KpiImpl.class)
     @XmlElementWrapper(name = "Kpis")
     protected List<MappingKpi> kpis;
@@ -146,11 +147,8 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	}
 
 	@Override
-	public List<MappingWritebackTable> writebackTables() {
-		if (writebackTables == null) {
-			writebackTables = new ArrayList<>();
-		}
-		return this.writebackTables;
+	public Optional<MappingWritebackTable> writebackTable() {
+			return Optional.ofNullable(writebackTable);
 	}
 
 	@Override
@@ -203,8 +201,8 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 		this.drillThroughActions = drillThroughActions;
 	}
 
-	public void setWritebackTables(List<MappingWritebackTable> writebackTables) {
-		this.writebackTables = writebackTables;
+	public void setWritebackTable(MappingWritebackTable writebackTable) {
+		this.writebackTable = writebackTable;
 	}
 
 	public void setVisible(boolean visible) {

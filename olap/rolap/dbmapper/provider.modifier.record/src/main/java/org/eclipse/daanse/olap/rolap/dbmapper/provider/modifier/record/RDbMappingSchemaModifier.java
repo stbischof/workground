@@ -220,12 +220,12 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingAnnotation> annotations, List<MappingCubeDimension> dimensionUsageOrDimensions,
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
-        List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
+        Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
         MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
     ) {
         return new CubeR(name, description, annotations, caption, visible, defaultMeasure, dimensionUsageOrDimensions
             , measures,
-            calculatedMembers, namedSets, drillThroughActions, writebackTables, enabled, cache, fact,
+            calculatedMembers, namedSets, drillThroughActions, writebackTable, enabled, cache, fact,
             actions, kpis);
     }
 

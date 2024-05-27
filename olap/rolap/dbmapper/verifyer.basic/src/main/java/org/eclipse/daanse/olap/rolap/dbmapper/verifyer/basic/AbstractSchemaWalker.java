@@ -17,6 +17,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalker
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggColumnName;
@@ -111,7 +112,7 @@ public abstract class AbstractSchemaWalker {
             checkCalculatedMemberList(cube.calculatedMembers());
             checkNamedSetList(cube.namedSets());
             checkDrillThroughActionList(cube.drillThroughActions());
-            checkWritebackTableList(cube.writebackTables());
+            checkWritebackTableOption(cube.writebackTable());
             checkKpiList(cube.kpis(), cube);
             if (cube.actions() != null) {
                 cube.actions().forEach(this::checkAction);
@@ -844,9 +845,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkWritebackTableList(List<? extends MappingWritebackTable> list) {
-        if (list != null) {
-            list.forEach(this::checkWritebackTable);
+    private void checkWritebackTableOption(Optional<? extends MappingWritebackTable> writebackTable) {
+        if (writebackTable != null && writebackTable.isPresent()) {
+            checkWritebackTable(writebackTable.get());
         }
     }
 

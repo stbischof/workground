@@ -153,7 +153,7 @@ public class HierarchyUsage {
     {
         assert cubeDim != null : "precondition: cubeDim != null";
 
-        this.fact = cube.fact;
+        this.fact = cube.getFact();
 
         // Attributes common to all Hierarchy kinds
         // name

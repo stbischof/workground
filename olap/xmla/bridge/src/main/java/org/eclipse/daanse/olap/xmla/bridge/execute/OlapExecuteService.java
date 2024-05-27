@@ -13,20 +13,8 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.execute;
 
-import static mondrian.xmla.XmlaConstants.CLIENT_FAULT_FC;
-import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_CODE;
-import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_FAULT_FS;
-import static mondrian.xmla.XmlaConstants.SERVER_FAULT_FC;
-import static mondrian.xmla.XmlaConstants.USM_DOM_PARSE_FAULT_FS;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
+import mondrian.rolap.RolapCube;
+import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -49,6 +37,8 @@ import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.api.result.Scenario;
+import org.eclipse.daanse.olap.impl.ScenarioImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DBSchemaDiscoverService;
@@ -157,7 +147,20 @@ import org.eclipse.daanse.xmla.model.record.execute.statement.StatementResponseR
 import org.eclipse.daanse.xmla.model.record.mddataset.RowSetR;
 import org.eclipse.daanse.xmla.model.record.xmla_empty.EmptyresultR;
 
-import mondrian.xmla.XmlaException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static mondrian.xmla.XmlaConstants.CLIENT_FAULT_FC;
+import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_CODE;
+import static mondrian.xmla.XmlaConstants.HSB_DRILL_THROUGH_SQL_FAULT_FS;
+import static mondrian.xmla.XmlaConstants.SERVER_FAULT_FC;
+import static mondrian.xmla.XmlaConstants.USM_DOM_PARSE_FAULT_FS;
 
 public class OlapExecuteService implements ExecuteService {
 
@@ -168,6 +171,7 @@ public class OlapExecuteService implements ExecuteService {
     private final DBSchemaDiscoverService dbSchemaService;
     private final MDSchemaDiscoverService mdSchemaService;
     private final OtherDiscoverService otherDiscoverService;
+    private final WriteBackService writeBackService;
 
     public OlapExecuteService(ContextListSupplyer contextsListSupplyer, ContextGroupXmlaServiceConfig config) {
         this.contextsListSupplyer = contextsListSupplyer;
@@ -175,6 +179,7 @@ public class OlapExecuteService implements ExecuteService {
         dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
         mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer);
         otherDiscoverService = new OtherDiscoverService(contextsListSupplyer, config);
+        writeBackService = new WriteBackService();
     }
 
     @Override
@@ -269,11 +274,20 @@ public class OlapExecuteService implements ExecuteService {
 
     private StatementResponse executeQuery(Context context, StatementRequest statementRequest, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
+        MappingRelation fact = null;
         try {
         if (session != null) {
             Scenario scenario = session.getScenario();
-            scenario.setChangeFlag(false);
-            query.getConnection().setScenario(scenario);
+            if(scenario != null) {
+            	query.getConnection().setScenario(scenario);
+            } else {
+                scenario = query.getConnection().createScenario();
+                query.getConnection().setScenario(scenario);
+            }
+            if (query.getCube() instanceof RolapCube rolapCube) {
+                fact = rolapCube.getFact();
+                writeBackService.modifyFact((RolapCube) query.getCube());
+            }
         }
         Statement statement = query.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
@@ -281,9 +295,6 @@ public class OlapExecuteService implements ExecuteService {
 
             //TODO: not double execute , we have QueryComponent query
             CellSet cellSet = statement.executeQuery(query);
-            if (query.getConnection().getScenario() != null) {
-                query.getConnection().getScenario().setChangeFlag(true);
-            }
 //          CellSet cellSet = statement.executeQuery(statementRequest.command().statement());
 
             Optional<Content> content = statementRequest.properties().content();
@@ -303,8 +314,9 @@ public class OlapExecuteService implements ExecuteService {
         return null;
         }
         finally {
-            if (query.getConnection().getScenario() != null) {
-                query.getConnection().getScenario().setChangeFlag(false);
+            if (fact != null) {
+                ((RolapCube)query.getCube()).setFact(fact);
+                ((RolapCube)query.getCube()).register();
             }
         }
     }
@@ -317,13 +329,16 @@ public class OlapExecuteService implements ExecuteService {
 		if (transactionCommand.getCommand() == Command.BEGIN) {
             Session session = Session.create(sessionId);
 			Scenario scenario = context.createScenario();
+            writeBackService.addWriteBackFact(context);
             session.setScenario(scenario);
 		} else if (transactionCommand.getCommand() == Command.ROLLBACK) {
             Session session = Session.get(sessionId);
             session.setScenario(null);
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
             Session session = Session.get(sessionId);
-            session.setScenario(null);
+            Scenario scenario = session.getScenario();
+            writeBackService.commit(scenario, context.getConnection());
+            scenario.getWritebackCells().clear();
         }
         return new StatementResponseR(null, null);
     }
@@ -332,10 +347,6 @@ public class OlapExecuteService implements ExecuteService {
         Session session = Session.get(statementRequest.sessionId());
         if (session != null) {
             Scenario scenario = session.getScenario();
-            if (scenario != null) {
-                scenario.setChangeFlag(true);
-            }
-
             Connection connection = context.getConnection();
             connection.setScenario(scenario);
             for (UpdateClause updateClause : update.getUpdateClauses()) {
@@ -376,8 +387,8 @@ public class OlapExecuteService implements ExecuteService {
                         .append(" CELL PROPERTIES VALUE").toString()
                 );
                 Cell cell = cellSet.getCell(Arrays.asList(0));
-
-                writeBackCell.setValue(scenario, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION);
+                List<Map<String, Object>> values = writeBackService.getAllocationValues(tupleString, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION, update.getCubeName(), connection);
+                //writeBackCell.setValue(scenario, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION);
             }
         }
         return new StatementResponseR(null, null);
@@ -700,7 +711,6 @@ public class OlapExecuteService implements ExecuteService {
             connection = context.getConnection();
             if (session != null) {
                 Scenario scenario = session.getScenario();
-                scenario.setChangeFlag(false);
                 connection.setScenario(scenario);
             }
             statement = connection.createStatement();
@@ -712,7 +722,6 @@ public class OlapExecuteService implements ExecuteService {
             int rowCount = enableRowCount ? rowCountSlot[0] : -1;
             if (session != null) {
                 Scenario scenario = session.getScenario();
-                scenario.setChangeFlag(true);
             }
             return Convertor.toStatementResponseRowSet(resultSet, rowCount);
         } catch (Exception e) {
@@ -724,10 +733,6 @@ public class OlapExecuteService implements ExecuteService {
                 HSB_DRILL_THROUGH_SQL_FAULT_FS,
                 e);
         } finally {
-            if (session != null) {
-                Scenario scenario = session.getScenario();
-                scenario.setChangeFlag(false);
-            }
             if (resultSet != null) {
                 try {
                     resultSet.close();

@@ -13,6 +13,8 @@
  */
 package mondrian.rolap.util;
 
+import java.util.List;
+
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
@@ -41,9 +43,7 @@ public class JoinUtil {
     }
 
     public static void changeLeftRight(MappingJoin join, MappingRelationOrJoin left, MappingRelationOrJoin right) {
-        join.relations().clear();
-        join.relations().add(left);
-        join.relations().add(right);
+        join.setRelations(List.of(left, right));
     }
 
     /**

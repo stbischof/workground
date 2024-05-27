@@ -586,7 +586,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             List.of(),
             List.of(),
             List.of(),
-            List.of(),
+            Optional.empty(),
             true,
             true,
             fact,

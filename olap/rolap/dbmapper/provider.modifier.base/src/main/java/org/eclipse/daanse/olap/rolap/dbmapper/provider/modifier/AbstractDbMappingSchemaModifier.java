@@ -459,7 +459,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             List<MappingCalculatedMember> calculatedMembers = cubeCalculatedMembers(cube);
             List<MappingNamedSet> namedSets = cubeNamedSets(cube);
             List<MappingDrillThroughAction> drillThroughActions = cubeDrillThroughActions(cube);
-            List<MappingWritebackTable> writebackTables = cubeWritebackTables(cube);
+            Optional<MappingWritebackTable> writebackTable = cubeWritebackTable(cube);
             boolean enabled = cubeEnabled(cube);
             boolean cache = cubeCache(cube);
             boolean visible = cubeVisible(cube);
@@ -468,7 +468,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             List<MappingKpi> kpis = cubeKpis(cube);
 
             return new_Cube(name, caption, description, defaultMeasure, annotations, dimensionUsageOrDimensions, measures,
-                calculatedMembers, namedSets, drillThroughActions, writebackTables, enabled, cache, visible, fact,
+                calculatedMembers, namedSets, drillThroughActions, writebackTable, enabled, cache, visible, fact,
                 actions, kpis);
         }
         return null;
@@ -479,7 +479,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         List<MappingAnnotation> annotations, List<MappingCubeDimension> dimensionUsageOrDimensions,
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
-        List<MappingWritebackTable> writebackTables, boolean enabled, boolean cache, boolean visible,
+        Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
         MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
     );
 
@@ -2117,15 +2117,15 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return relation.alias();
     }
 
-    protected List<MappingWritebackTable> cubeWritebackTables(MappingCube cube) {
-        return writebackTables(cube.writebackTables());
+    protected Optional<MappingWritebackTable> cubeWritebackTable(MappingCube cube) {
+        return writebackTables(cube.writebackTable());
     }
 
-    protected List<MappingWritebackTable> writebackTables(List<MappingWritebackTable> writebackTables) {
+    protected Optional<MappingWritebackTable> writebackTables(Optional<MappingWritebackTable> writebackTables) {
         if (writebackTables != null) {
-            return writebackTables.stream().map(this::writebackTable).toList();
+            return Optional.ofNullable(writebackTable(writebackTables.get()));
         }
-        return null;
+        return Optional.empty();
     }
 
     private MappingWritebackTable writebackTable(MappingWritebackTable writebackTable) {
