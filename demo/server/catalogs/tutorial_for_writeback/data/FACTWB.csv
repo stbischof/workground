@@ -1,0 +1,12 @@
+"VAL","VAL1","L2"
+INTEGER,INTEGER,VARCHAR(100)
+-42,0,Level11
+-62,0,Level22
+70,0,Level11
+60,0,Level22
+-20,0,Level33
+-40,0,Level44
+-60,0,Level55
+25,0,Level33
+50,0,Level44
+70,0,Level55

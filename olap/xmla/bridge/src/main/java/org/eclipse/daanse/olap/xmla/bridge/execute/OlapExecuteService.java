@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap.xmla.bridge.execute;
 
 import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
+import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -37,7 +38,6 @@ import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.api.result.Scenario;
-import org.eclipse.daanse.olap.impl.ScenarioImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
@@ -285,8 +285,9 @@ public class OlapExecuteService implements ExecuteService {
                 query.getConnection().setScenario(scenario);
             }
             if (query.getCube() instanceof RolapCube rolapCube) {
+                scenario.setWriteBackTable(rolapCube.getWritebackTable());
                 fact = rolapCube.getFact();
-                writeBackService.modifyFact((RolapCube) query.getCube());
+                writeBackService.modifyFact((RolapCube) query.getCube(), scenario.getSessionValues());
             }
         }
         Statement statement = query.getConnection().createStatement();
@@ -329,7 +330,6 @@ public class OlapExecuteService implements ExecuteService {
 		if (transactionCommand.getCommand() == Command.BEGIN) {
             Session session = Session.create(sessionId);
 			Scenario scenario = context.createScenario();
-            writeBackService.addWriteBackFact(context);
             session.setScenario(scenario);
 		} else if (transactionCommand.getCommand() == Command.ROLLBACK) {
             Session session = Session.get(sessionId);
@@ -339,6 +339,7 @@ public class OlapExecuteService implements ExecuteService {
             Scenario scenario = session.getScenario();
             writeBackService.commit(scenario, context.getConnection());
             scenario.getWritebackCells().clear();
+            scenario.getSessionValues().clear();
         }
         return new StatementResponseR(null, null);
     }
@@ -387,8 +388,9 @@ public class OlapExecuteService implements ExecuteService {
                         .append(" CELL PROPERTIES VALUE").toString()
                 );
                 Cell cell = cellSet.getCell(Arrays.asList(0));
-                List<Map<String, Object>> values = writeBackService.getAllocationValues(tupleString, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION, update.getCubeName(), connection);
-                //writeBackCell.setValue(scenario, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION);
+                List<Map<String, Map.Entry<Datatype, Object>>> values = writeBackService.getAllocationValues(tupleString, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION, update.getCubeName(), connection);
+                scenario.getSessionValues().addAll(values);
+                connection.getCacheControl(null).flushSchemaCache();
             }
         }
         return new StatementResponseR(null, null);
@@ -720,9 +722,6 @@ public class OlapExecuteService implements ExecuteService {
                 tabFields,
                 rowCountSlot);
             int rowCount = enableRowCount ? rowCountSlot[0] : -1;
-            if (session != null) {
-                Scenario scenario = session.getScenario();
-            }
             return Convertor.toStatementResponseRowSet(resultSet, rowCount);
         } catch (Exception e) {
         	e.printStackTrace();

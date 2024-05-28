@@ -14,21 +14,20 @@
 package org.eclipse.daanse.olap.xmla.bridge.execute;
 
 import mondrian.olap.QueryImpl;
-import mondrian.rolap.BitKey;
 import mondrian.rolap.RolapBaseCubeMeasure;
 import mondrian.rolap.RolapConnection;
 import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapCubeHierarchy;
+import mondrian.rolap.RolapCubeMember;
 import mondrian.rolap.RolapHierarchy;
 import mondrian.rolap.RolapMember;
-import mondrian.rolap.RolapStar;
-import mondrian.rolap.RolapStoredMeasure;
 import mondrian.rolap.RolapWritebackAttribute;
 import mondrian.rolap.RolapWritebackColumn;
 import mondrian.rolap.RolapWritebackMeasure;
 import mondrian.rolap.RolapWritebackTable;
+import org.eclipse.daanse.db.dialect.api.Datatype;
+import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Connection;
-import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
@@ -36,22 +35,20 @@ import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.result.AllocationPolicy;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.result.Scenario;
-import org.eclipse.daanse.olap.impl.ScenarioImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ViewR;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,28 +58,46 @@ import java.util.stream.Collectors;
 public class WriteBackService {
 
     public void commit(Scenario scenario, Connection con) {
-        DataSource dataSource = con.getDataSource();
-        try (final java.sql.Connection connection = dataSource.getConnection(); final Statement statement =
-            connection.createStatement()) {
-            //TODO add cube as method parameter
-            statement.execute("delete from write_back_data");
-            List<ScenarioImpl.WritebackCell> wbcs = scenario.getWritebackCells();
-            for (ScenarioImpl.WritebackCell wbc : wbcs) {
-                Member[] members = wbc.getMembersByOrdinal();
-                if (members != null && members.length > 0 && members[0] instanceof RolapBaseCubeMeasure rolapBaseCubeMeasure) {
-                    Cube cube = rolapBaseCubeMeasure.getCube();
-                    String membersString = getMembersString(members);
-                    statement.executeUpdate("INSERT INTO write_back_data(currentValue, newValue, allocationPolicy, " +
-                        "CUBE_NAME, memberUniqueNames) values("
-                        + wbc.getCurrentValue() + ", "
-                        + wbc.getNewValue() + ", '"
-                        + wbc.getAllocationPolicy().name() + "', '"
-                        + cube.getName() + "', '"
-                        + membersString + "')");
+        if (scenario.getWriteBackTable().isPresent()) {
+            RolapWritebackTable writebackTable = scenario.getWriteBackTable().get();
+            DataSource dataSource = con.getDataSource();
+            Dialect dialect = con.getContext().getDialect();
+            try (final java.sql.Connection connection = dataSource.getConnection(); final Statement statement =
+                connection.createStatement()) {
+                List<Map<String, Map.Entry<Datatype, Object>>> sessionValues = scenario.getSessionValues();
+                scenario.getWriteBackTable();
+                for (Map<String, Map.Entry<Datatype, Object>> wbc : sessionValues) {
+                    StringBuilder sql = new StringBuilder("INSERT INTO ").append(writebackTable.getName()).append(" (");
+                    boolean flag = true;
+                    for (RolapWritebackColumn column : writebackTable.getColumns()) {
+                        if (flag) {
+                            flag = false;
+                        } else {
+                            sql.append(", ");
+                        }
+                        if (column instanceof RolapWritebackAttribute rolapWritebackAttribute) {
+                            sql.append(rolapWritebackAttribute.getColumnName());
+                        }
+                        if (column instanceof RolapWritebackMeasure rolapWritebackMeasure) {
+                            sql.append(rolapWritebackMeasure.getColumnName());
+                        }
+                    }
+                    sql.append(") values (");
+                    flag = true;
+                    for (Map.Entry<String, Map.Entry<Datatype, Object>> en : wbc.entrySet()) {
+                        if (flag) {
+                            flag = false;
+                        } else {
+                            sql.append(", ");
+                        }
+                        dialect.quote(sql, en.getValue().getValue(), en.getValue().getKey());
+                    }
+                    sql.append(")");
+                    statement.execute(sql.toString());
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
     }
@@ -193,14 +208,14 @@ public class WriteBackService {
         return null;
     }
 
-    public List<Map<String, Object>> getAllocationValues(
+    public List<Map<String, Map.Entry<Datatype, Object>>> getAllocationValues(
         String tupleString,
         Object value,
         AllocationPolicy equalAllocation,
         String cubeName,
         Connection connection
     ) {
-        List<Map<String, Object>> res = new ArrayList<>();
+        List<Map<String, Map.Entry<Datatype, Object>>> res = new ArrayList<>();
         //[D1.HierarchyWithHasAll].[Level11], [Measures].[Measure1]
         Optional<Cube> oCube = getCube(cubeName, connection);
         if (oCube.isPresent() && oCube.get() instanceof RolapCube rolapCube) {
@@ -238,7 +253,7 @@ public class WriteBackService {
                                 Level[] levels = oRolapHierarchy.get().getLevels();
                                 Optional<RolapMember> oRolapMember = getRolapHierarchy(levels, ls, rolapCube);
                                 Set<Member> members = getLevelLeafMembers(levels, oRolapMember, rolapCube);
-                                Map<Member, Object> data = getData(members, rolapCube);
+                                Map<Member, Object> data = getData(members, rolapBaseCubeMeasure.getUniqueName(), rolapCube);
                                 res.addAll(allocateData(data, measureName, (Double) value, equalAllocation, writebackTable));
                             }
                         } else {
@@ -250,7 +265,8 @@ public class WriteBackService {
                                         if (levels != null && levels.length > 0) {
                                             Set<Member> members = getLevelLeafMembers(levels, Optional.empty(),
                                                 rolapCube);
-                                            Map<Member, Object> data = getData(members, rolapCube);
+
+                                            Map<Member, Object> data = getData(members, rolapBaseCubeMeasure.getUniqueName(), rolapCube);
                                             res.addAll(allocateData(data, measureName, (Double) value, equalAllocation,
                                                 writebackTable));
                                         }
@@ -268,22 +284,26 @@ public class WriteBackService {
         return res;
     }
 
-    private List<Map<String, Object>> allocateData(
+    private List<Map<String, Map.Entry<Datatype, Object>>> allocateData(
         Map<Member, Object> data,
         String measureName,
         Double value,
         AllocationPolicy allocation,
         RolapWritebackTable writebackTable
     ) {
-        Map<Member, Double> d = new HashMap<>();
+        List<Map<Member, Double>> res = new ArrayList();
         switch (allocation) {
             case EQUAL_ALLOCATION:
                 int size = data.size();
                 double vav = value / size;
+                Map<Member, Double> d = new HashMap<>();
+                Map<Member, Double> dMinus = new HashMap<>();
                 for (Map.Entry<Member, Object> entry : data.entrySet()) {
-                    d.put(entry.getKey(), (-1) * (Double) entry.getValue());
+                    dMinus.put(entry.getKey(), (-1) * (Double) entry.getValue());
                     d.put(entry.getKey(), vav);
                 }
+                res.add(dMinus);
+                res.add(d);
                 break;
             case WEIGHTED_ALLOCATION:
                 break;
@@ -294,40 +314,43 @@ public class WriteBackService {
             default:
 
         }
-        return allocateData(d, measureName, writebackTable);
+        return allocateData(res, measureName, writebackTable);
     }
 
-    private List<Map<String, Object>> allocateData(
-        Map<Member, Double> d,
+    private List<Map<String, Map.Entry<Datatype, Object>>> allocateData(
+        List<Map<Member, Double>> l,
         String measureName,
         RolapWritebackTable writebackTable
     ) {
-        List<Map<String, Object>> res = new ArrayList<>();
-        for (Map.Entry<Member, Double> entry : d.entrySet()) {
-            Member m = entry.getKey();
-            Double value = entry.getValue();
-            if (m instanceof RolapMember rolapMember) {
-                Map<String, Object> mRes = new HashMap<>();
-                Object key = rolapMember.getKey();
-                List<RolapWritebackColumn> columns = writebackTable.getColumns();
-                for (RolapWritebackColumn column : columns) {
-                    if (column instanceof RolapWritebackMeasure rolapWritebackMeasure) {
-                        if (rolapWritebackMeasure.getMeasure().getUniqueName().equals(measureName)) {
-                            mRes.put(rolapWritebackMeasure.getColumnName(), value);
-                        } else {
-                            mRes.put(rolapWritebackMeasure.getColumnName(), 0);
+        List<Map<String, Map.Entry<Datatype, Object>>> res = new ArrayList<>();
+        for (Map<Member, Double> d : l) {
+            for (Map.Entry<Member, Double> entry : d.entrySet()) {
+                Member m = entry.getKey();
+                Double value = entry.getValue();
+                if (m instanceof RolapCubeMember rolapCubeMember) {
+                    Map<String, Map.Entry<Datatype, Object>> mRes = new LinkedHashMap<>();
+                    Object key = rolapCubeMember.getKey();
+                    List<RolapWritebackColumn> columns = writebackTable.getColumns();
+                    for (RolapWritebackColumn column : columns) {
+                        if (column instanceof RolapWritebackMeasure rolapWritebackMeasure) {
+                            if (rolapWritebackMeasure.getMeasure().getUniqueName().equals(measureName)) {
+                                mRes.put(rolapWritebackMeasure.getColumnName(), Map.entry(Datatype.NUMERIC, value));
+                            } else {
+                                mRes.put(rolapWritebackMeasure.getColumnName(), Map.entry(Datatype.NUMERIC,0));
+                            }
+                        }
+                        if (column instanceof RolapWritebackAttribute rolapWritebackAttribute) {
+                            mRes.put(rolapWritebackAttribute.getColumnName(), Map.entry(Datatype.STRING, key));
                         }
                     }
-                    if (column instanceof RolapWritebackAttribute rolapWritebackAttribute) {
-                        mRes.put(rolapWritebackAttribute.getColumnName(), key);
-                    }
+                    res.add(mRes);
                 }
             }
         }
         return res;
     }
 
-    private Map<Member, Object> getData(Set<Member> members, RolapCube cube) {
+    private Map<Member, Object> getData(Set<Member> members, String measureUniqueName, RolapCube cube) {
 
         //SELECT
         //{
@@ -349,7 +372,7 @@ public class WriteBackService {
             } else {
                 buf.append(",");
             }
-            buf.append("(").append(member.getUniqueName()).append(")");
+            buf.append("(").append(member.getUniqueName()).append(", ").append(measureUniqueName).append(")");
         }
         buf.append("} ON 0 FROM ").append(cube.getName());
         final String mdx = buf.toString();
@@ -425,47 +448,29 @@ public class WriteBackService {
         return Optional.empty();
     }
 
-    public void addWriteBackFact(Context context) {
-        Cube[] cubes = context.getConnection().getSchema().getCubes();
-        if (cubes != null) {
-            DataSource dataSource = context.getConnection().getDataSource();
-            try (final java.sql.Connection connection = dataSource.getConnection(); final Statement statement =
-                connection.createStatement()) {
-                for (Cube cube : cubes) {
-                    if (cube instanceof RolapCube rolapCube) {
-                        MappingRelationOrJoin fact = rolapCube.getFact();
-                        if (fact instanceof MappingTable table) {
-                            StringBuilder sb = new StringBuilder("SELECT * INTO ").append(table.name()).append("WB " +
-                                "from ").append(table.name()).append(" Where 1!=1");
-                            statement.executeQuery(sb.toString());
-                        }
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void modifyFact(RolapCube cube) {
+    public void modifyFact(RolapCube cube, List<Map<String, Map.Entry<Datatype, Object>>> sessionValues) {
         MappingRelation fact = cube.getFact();
-        if (fact instanceof MappingTable mappingTable) {
-            String alias = mappingTable.alias() != null ? mappingTable.alias() : mappingTable.name();
-            cube.getContext().getDialect().getDialectName();
-            StringBuilder sql = new StringBuilder("select * from FACT union all select * from FACTWB");
-            //TODO add session data
-            List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
-                cube.getContext().getDialect().getDialectName()));
-            cube.setFact(new ViewR(alias, sqls));
-            List<RolapHierarchy> rolapHierarchyList = cube.getHierarchies();
-            if (rolapHierarchyList != null) {
-                for (RolapHierarchy hierarchy : rolapHierarchyList) {
-                    if (fact.equals(hierarchy.getRelation())) {
-                        hierarchy.setRelation(cube.getFact());
-                    }
-                }
-            }
-            cube.register();
+        if (cube.getWritebackTable() != null && cube.getWritebackTable().isPresent()) {
+        	if (fact instanceof MappingTable mappingTable) {
+        		String alias = mappingTable.alias() != null ? mappingTable.alias() : mappingTable.name();
+        		cube.getContext().getDialect().getDialectName();
+        		StringBuilder sql = new StringBuilder("select * from " + mappingTable.name() + " union all select * from " + cube.getWritebackTable().get().getName());
+        		if (sessionValues != null && !sessionValues.isEmpty()) {
+        			sql.append(cube.getContext().getDialect().generateUnionAllSql(sessionValues));
+        		}
+        		List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
+        		cube.getContext().getDialect().getDialectName()));
+        		cube.setFact(new ViewR(alias, sqls));
+        		List<RolapHierarchy> rolapHierarchyList = cube.getHierarchies();
+        		if (rolapHierarchyList != null) {
+        			for (RolapHierarchy hierarchy : rolapHierarchyList) {
+        				if (fact.equals(hierarchy.getRelation())) {
+        					hierarchy.setRelation(cube.getFact());
+        				}
+        			}
+        		}
+        		cube.register();
+        	}
         }
     }
 }

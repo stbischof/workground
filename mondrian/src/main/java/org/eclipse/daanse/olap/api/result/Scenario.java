@@ -2,7 +2,10 @@ package org.eclipse.daanse.olap.api.result;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import mondrian.rolap.RolapWritebackTable;
+import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.Connection;
 
 import mondrian.rolap.RolapMember;
@@ -46,4 +49,10 @@ public interface Scenario {
         double currentValue,
         AllocationPolicy allocationPolicy,
         Object[] allocationArgs);
+
+    List<Map<String, Map.Entry<Datatype, Object>>> getSessionValues();
+
+    void setWriteBackTable(Optional<RolapWritebackTable> writebackTable);
+
+    Optional<RolapWritebackTable> getWriteBackTable();
 }

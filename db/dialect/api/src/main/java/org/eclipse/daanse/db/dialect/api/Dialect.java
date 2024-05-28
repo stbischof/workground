@@ -8,9 +8,9 @@
  * Copyright (C) 2021 Sergei Semenkov
  * All rights reserved.
  * ---- All changes after Fork in 2023 ------------------------
- * 
+ *
  * Project: Eclipse daanse
- * 
+ *
  * Copyright (c) 2023 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made
@@ -60,11 +60,11 @@ public interface Dialect {
 	 * <ul>
 	 * <p>
 	 *
-	 * 
+	 *
 	 * @param idCondition    {@link CharSequence} with the IF-Condition
 	 * @param thenExpression {@link CharSequence} with the Then-Expression
 	 * @param elseExpression {@link CharSequence} with the Else-Expression
-	 * 
+	 *
 	 * @return function wrapped version
 	 */
 	StringBuilder wrapIntoSqlIfThenElseFunction(CharSequence idCondition, CharSequence thenExpression,
@@ -653,7 +653,7 @@ public interface Dialect {
 	/**
 	 * Informs Mondrian if the dialect supports regular expressions when creating
 	 * the 'where' or the 'having' clause.
-	 * 
+	 *
 	 * @return True if regular expressions are supported.
 	 */
 	boolean allowsRegularExpressionInWhereClause();
@@ -662,7 +662,7 @@ public interface Dialect {
 	 * Some databases, like Greenplum, don't include nulls as part of the results of
 	 * a COUNT sql call. This allows dialects to wrap the count expression in
 	 * something before it is used in the query.
-	 * 
+	 *
 	 * @param exp The expression to wrap.
 	 * @return A valid expression to use for a count operation.
 	 */
@@ -756,4 +756,6 @@ public interface Dialect {
 	boolean supportBatchOperations();
 
 	String createSchema(String schemaName, boolean ifExists);
+
+    StringBuilder generateUnionAllSql(List<Map<String, Map.Entry<Datatype, Object>>> valueList);
 }

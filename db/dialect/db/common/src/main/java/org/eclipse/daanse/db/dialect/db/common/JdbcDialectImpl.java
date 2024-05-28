@@ -16,7 +16,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -573,6 +572,32 @@ public abstract class JdbcDialectImpl implements Dialect {
         return buf;
     }
 
+    @Override
+    public StringBuilder generateUnionAllSql(List<Map<String, Map.Entry<Datatype, Object>>> valueList) {
+        final StringBuilder buf = new StringBuilder();
+        for (Map<String, Map.Entry<Datatype, Object>> m : valueList) {
+            buf.append(" union all ");
+            buf.append("select ");
+            boolean firstFlag = true;
+            for (Map.Entry<String, Map.Entry<Datatype, Object>> en : m.entrySet()) {
+                if (firstFlag) {
+                    firstFlag = false;
+                } else {
+                    buf.append((", "));
+                }
+                quote(buf, en.getValue().getValue(), en.getValue().getKey());
+                if (allowsAs()) {
+                    buf.append(" as ");
+                } else {
+                    buf.append(' ');
+                }
+                quoteIdentifier(en.getKey(), buf);
+            }
+        }
+        return buf;
+
+    }
+
     private void formSelectFieldsForInlineGeneric(StringBuilder buf, String[] values, List<String> columnTypes, List<String> columnNames, Integer[] maxLengths) {
         for (int j = 0; j < values.length; j++) {
             String value = values[j];
@@ -1100,7 +1125,7 @@ public abstract class JdbcDialectImpl implements Dialect {
 
 		return sb.append(quoteIdentifier(schemaName, tableName)).toString();
 	}
-	
+
 	@Override
 	public String createSchema(String schemaName,  boolean ifNotExists) {
 		StringBuilder sb = new StringBuilder("CREATE SCHEMA ");
