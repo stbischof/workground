@@ -10,10 +10,10 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 -->
-<Schema name="tutorial_for_writeback">
+<Schema name="tutorial_for_writeback_with_fact_view">
   <Documentation>
     <![CDATA[
-      writeback with fact as table
+      writeback with fact as view
 		]]>
   </Documentation>
   <Dimension name="D1">
@@ -32,15 +32,14 @@
   </Dimension>
 
   <Cube name="C">
-    <Table name="FACT"/>
-    <!--View alias="FACT1">
+    <View alias="FACT1">
       <SQL dialect="generic">
-        <![CDATA[select * from FACT union all select * from FACTWB union all select -70.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select -60.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2"]]>
+        <![CDATA[select * from FACT]]>
       </SQL>
       <SQL dialect="h2">
-        <![CDATA[select * from FACT union all select * from FACTWB union all select -70.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select -60.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2"]]>
+        <![CDATA[select * from FACT]]>
       </SQL>
-    </View-->
+    </View>
     <DimensionUsage name="D1" source="D1" foreignKey="L2"/>
     <WritebackTable name="FACTWB"  >
       <WritebackMeasure name="Measure1" column="VAL"></WritebackMeasure>

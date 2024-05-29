@@ -13,9 +13,11 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.execute;
 
+import mondrian.olap.UpdateImpl;
 import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
+import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -350,50 +352,70 @@ public class OlapExecuteService implements ExecuteService {
             Connection connection = context.getConnection();
             connection.setScenario(scenario);
             for (UpdateClause updateClause : update.getUpdateClauses()) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);
-                updateClause.getTupleExp().unparse(pw);
-                String tupleString = sw.toString();
+                if (updateClause instanceof UpdateImpl.UpdateClauseImpl updateClauseImpl) {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new mondrian.mdx.QueryPrintWriter(sw);
+                    updateClause.getTupleExp().unparse(pw);
+                    String tupleString = sw.toString();
 
-                Statement pstmt = connection.createStatement();
-                CellSet cellSet = pstmt.executeQuery(
-                    new StringBuilder("SELECT ")
-                        .append(tupleString)
-                        .append(" ON 0 FROM ")
-                        .append(update.getCubeName())
-                        //.append(" CELL PROPERTIES CELL_ORDINAL")
-                        .toString()
-                );
-                CellSetAxis axis = cellSet.getAxes().get(0);
-                if (axis.getPositionCount() == 0) {
-                    //Empty tuple exception
+                    Statement pstmt = connection.createStatement();
+                    CellSet cellSet = pstmt.executeQuery(
+                        new StringBuilder("SELECT ")
+                            .append(tupleString)
+                            .append(" ON 0 FROM ")
+                            .append(update.getCubeName())
+                            //.append(" CELL PROPERTIES CELL_ORDINAL")
+                            .toString()
+                    );
+                    CellSetAxis axis = cellSet.getAxes().get(0);
+                    if (axis.getPositionCount() == 0) {
+                        //Empty tuple exception
+                    }
+                    if (axis.getPositionCount() == 1) {
+                        //More than one tuple exception
+                    }
+                    //Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
+
+                    sw = new StringWriter();
+                    pw = new mondrian.mdx.QueryPrintWriter(sw);
+                    updateClause.getValueExp().unparse(pw);
+                    String valueString = sw.toString();
+
+                    pstmt = connection.createStatement();
+                    cellSet = pstmt.executeQuery(
+                        new StringBuilder("WITH MEMBER [Measures].[m1] AS ")
+                            .append(valueString)
+                            .append(" SELECT [Measures].[m1] ON 0 FROM ")
+                            .append(update.getCubeName())
+                            .append(" CELL PROPERTIES VALUE").toString()
+                    );
+                    Cell cell = cellSet.getCell(Arrays.asList(0));
+                    AllocationPolicy allocationPolicy = convertAllocation(updateClauseImpl.getAllocation());
+                    List<Map<String, Map.Entry<Datatype, Object>>> values = writeBackService.getAllocationValues(tupleString, cell.getValue(), allocationPolicy, update.getCubeName(), connection);
+                    scenario.getSessionValues().addAll(values);
+                    connection.getCacheControl(null).flushSchemaCache();
                 }
-                if (axis.getPositionCount() == 1) {
-                    //More than one tuple exception
-                }
-                //Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
-
-                sw = new StringWriter();
-                pw = new mondrian.mdx.QueryPrintWriter(sw);
-                updateClause.getValueExp().unparse(pw);
-                String valueString = sw.toString();
-
-                pstmt = connection.createStatement();
-                cellSet = pstmt.executeQuery(
-                    new StringBuilder("WITH MEMBER [Measures].[m1] AS ")
-                        .append(valueString)
-                        .append(" SELECT [Measures].[m1] ON 0 FROM ")
-                        .append(update.getCubeName())
-                        .append(" CELL PROPERTIES VALUE").toString()
-                );
-                Cell cell = cellSet.getCell(Arrays.asList(0));
-                List<Map<String, Map.Entry<Datatype, Object>>> values = writeBackService.getAllocationValues(tupleString, cell.getValue(), AllocationPolicy.EQUAL_ALLOCATION, update.getCubeName(), connection);
-                scenario.getSessionValues().addAll(values);
-                connection.getCacheControl(null).flushSchemaCache();
             }
         }
         return new StatementResponseR(null, null);
     }
+
+    private AllocationPolicy convertAllocation(Allocation allocation) {
+            switch (allocation) {
+                case NO_ALLOCATION:
+                    return AllocationPolicy.EQUAL_ALLOCATION;
+                case USE_EQUAL_ALLOCATION:
+                    return AllocationPolicy.EQUAL_ALLOCATION;
+                case USE_EQUAL_INCREMENT:
+                    return AllocationPolicy.EQUAL_INCREMENT;
+                case USE_WEIGHTED_ALLOCATION:
+                    return AllocationPolicy.WEIGHTED_ALLOCATION;
+                case USE_WEIGHTED_INCREMENT:
+                    return AllocationPolicy.WEIGHTED_INCREMENT;
+                default: return AllocationPolicy.EQUAL_ALLOCATION;
+            }
+    }
+
 
     private StatementResponse executeRefresh(Context context, Refresh refresh) {
         Connection connection = context.getConnection();

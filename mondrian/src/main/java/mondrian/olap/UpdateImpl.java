@@ -23,6 +23,7 @@ package mondrian.olap;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Update;
 import org.eclipse.daanse.olap.api.query.component.UpdateClause;
@@ -57,14 +58,6 @@ public class UpdateImpl extends AbstractQueryPart implements Update {
         return this.updateClauses;
     }
 
-    public enum Allocation {
-        NO_ALLOCATION,
-        USE_EQUAL_ALLOCATION,
-        USE_EQUAL_INCREMENT,
-        USE_WEIGHTED_ALLOCATION,
-        USE_WEIGHTED_INCREMENT
-    }
-
     public static class UpdateClauseImpl extends AbstractQueryPart implements UpdateClause {
         private final Expression tuple;
         private Expression value;
@@ -86,6 +79,10 @@ public class UpdateImpl extends AbstractQueryPart implements Update {
         @Override
         public Expression getValueExp() {
             return this.value;
+        }
+
+        public Allocation getAllocation() {
+            return allocation == null ? Allocation.USE_EQUAL_ALLOCATION : allocation;
         }
     }
 }

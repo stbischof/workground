@@ -10,10 +10,10 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 -->
-<Schema name="tutorial_for_writeback">
+<Schema name="tutorial_for_writeback_with_fact_InlineTable">
   <Documentation>
     <![CDATA[
-      writeback with fact as table
+      writeback with fact as InlineTable
 		]]>
   </Documentation>
   <Dimension name="D1">
@@ -32,15 +32,40 @@
   </Dimension>
 
   <Cube name="C">
-    <Table name="FACT"/>
-    <!--View alias="FACT1">
-      <SQL dialect="generic">
-        <![CDATA[select * from FACT union all select * from FACTWB union all select -70.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select -60.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2"]]>
-      </SQL>
-      <SQL dialect="h2">
-        <![CDATA[select * from FACT union all select * from FACTWB union all select -70.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select -60.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level11' as "L2" union all select 130.0 as "VALUE", 0 as "VALUE1", 'Level22' as "L2"]]>
-      </SQL>
-    </View-->
+    <InlineTable alias="FACT">
+      <ColumnDefs>
+        <ColumnDef name="VAL" type="Numeric"/>
+        <ColumnDef name="VAL1" type="Numeric"/>
+        <ColumnDef name="L2" type="String"/>
+      </ColumnDefs>
+      <Rows>
+        <Row>
+          <Value column="VAL">42</Value>
+          <Value column="VAL1">21</Value>
+          <Value column="L2">Level11</Value>
+        </Row>
+        <Row>
+          <Value column="VAL">62</Value>
+          <Value column="VAL1">31</Value>
+          <Value column="L2">Level22</Value>
+        </Row>
+        <Row>
+          <Value column="VAL">20</Value>
+          <Value column="VAL1">10</Value>
+          <Value column="L2">Level33</Value>
+        </Row>
+        <Row>
+          <Value column="VAL">40</Value>
+          <Value column="VAL1">20</Value>
+          <Value column="L2">Level44</Value>
+        </Row>
+        <Row>
+          <Value column="VAL">60</Value>
+          <Value column="VAL1">30</Value>
+          <Value column="L2">Level55</Value>
+        </Row>
+      </Rows>
+    </InlineTable>
     <DimensionUsage name="D1" source="D1" foreignKey="L2"/>
     <WritebackTable name="FACTWB"  >
       <WritebackMeasure name="Measure1" column="VAL"></WritebackMeasure>

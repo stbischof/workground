@@ -1,9 +1,9 @@
 # Documentation
-### CatalogName : tutorial_for_writeback
-### Schema tutorial_for_writeback : 
+### CatalogName : tutorial_for_writeback_with_fact_InlineTable
+### Schema tutorial_for_writeback_with_fact_InlineTable : 
 
     
-      writeback with fact as table
+      writeback with fact as InlineTable
 		
   
 ### Public Dimensions:
@@ -40,7 +40,7 @@ Levels: "L1, L2"
 
     
 
-##### Table: "FACT"
+##### Table: ""
 
 ##### Dimensions:
 ##### Dimension: "D1 -> D1":
@@ -79,7 +79,7 @@ L L2 ""
 "d00" ||--|| "h000" : "L2-L2"
 ```
 ---
-### Cube Matrix for tutorial_for_writeback:
+### Cube Matrix for tutorial_for_writeback_with_fact_InlineTable:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -90,7 +90,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube C: [0.1000, 0.0000]
+Cube C: [0.1000, 0.0005]
 ```
 ---
 ### Database :
@@ -100,11 +100,6 @@ Cube C: [0.1000, 0.0000]
 title: Diagram;
 ---
 erDiagram
-"FACT✔"{
-int VAL "✔"
-int VAL1 "✔"
-string L2 "✔"
-}
 "FACTWB✔"{
 int VAL "✔"
 int VAL1 "✔"
@@ -126,12 +121,17 @@ string ALLOCATIONPOLICY "✔"
 string CUBE_NAME "✔"
 string MEMBERUNIQUENAMES "✔"
 }
+"FACT❌"{
+DECIMAL VAL "❌"
+VARCHAR L2 "❌"
+DECIMAL VAL1 "❌"
+}
 
-"FACT✔" ||--o{ "L1✔" : "L2-L2"
+"FACT❌" ||--o{ "L1✔" : "L2-L2"
 "L1✔" ||--o{ "L2✔" : "L2-L2"
 ```
 ---
-## Validation result for schema tutorial_for_writeback
+## Validation result for schema tutorial_for_writeback_with_fact_InlineTable
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

@@ -1,9 +1,9 @@
 # Documentation
-### CatalogName : tutorial_for_writeback
-### Schema tutorial_for_writeback : 
+### CatalogName : tutorial_for_writeback_with_fact_view
+### Schema tutorial_for_writeback_with_fact_view : 
 
     
-      writeback with fact as table
+      writeback with fact as view
 		
   
 ### Public Dimensions:
@@ -40,7 +40,7 @@ Levels: "L1, L2"
 
     
 
-##### Table: "FACT"
+##### Table: "select * from FACT"
 
 ##### Dimensions:
 ##### Dimension: "D1 -> D1":
@@ -79,7 +79,7 @@ L L2 ""
 "d00" ||--|| "h000" : "L2-L2"
 ```
 ---
-### Cube Matrix for tutorial_for_writeback:
+### Cube Matrix for tutorial_for_writeback_with_fact_view:
 ```mermaid
 quadrantChart
 title Cube Matrix
@@ -127,11 +127,11 @@ string CUBE_NAME "✔"
 string MEMBERUNIQUENAMES "✔"
 }
 
-"FACT✔" ||--o{ "L1✔" : "L2-L2"
+"FACT1✔" ||--o{ "L1✔" : "L2-L2"
 "L1✔" ||--o{ "L2✔" : "L2-L2"
 ```
 ---
-## Validation result for schema tutorial_for_writeback
+## Validation result for schema tutorial_for_writeback_with_fact_view
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

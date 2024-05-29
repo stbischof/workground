@@ -31,7 +31,6 @@ import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.UpdateStatement;
-import org.eclipse.daanse.mdx.model.api.expression.MdxExpression;
 import org.eclipse.daanse.mdx.model.api.select.Allocation;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.query.QueryProvider;
@@ -103,27 +102,9 @@ public class QueryProviderImpl implements QueryProvider {
     private UpdateClause convertUpdateClause(org.eclipse.daanse.mdx.model.api.select.UpdateClause updateClause) {
         Expression tuple = MdxToQueryConverter.getExpression(updateClause.tupleExp());
         Expression value = MdxToQueryConverter.getExpression(updateClause.valueExp());
-        UpdateImpl.Allocation allocation = convertAllocation(updateClause.allocation());
+        Allocation allocation = updateClause.allocation();
         Expression weight = MdxToQueryConverter.getExpression(updateClause.weight());
         return  new UpdateImpl.UpdateClauseImpl(tuple, value, allocation, weight);
-    }
-
-    private UpdateImpl.Allocation convertAllocation(Allocation allocation) {
-        if (allocation != null) {
-            switch (allocation) {
-                case NO_ALLOCATION:
-                    return UpdateImpl.Allocation.NO_ALLOCATION;
-                case USE_EQUAL_ALLOCATION:
-                    return UpdateImpl.Allocation.USE_EQUAL_ALLOCATION;
-                case USE_EQUAL_INCREMENT:
-                    return UpdateImpl.Allocation.USE_EQUAL_INCREMENT;
-                case USE_WEIGHTED_ALLOCATION:
-                    return UpdateImpl.Allocation.USE_WEIGHTED_ALLOCATION;
-                case USE_WEIGHTED_INCREMENT:
-                    return UpdateImpl.Allocation.USE_WEIGHTED_INCREMENT;
-            }
-        }
-        return null;
     }
 
     @Override
