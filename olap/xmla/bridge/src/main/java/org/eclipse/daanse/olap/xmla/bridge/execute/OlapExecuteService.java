@@ -277,19 +277,25 @@ public class OlapExecuteService implements ExecuteService {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         MappingRelation fact = null;
         try {
+        Scenario scenario;
         if (session != null) {
-            Scenario scenario = session.getScenario();
+            scenario = session.getScenario();
             if(scenario != null) {
             	query.getConnection().setScenario(scenario);
             } else {
                 scenario = query.getConnection().createScenario();
                 query.getConnection().setScenario(scenario);
             }
-            if (query.getCube() instanceof RolapCube rolapCube) {
-                scenario.setWriteBackTable(rolapCube.getWritebackTable());
-                fact = rolapCube.getFact();
-                writeBackService.modifyFact((RolapCube) query.getCube(), scenario.getSessionValues());
-            }
+        } else {
+        	session = Session.create(statementRequest.sessionId());
+        	scenario = query.getConnection().createScenario();
+            query.getConnection().setScenario(scenario);
+
+        }
+        if (query.getCube() instanceof RolapCube rolapCube) {
+            scenario.setWriteBackTable(rolapCube.getWritebackTable());
+            fact = rolapCube.getFact();
+            writeBackService.modifyFact((RolapCube) query.getCube(), scenario.getSessionValues());
         }
         Statement statement = query.getConnection().createStatement();
         String mdx = statementRequest.command().statement();
