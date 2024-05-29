@@ -260,7 +260,7 @@ public class WriteBackService {
                             }
                         } else {
                             List<RolapHierarchy> hs = rolapCube.getHierarchies();
-                            if (hs != null) {
+                            if (hs != null && hs.stream().anyMatch(h -> h instanceof RolapCubeHierarchy)) {
                                 for (RolapHierarchy h : hs) {
                                     if (h instanceof RolapCubeHierarchy rolapCubeHierarchy) {
                                         Level[] levels = rolapCubeHierarchy.getLevels();
@@ -276,7 +276,9 @@ public class WriteBackService {
                                 }
                             } else {
                                 // Hierarchies is absent
-                                //TODO
+                                Map<Member, Object> data = getData(rolapBaseCubeMeasure, rolapCube);
+                                res.addAll(allocateData(data, measureName, (Double) value, equalAllocation,
+                                    writebackTable));
                             }
                         }
                     }
@@ -373,6 +375,24 @@ public class WriteBackService {
                     }
                     res.add(mRes);
                 }
+                if (m instanceof RolapBaseCubeMeasure rolapBaseCubeMeasure) {
+                    Map<String, Map.Entry<Datatype, Object>> mRes = new LinkedHashMap<>();
+                    Object key = rolapBaseCubeMeasure.getKey();
+                    List<RolapWritebackColumn> columns = writebackTable.getColumns();
+                    for (RolapWritebackColumn column : columns) {
+                        if (column instanceof RolapWritebackMeasure rolapWritebackMeasure) {
+                            if (rolapWritebackMeasure.getMeasure().getUniqueName().equals(measureName)) {
+                                mRes.put(rolapWritebackMeasure.getColumnName(), Map.entry(Datatype.NUMERIC, value));
+                            } else {
+                                mRes.put(rolapWritebackMeasure.getColumnName(), Map.entry(Datatype.NUMERIC,0));
+                            }
+                        }
+                        if (column instanceof RolapWritebackAttribute rolapWritebackAttribute) {
+                            mRes.put(rolapWritebackAttribute.getColumnName(), Map.entry(Datatype.STRING, key));
+                        }
+                    }
+                    res.add(mRes);
+                }
             }
         }
         return res;
@@ -409,6 +429,28 @@ public class WriteBackService {
             res.put(m, result.getCell(new int[]{i}).getValue());
             i++;
         }
+        return res;
+    }
+
+    private Map<Member, Object> getData(Member measure, RolapCube cube) {
+        //example
+        //SELECT
+        //{
+        //    ([Measures].[Measure1])
+        //} ON 0
+        //FROM C
+
+        Map<Member, Object> res = new HashMap<>();
+        final StringBuilder buf = new StringBuilder();
+        buf.append("select {");
+        buf.append("(").append(measure.getUniqueName()).append(")");
+        buf.append("} ON 0 FROM ").append(cube.getName());
+        final String mdx = buf.toString();
+        final RolapConnection connection =
+            cube.getSchema().getInternalConnection();
+        final QueryImpl query = connection.parseQuery(mdx);
+        final Result result = connection.execute(query);
+        res.put(measure, result.getCell(new int[]{0}).getValue());
         return res;
     }
 
