@@ -11,4 +11,14 @@
 package mondrian.rolap;
 
 public abstract class RolapWritebackColumn{
+
+    protected final String columnName;
+
+    protected RolapWritebackColumn(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
 }

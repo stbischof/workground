@@ -14,5 +14,5 @@
 package org.eclipse.daanse.xmla.api;
 
 public interface UserPrincipal {
-
+    String getUserId();
 }

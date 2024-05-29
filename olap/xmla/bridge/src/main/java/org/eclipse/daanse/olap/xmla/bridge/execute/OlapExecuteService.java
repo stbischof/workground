@@ -204,7 +204,6 @@ public class OlapExecuteService implements ExecuteService {
                 }
             }
             */
-                ;
 
                 for (Statement statement : connection.getContext().getStatements(connection)) {
                         statement.cancel();
@@ -261,9 +260,9 @@ public class OlapExecuteService implements ExecuteService {
 					} else if (queryComponent instanceof Update update) {
 						return executeUpdate(context, statementRequest, update);
 					} else if (queryComponent instanceof TransactionCommand transactionCommand) {
-						return executeTransactionCommand(context, statementRequest, transactionCommand);
+						return executeTransactionCommand(context, userPrincipal, statementRequest, transactionCommand);
 					} else if (queryComponent instanceof Query query){
-						return executeQuery(context, statementRequest,query);
+						return executeQuery(statementRequest,query);
 					}
 				}
 
@@ -272,7 +271,7 @@ public class OlapExecuteService implements ExecuteService {
 		return new StatementResponseR(null, null);
 	}
 
-    private StatementResponse executeQuery(Context context, StatementRequest statementRequest, Query query) {
+    private StatementResponse executeQuery(StatementRequest statementRequest, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         MappingRelation fact = null;
         try {
@@ -323,7 +322,7 @@ public class OlapExecuteService implements ExecuteService {
     }
 
     private StatementResponse executeTransactionCommand(
-        Context context, StatementRequest statementRequest,
+        Context context, UserPrincipal userPrincipal, StatementRequest statementRequest,
         TransactionCommand transactionCommand
     ) {
         String sessionId = statementRequest.sessionId();
@@ -337,7 +336,7 @@ public class OlapExecuteService implements ExecuteService {
 		} else if (transactionCommand.getCommand() == Command.COMMIT) {
             Session session = Session.get(sessionId);
             Scenario scenario = session.getScenario();
-            writeBackService.commit(scenario, context.getConnection());
+            writeBackService.commit(scenario, context.getConnection(), userPrincipal);
             scenario.getWritebackCells().clear();
             scenario.getSessionValues().clear();
         }
@@ -372,7 +371,7 @@ public class OlapExecuteService implements ExecuteService {
                 if (axis.getPositionCount() == 1) {
                     //More than one tuple exception
                 }
-                Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
+                //Cell writeBackCell = cellSet.getCell(Arrays.asList(0));
 
                 sw = new StringWriter();
                 pw = new mondrian.mdx.QueryPrintWriter(sw);

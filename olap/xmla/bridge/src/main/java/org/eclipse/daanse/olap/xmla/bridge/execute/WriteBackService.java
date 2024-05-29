@@ -40,6 +40,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ViewR;
+import org.eclipse.daanse.xmla.api.UserPrincipal;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -53,11 +54,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class WriteBackService {
 
-    public void commit(Scenario scenario, Connection con) {
+    public void commit(Scenario scenario, Connection con, UserPrincipal userPrincipal) {
         if (scenario.getWriteBackTable().isPresent()) {
             RolapWritebackTable writebackTable = scenario.getWriteBackTable().get();
             DataSource dataSource = con.getDataSource();
@@ -68,22 +70,14 @@ public class WriteBackService {
                 scenario.getWriteBackTable();
                 for (Map<String, Map.Entry<Datatype, Object>> wbc : sessionValues) {
                     StringBuilder sql = new StringBuilder("INSERT INTO ").append(writebackTable.getName()).append(" (");
-                    boolean flag = true;
-                    for (RolapWritebackColumn column : writebackTable.getColumns()) {
-                        if (flag) {
-                            flag = false;
-                        } else {
-                            sql.append(", ");
-                        }
-                        if (column instanceof RolapWritebackAttribute rolapWritebackAttribute) {
-                            sql.append(rolapWritebackAttribute.getColumnName());
-                        }
-                        if (column instanceof RolapWritebackMeasure rolapWritebackMeasure) {
-                            sql.append(rolapWritebackMeasure.getColumnName());
-                        }
+                    sql.append(writebackTable.getColumns().stream().map( RolapWritebackColumn::getColumnName )
+                        .collect(Collectors.joining(", ")));
+                    sql.append(", ID");
+                    if (userPrincipal != null && userPrincipal.getUserId() != null) {
+                        sql.append(", USER");
                     }
                     sql.append(") values (");
-                    flag = true;
+                    boolean flag = true;
                     for (Map.Entry<String, Map.Entry<Datatype, Object>> en : wbc.entrySet()) {
                         if (flag) {
                             flag = false;
@@ -91,6 +85,12 @@ public class WriteBackService {
                             sql.append(", ");
                         }
                         dialect.quote(sql, en.getValue().getValue(), en.getValue().getKey());
+                    }
+                    sql.append(", ");
+                    dialect.quote(sql, UUID.randomUUID(), Datatype.STRING);
+                    if (userPrincipal != null && userPrincipal.getUserId() != null) {
+                        sql.append(", ");
+                        dialect.quote(sql, userPrincipal.getUserId(), Datatype.STRING);
                     }
                     sql.append(")");
                     statement.execute(sql.toString());
@@ -351,29 +351,25 @@ public class WriteBackService {
     }
 
     private Map<Member, Object> getData(Set<Member> members, String measureUniqueName, RolapCube cube) {
-
+        //example
         //SELECT
         //{
-        //    ([D1.HierarchyWithHasAll].[Level11].[Level11]),
-        //    ([D1.HierarchyWithHasAll].[Level11].[Level22]),
-        //    ([D1.HierarchyWithHasAll].[Level22].[Level11]),
-        //    ([D1.HierarchyWithHasAll].[Level22].[Level22]),
-        //    ([D1.HierarchyWithHasAll].[Level22].[Level33])
+        //    ([D1.HierarchyWithHasAll].[Level11].[Level11], [Measures].[Measure1]),
+        //    ([D1.HierarchyWithHasAll].[Level11].[Level22], [Measures].[Measure1]),
+        //    ([D1.HierarchyWithHasAll].[Level22].[Level11], [Measures].[Measure1]),
+        //    ([D1.HierarchyWithHasAll].[Level22].[Level22], [Measures].[Measure1]),
+        //    ([D1.HierarchyWithHasAll].[Level22].[Level33], [Measures].[Measure1])
         //} ON 0
         //FROM C
 
         Map<Member, Object> res = new HashMap<>();
         final StringBuilder buf = new StringBuilder();
-        boolean flagFirst = true;
         buf.append("select {");
-        for (Member member : members) {
-            if (flagFirst) {
-                flagFirst = false;
-            } else {
-                buf.append(",");
-            }
-            buf.append("(").append(member.getUniqueName()).append(", ").append(measureUniqueName).append(")");
-        }
+        buf.append(
+            members.stream()
+                .map(member -> "(" + member.getUniqueName() + ", " + measureUniqueName + ")")
+                .collect(Collectors.joining(", "))
+        );
         buf.append("} ON 0 FROM ").append(cube.getName());
         final String mdx = buf.toString();
         final RolapConnection connection =
@@ -450,27 +446,35 @@ public class WriteBackService {
 
     public void modifyFact(RolapCube cube, List<Map<String, Map.Entry<Datatype, Object>>> sessionValues) {
         MappingRelation fact = cube.getFact();
-        if (cube.getWritebackTable() != null && cube.getWritebackTable().isPresent()) {
-        	if (fact instanceof MappingTable mappingTable) {
-        		String alias = mappingTable.alias() != null ? mappingTable.alias() : mappingTable.name();
-        		cube.getContext().getDialect().getDialectName();
-        		StringBuilder sql = new StringBuilder("select * from " + mappingTable.name() + " union all select * from " + cube.getWritebackTable().get().getName());
-        		if (sessionValues != null && !sessionValues.isEmpty()) {
-        			sql.append(cube.getContext().getDialect().generateUnionAllSql(sessionValues));
-        		}
-        		List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
-        		cube.getContext().getDialect().getDialectName()));
-        		cube.setFact(new ViewR(alias, sqls));
-        		List<RolapHierarchy> rolapHierarchyList = cube.getHierarchies();
-        		if (rolapHierarchyList != null) {
-        			for (RolapHierarchy hierarchy : rolapHierarchyList) {
-        				if (fact.equals(hierarchy.getRelation())) {
-        					hierarchy.setRelation(cube.getFact());
-        				}
-        			}
-        		}
-        		cube.register();
-        	}
+        Optional<RolapWritebackTable> oWritebackTable = cube.getWritebackTable();
+        if (oWritebackTable.isPresent()) {
+            RolapWritebackTable writebackTable = oWritebackTable.get();
+            if (cube.getWritebackTable() != null && cube.getWritebackTable().isPresent()) {
+                if (fact instanceof MappingTable mappingTable) {
+                    String alias = mappingTable.alias() != null ? mappingTable.alias() : mappingTable.name();
+                    cube.getContext().getDialect().getDialectName();
+                    StringBuilder sql = new StringBuilder("select * from ").append(mappingTable.name());
+                    sql.append(" union all select ");
+                    sql.append(writebackTable.getColumns().stream().map( RolapWritebackColumn::getColumnName )
+                        .collect(Collectors.joining(", "))).append(" from ")
+                        .append(cube.getWritebackTable().get().getName());
+                    if (sessionValues != null && !sessionValues.isEmpty()) {
+                        sql.append(cube.getContext().getDialect().generateUnionAllSql(sessionValues));
+                    }
+                    List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
+                        cube.getContext().getDialect().getDialectName()));
+                    cube.setFact(new ViewR(alias, sqls));
+                    List<RolapHierarchy> rolapHierarchyList = cube.getHierarchies();
+                    if (rolapHierarchyList != null) {
+                        for (RolapHierarchy hierarchy : rolapHierarchyList) {
+                            if (fact.equals(hierarchy.getRelation())) {
+                                hierarchy.setRelation(cube.getFact());
+                            }
+                        }
+                    }
+                    cube.register();
+                }
+            }
         }
     }
 }
