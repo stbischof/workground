@@ -14,9 +14,14 @@
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.element.Cube;
+import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
+import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
+import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.MemberTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.OriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
@@ -50,6 +55,7 @@ import org.eclipse.daanse.xmla.api.discover.mdschema.properties.MdSchemaProperti
 import org.eclipse.daanse.xmla.api.discover.mdschema.properties.MdSchemaPropertiesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsRequest;
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsResponseRow;
+import org.eclipse.daanse.xmla.model.record.discover.mdschema.actions.MdSchemaActionsResponseRowR;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +87,185 @@ public class MDSchemaDiscoverService {
     public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request) {
         // mondrian doesn't support actions. It's not an error to ask for
         // them, there just aren't any
-        return null;
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        /*
+        String catalogName = null;
+        Optional<String> oCatalog=  request.properties().catalog();
+        if(oCatalog.isPresent()) {
+            catalogName= oCatalog.get();
+            Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(catalogName);
+            if (oContext.isPresent()) {
+                Context context = oContext.get();
+                List<Schema> schemas = context.getConnection().getSchemas();
+                if (schemas != null) {
+                    for (Schema schema : schemas) {
+                        for (Cube cube : schema.getCubes()) {
+                            MdSchemaActionsResponseRow row = new MdSchemaActionsResponseRowR(
+                                Optional.ofNullable(catalogName),
+                                Optional.ofNullable(schema.getName()),
+                                cube.getName(),
+                                Optional.of("actionName1"),
+                                Optional.of(ActionTypeEnum.URL),
+                                "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                CoordinateTypeEnum.CELL,
+                                Optional.of("url_google"),
+                                Optional.of("description"),
+                                Optional.of("http://localhost:8080"),
+                                Optional.of("application"),
+                                Optional.of(InvocationEnum.NORMAL_OPERATION)
+                            );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName2"),
+                                    Optional.of(ActionTypeEnum.HTML),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("html_google"),
+                                    Optional.of("description"),
+                                    Optional.of("https://www.google.com/"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName3"),
+                                    Optional.of(ActionTypeEnum.DRILL_THROUGH),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("drill_through"),
+                                    Optional.of("description"),
+                                    Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName4"),
+                                    Optional.of(ActionTypeEnum.COMMANDLINE),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("COMMANDLINE"),
+                                    Optional.of("description"),
+                                    Optional.of("https://www.google.com/"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName5"),
+                                    Optional.of(ActionTypeEnum.STATEMENT),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("STATEMENT"),
+                                    Optional.of("description"),
+                                    Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName6"),
+                                    Optional.of(ActionTypeEnum.DATASET),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("DATASET"),
+                                    Optional.of("description"),
+                                    Optional.of("SELECT\n" +
+                                            "{\n" +
+                                            "([D1.HierarchyWithHasAll].[Level11].[Level11], [Measures].[Measure1]),\n" +
+                                            "([D1.HierarchyWithHasAll].[Level11].[Level22], [Measures].[Measure1]),\n" +
+                                            "([D1.HierarchyWithHasAll].[Level22].[Level33], [Measures].[Measure1]),\n" +
+                                            "([D1.HierarchyWithHasAll].[Level22].[Level44], [Measures].[Measure1]),\n" +
+                                            "([D1.HierarchyWithHasAll].[Level22].[Level55], [Measures].[Measure1])\n" +
+                                            "} ON 0\n" +
+                                            "FROM C"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName7"),
+                                    Optional.of(ActionTypeEnum.ROW_SET),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("ROW_SET"),
+                                    Optional.of("description"),
+                                    Optional.of("SELECT\n" +
+                                        "{\n" +
+                                        "([D1.HierarchyWithHasAll].[Level11].[Level11], [Measures].[Measure1]),\n" +
+                                        "([D1.HierarchyWithHasAll].[Level11].[Level22], [Measures].[Measure1]),\n" +
+                                        "([D1.HierarchyWithHasAll].[Level22].[Level33], [Measures].[Measure1]),\n" +
+                                        "([D1.HierarchyWithHasAll].[Level22].[Level44], [Measures].[Measure1]),\n" +
+                                        "([D1.HierarchyWithHasAll].[Level22].[Level55], [Measures].[Measure1])\n" +
+                                        "} ON 0\n" +
+                                        "FROM C"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName8"),
+                                    Optional.of(ActionTypeEnum.PROPRIETARY),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("PROPRIETARY"),
+                                    Optional.of("description"),
+                                    Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+
+                            row = new MdSchemaActionsResponseRowR(
+                                    Optional.ofNullable(catalogName),
+                                    Optional.ofNullable(schema.getName()),
+                                    cube.getName(),
+                                    Optional.of("actionName9"),
+                                    Optional.of(ActionTypeEnum.REPORT),
+                                    "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+                                    CoordinateTypeEnum.CELL,
+                                    Optional.of("REPORT"),
+                                    Optional.of("description"),
+                                    Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
+                                    Optional.of("application"),
+                                    Optional.of(InvocationEnum.NORMAL_OPERATION)
+                                );
+                            result.add(row);
+                        }
+                    }
+                }
+            }
+        }
+         */
+        return result;
     }
 
     public List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest request) {

@@ -464,10 +464,11 @@ public class Convert {
             Optional.ofNullable(m.get(Constants.ROWSET.ROW_PROPERTY.SCHEMA_NAME)),
             m.get(Constants.ROWSET.ROW_PROPERTY.CUBE_NAME),
             Optional.ofNullable(m.get(ACTION_NAME)),
-            Optional.ofNullable(ActionTypeEnum.fromValue(m.get(ACTION_TYPE))),
+            //Optional.ofNullable(ActionTypeEnum.fromValue(m.get(ACTION_TYPE))),
+            Optional.empty(),
             Optional.ofNullable(m.get(COORDINATE)),
             CoordinateTypeEnum.fromValue(m.get(COORDINATE_TYPE)),
-            InvocationEnum.fromValue(m.get(INVOCATION)),
+            m.get(INVOCATION)==null ? null : InvocationEnum.fromValue(m.get(INVOCATION)),
             Optional.ofNullable(CubeSourceEnum.fromValue(m.get(CUBE_SOURCE)))
         );
     }

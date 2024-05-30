@@ -74,7 +74,7 @@ public interface MdSchemaActionsRestrictions {
      * If the action is PROPRIETARY (0x40), then a value MUST be
      * provided in the APPLICATION column.
      */
-   // @Restriction(name = RESTRICTIONS_ACTION_TYPE, type = XSD_INTEGER, order = 4)
+    @Restriction(name = RESTRICTIONS_ACTION_TYPE, type = XSD_INTEGER, order = 4)
     Optional<ActionTypeEnum> actionType();
 
     /**
@@ -108,7 +108,7 @@ public interface MdSchemaActionsRestrictions {
      * 4 - Indicates that the action is performed as part of a batch
      * operation.
      */
-    //@Restriction(name = RESTRICTIONS_INVOCATION, type = XSD_INTEGER, order = 7)
+    @Restriction(name = RESTRICTIONS_INVOCATION, type = XSD_INTEGER, order = 7)
     InvocationEnum invocation();
 
     /**
@@ -117,6 +117,6 @@ public interface MdSchemaActionsRestrictions {
      * 0x02 - Dimension
      * The default restriction is a value of 1.
      */
-    //@Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 8)
+    @Restriction(name = RESTRICTIONS_CUBE_SOURCE, type = XSD_INTEGER, order = 8)
     Optional<CubeSourceEnum> cubeSource();
 }
