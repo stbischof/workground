@@ -94,7 +94,24 @@ public class StatementImpl extends mondrian.server.StatementImpl implements Stat
             throw new RuntimeException(
                 "mondrian gave exception while parsing query", e);
         }
-        if (parseTree instanceof DrillThrough drillThrough) {
+        return executeQuery(parseTree, advanced,
+            tabFields,
+         rowCountSlot);
+    }
+
+    @Override
+    public ResultSet executeQuery(
+        QueryComponent queryComponent,
+        Optional<Boolean> advanced,
+        Optional<String> tabFields,
+        int[] rowCountSlot
+    )  {
+        if (advanced.isPresent() && advanced.get()) {
+            // REVIEW: I removed 'executeDrillThroughAdvanced' in the cleanup.
+            // Do we still need it?
+            throw new UnsupportedOperationException();
+        }
+        if (queryComponent instanceof DrillThrough drillThrough) {
             final Query query = drillThrough.getQuery();
             query.setResultStyle(ResultStyle.LIST);
             //setQuery(query);
@@ -102,7 +119,7 @@ public class StatementImpl extends mondrian.server.StatementImpl implements Stat
             final List<Integer> coords = Collections.nCopies(
                 cellSet.getAxes().size(), 0);
             final Cell cell =
-                 cellSet.getCell(coords);
+                cellSet.getCell(coords);
 
             List<OlapElement> fields = drillThrough.getReturnList();
             if(fields.isEmpty()) {
@@ -129,7 +146,7 @@ public class StatementImpl extends mondrian.server.StatementImpl implements Stat
                     "Cannot do DrillThrough operation on the cell");
             }
             return resultSet;
-        } else if (parseTree instanceof Explain explain) {
+        } else if (queryComponent instanceof Explain explain) {
             String plan = explainInternal(explain.getQuery());
             return null;
 

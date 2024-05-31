@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.query.component.Query;
+import org.eclipse.daanse.olap.api.query.component.QueryComponent;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.Result;
 
@@ -42,10 +43,13 @@ public interface Statement  {
 
     ResultSet executeQuery(String statement, Optional<Boolean> advanced, Optional<String> tabFields, int[] rowCountSlot);
 
+    ResultSet executeQuery(QueryComponent queryComponent, Optional<Boolean> advanced,
+                           Optional<String> tabFields, int[] rowCountSlot);
+
     Query getQuery();
-    
-    
-    
+
+
+
     /**
      * Closes this statement.
      */

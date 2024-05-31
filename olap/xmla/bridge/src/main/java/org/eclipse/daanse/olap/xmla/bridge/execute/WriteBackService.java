@@ -557,14 +557,6 @@ public class WriteBackService {
 
     private void changeFact(RolapCube cube, List<MappingSQL> sqls, String alias) {
         cube.setFact(new ViewR(alias, sqls));
-        List<RolapHierarchy> rolapHierarchyList = cube.getHierarchies();
-        //if (rolapHierarchyList != null) {
-        //    for (RolapHierarchy hierarchy : rolapHierarchyList) {
-        //        if (fact.equals(hierarchy.getRelation())) {
-        //            hierarchy.setRelation(cube.getFact());
-        //        }
-        //    }
-        //}
         cube.register();
     }
 

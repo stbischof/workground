@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.execute;
 
+import mondrian.olap.MondrianException;
 import mondrian.olap.UpdateImpl;
 import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
@@ -735,16 +736,43 @@ public class OlapExecuteService implements ExecuteService {
         Connection connection = null;
         Statement statement;
         ResultSet resultSet = null;
+        MappingRelation fact = null;
+        RolapCube cube = null;
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         try {
             connection = context.getConnection();
-            if (session != null) {
-                Scenario scenario = session.getScenario();
-                connection.setScenario(scenario);
+            QueryComponent parseTree;
+            try {
+                parseTree =
+                    connection.parseStatement(statementRequest.command().statement());
+            } catch (MondrianException e) {
+                throw new RuntimeException(
+                    "mondrian gave exception while parsing query", e);
+            }
+            if (parseTree instanceof DrillThrough drillThrough) {
+                if (drillThrough.getQuery() != null && drillThrough.getQuery().getCube() != null &&
+                    drillThrough.getQuery().getCube() instanceof RolapCube rolapCube) {
+                    cube = rolapCube;
+                    Scenario scenario;
+                    if (session != null) {
+                        scenario = session.getScenario();
+                        connection.setScenario(scenario);
+                    } else {
+                    	session = Session.create(statementRequest.sessionId());
+                    	scenario = drillThrough.getQuery().getConnection().createScenario();
+                    	drillThrough.getQuery().getConnection().setScenario(scenario);
+
+                    }                    
+                    if (connection.getScenario() != null) {
+                        scenario.setWriteBackTable(rolapCube.getWritebackTable());
+                        fact = rolapCube.getFact();
+                        writeBackService.modifyFact(rolapCube, scenario.getSessionValues());
+                    }
+                }
             }
             statement = connection.createStatement();
             resultSet = statement.executeQuery(
-                statementRequest.command().statement(),
+                parseTree,
                 advanced,
                 tabFields,
                 rowCountSlot);
@@ -759,6 +787,10 @@ public class OlapExecuteService implements ExecuteService {
                 HSB_DRILL_THROUGH_SQL_FAULT_FS,
                 e);
         } finally {
+            if (fact != null && cube != null) {
+                cube.setFact(fact);
+                cube.register();
+            }
             if (resultSet != null) {
                 try {
                     resultSet.close();
