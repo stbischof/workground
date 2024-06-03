@@ -62,6 +62,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribute;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
@@ -977,12 +978,32 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkWritebackAttribute(MappingWritebackAttribute writebackAttribute) {
-        super.checkWritebackAttribute(writebackAttribute);
+    protected void checkWritebackAttribute(MappingWritebackAttribute writebackAttribute, MappingCube cube) {
+        super.checkWritebackAttribute(writebackAttribute, cube);
         if (writebackAttribute != null) {
             if (isEmpty(writebackAttribute.dimension())) {
                 results.add(new VerificationResultR(WRITEBACK_ATTRIBUTE, WRITEBACK_ATTRIBUTE_DIMENSION_MUST_BE_SET,
                     ERROR, Cause.SCHEMA));
+            } else {
+                if (!cube.dimensionUsageOrDimensions().stream().anyMatch(d -> d.name().equals(writebackAttribute.dimension()))) {
+                    String msg = String.format(DIMENSION_WITH_NAME_ABSENT_IN_CUBE, orNotSet(writebackAttribute.dimension()), orNotSet(cube.name()));
+                    results.add(new VerificationResultR(WRITEBACK_ATTRIBUTE, msg,
+                        ERROR, Cause.SCHEMA));
+                } else {
+                    if (!isEmpty(writebackAttribute.column())) {
+                        Optional<MappingCubeDimension> oDimension = cube.dimensionUsageOrDimensions().stream().filter(d -> d.name().equals(writebackAttribute.dimension())).findFirst();
+                        if (oDimension.isPresent()) {
+                            String foreignKey = oDimension.get().foreignKey();
+                            if (!writebackAttribute.column().equals(foreignKey)) {
+                                String msg = String.format(DIMENSION_WITH_NAME_DONT_HAVE_FOREIGN_KEY_IN_DIMENSION_IN_CUBE,
+                                    orNotSet(writebackAttribute.dimension()), writebackAttribute.column(),
+                                    orNotSet(writebackAttribute.dimension()), orNotSet(cube.name()));
+                                results.add(new VerificationResultR(WRITEBACK_ATTRIBUTE, msg,
+                                    ERROR, Cause.SCHEMA));
+                            }
+                        }
+                    }                	
+                }                
             }
             if (isEmpty(writebackAttribute.column())) {
                 results.add(new VerificationResultR(WRITEBACK_ATTRIBUTE, WRITEBACK_ATTRIBUTE_COLUMN_MUST_BE_SET,
@@ -992,12 +1013,18 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkWritebackMeasure(MappingWritebackMeasure writebackMeasure) {
-        super.checkWritebackMeasure(writebackMeasure);
+    protected void checkWritebackMeasure(MappingWritebackMeasure writebackMeasure, MappingCube cube) {
+        super.checkWritebackMeasure(writebackMeasure, cube);
         if (writebackMeasure != null) {
             if (isEmpty(writebackMeasure.name())) {
                 results.add(new VerificationResultR(WRITEBACK_MEASURE, WRITEBACK_MEASURE_NAME_MUST_BE_SET,
                     ERROR, Cause.SCHEMA));
+            } else {
+                if (!cube.measures().stream().anyMatch(m -> m.name().equals(writebackMeasure.name()))) {
+                    String msg = String.format(MEASURE_WITH_NAME_ABSENT_IN_CUBE, orNotSet(writebackMeasure.name()), orNotSet(cube.name()));
+                    results.add(new VerificationResultR(WRITEBACK_MEASURE, msg,
+                        ERROR, Cause.SCHEMA));
+                }
             }
             if (isEmpty(writebackMeasure.column())) {
                 results.add(new VerificationResultR(WRITEBACK_MEASURE, WRITEBACK_MEASURE_COLUMN_MUST_BE_SET,
@@ -1007,13 +1034,32 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkWritebackTable(MappingWritebackTable writebackTable) {
-        super.checkWritebackTable(writebackTable);
+    protected void checkWritebackTable(MappingWritebackTable writebackTable, MappingCube cube) {
+        super.checkWritebackTable(writebackTable, cube);
         if (writebackTable != null && isEmpty(writebackTable.name())) {
             results.add(new VerificationResultR(WRITEBACK_TABLE, WRITEBACK_TABLE_NAME_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
+        } else {
+            if (writebackTable.columns() == null) {
+                results.add(new VerificationResultR(WRITEBACK_TABLE, WRITEBACK_COLUMNS_MUST_BE_SET,
+                    ERROR, Cause.SCHEMA));
+            } else {
+                for (MappingWritebackColumn column : writebackTable.columns()) {
+                    if (isEmpty(column.column())) {
+                        results.add(new VerificationResultR(WRITEBACK_TABLE, WRITEBACK_COLUMN_NAME_MUST_BE_SET,
+                            ERROR, Cause.SCHEMA));
+                    }
+                    if (column instanceof MappingWritebackAttribute mappingWritebackAttribute) {
+                        checkWritebackAttribute(mappingWritebackAttribute, cube);
+                    }
+                    if (column instanceof MappingWritebackMeasure mappingWritebackMeasure) {
+                        checkWritebackMeasure(mappingWritebackMeasure, cube);
+                    }
+                }
+            }
         }
     }
+
 
     private void checkHierarchyJoin(MappingHierarchy hierarchy, MappingPrivateDimension cubeDimension) {
         if (hierarchy.relation() instanceof MappingJoin) {

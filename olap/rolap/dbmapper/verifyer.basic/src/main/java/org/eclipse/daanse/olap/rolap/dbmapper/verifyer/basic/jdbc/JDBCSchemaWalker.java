@@ -34,6 +34,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackColumn;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.AbstractSchemaWalker;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaExplorer;
@@ -52,6 +54,7 @@ import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.ERROR;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level.WARNING;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.AGG_EXCLUDE_TABLE_0_DOES_NOT_EXIST_IN_DATABASE;
+import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DOES_NOT_EXIST_IN_WRITE_BACK_TABLE_S;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
 import static org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.SchemaWalkerMessages.COLUMN_S_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE;
@@ -358,6 +361,43 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         }
     }
 
+    @Override
+    protected void checkWritebackTable(MappingWritebackTable writebackTable, MappingCube cube) {
+        super.checkWritebackTable(writebackTable, cube);
+        String tableName = writebackTable.name();
+        String schemaName = writebackTable.schema();
+        if (tableName != null) {
+            TableReference tableReference = getTableReference(schemaName, tableName);
+            try {
+                if (!databaseService.tableExists(databaseMetaData, tableReference)) {
+                    String msg = String.format(TABLE_S_DOES_NOT_EXIST_IN_DATABASE, tableName);
+                    results.add(new VerificationResultR(TABLE, msg, ERROR, DATABASE));
+                }
+            } catch (SQLException e) {
+                String message = String.format(COULD_NOCH_CHECK_EXISTANCE_OF_TABLE_0, tableName);
+                results.add(new VerificationResultR(TABLE, message, ERROR, DATABASE));
+            }
+            Iterable<MappingWritebackColumn>  columns = writebackTable.columns();
+            if(columns != null || columns.spliterator().getExactSizeIfKnown() > 0) {
+                for( MappingWritebackColumn column : columns ){
+                    ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column.column());
+                    try {
+                        if (!databaseService.columnExists(databaseMetaData, columnReference)) {
+                            String msg = String.format(COLUMN_S_DOES_NOT_EXIST_IN_WRITE_BACK_TABLE_S, column.column(), tableName);
+                            results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
+
+                        }
+                    } catch (SQLException throwables) {
+                        String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE,
+                            isEmpty(column.column()) ? "' '" : column.column(), "-", tableName);
+                        results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
+
+                    }
+                }
+            }
+        }
+    }
+
     private void checkMeasureColumnInMappingTable(MappingMeasure measure, MappingCube cube, MappingTable mappingTable) {
         try {
             TableReference tableReference = getTableReference(mappingTable.schema(), mappingTable.name());
@@ -400,7 +440,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkSQL(MappingSQL sql) {
     	if (sql != null && sql.content() != null) {
-    		try {        	
+    		try {
     			Connection con = databaseMetaData.getConnection();
     			Statement stmt = con.createStatement();
     			ResultSet rs = stmt.executeQuery(sql.content());

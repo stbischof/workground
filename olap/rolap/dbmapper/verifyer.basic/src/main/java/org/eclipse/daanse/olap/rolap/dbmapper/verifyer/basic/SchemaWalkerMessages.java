@@ -72,6 +72,8 @@ public class SchemaWalkerMessages {
 
     public static final String SCHEMA_SPACE = "schema ";
     public static final String WRITEBACK_TABLE_NAME_MUST_BE_SET = "WritebackTable name must be set";
+    public static final String WRITEBACK_COLUMNS_MUST_BE_SET = "WritebackTable columns must be set";
+    public static final String WRITEBACK_COLUMN_NAME_MUST_BE_SET = "WritebackTable column name must be set";
     public static final String TABLE_NAME_MUST_BE_SET = "Table name must be set";
     public static final String JOIN_RELATION_MUST_BE_SET_LEFT_AND_RIGHT = "Join: relation must be set left and right";
     public static final String CUBE_USAGE_CUBE_NAME_MUST_BE_SET = "CubeUsage cubeName must be set";
@@ -122,6 +124,10 @@ public class SchemaWalkerMessages {
     public static final String ACTION_NAME_MUST_BE_SET = "Action name must be set";
     public static final String WRITEBACK_MEASURE = "WritebackMeasure";
     public static final String WRITEBACK_MEASURE_COLUMN_MUST_BE_SET = "WritebackMeasure column must be set";
+    public static final String MEASURE_WITH_NAME_ABSENT_IN_CUBE = "Measure with name %s absent in cube with name %s for write back";
+    public static final String DIMENSION_WITH_NAME_ABSENT_IN_CUBE = "Dimension with name %s absent in cube with name %s for write back";
+    public static final String DIMENSION_WITH_NAME_DONT_HAVE_FOREIGN_KEY_IN_DIMENSION_IN_CUBE =
+        "Dimension with name %s doesn't have foreign key %s in dimension %s in cube with name %s for write back";
     public static final String WRITEBACK_MEASURE_NAME_MUST_BE_SET = "WritebackMeasure name must be set";
     public static final String WRITEBACK_ATTRIBUTE = "WritebackAttribute";
     public static final String WRITEBACK_ATTRIBUTE_COLUMN_MUST_BE_SET = "WritebackAttribute column must be set";
@@ -254,6 +260,7 @@ public class SchemaWalkerMessages {
         "Could not lookup existence of Column %s in table %s";
     public static final String PARENT_TABLE_NAME = "parentTable.name";
     public static final String COLUMN_S_DOES_NOT_EXIST_IN_LEVEL_TABLE_S = "Column %s does not exist in Level table %s";
+    public static final String COLUMN_S_DOES_NOT_EXIST_IN_WRITE_BACK_TABLE_S = "Column %s does not exist in table %s";
     public static final String TABLE_S_DOES_NOT_EXIST_IN_DATABASE = "Table %s does not exist in database";
     public static final String COULD_NOCH_CHECK_EXISTANCE_OF_TABLE_0 = "could noch check existence of Table {0}";
     public static final String SCHEMA_S_DOES_NOT_EXIST = "Schema %s does not exist";

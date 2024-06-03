@@ -17,6 +17,4 @@ public interface MappingWritebackMeasure extends MappingWritebackColumn {
 
     String name();
 
-    String column();
-
 }

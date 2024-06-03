@@ -112,7 +112,7 @@ public abstract class AbstractSchemaWalker {
             checkCalculatedMemberList(cube.calculatedMembers());
             checkNamedSetList(cube.namedSets());
             checkDrillThroughActionList(cube.drillThroughActions());
-            checkWritebackTableOption(cube.writebackTable());
+            checkWritebackTableOption(cube.writebackTable(), cube);
             checkKpiList(cube.kpis(), cube);
             if (cube.actions() != null) {
                 cube.actions().forEach(this::checkAction);
@@ -573,28 +573,28 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkWritebackTable(MappingWritebackTable writebackTable) {
+    protected void checkWritebackTable(MappingWritebackTable writebackTable, MappingCube cube) {
         if (writebackTable != null && writebackTable.columns() != null) {
-            writebackTable.columns().forEach(this::checkWritebackColumn);
+            writebackTable.columns().forEach(c -> checkWritebackColumn(c, cube));
         }
     }
 
-    protected void checkWritebackColumn(MappingWritebackColumn writebackColumn) {
+    protected void checkWritebackColumn(MappingWritebackColumn writebackColumn, MappingCube cube) {
         if (writebackColumn != null) {
             if (writebackColumn instanceof MappingWritebackAttribute writebackAttribute) {
-                checkWritebackAttribute(writebackAttribute);
+                checkWritebackAttribute(writebackAttribute, cube);
             }
             if (writebackColumn instanceof MappingWritebackMeasure writebackMeasure) {
-                checkWritebackMeasure(writebackMeasure);
+                checkWritebackMeasure(writebackMeasure, cube);
             }
         }
     }
 
-    protected void checkWritebackMeasure(MappingWritebackMeasure writebackColumn) {
+    protected void checkWritebackMeasure(MappingWritebackMeasure writebackColumn, MappingCube cube) {
         //empty
     }
 
-    protected void checkWritebackAttribute(MappingWritebackAttribute writebackColumn) {
+    protected void checkWritebackAttribute(MappingWritebackAttribute writebackColumn, MappingCube cube) {
         //empty
     }
 
@@ -845,9 +845,9 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkWritebackTableOption(Optional<? extends MappingWritebackTable> writebackTable) {
+    private void checkWritebackTableOption(Optional<? extends MappingWritebackTable> writebackTable, MappingCube cube) {
         if (writebackTable != null && writebackTable.isPresent()) {
-            checkWritebackTable(writebackTable.get());
+            checkWritebackTable(writebackTable.get(), cube);
         }
     }
 

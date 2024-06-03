@@ -17,6 +17,4 @@ public interface MappingWritebackAttribute extends MappingWritebackColumn{
 
     String dimension();
 
-    String column();
-
 }
