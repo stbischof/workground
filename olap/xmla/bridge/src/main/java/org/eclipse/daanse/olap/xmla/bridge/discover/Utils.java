@@ -43,6 +43,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberP
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttribute;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -51,7 +55,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
+import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CustomRollupSettingEnum;
@@ -60,6 +66,7 @@ import org.eclipse.daanse.xmla.api.common.enums.DimensionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.DimensionUniqueSettingEnum;
 import org.eclipse.daanse.xmla.api.common.enums.HierarchyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
+import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelTypeEnum;
@@ -81,6 +88,7 @@ import org.eclipse.daanse.xmla.api.discover.dbschema.schemata.DbSchemaSchemataRe
 import org.eclipse.daanse.xmla.api.discover.dbschema.sourcetables.DbSchemaSourceTablesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.dbschema.tables.DbSchemaTablesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.dbschema.tablesinfo.DbSchemaTablesInfoResponseRow;
+import org.eclipse.daanse.xmla.api.discover.mdschema.actions.MdSchemaActionsResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.cubes.MdSchemaCubesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.demensions.MdSchemaDimensionsResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.functions.MdSchemaFunctionsResponseRow;
@@ -98,6 +106,7 @@ import org.eclipse.daanse.xmla.model.record.discover.dbschema.schemata.DbSchemaS
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.sourcetables.DbSchemaSourceTablesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.tables.DbSchemaTablesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.tablesinfo.DbSchemaTablesInfoResponseRowR;
+import org.eclipse.daanse.xmla.model.record.discover.mdschema.actions.MdSchemaActionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.cubes.MdSchemaCubesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.demensions.MdSchemaDimensionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.functions.MdSchemaFunctionsResponseRowR;
@@ -873,6 +882,106 @@ public class Utils {
         }).flatMap(Collection::stream).toList();
     }
 
+    static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
+        Context context,
+        Optional<String> oSchemaName,
+        String cubeName,
+        Optional<String> oActionName,
+        Optional<ActionTypeEnum> oActionType,
+        Optional<String> oCoordinate,
+        CoordinateTypeEnum coordinateType,
+        InvocationEnum invocation,
+        Optional<CubeSourceEnum> oCubeSource
+    ) {
+        List<DatabaseMappingSchemaProvider> schemas =
+            getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName);
+        return schemas.stream().map(dsp -> {
+            MappingSchema schema = dsp.get();
+            return getMdSchemaActionsResponseRow(context.getName(), schema, cubeName, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource);
+        }).flatMap(Collection::stream).toList();
+    }
+
+
+
+    private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
+        String catalogName,
+        MappingSchema schema,
+        String cubeName,
+        Optional<String> oActionName,
+        Optional<ActionTypeEnum> oActionType,
+        Optional<String> oCoordinate,
+        CoordinateTypeEnum coordinateType,
+        InvocationEnum invocation,
+        Optional<CubeSourceEnum> oCubeSource
+    ) {
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        result.addAll(getMappingCubeWithFilter(schema.cubes(), Optional.of(cubeName)).stream()
+            .map(c -> getMdSchemaActionsResponseRow(catalogName, schema.name(), c, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource))
+            .flatMap(Collection::stream)
+            .toList());
+
+        return result;
+    }
+
+    private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
+        String catalogName,
+        String schemaName,
+        MappingCube c,
+        Optional<String> oActionName,
+        Optional<ActionTypeEnum> oActionType,
+        Optional<String> oCoordinate,
+        CoordinateTypeEnum coordinateType,
+        InvocationEnum invocation,
+        Optional<CubeSourceEnum> oCubeSource
+    ) {
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        if (c.drillThroughActions() != null) {
+            result.addAll(getMappingDrillThroughActionWithFilter(c.drillThroughActions(), oActionName).stream()
+                .map(da -> getMdSchemaDrillThroughActionsResponseRow(catalogName, schemaName, c, da))
+                .toList());
+
+        }
+        return result;
+    }
+
+    private static MdSchemaActionsResponseRow getMdSchemaDrillThroughActionsResponseRow(String catalogName, String schemaName, MappingCube c, MappingDrillThroughAction da) {
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        MappingDrillThroughMeasure dThroughMeasure = null;
+        MappingDrillThroughAttribute dThroughAttribute = null;
+        for (MappingDrillThroughElement drillThroughElement : da.drillThroughElements()) {
+            if (drillThroughElement instanceof MappingDrillThroughMeasure drillThroughMeasure) {
+
+            }
+            if (drillThroughElement instanceof MappingDrillThroughAttribute drillThroughAttribute) {
+
+            }
+        }
+        String query = getDrillThroughQuery(da.drillThroughElements(), c);
+
+        return new MdSchemaActionsResponseRowR(
+            Optional.ofNullable(catalogName),
+            Optional.ofNullable(schemaName),
+            c.name(),
+            Optional.ofNullable(da.name()),
+            Optional.of(ActionTypeEnum.DRILL_THROUGH),
+            "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
+            CoordinateTypeEnum.CELL,
+            Optional.ofNullable(da.caption()),
+            Optional.ofNullable(da.description()),
+            Optional.of(query),
+            //Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
+            Optional.empty(),
+            Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
+        );
+    }
+
+    private static String getDrillThroughQuery(List<MappingDrillThroughElement> drillThroughElements, MappingCube c) {
+        StringBuilder sb = new StringBuilder("DRILLTHROUGH MAXROWS 1000 SELECT FROM [")
+            .append(c.name())
+            .append("] WHERE (");
+        return sb.toString();
+    }
+
     static List<MdSchemaSetsResponseRow> getMdSchemaSetsResponseRow(
         Context context,
         Optional<String> oSchemaName,
@@ -1028,6 +1137,13 @@ public class Utils {
             return kpis.stream().filter(k -> oKpiName.get().equals(k.name())).toList();
         }
         return kpis;
+    }
+
+    private static List<MappingDrillThroughAction> getMappingDrillThroughActionWithFilter(List<MappingDrillThroughAction> actions, Optional<String> oActionName) {
+        if (oActionName.isPresent()) {
+            return actions.stream().filter(a -> oActionName.get().equals(a.name())).toList();
+        }
+        return actions;
     }
 
     private static List<MdSchemaMembersResponseRow> getMdSchemaMembersResponseRow(

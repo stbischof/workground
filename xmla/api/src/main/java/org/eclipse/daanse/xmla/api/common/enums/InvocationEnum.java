@@ -43,13 +43,16 @@ public enum InvocationEnum {
     }
 
     public static InvocationEnum fromValue(String v) {
-        int vi = Integer.parseInt(v);
-        return Stream.of(InvocationEnum.values())
-            .filter(e -> (e.value == vi))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
-                new StringBuilder("InvocationEnum Illegal argument ").append(v)
-                    .toString())
-            );
+    	if (v != null) {
+    		int vi = Integer.parseInt(v);
+    		return Stream.of(InvocationEnum.values())
+    				.filter(e -> (e.value == vi))
+    				.findFirst()
+    				.orElseThrow(() -> new IllegalArgumentException(
+    						new StringBuilder("InvocationEnum Illegal argument ").append(v)
+    						.toString())
+    						);
+    	}
+    	return null;
     }
 }

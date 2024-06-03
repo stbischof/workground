@@ -15,8 +15,11 @@ package org.eclipse.daanse.olap.xmla.bridge.discover;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
+import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
+import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
+import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.MemberTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.OriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.PropertyOriginEnum;
@@ -56,6 +59,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaActionsResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaCubesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaDimensionsResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaFunctionsResponseRow;
@@ -79,9 +83,40 @@ public class MDSchemaDiscoverService {
     }
 
     public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request) {
-        // mondrian doesn't support actions. It's not an error to ask for
-        // them, there just aren't any
-        return null;
+        Optional<String> oCatalogName = request.restrictions().catalogName();
+        Optional<String> schemaName = request.restrictions().schemaName();
+        String cubeName = request.restrictions().cubeName();
+
+        Optional<String> actionName = request.restrictions().actionName();
+        Optional<ActionTypeEnum> actionType = request.restrictions().actionType();
+        Optional<String> coordinate = request.restrictions().coordinate();
+        CoordinateTypeEnum coordinateType = request.restrictions().coordinateType();
+        InvocationEnum invocation = request.restrictions().invocation();
+        Optional<CubeSourceEnum> cubeSource = request.restrictions().cubeSource();
+
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        String catalogName = null;
+
+        if (oCatalogName.isPresent()) {
+
+        } else {
+            oCatalogName = request.properties().catalog();
+            if (oCatalogName.isPresent()) {
+                catalogName = oCatalogName.get();
+            }
+        }
+        if (catalogName != null) {
+            Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(catalogName);
+            if (oContext.isPresent()) {
+                Context context = oContext.get();
+                result.addAll(getMdSchemaActionsResponseRow(context, schemaName, cubeName, actionName, actionType, coordinate, coordinateType, invocation, cubeSource));
+            }
+        } else {
+            result.addAll(contextsListSupplyer.get().stream().map(c ->
+                getMdSchemaActionsResponseRow(c, schemaName, cubeName, actionName, actionType, coordinate, coordinateType, invocation, cubeSource)
+            ).flatMap(Collection::stream).toList());
+        }
+        return result;
     }
 
     public List<MdSchemaCubesResponseRow> mdSchemaCubes(MdSchemaCubesRequest request) {
