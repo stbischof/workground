@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
+import org.eclipse.daanse.olap.api.DrillThroughAction;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -43,10 +44,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberP
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttribute;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -128,6 +125,10 @@ import mondrian.olap.Util;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapStoredMeasure;
 import mondrian.xmla.VarType;
+
+import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.getCoordinateElements;
+import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.getDrillThroughQuery;
+import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.isDrillThroughElementsExist;
 
 public class Utils {
 
@@ -560,7 +561,14 @@ public class Utils {
 
     private static List<MappingCube> getMappingCubeWithFilter(List<MappingCube> cubes, Optional<String> cubeName) {
         if (cubeName.isPresent()) {
-            return cubes.stream().filter(c -> cubeName.get().equals(c.name())).toList();
+            return getMappingCubeWithFilter(cubes, cubeName.get());
+        }
+        return cubes;
+    }
+
+    private static List<MappingCube> getMappingCubeWithFilter(List<MappingCube> cubes, String cubeName) {
+        if (cubeName != null) {
+            return cubes.stream().filter(c -> cubeName.equals(c.name())).toList();
         }
         return cubes;
     }
@@ -893,19 +901,20 @@ public class Utils {
         InvocationEnum invocation,
         Optional<CubeSourceEnum> oCubeSource
     ) {
-        List<DatabaseMappingSchemaProvider> schemas =
-            getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName);
-        return schemas.stream().map(dsp -> {
-            MappingSchema schema = dsp.get();
-            return getMdSchemaActionsResponseRow(context.getName(), schema, cubeName, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource);
-        }).flatMap(Collection::stream).toList();
+        List<Schema> schemas = context.getConnection().getSchemas();
+        if (schemas != null) {
+            return getSchemasWithFilter(schemas, oSchemaName).stream()
+                .map(schema -> getMdSchemaActionsResponseRow(context.getName(), schema, cubeName, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource)
+                ).flatMap(Collection::stream).toList();
+        }
+        return List.of();
     }
 
 
 
     private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
         String catalogName,
-        MappingSchema schema,
+        Schema schema,
         String cubeName,
         Optional<String> oActionName,
         Optional<ActionTypeEnum> oActionType,
@@ -915,8 +924,9 @@ public class Utils {
         Optional<CubeSourceEnum> oCubeSource
     ) {
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        result.addAll(getMappingCubeWithFilter(schema.cubes(), Optional.of(cubeName)).stream()
-            .map(c -> getMdSchemaActionsResponseRow(catalogName, schema.name(), c, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource))
+        List<Cube> cubes = schema.getCubes() == null ? List.of() : Arrays.asList(schema.getCubes());
+        result.addAll(getCubesWithFilter(cubes, cubeName).stream()
+            .map(c -> getMdSchemaActionsResponseRow(catalogName, schema.getName(), c, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource))
             .flatMap(Collection::stream)
             .toList());
 
@@ -926,7 +936,7 @@ public class Utils {
     private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
         String catalogName,
         String schemaName,
-        MappingCube c,
+        Cube cube,
         Optional<String> oActionName,
         Optional<ActionTypeEnum> oActionType,
         Optional<String> oCoordinate,
@@ -935,51 +945,43 @@ public class Utils {
         Optional<CubeSourceEnum> oCubeSource
     ) {
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        if (c.drillThroughActions() != null) {
-            result.addAll(getMappingDrillThroughActionWithFilter(c.drillThroughActions(), oActionName).stream()
-                .map(da -> getMdSchemaDrillThroughActionsResponseRow(catalogName, schemaName, c, da))
+        if (cube.getDrillThroughActions() != null) {
+            result.addAll(getMappingDrillThroughActionWithFilter(cube.getDrillThroughActions(), oActionName).stream()
+                .map(da -> getMdSchemaDrillThroughActionsResponseRow(catalogName, schemaName, cube, da, oCoordinate))
+                .flatMap(Collection::stream)
                 .toList());
 
         }
         return result;
     }
 
-    private static MdSchemaActionsResponseRow getMdSchemaDrillThroughActionsResponseRow(String catalogName, String schemaName, MappingCube c, MappingDrillThroughAction da) {
+    private static List<MdSchemaActionsResponseRow> getMdSchemaDrillThroughActionsResponseRow(
+        String catalogName, String schemaName,
+        Cube cube, DrillThroughAction da, Optional<String> oCoordinate) {
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        MappingDrillThroughMeasure dThroughMeasure = null;
-        MappingDrillThroughAttribute dThroughAttribute = null;
-        for (MappingDrillThroughElement drillThroughElement : da.drillThroughElements()) {
-            if (drillThroughElement instanceof MappingDrillThroughMeasure drillThroughMeasure) {
+        if (oCoordinate != null && oCoordinate.isPresent()) {
+            List<String> coordinateElements = getCoordinateElements(oCoordinate.get());
+            if (isDrillThroughElementsExist(da.getOlapElements(), coordinateElements, cube)) {
+                String query = getDrillThroughQuery(coordinateElements, cube);
+                String coordinate = oCoordinate.get();
 
-            }
-            if (drillThroughElement instanceof MappingDrillThroughAttribute drillThroughAttribute) {
-
+                result.add(new MdSchemaActionsResponseRowR(
+                    Optional.ofNullable(catalogName),
+                    Optional.ofNullable(schemaName),
+                    cube.getName(),
+                    Optional.ofNullable(da.getName()),
+                    Optional.of(ActionTypeEnum.DRILL_THROUGH),
+                    coordinate,
+                    CoordinateTypeEnum.CELL,
+                    Optional.ofNullable(da.getCaption()),
+                    Optional.ofNullable(da.getDescription()),
+                    Optional.of(query),
+                    Optional.empty(),
+                    Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
+                ));
             }
         }
-        String query = getDrillThroughQuery(da.drillThroughElements(), c);
-
-        return new MdSchemaActionsResponseRowR(
-            Optional.ofNullable(catalogName),
-            Optional.ofNullable(schemaName),
-            c.name(),
-            Optional.ofNullable(da.name()),
-            Optional.of(ActionTypeEnum.DRILL_THROUGH),
-            "([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])",
-            CoordinateTypeEnum.CELL,
-            Optional.ofNullable(da.caption()),
-            Optional.ofNullable(da.description()),
-            Optional.of(query),
-            //Optional.of("DRILLTHROUGH MAXROWS 1000 SELECT FROM [C] WHERE ([Measures].[Measure1],[D1.HierarchyWithHasAll].[Level11])"),
-            Optional.empty(),
-            Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
-        );
-    }
-
-    private static String getDrillThroughQuery(List<MappingDrillThroughElement> drillThroughElements, MappingCube c) {
-        StringBuilder sb = new StringBuilder("DRILLTHROUGH MAXROWS 1000 SELECT FROM [")
-            .append(c.name())
-            .append("] WHERE (");
-        return sb.toString();
+        return result;
     }
 
     static List<MdSchemaSetsResponseRow> getMdSchemaSetsResponseRow(
@@ -1139,9 +1141,9 @@ public class Utils {
         return kpis;
     }
 
-    private static List<MappingDrillThroughAction> getMappingDrillThroughActionWithFilter(List<MappingDrillThroughAction> actions, Optional<String> oActionName) {
+    private static List<DrillThroughAction> getMappingDrillThroughActionWithFilter(List<DrillThroughAction> actions, Optional<String> oActionName) {
         if (oActionName.isPresent()) {
-            return actions.stream().filter(a -> oActionName.get().equals(a.name())).toList();
+            return actions.stream().filter(a -> oActionName.get().equals(a.getName())).toList();
         }
         return actions;
     }
@@ -1640,7 +1642,14 @@ public class Utils {
 
     private static List<Cube> getCubesWithFilter(List<Cube> cubes, Optional<String> oCubeName) {
         if (oCubeName.isPresent()) {
-            return cubes.stream().filter(c -> oCubeName.get().equals(c.getName())).toList();
+            return getCubesWithFilter(cubes, oCubeName.get());
+        }
+        return cubes;
+    }
+
+    private static List<Cube> getCubesWithFilter(List<Cube> cubes, String cubeName) {
+        if (cubeName != null) {
+            return cubes.stream().filter(c -> cubeName.equals(c.getName())).toList();
         }
         return cubes;
     }

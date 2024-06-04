@@ -2553,10 +2553,16 @@ public class SoapUtil {
         SOAPElement s = prepareSequenceElement(schema);
         addElement(s, "CATALOG_NAME", "xsd:string", "0");
         addElement(s, "SCHEMA_NAME", "xsd:string", "0");
-        addElement(s, "CUBE_NAME", "xsd:string", null);
-        addElement(s, "ACTION_NAME", "xsd:string", null);
-        addElement(s, "COORDINATE", "xsd:string", null);
-        addElement(s, "COORDINATE_TYPE", "xsd:int", null);
+        addElement(s, "CUBE_NAME", "xsd:string", "0");
+        addElement(s, "ACTION_NAME", "xsd:string", "0");
+        addElement(s, "ACTION_TYPE", "xsd:int", "0");
+        addElement(s, "COORDINATE", "xsd:string", "0");
+        addElement(s, "COORDINATE_TYPE", "xsd:int", "0");
+        addElement(s, "ACTION_CAPTION", "xsd:string", "0");
+        addElement(s, "DESCRIPTION", "xsd:string", "0");
+        addElement(s, "CONTENT", "xsd:string", "0");
+        addElement(s, "APPLICATION", "xsd:string", "0");
+        addElement(s, "INVOCATION", "xsd:int", "0");
         return seRoot;
     }
 

@@ -30,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "DrillThroughAction", propOrder = { "drillThroughElements" })
 public class DrillThroughActionImpl extends AbstractMainElement implements MappingDrillThroughAction {
 
-	@XmlElements({ @XmlElement(name = "Attribute", type = DrillThroughAttributeImpl.class),
-			@XmlElement(name = "Measure", type = DrillThroughMeasureImpl.class) })
+	@XmlElements({ @XmlElement(name = "DrillThroughAttribute", type = DrillThroughAttributeImpl.class),
+			@XmlElement(name = "DrillThroughMeasure", type = DrillThroughMeasureImpl.class) })
 	protected List<MappingDrillThroughElement> drillThroughElements;
 
 	@XmlAttribute(name = "default")

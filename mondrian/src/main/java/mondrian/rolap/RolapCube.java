@@ -39,6 +39,7 @@ import mondrian.olap.exceptions.CalcMemberNotUniqueException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
+import org.eclipse.daanse.olap.api.DrillThroughAction;
 import org.eclipse.daanse.olap.api.DrillThroughColumn;
 import org.eclipse.daanse.olap.api.Evaluator;
 import org.eclipse.daanse.olap.api.MatchType;
@@ -446,7 +447,7 @@ public class RolapCube extends CubeBase {
         checkOrdinals(mappingCube.name(), measureList);
         loadAggGroup(mappingCube);
 
-        for(MappingAction mappingAction: mappingCube.actions()) {
+        for(MappingAction mappingAction: mappingCube.drillThroughActions()) {
             if(mappingAction instanceof MappingDrillThroughAction mappingDrillThroughAction) {
                 List<DrillThroughColumn> columns = new ArrayList<>();
 
@@ -469,7 +470,8 @@ public class RolapCube extends CubeBase {
                         else {
                             if(mappingDrillThroughAttribute.hierarchy() != null && !mappingDrillThroughAttribute.hierarchy().equals("")) {
                                 for(Hierarchy currentHierarchy: dimension.getHierarchies()) {
-                                    if(currentHierarchy.getName().equals(mappingDrillThroughAttribute.hierarchy())) {
+                                    if(currentHierarchy instanceof RolapCubeHierarchy rolapCubeHierarchy
+                                        && rolapCubeHierarchy.getSubName().equals(mappingDrillThroughAttribute.hierarchy())) {
                                         hierarchy = currentHierarchy;
                                         break;
                                     }
@@ -3555,6 +3557,17 @@ public class RolapCube extends CubeBase {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<DrillThroughAction> getDrillThroughActions() {
+        List<DrillThroughAction> res = new ArrayList<>();
+        for (AbstractRolapAction action : this.actionList) {
+            if (action instanceof DrillThroughAction drillThroughAction) {
+                res.add(drillThroughAction);
+            }
+        }
+        return res;
     }
 
     @Override

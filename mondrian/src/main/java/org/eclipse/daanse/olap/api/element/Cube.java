@@ -122,6 +122,8 @@ public interface Cube extends OlapElement, MetaElement {
 
     DrillThroughAction getDefaultDrillThroughAction();
 
+    List<DrillThroughAction> getDrillThroughActions();
+
     /**
      * Returns the members of a level, optionally including calculated members.
      */
