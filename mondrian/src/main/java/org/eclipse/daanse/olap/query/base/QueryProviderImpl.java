@@ -20,6 +20,7 @@ import static org.eclipse.daanse.olap.query.base.MdxToQueryConverter.convertPara
 import static org.eclipse.daanse.olap.query.base.MdxToQueryConverter.convertQueryAxis;
 import static org.eclipse.daanse.olap.query.base.MdxToQueryConverter.convertQueryAxisList;
 import static org.eclipse.daanse.olap.query.base.MdxToQueryConverter.convertSubcube;
+import static org.eclipse.daanse.olap.query.base.MdxToQueryConverter.getExpressionByCompoundId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.eclipse.daanse.mdx.model.api.DrillthroughStatement;
 import org.eclipse.daanse.mdx.model.api.ExplainStatement;
 import org.eclipse.daanse.mdx.model.api.MdxStatement;
 import org.eclipse.daanse.mdx.model.api.RefreshStatement;
+import org.eclipse.daanse.mdx.model.api.ReturnItem;
 import org.eclipse.daanse.mdx.model.api.SelectStatement;
 import org.eclipse.daanse.mdx.model.api.UpdateStatement;
 import org.eclipse.daanse.mdx.model.api.select.Allocation;
@@ -129,7 +131,12 @@ public class QueryProviderImpl implements QueryProvider {
     @Override
     public DrillThrough createDrillThrough(Statement statement, DrillthroughStatement drillthroughStatement, boolean strictValidation) {
         Query query = createQuery(statement, drillthroughStatement.selectStatement(), strictValidation);
-        List<Expression> returnList = List.of();
+        List<Expression> returnList = new ArrayList<>();
+        if (drillthroughStatement.returnItems() != null) {
+            for ( ReturnItem returnItem : drillthroughStatement.returnItems()) {
+                returnList.add(getExpressionByCompoundId(returnItem.compoundId()));
+            }
+        }
         return new DrillThroughImpl(query,
             drillthroughStatement.maxRows().orElse(0),
             drillthroughStatement.firstRowSet().orElse(0),

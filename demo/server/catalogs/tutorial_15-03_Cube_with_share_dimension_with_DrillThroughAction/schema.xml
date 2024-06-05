@@ -24,13 +24,13 @@
     <Table name="Fact"/>
     <DimensionUsage name="Dimension1" source="Dimension1" foreignKey="DIM_KEY"/>
     <Measure aggregator="sum" name="Measure1" column="VALUE"/>
-    <DrillThroughAction name="Drillthrough" default="true">
+    <DrillThroughAction name="DrillthroughH1L1" caption="DrillthroughH1L1" default="true">
       <DrillThroughAttribute dimension="Dimension1" hierarchy="Hierarchy1" level="H1_Level1" name="H1_Level1"/>
       <DrillThroughMeasure measure="Measure1" name="Measure1"/>
     </DrillThroughAction>
-    <DrillThroughAction name="Drillthrough">
+    <DrillThroughAction name="DrillthroughH2L1" caption="DrillthroughH2L1">
       <DrillThroughMeasure measure="Measure1" name="Measure1"/>
-      <DrillThroughAttribute dimension="Dimension1" hierarchy="Hierarchy1" level="H1_Level1" name="H2_Level2"/>
+      <DrillThroughAttribute dimension="Dimension1" hierarchy="Hierarchy2" level="H2_Level1" name="H2_Level1"/>
     </DrillThroughAction>
   </Cube>
 

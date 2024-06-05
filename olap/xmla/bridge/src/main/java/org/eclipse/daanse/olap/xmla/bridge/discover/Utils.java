@@ -961,25 +961,23 @@ public class Utils {
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
         if (oCoordinate != null && oCoordinate.isPresent()) {
             List<String> coordinateElements = getCoordinateElements(oCoordinate.get());
-            if (isDrillThroughElementsExist(da.getOlapElements(), coordinateElements, cube)) {
-                String query = getDrillThroughQuery(coordinateElements, da.getOlapElements(), cube);
-                String coordinate = oCoordinate.get();
+            String query = getDrillThroughQuery(coordinateElements, da.getOlapElements(), cube);
+            String coordinate = oCoordinate.get();
 
-                result.add(new MdSchemaActionsResponseRowR(
-                    Optional.ofNullable(catalogName),
-                    Optional.ofNullable(schemaName),
-                    cube.getName(),
-                    Optional.ofNullable(da.getName()),
-                    Optional.of(ActionTypeEnum.DRILL_THROUGH),
-                    coordinate,
-                    CoordinateTypeEnum.CELL,
-                    Optional.ofNullable(da.getCaption()),
-                    Optional.ofNullable(da.getDescription()),
-                    Optional.of(query),
-                    Optional.empty(),
-                    Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
-                ));
-            }
+            result.add(new MdSchemaActionsResponseRowR(
+                Optional.ofNullable(catalogName),
+                Optional.ofNullable(schemaName),
+                cube.getName(),
+                Optional.ofNullable(da.getName()),
+                Optional.of(ActionTypeEnum.DRILL_THROUGH),
+                coordinate,
+                CoordinateTypeEnum.CELL,
+                Optional.ofNullable(da.getCaption()),
+                Optional.ofNullable(da.getDescription()),
+                Optional.of(query),
+                Optional.empty(),
+                Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
+            ));
         }
         return result;
     }
