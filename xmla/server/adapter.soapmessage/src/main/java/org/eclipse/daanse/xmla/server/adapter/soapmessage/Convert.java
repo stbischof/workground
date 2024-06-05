@@ -464,7 +464,7 @@ public class Convert {
             Optional.ofNullable(m.get(Constants.ROWSET.ROW_PROPERTY.SCHEMA_NAME)),
             m.get(Constants.ROWSET.ROW_PROPERTY.CUBE_NAME),
             Optional.ofNullable(m.get(ACTION_NAME)),
-            //Optional.ofNullable(ActionTypeEnum.fromValue(m.get(ACTION_TYPE))),
+            //Optional.ofNullable(ActionTypeEnum.fromValue(m.get(ACTION_TYPE))), //wrong value from excel
             Optional.empty(),
             Optional.ofNullable(m.get(COORDINATE)),
             CoordinateTypeEnum.fromValue(m.get(COORDINATE_TYPE)),

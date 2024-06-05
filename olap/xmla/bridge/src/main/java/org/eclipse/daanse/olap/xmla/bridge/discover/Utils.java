@@ -945,7 +945,7 @@ public class Utils {
         Optional<CubeSourceEnum> oCubeSource
     ) {
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        if (cube.getDrillThroughActions() != null) {
+        if (cube.getDrillThroughActions() != null && coordinateType.equals(CoordinateTypeEnum.CELL)) {
             result.addAll(getMappingDrillThroughActionWithFilter(cube.getDrillThroughActions(), oActionName).stream()
                 .map(da -> getMdSchemaDrillThroughActionsResponseRow(catalogName, schemaName, cube, da, oCoordinate))
                 .flatMap(Collection::stream)
@@ -962,7 +962,7 @@ public class Utils {
         if (oCoordinate != null && oCoordinate.isPresent()) {
             List<String> coordinateElements = getCoordinateElements(oCoordinate.get());
             if (isDrillThroughElementsExist(da.getOlapElements(), coordinateElements, cube)) {
-                String query = getDrillThroughQuery(coordinateElements, cube);
+                String query = getDrillThroughQuery(coordinateElements, da.getOlapElements(), cube);
                 String coordinate = oCoordinate.get();
 
                 result.add(new MdSchemaActionsResponseRowR(

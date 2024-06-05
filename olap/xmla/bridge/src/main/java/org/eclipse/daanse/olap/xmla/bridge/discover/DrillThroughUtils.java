@@ -55,7 +55,7 @@ public class DrillThroughUtils {
         return result;
     }
 
-    public static String getDrillThroughQuery(List<String> coordinateElements, Cube c) {
+    public static String getDrillThroughQuery(List<String> coordinateElements, List<OlapElement> olapElements,  Cube c) {
         StringBuilder sb = new StringBuilder("DRILLTHROUGH MAXROWS 1000 SELECT ");
         if (!coordinateElements.isEmpty()) {
             sb.append("(");
@@ -71,6 +71,21 @@ public class DrillThroughUtils {
             sb.append(") ON 0 ");
         }
         sb.append("FROM ").append(c.getName());
+        boolean flag = true;
+        for (OlapElement olapElement : olapElements) {
+            if (flag) {
+                flag = false;
+                sb.append(" RETURN ");
+            } else {
+                sb.append(",");
+            }
+            if (olapElement instanceof RolapBaseCubeMeasure mes) {
+                sb.append(mes.getUniqueName());
+            }
+            if (olapElement instanceof RolapCubeLevel lev) {
+                sb.append(lev.getUniqueName());
+            }
+        }
         return sb.toString();
 
 //        DRILLTHROUGH SELECT (
@@ -110,11 +125,15 @@ public class DrillThroughUtils {
             String[] ats = attribute.split("\\.");
             if (ats.length > 2) {
                 for (int i =2; i <  ats.length; i++) {
-                    res.add(ats[i].replace("[", "").replace("]", ""));
+                    res.add(removeBrackets(ats[i]));
                 }
             }
         }
         return res;
+    }
+
+    private static String removeBrackets(String s) {
+        return s.replace("[", "").replace("]", "");
     }
 
     private static String getHierarchyName(String attribute) {
@@ -131,7 +150,7 @@ public class DrillThroughUtils {
         if (attribute != null) {
             String[] ats = attribute.split("\\.");
             if (ats.length > 0) {
-                return ats[0].replace("[", "").replace("]", "");
+                return removeBrackets(ats[0]);
             }
         }
         return null;
@@ -161,7 +180,7 @@ public class DrillThroughUtils {
         if (measure != null && measure.startsWith("[Measures]")) {
             String[] es = measure.split("\\.");
             if (es.length == 2) {
-                return es[1].replace("[", "").replace("]", "");
+                return removeBrackets(es[1]);
             }
         }
         return null;

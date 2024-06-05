@@ -13,6 +13,8 @@
  */
 package org.eclipse.daanse.xmla.api.common.enums;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public enum ActionTypeEnum {
@@ -84,5 +86,19 @@ public enum ActionTypeEnum {
                 new StringBuilder("ActionTypeEnum Illegal argument ").append(v)
                     .toString())
             );
+    }
+
+    public static List<ActionTypeEnum> parseActionType(String v)
+    {
+        List<ActionTypeEnum> apList = new ArrayList<ActionTypeEnum>();
+        if (v == null) {
+            int val = Integer.decode(v);
+            for (ActionTypeEnum ap : values()) {
+                if ((val & ap.getValue()) != 0) {
+                    apList.add(ap);
+                }
+            }
+        }
+        return apList;
     }
 }
