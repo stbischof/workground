@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.DrillThroughAction;
@@ -954,6 +954,29 @@ public class Utils {
         }
         return result;
     }
+
+    public static List<MdSchemaActionsResponseRow> getMdSchemaUrlActionsResponseRow(Optional<String> coordinate, List<UrlAction> urlActions) {
+        //TODO add filter for URLs
+        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
+        for (UrlAction urlAction : urlActions) {
+            result.add(new MdSchemaActionsResponseRowR(
+                urlAction.catalogName(),
+                urlAction.schemaName(),
+                urlAction.cubeName(),
+                urlAction.actionName(),
+                Optional.of(ActionTypeEnum.URL),
+                coordinate.orElse(null),
+                urlAction.coordinateType(),
+                urlAction.actionCaption(),
+                urlAction.description(),
+                Optional.ofNullable(urlAction.url()),
+                Optional.empty(),
+                Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
+            ));
+        }
+        return result;
+    }
+
 
     private static List<MdSchemaActionsResponseRow> getMdSchemaDrillThroughActionsResponseRow(
         String catalogName, String schemaName,

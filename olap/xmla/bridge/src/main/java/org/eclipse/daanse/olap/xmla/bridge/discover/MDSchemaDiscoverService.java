@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
+import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
@@ -73,13 +74,16 @@ import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaMemb
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaPropertiesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaPropertiesResponseRowCell;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaSetsResponseRow;
+import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaUrlActionsResponseRow;
 
 public class MDSchemaDiscoverService {
 
     private ContextListSupplyer contextsListSupplyer;
+    private List<UrlAction> urlActions;
 
-    public MDSchemaDiscoverService(ContextListSupplyer contextsListSupplyer) {
+    public MDSchemaDiscoverService(ContextListSupplyer contextsListSupplyer, List<UrlAction> urlActions) {
         this.contextsListSupplyer = contextsListSupplyer;
+        this.urlActions = urlActions;
     }
 
     public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request) {
@@ -115,6 +119,9 @@ public class MDSchemaDiscoverService {
             result.addAll(contextsListSupplyer.get().stream().map(c ->
                 getMdSchemaActionsResponseRow(c, schemaName, cubeName, actionName, actionType, coordinate, coordinateType, invocation, cubeSource)
             ).flatMap(Collection::stream).toList());
+        }
+        if (CoordinateTypeEnum.CELL.equals(coordinateType)) {
+            result.addAll(getMdSchemaUrlActionsResponseRow(coordinate, urlActions));
         }
         return result;
     }

@@ -135,7 +135,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		
+
 		<dependency>
 			<groupId>org.eclipse.daanse</groupId>
 			<artifactId>org.eclipse.daanse.db.dialect.resolver.basic</artifactId>
@@ -170,12 +170,18 @@
 			<scope>compile</scope>
 			<version>${revision}</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>org.eclipse.daanse</groupId>
 			<artifactId>org.eclipse.daanse.olap.documentation.common</artifactId>
 			<scope>compile</scope>
 			<version>${revision}</version>
 		</dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.olap.action.impl</artifactId>
+      <scope>compile</scope>
+      <version>${revision}</version>
+    </dependency>
 
 		<dependency>
 			<groupId>org.osgi</groupId>

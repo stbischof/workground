@@ -203,7 +203,7 @@ class MDSchemaDiscoverServiceTest {
          */
 
         cls = Mockito.spy(new ContextsSupplyerImpl(contextGroup));
-        service = new MDSchemaDiscoverService(cls);
+        service = new MDSchemaDiscoverService(cls, List.of());
     }
 
     @Test

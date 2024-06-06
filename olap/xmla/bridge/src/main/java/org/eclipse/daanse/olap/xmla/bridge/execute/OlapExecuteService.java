@@ -19,6 +19,7 @@ import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.mdx.model.api.select.Allocation;
+import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -176,11 +177,11 @@ public class OlapExecuteService implements ExecuteService {
     private final OtherDiscoverService otherDiscoverService;
     private final WriteBackService writeBackService;
 
-    public OlapExecuteService(ContextListSupplyer contextsListSupplyer, ContextGroupXmlaServiceConfig config) {
+    public OlapExecuteService(ContextListSupplyer contextsListSupplyer, List<UrlAction> urlAction, ContextGroupXmlaServiceConfig config) {
         this.contextsListSupplyer = contextsListSupplyer;
         this.config = config;
         dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
-        mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer);
+        mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer, urlAction);
         otherDiscoverService = new OtherDiscoverService(contextsListSupplyer, config);
         writeBackService = new WriteBackService();
     }
@@ -762,7 +763,7 @@ public class OlapExecuteService implements ExecuteService {
                     	scenario = drillThrough.getQuery().getConnection().createScenario();
                     	drillThrough.getQuery().getConnection().setScenario(scenario);
 
-                    }                    
+                    }
                     if (connection.getScenario() != null) {
                         scenario.setWriteBackTable(rolapCube.getWritebackTable());
                         fact = rolapCube.getFact();

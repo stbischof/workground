@@ -13,9 +13,12 @@
 */
 package org.eclipse.daanse.olap.xmla.bridge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.daanse.olap.api.ContextGroup;
+import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DelegatingDiscoverService;
 import org.eclipse.daanse.olap.xmla.bridge.execute.OlapExecuteService;
 import org.eclipse.daanse.xmla.api.XmlaService;
@@ -26,6 +29,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
@@ -35,18 +39,20 @@ import org.osgi.util.converter.Converters;
 public class ContextGroupXmlaService implements XmlaService {
 
 	private static final Converter CONVERTER = Converters.standardConverter();
+    public static final String REF_NAME_URL_ACTIONS = "urlAction";
 	private ContextGroupXmlaServiceConfig config;
+    private List<UrlAction> urlActions = new ArrayList<>();
 
 	public ContextGroupXmlaService() {
 
 	}
-	
+
 	@Activate
 	 void activate(Map<String, Object> props) {
 		this.config = CONVERTER.convert(props).to(ContextGroupXmlaServiceConfig.class);
 		 ContextListSupplyer contextsListSupplyer = new ContextsSupplyerImpl(contextGroup);
-		 executeService = new OlapExecuteService(contextsListSupplyer, config);
-		 discoverService = new DelegatingDiscoverService(contextsListSupplyer, config);
+		 executeService = new OlapExecuteService(contextsListSupplyer, urlActions, config);
+		 discoverService = new DelegatingDiscoverService(contextsListSupplyer, urlActions, config);
 
 	}
 
@@ -66,6 +72,15 @@ public class ContextGroupXmlaService implements XmlaService {
 	void bindContextGroup(ContextGroup contextGroup) {
 		this.contextGroup = contextGroup;
 	}
+
+    @Reference(name = REF_NAME_URL_ACTIONS, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void bindUrlAction(UrlAction action) {
+        urlActions.add(action);
+    }
+
+    public void unbindUrlAction(UrlAction action) {
+        urlActions.remove(action);
+    }
 
 	@Override
 	public DiscoverService discover() {

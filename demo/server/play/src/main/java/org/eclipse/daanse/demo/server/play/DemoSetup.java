@@ -42,6 +42,8 @@ public class DemoSetup {
 
     public static final String PID_DESCRIPTION_DOC = "org.eclipse.daanse.olap.documentation.common.MarkdownDocumentationProvider";
 
+    public static final String PID_URL_ACTION = "org.eclipse.daanse.olap.action.impl.UrlActionImpl";
+
 	public static final String PID_MS_SOAP = "org.eclipse.daanse.xmla.server.jakarta.jws.MsXmlAnalysisSoap";
 
 	public static final String PID_MS_SOAP_MSG_WS = "org.eclipse.daanse.xmla.server.jakarta.xml.ws.provider.soapmessage.XmlaWebserviceProvider";
@@ -106,6 +108,8 @@ public class DemoSetup {
         initVerifiers();
 
         initDocumentation();
+
+        initUrlAction();
 	}
 
 	private void runTest(Context context) {
@@ -192,6 +196,23 @@ public class DemoSetup {
         props.put("writeVerifierResult", true);
         props.put("writeSchemasAsXML", false);
         cDoc = configurationAdmin.getFactoryConfiguration(PID_DESCRIPTION_DOC, "1", "?");
+        cDoc.update(props);
+    }
+
+    private void initUrlAction() throws IOException {
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put("urlAction" + TARGET_EXT, "(service.pid=*)");
+        props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
+        props.put("schemaName", "Actions");
+        props.put("cubeName", "Actions");
+        props.put("actionName", "testActions");
+        props.put("actionCaption", "testActions");
+        props.put("actionDescription", "testActionsDescription");
+        props.put("actionCoordinate", "");
+        props.put("actionCoordinateType", "CELL");
+        props.put("actionUrl", "https://google.com");
+
+        cDoc = configurationAdmin.getFactoryConfiguration(PID_URL_ACTION, "1", "?");
         cDoc.update(props);
     }
 
