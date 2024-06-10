@@ -70,7 +70,7 @@ erDiagram
 "Fact✔"{
 string KEY "✔"
 int VALUE "✔"
-null VALUE_NUMERIC "✔"
+double VALUE_NUMERIC "✔"
 }
 
 ```

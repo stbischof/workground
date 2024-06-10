@@ -647,6 +647,10 @@ string bezeichnung "✔"
 int id "✔"
 string klassenwiederholung "✔"
 }
+"migrations_hintergrund✔"{
+int id "✔"
+string migrations_hintergrund "✔"
+}
 "schul_abschluss✔"{
 int id "✔"
 string schulabschluss "✔"
@@ -687,6 +691,10 @@ int id "✔"
 string traeger_art "✔"
 string traeger_kat_id "✔"
 }
+"traeger_kategorie✔"{
+int id "✔"
+string traeger_kategorie "✔"
+}
 "wohnort_landkreis✔"{
 int id "✔"
 string kuerzel "✔"
@@ -706,17 +714,9 @@ VARCHAR foerderung_art "❌"
 VARCHAR bezeichnung "❌"
 INTEGER id "❌"
 }
-"traeger_kategorie❌"{
-INTEGER id "❌"
-VARCHAR traeger_kategorie "❌"
-}
 "personal_art❌"{
 VARCHAR bezeichnung "❌"
 VARCHAR id "❌"
-}
-"migrations_hintergrund❌"{
-VARCHAR id "❌"
-VARCHAR migrations_hintergrund "❌"
 }
 
 "fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
@@ -724,7 +724,7 @@ VARCHAR migrations_hintergrund "❌"
 "fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "traeger✔" : "traeger_id-id"
 "traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
-"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie✔" : "traeger_kat_id-id"
 "fact_schulen✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
 "schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
@@ -734,7 +734,7 @@ VARCHAR migrations_hintergrund "❌"
 "fact_personal✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "traeger✔" : "traeger_id-id"
 "traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
-"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie✔" : "traeger_kat_id-id"
 "fact_personal✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
 "schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
@@ -747,7 +747,7 @@ VARCHAR migrations_hintergrund "❌"
 "fact_schueler✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "traeger✔" : "traeger_id-id"
 "traeger✔" ||--o{ "traeger_art✔" : "traeger_art_id-id"
-"traeger_art✔" ||--o{ "traeger_kategorie❌" : "traeger_kat_id-id"
+"traeger_art✔" ||--o{ "traeger_kategorie✔" : "traeger_kat_id-id"
 "fact_schueler✔" ||--o{ "schule✔" : "schule_id-id"
 "schule✔" ||--o{ "schul_art✔" : "schul_art_id-id"
 "schul_art✔" ||--o{ "schul_kategorie✔" : "schul_kategorie_id-id"
@@ -758,7 +758,7 @@ VARCHAR migrations_hintergrund "❌"
 "fact_schueler✔" ||--o{ "einschulung❌" : "einschulung_id-id"
 "fact_schueler✔" ||--o{ "schul_abschluss✔" : "schul_abschluss_id-id"
 "fact_schueler✔" ||--o{ "klassen_wiederholung✔" : "klassen_wdh-id"
-"fact_schueler✔" ||--o{ "migrations_hintergrund❌" : "migrations_hg_id-id"
+"fact_schueler✔" ||--o{ "migrations_hintergrund✔" : "migrations_hg_id-id"
 "fact_schueler✔" ||--o{ "foerderung_art❌" : "foerder_art_id-id"
 "foerderung_art❌" ||--o{ "sonderpaed_foerderbedarf✔" : "sp_foerderbedarf_id-id"
 ```
@@ -777,12 +777,9 @@ VARCHAR migrations_hintergrund "❌"
 |SCHEMA|Hierarchy: Table field must be empty in dimension with name Altersgruppen Personal|
 |DATABASE|Column id defined in field primaryKey does not exist in table foerderung_art|
 |DATABASE|Table bundesland does not exist in database|
-|DATABASE|Table traeger_kategorie does not exist in database|
 |DATABASE|Table personal_art does not exist in database|
 |DATABASE|Table einschulung does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table personal_art|
-|DATABASE|Column id defined in field primaryKey does not exist in table migrations_hintergrund|
-|DATABASE|Table migrations_hintergrund does not exist in database|
 |DATABASE|Table foerderung_art does not exist in database|
 |DATABASE|Column id defined in field primaryKey does not exist in table einschulung|
 ## <span style='color: blue;'>WARNING</span> : 

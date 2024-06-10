@@ -34,6 +34,9 @@ public abstract class AbstractContextDocumentationProvider implements ConntextDo
         typeMapInitial.put(Types.TIMESTAMP, "timestamp");
         typeMapInitial.put(Types.TIME, "time");
         typeMapInitial.put(Types.VARCHAR, "string");
+        typeMapInitial.put(Types.DECIMAL, "double");
+        typeMapInitial.put(Types.NUMERIC, "double");
+        typeMapInitial.put(Types.REAL, "double");
 
         TYPE_MAP = Collections.unmodifiableMap(typeMapInitial);
     }

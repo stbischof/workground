@@ -1,6 +1,6 @@
 # Documentation
 ### CatalogName : tutorial_20-01_VirtualCube_with_Measure_only
-### Schema Minimal_Virtual_Cubes_With_Measures :
+### Schema Minimal_Virtual_Cubes_With_Measures : 
 ---
 ### Cubes :
 
@@ -9,14 +9,14 @@
 ---
 #### Cube "Cube1":
 
-
+    
 
 ##### Table: "C1_Fact"
 
 ---
 #### Cube "Cube2":
 
-
+    
 
 ##### Table: "C2_Fact"
 
@@ -122,7 +122,7 @@ int VALUE "✔"
 ```
 ---
 ## Validation result for schema Minimal_Virtual_Cubes_With_Measures
-## <span style='color: red;'>ERROR</span> :
+## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|VirtualCube with name VirtualCubeMeasureOnly must contain dimensions |

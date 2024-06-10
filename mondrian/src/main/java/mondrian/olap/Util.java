@@ -388,9 +388,12 @@ public class Util {
      * "[a [bracketed]] string]".
      */
     public static String quoteMdxIdentifier(String id) {
-        StringBuilder buf = new StringBuilder(id.length() + 20);
-        quoteMdxIdentifier(id, buf);
-        return buf.toString();
+    	if (id != null) {
+    		StringBuilder buf = new StringBuilder(id.length() + 20);
+    		quoteMdxIdentifier(id, buf);
+    		return buf.toString();
+    	}
+    	return id;
     }
 
     public static void quoteMdxIdentifier(String id, StringBuilder buf) {

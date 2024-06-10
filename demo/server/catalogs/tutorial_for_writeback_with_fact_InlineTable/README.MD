@@ -115,8 +115,8 @@ string L2 "✔"
 string L2 "✔"
 }
 "WRITE_BACK_DATA✔"{
-null CURRENTVALUE "✔"
-null NEWVALUE "✔"
+double CURRENTVALUE "✔"
+double NEWVALUE "✔"
 string ALLOCATIONPOLICY "✔"
 string CUBE_NAME "✔"
 string MEMBERUNIQUENAMES "✔"

@@ -7,7 +7,7 @@
     null
 
 ---
-#### Cube "null":
+#### Cube "":
 
     
 

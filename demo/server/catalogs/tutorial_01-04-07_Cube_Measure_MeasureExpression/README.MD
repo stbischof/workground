@@ -66,7 +66,17 @@ erDiagram
 "FACT✔"{
 int KEY "✔"
 int VALUE "✔"
-null VALUE_NUMERIC "✔"
+double VALUE_NUMERIC "✔"
+}
+"Fact✔"{
+string KEY "✔"
+int VALUE "✔"
+double VALUE_NUMERIC "✔"
+}
+"MEASURE✔"{
+int ID "✔"
+int VALUE "✔"
+string FLAG "✔"
 }
 "MEASURE_TABLE✔"{
 int ID "✔"

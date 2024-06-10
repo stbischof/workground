@@ -49,7 +49,7 @@ Levels: "Level1, Level2"
 
 ###### Level "Level2" :
 
-    column(s): null
+    column(s): 
 
 ### Cube "Cube" diagram:
 

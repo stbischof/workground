@@ -1,6 +1,6 @@
 # Documentation
 ### CatalogName : tutorial_20-01_VirtualCube_with_common_dimension
-### Schema Minimal_Virtual_Cubes_With_1_Dimension :
+### Schema Minimal_Virtual_Cubes_With_1_Dimension : 
 ### Public Dimensions:
 
     Dimension1
@@ -29,7 +29,7 @@ Levels: "Level1"
 ---
 #### Cube "Cube1":
 
-
+    
 
 ##### Table: "C1_Fact"
 
@@ -39,7 +39,7 @@ Levels: "Level1"
 ---
 #### Cube "Cube2":
 
-
+    
 
 ##### Table: "C2_Fact"
 
@@ -173,11 +173,11 @@ string NAME "✔"
 ```
 ---
 ## Validation result for schema Minimal_Virtual_Cubes_With_1_Dimension
-## <span style='color: red;'>ERROR</span> :
+## <span style='color: red;'>ERROR</span> : 
 |Type|   |
 |----|---|
 |SCHEMA|Virtual Cube Dimension Cube name must be set|
-## <span style='color: blue;'>WARNING</span> :
+## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
 |DATABASE|Table: Schema must be set|

@@ -78,7 +78,7 @@ title: Diagram;
 erDiagram
 "Fact✔"{
 string KEY "✔"
-null VALUE "✔"
+double VALUE "✔"
 }
 
 ```

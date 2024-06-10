@@ -58,7 +58,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
@@ -80,8 +79,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.lang.StringTemplate.STR;
 
 @Designate(ocd = DocumentationProviderConfig.class, factory = true)
 @Component(service = ConntextDocumentationProvider.class, configurationPolicy = ConfigurationPolicy.REQUIRE)
@@ -162,8 +159,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeCubeMatrixDiagram(FileWriter writer, Context context, MappingSchema schema) {
         try {
             String schemaName = schema.name();
-            writer.write(STR. """
-                ### Cube Matrix for \{schemaName}:
+            writer.write("### Cube Matrix for ");
+            writer.write(schemaName);
+            writer.write(":");
+            writer.write("""
+
                 ```mermaid
                 quadrantChart
                 title Cube Matrix
@@ -184,9 +184,14 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 y = y < 0 ? (-1)*y : y;
                 String sx = quadrantChartFormat(x);
                 String sy = quadrantChartFormat(y);
-                writer.write(STR. """
-                    Cube \{cubeName}: [\{sx}, \{sy}]
-                    """);
+                writer.write("Cube ");
+                writer.write(cubeName);
+                writer.write(": [");
+                writer.write(sx);
+                writer.write(", ");
+                writer.write(sy);
+                writer.write("]");
+                writer.write(ENTER);
             }
             writer.write("```");
             writer.write(ENTER);
@@ -237,7 +242,6 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         for (MappingCubeDimension d : c.dimensionUsageOrDimensions()) {
             res = res + getLevelsCount1(schema, d);
         }
-        ;
         return res;
     }
 
@@ -298,7 +302,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private List<String> cubeDimensionConnections(MappingSchema schema, MappingCube c, int cubeIndex) {
         List<String> result = new ArrayList<>();
-        String cubeName = STR. "c\{cubeIndex}";
+        String cubeName = new StringBuilder("c").append(cubeIndex).toString();
         if (cubeName != null) {
             result.addAll(dimensionsConnections(schema, c.dimensionUsageOrDimensions(), cubeName, cubeIndex));
         }
@@ -308,7 +312,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private List<String> virtualCubeDimensionConnections(MappingSchema schema, MappingVirtualCube c, int cubeIndex) {
         List<String> result = new ArrayList<>();
-        String cubeName = STR. "c\{cubeIndex}";
+        String cubeName = new StringBuilder("c").append(cubeIndex).toString();
         if (cubeName != null) {
             result.addAll(dimensionsConnections(schema, c.virtualCubeDimensions(), cubeName, cubeIndex));
         }
@@ -383,11 +387,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         List<MappingHierarchy> hList = d.hierarchies();
         List<String> result = new ArrayList<>();
         int i = 0;
-        String dName = STR. "d\{cubeIndex}\{dimensionIndex}";
+        String dName = new StringBuilder("d").append(cubeIndex).append(dimensionIndex).toString();
         for (MappingHierarchy h : hList) {
             result.add(connection1(cubeName, dName, foreignKey, h.primaryKey()));
             for (MappingLevel l : h.levels()) {
-                result.add(connection1(dName, STR."h\{cubeIndex}\{dimensionIndex}\{i}", h.primaryKey(),
+                result.add(connection1(dName, new StringBuilder("h").append(cubeIndex).append(dimensionIndex).append(i).toString(), h.primaryKey(),
                     l.column()));
             }
             i++;
@@ -487,7 +491,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     Optional<VerificationResult> first = map.values().stream().findFirst();
                     if (first.isPresent()) {
                         String levelName = getColoredLevel(first.get().level());
-                        writer.write(STR."## \{levelName} : ");
+                        writer.write("## ");
+                        writer.write(levelName);
+                        writer.write(" : ");
                         writer.write(ENTER);
                         writer.write("|Type|   |");
                         writer.write(ENTER);
@@ -587,7 +593,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeSchemaAsXML(FileWriter writer, MappingSchema schema) {
         try {
             String schemaName = schema.name();
-            writer.write(STR."### Schema \{schemaName} as XML: ");
+            writer.write("### Schema ");
+            writer.write(schemaName);
+            writer.write(" as XML: ");
             writer.write(ENTER);
             SerializerModifier serializerModifier = new SerializerModifier(schema);
             writer.write(serializerModifier.getXML());
@@ -600,7 +608,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeSchema(FileWriter writer, MappingSchema schema) {
         try {
             String schemaName = schema.name();
-            writer.write(STR."### Schema \{schemaName} : ");
+            writer.write("### Schema ");
+            writer.write(schemaName);
+            writer.write(" : ");
             writer.write(ENTER);
             if (schema.documentation().isPresent() && schema.documentation().get().documentation() != null) {
                 writer.write(schema.documentation().get().documentation());
@@ -609,23 +619,26 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             if (!schema.dimensions().isEmpty()) {
                 String dimensions = schema.dimensions().stream().map(d -> d.name())
                     .collect(Collectors.joining(", "));
-                writer.write(STR. """
-                    ### Public Dimensions:
-
-                        \{dimensions}
-
-                    """);
+                writer.write("### Public Dimensions:");
+                writer.write(ENTER);
+                writer.write(ENTER);
+                writer.write("    ");
+                writer.write(dimensions);
+                writer.write(ENTER);
+                writer.write(ENTER);
                 writeList(writer, schema.dimensions(), this::writePublicDimension);
             }
             String cubes = schema.cubes().stream().map(c -> c.name())
                 .collect(Collectors.joining(", "));
-            writer.write(STR. """
-                ---
-                ### Cubes :
-
-                    \{cubes}
-
-                """);
+            writer.write("---");
+            writer.write(ENTER);
+            writer.write("### Cubes :");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("    ");
+            writer.write(cubes);
+            writer.write(ENTER);
+            writer.write(ENTER);
             writeCubeList(writer, schema.cubes());
             //write roles
             writeRoles(writer, schema.roles());
@@ -657,10 +670,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeRole(FileWriter writer, MappingRole role) {
         try {
             String name = role.name();
-            writer.write(STR. """
-                ##### Role: "\{name}"
-
-                """);
+            writer.write("##### Role: \"");
+            writer.write(name);
+            writer.write("\"");
+            writer.write(ENTER);
+            writer.write(ENTER);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -670,17 +684,24 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private void writeCube(FileWriter writer, MappingCube cube) {
         try {
             String description = cube.description() != null ? cube.description() : EMPTY_STRING;
-            String name = cube.name();
+            String name = cube.name() != null ? cube.name() : "";
             String table = getTable(cube.fact());
-            writer.write(STR. """
-                ---
-                #### Cube "\{name}":
-
-                    \{description}
-
-                ##### Table: "\{table}"
-
-                """);
+            writer.write("---");
+            writer.write(ENTER);
+            writer.write("#### Cube \"");
+            writer.write(name);
+            writer.write("\":");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("    ");
+            writer.write(description);
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("##### Table: \"");
+            writer.write(table);
+            writer.write("\"");
+            writer.write(ENTER);
+            writer.write(ENTER);
             writeCubeDimensions(writer, cube.dimensionUsageOrDimensions());
         } catch (IOException e) {
             e.printStackTrace();
@@ -691,11 +712,14 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             List<String> connections = cubeDimensionConnections(schema, cube, index);
             if (cube.name() != null) {
-                String tableName = STR. "c\{index}[\"\{cube.name()}\"]";
+                String tableName = new StringBuilder("c").append(index).append("[\"").append(cube.name()).append("\"]").toString();
                 String cubeName = cube.name();
-                writer.write(STR. """
-                    ### Cube \"\{cubeName}\" diagram:
-
+                writer.write("### Cube \"");
+                writer.write(cubeName);
+                writer.write("\" diagram:");
+                writer.write(ENTER);
+                writer.write(ENTER);
+                writer.write("""
                     ---
 
                     ```mermaid
@@ -711,51 +735,72 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     ]
                     }}%%
                     erDiagram
-                    \{tableName}{
                     """);
-                for (MappingMeasure m : cube.measures()) {
-                    String description = m.description() == null ? EMPTY_STRING : m.description();
-                    String measureName = prepare(m.name());
-                    writer.write(STR."M \{measureName} \"\{description}\"");
+                    writer.write(tableName);
+                    writer.write("{");
                     writer.write(ENTER);
-                }
-                for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) {
-                    String description = d.description() == null ? EMPTY_STRING : d.description();
-                    String dimensionName =  prepare(d.name());
-                    writer.write(STR."D \{dimensionName} \"\{description}\"");
-                    writer.write(ENTER);
-                }
-                for (MappingNamedSet ns : cube.namedSets()) {
-                    String description = ns.description() == null ? EMPTY_STRING : ns.description();
-                    String namedSetName =  prepare(ns.name());
-                    writer.write(STR."NS \{namedSetName} \"\{description}\"");
-                    writer.write(ENTER);
-                }
-                for (MappingCalculatedMember cm : cube.calculatedMembers()) {
-                    String description = cm.description() == null ? EMPTY_STRING : cm.description();
-                    String calculatedMemberName =  prepare(cm.name());
-                    writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
-                    writer.write(ENTER);
-                }
-                for (MappingKpi cm : cube.kpis()) {
-                    String description = cm.description() == null ? EMPTY_STRING : cm.description();
-                    String kpiName =  prepare(cm.name());
-                    writer.write(STR."KPI \{kpiName} \"\{description}\"");
-                    writer.write(ENTER);
-                }
-                writer.write("}");
-                writer.write(ENTER);
+                    for (MappingMeasure m : cube.measures()) {
+                       String description = m.description() == null ? EMPTY_STRING : m.description();
+                       String measureName = prepare(m.name());
+                       writer.write("M ");
+                       writer.write(measureName);
+                       writer.write(" \"");
+                       writer.write(description);
+                       writer.write("\"");
+                       writer.write(ENTER);
+                    }
+                    for (MappingCubeDimension d : cube.dimensionUsageOrDimensions()) { String description = d.description() == null ? EMPTY_STRING : d.description();
+                       String dimensionName =  prepare(d.name());
+                       writer.write("D ");
+                       writer.write(dimensionName);
+                       writer.write(" \"");
+                       writer.write(description);
+                       writer.write("\"");
+                       writer.write(ENTER);
+                   }
+                   for (MappingNamedSet ns : cube.namedSets()) {
+                       String description = ns.description() == null ? EMPTY_STRING : ns.description();
+                       String namedSetName =  prepare(ns.name());
+                       writer.write("NS ");
+                       writer.write(namedSetName);
+                       writer.write(" \"");
+                       writer.write(description);
+                       writer.write("\"");
+                       writer.write(ENTER);
+                   }
+                   for (MappingCalculatedMember cm : cube.calculatedMembers()) {
+                       String description = cm.description() == null ? EMPTY_STRING : cm.description();
+                       String calculatedMemberName =  prepare(cm.name());
+                       writer.write("CM ");
+                       writer.write(calculatedMemberName);
+                       writer.write(" \"");
+                       writer.write(description);
+                       writer.write("\"");
+                       writer.write(ENTER);
+                   }
+                   for (MappingKpi cm : cube.kpis()) {
+                       String description = cm.description() == null ? EMPTY_STRING : cm.description();
+                       String kpiName =  prepare(cm.name());
+                       writer.write("KPI ");
+                       writer.write(kpiName);
+                       writer.write(" \"");
+                       writer.write(description);
+                       writer.write("\"");
+                       writer.write(ENTER);
+                   }
+                   writer.write("}");
+                   writer.write(ENTER);
 
-                writeDimensionPartDiagram(writer, schema, cube, index);
+                   writeDimensionPartDiagram(writer, schema, cube, index);
 
-                for (String c : connections) {
-                    writer.write(c);
-                    writer.write(ENTER);
-                }
-                writer.write(STR. """
-                    ```
-                    ---
-                    """);
+                   for (String c : connections) {
+                       writer.write(c);
+                       writer.write(ENTER);
+                   }
+                   writer.write("```");
+                   writer.write(ENTER);
+                   writer.write("---");
+                   writer.write(ENTER);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -766,11 +811,15 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             List<String> connections = virtualCubeDimensionConnections(schema, virtualCube, index);
             if (virtualCube.name() != null) {
-                String tableName = STR. "c\{index}[\"\{virtualCube.name()}\"]";
+                String tableName = new StringBuilder("c").append(index).append("[\"")
+                    .append(virtualCube.name()).append("\"]").toString();
                 String cubeName = virtualCube.name();
-                writer.write(STR. """
-                    ### Virtual Cube \"\{cubeName}\" diagram:
-
+                writer.write("### Virtual Cube \"");
+                writer.write(cubeName);
+                writer.write("\" diagram:");
+                writer.write(ENTER);
+                writer.write(ENTER);
+                writer.write("""
                     ---
 
                     ```mermaid
@@ -786,38 +835,63 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     ]
                     }}%%
                     erDiagram
-                    \{tableName}{
                     """);
+
+                writer.write(tableName);
+                writer.write("{");
+                writer.write(ENTER);
                 for (MappingVirtualCubeMeasure m : virtualCube.virtualCubeMeasures()) {
                     String description = EMPTY_STRING;
                     String cube = m.cubeName() != null ? m.cubeName() : EMPTY_STRING;
                     String measureName = prepare(m.name());
-                    writer.write(STR."M \{cube}_\{measureName} \"\{description}\"");
+                    writer.write("M ");
+                    writer.write(cube);
+                    writer.write("_");
+                    writer.write(measureName);
+                    writer.write(" \"");
+                    writer.write(description);
+                    writer.write("\"");
                     writer.write(ENTER);
                 }
                 for (MappingCubeDimension d : virtualCube.virtualCubeDimensions()) {
                     String description = d.description() == null ? EMPTY_STRING : d.description();
                     String dimensionName =  prepare(d.name());
-                    writer.write(STR."D \{dimensionName} \"\{description}\"");
+                    writer.write("D ");
+                    writer.write(dimensionName);
+                    writer.write(" \"");
+                    writer.write(description);
+                    writer.write("\"");
                     writer.write(ENTER);
                 }
                 for (MappingNamedSet ns : virtualCube.namedSets()) {
                     String description = ns.description() == null ? EMPTY_STRING : ns.description();
                     String namedSetName =  prepare(ns.name());
-                    writer.write(STR."NS \{namedSetName} \"\{description}\"");
+                    writer.write("NS ");
+                    writer.write(namedSetName);
+                    writer.write("\"");
+                    writer.write(description);
+                    writer.write("\"");
                     writer.write(ENTER);
                 }
                 for (MappingCalculatedMember cm : virtualCube.calculatedMembers()) {
                     String description = cm.description() == null ? EMPTY_STRING : cm.description();
                     String calculatedMemberName =  prepare(cm.name());
-                    writer.write(STR."CM \{calculatedMemberName} \"\{description}\"");
+                    writer.write("CM ");
+                    writer.write(calculatedMemberName);
+                    writer.write(" \"");
+                    writer.write(description);
+                    writer.write("\"");
                     writer.write(ENTER);
                 }
                 if (virtualCube.kpis() != null) {
                 	for (MappingKpi kpi : virtualCube.kpis()) {
                 		String description = kpi.description() == null ? EMPTY_STRING : kpi.description();
                 		String kpiName =  prepare(kpi.name());
-                		writer.write(STR."KPI \{kpiName} \"\{description}\"");
+                		writer.write("KPI ");
+                        writer.write(kpiName);
+                        writer.write(" \"");
+                        writer.write(description);
+                        writer.write("\"");
                 		writer.write(ENTER);
                 	}
                 }
@@ -830,7 +904,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(c);
                     writer.write(ENTER);
                 }
-                writer.write(STR. """
+                writer.write("""
                     ```
                     ---
                     """);
@@ -905,12 +979,22 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         int dimensionIndex
     ) {
         try {
-            writer.write(STR."d\{cubeIndex}\{dimensionIndex}[\"\{pd.name()}\"] {");
+        	String name = pd.name() != null ? pd.name() : "";
+            writer.write("d");
+            writer.write("" + cubeIndex);
+            writer.write("" + dimensionIndex);
+            writer.write("[\"");
+            writer.write(name);
+            writer.write("\"] {");
             writer.write(ENTER);
             for (MappingHierarchy h : pd.hierarchies()) {
                 String description = h.description() == null ? EMPTY_STRING : h.description();
                 String hierarchyName = prepare(h.name());
-                writer.write(STR."H \{hierarchyName} \"\{description}\"");
+                writer.write("H ");
+                writer.write(hierarchyName);
+                writer.write(" \"");
+                writer.write(description);
+                writer.write("\"");
                 writer.write(ENTER);
             }
             writer.write("}");
@@ -918,12 +1002,22 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             int hIndex = 0;
             for (MappingHierarchy h : pd.hierarchies()) {
                 String hierarchyName = prepare(h.name());
-                writer.write(STR."h\{cubeIndex}\{dimensionIndex}\{hIndex}[\"\{hierarchyName}\"] {");
+                writer.write("h");
+                writer.write("" + cubeIndex);
+                writer.write("" + dimensionIndex);
+                writer.write("" + hIndex);
+                writer.write("[\"");
+                writer.write(hierarchyName);
+                writer.write("\"] {");
                 writer.write(ENTER);
                 for (MappingLevel l : h.levels()) {
                     String description = l.description() == null ? EMPTY_STRING : l.description();
                     String levelNmae = prepare(l.name());
-                    writer.write(STR."L \{levelNmae} \"\{description}\"");
+                    writer.write("L ");
+                    writer.write(levelNmae);
+                    writer.write(" \"");
+                    writer.write(description);
+                    writer.write("\"");
                     writer.write(ENTER);
                 }
                 writer.write("}");
@@ -940,6 +1034,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             if (!dimensionUsageOrDimensions.isEmpty()) {
                 writer.write("##### Dimensions:");
                 writer.write(ENTER);
+                writer.write("");
                 writeList(writer, dimensionUsageOrDimensions, this::writeCubeDimension);
             }
         } catch (IOException e) {
@@ -958,12 +1053,15 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writeDimensionUsage(FileWriter writer, MappingDimensionUsage du) {
         try {
-            String name = du.name();
+            String name = du.name() != null ? du.name() : "";
             String source = du.source();
-            writer.write(STR. """
-                ##### Dimension: "\{name} -> \{source}":
-
-                """);
+            writer.write("##### Dimension: \"");
+            writer.write(name);
+            writer.write(" -> ");
+            writer.write(source);
+            writer.write("\":");
+            writer.write(ENTER);
+            writer.write(ENTER);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -971,20 +1069,24 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private void writePublicDimension(FileWriter writer, MappingPrivateDimension d) {
         try {
-            String dimension = d.name();
-            String description = d.description();
+            String dimension = d.name() != null ? d.name() : "";
+            String description = d.description() != null ? d.description() : "";
             AtomicInteger index = new AtomicInteger();
             String hierarchies = d.hierarchies().stream().map(h -> h.name() == null ?
                 "Hierarchy" + index.getAndIncrement() : h.name())
                 .collect(Collectors.joining(", "));
-            writer.write(STR. """
-                ##### Dimension "\{dimension}":
-
-                Hierarchies:
-
-                    \{hierarchies}
-
-                """);
+            writer.write("##### Dimension \"");
+            writer.write(dimension);
+            writer.write("\":");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("Hierarchies:");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("    ");
+            writer.write(hierarchies);
+            writer.write(ENTER);
+            writer.write(ENTER);
             writeHierarchies(writer, d.hierarchies());
         } catch (IOException e) {
             e.printStackTrace();
@@ -1004,14 +1106,21 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             String tables = getTable(h.relation());
             String levels = h.levels() != null ? h.levels().stream().map(l -> l.name())
                 .collect(Collectors.joining(", ")) : EMPTY_STRING;
-            writer.write(STR. """
-                ##### Hierarchy \{name}:
-
-                Tables: "\{tables}"
-
-                Levels: "\{levels}"
-
-                """);
+            writer.write("##### Hierarchy ");
+            writer.write(name);
+            writer.write(":");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("Tables: \"");
+            writer.write(tables);
+            writer.write("\"");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("Levels: \"");
+            writer.write(levels);
+            writer.write("\"");
+            writer.write(ENTER);
+            writer.write(ENTER);
             writeList(writer, h.levels(), this::writeLevel);
         } catch (IOException e) {
             e.printStackTrace();
@@ -1023,12 +1132,17 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             String name = level.name();
             String description = level.description();
             String columns = level.column();
-            writer.write(STR. """
-                ###### Level "\{name}" :
-
-                    column(s): \{columns}
-
-                """);
+            writer.write("###### Level \"");
+            writer.write(name);
+            writer.write("\" :");
+            writer.write(ENTER);
+            writer.write(ENTER);
+            writer.write("    column(s): ");
+            if (columns != null) {
+            	writer.write(columns);
+            }
+            writer.write(ENTER);
+            writer.write(ENTER);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1158,7 +1272,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             if (tables != null && !tables.isEmpty()) {
                 writer.write("### Database :");
                 writer.write(ENTER);
-                writer.write(STR. """
+                writer.write("""
                     ---
                     ```mermaid
                     ---
@@ -1177,7 +1291,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                     writer.write(c);
                     writer.write(ENTER);
                 }
-                writer.write(STR. """
+                writer.write("""
                     ```
                     ---
                     """);
@@ -1192,17 +1306,23 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             List<Column> columnList = table.columns();
             String name = table.tableName();
             String tableFlag = NEGATIVE_FLAG;
-            writer.write(STR. """
-                "\{name}\{tableFlag}"{
-                """);
+            writer.write("\"");
+            writer.write(name);
+            writer.write(tableFlag);
+            writer.write("\"{");
+            writer.write(ENTER);
             if (columnList != null) {
                 for (Column c : columnList) {
                     String columnName = c.name();
                     String type = c.type().getType().value;
                     String flag = NEGATIVE_FLAG;
-                    writer.write(STR. """
-                        \{type} \{columnName} "\{flag}"
-                        """);
+                    writer.write(type);
+                    writer.write(" ");
+                    writer.write(columnName);
+                    writer.write(" \"");
+                    writer.write(flag);
+                    writer.write("\"");
+                    writer.write(ENTER);
                 }
             }
             writer.write("}");
@@ -1223,24 +1343,36 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 missedTableNames.add(name);
             }
             if (columnList != null) {
-                writer.write(STR. """
-                    "\{name}\{tableFlag}"{
-                    """);
+                writer.write("\"");
+                writer.write(name);
+                writer.write(tableFlag);
+                writer.write("\"{");
+                writer.write(ENTER);
                 for (ColumnDefinition c : columnList) {
                     String columnName = c.column().name();
                     String type = TYPE_MAP.get(c.columnType().dataType().getVendorTypeNumber());
                     String flag = POSITIVE_FLAG;
-                    writer.write(STR. """
-                        \{type} \{columnName} "\{flag}"
-                        """);
+                    if (type != null) {
+                    	writer.write(type);
+                    }
+                    writer.write(" ");
+                    writer.write(columnName);
+                    writer.write(" \"");
+                    writer.write(flag);
+                    writer.write("\"");
+                    writer.write(ENTER);
                 }
                 for (Column c : missedColumns) {
                     String columnName = c.name();
                     String type = c.type().getType().value;
                     String flag = NEGATIVE_FLAG;
-                    writer.write(STR. """
-                        \{type} \{columnName} "\{flag}"
-                        """);
+                    writer.write(type);
+                    writer.write(" ");
+                    writer.write(columnName);
+                    writer.write(" \"");
+                    writer.write(flag);
+                    writer.write("\"");
+                    writer.write(ENTER);
                 }
                 writer.write("}");
                 writer.write(ENTER);

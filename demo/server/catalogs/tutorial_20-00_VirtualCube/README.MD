@@ -1,12 +1,12 @@
 # Documentation
 ### CatalogName : tutorial_20-00_VirtualCube
-### Schema Cube_with_virtual_cube :
+### Schema Cube_with_virtual_cube : 
 
-
+    
 		A basic OLAP schema with virtual cube which have reference to Cube1, Cube2
 
-
-
+		
+  
 ### Public Dimensions:
 
     Dimension1
@@ -35,7 +35,7 @@ Levels: "Level2"
 ---
 #### Cube "Cube1":
 
-
+    
 
 ##### Table: "Fact"
 
@@ -45,7 +45,7 @@ Levels: "Level2"
 ---
 #### Cube "Cube2":
 
-
+    
 
 ##### Table: "Fact"
 
@@ -185,7 +185,7 @@ int VALUE "✔"
 ```
 ---
 ## Validation result for schema Cube_with_virtual_cube
-## <span style='color: blue;'>WARNING</span> :
+## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|
 |DATABASE|Table: Schema must be set|

@@ -14,7 +14,7 @@
 ##### Table: "Fact"
 
 ##### Dimensions:
-##### Dimension "null":
+##### Dimension "":
 
 Hierarchies:
 
@@ -51,7 +51,7 @@ c0["Cube"]{
 M Measure ""
 D _ ""
 }
-d00["null"] {
+d00[""] {
 H HierarchyWithHasAll ""
 }
 h000["HierarchyWithHasAll"] {

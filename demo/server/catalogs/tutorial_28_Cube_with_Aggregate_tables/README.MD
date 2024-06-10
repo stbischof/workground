@@ -137,17 +137,17 @@ title: Diagram;
 erDiagram
 "AGG_C_14_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-null STORE_COST "✔"
+double STORE_COST "✔"
 int FACT_COUNT "✔"
 }
 "AGG_C_SPECIAL_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-null STORE_COST_SUM "✔"
+double STORE_COST_SUM "✔"
 int FACT_COUNT "✔"
 }
 "AGG_LC_100_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-null STORE_COST "✔"
+double STORE_COST "✔"
 int FACT_COUNT "✔"
 }
 "PRODUCT✔"{
@@ -165,11 +165,11 @@ string PRODUCT_FAMILE "✔"
 }
 "SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-null STORE_COST "✔"
+double STORE_COST "✔"
 }
 "aGG_PL_01_SALES_FACT_1997✔"{
 int PRODUCT_ID "✔"
-null STORE_COST_SUM "✔"
+double STORE_COST_SUM "✔"
 int FACT_COUNT "✔"
 }
 
