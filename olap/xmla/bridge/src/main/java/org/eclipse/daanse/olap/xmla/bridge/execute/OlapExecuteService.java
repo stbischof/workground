@@ -19,7 +19,7 @@ import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.mdx.model.api.select.Allocation;
-import org.eclipse.daanse.olap.action.api.UrlAction;
+import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Command;
 import org.eclipse.daanse.olap.api.Connection;
@@ -177,11 +177,11 @@ public class OlapExecuteService implements ExecuteService {
     private final OtherDiscoverService otherDiscoverService;
     private final WriteBackService writeBackService;
 
-    public OlapExecuteService(ContextListSupplyer contextsListSupplyer, List<UrlAction> urlAction, ContextGroupXmlaServiceConfig config) {
+    public OlapExecuteService(ContextListSupplyer contextsListSupplyer, ActionService actionService, ContextGroupXmlaServiceConfig config) {
         this.contextsListSupplyer = contextsListSupplyer;
         this.config = config;
         dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
-        mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer, urlAction);
+        mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer, actionService);
         otherDiscoverService = new OtherDiscoverService(contextsListSupplyer, config);
         writeBackService = new WriteBackService();
     }

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.DrillThroughAction;
@@ -52,9 +51,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
-import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
-import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CustomRollupSettingEnum;
@@ -63,7 +60,6 @@ import org.eclipse.daanse.xmla.api.common.enums.DimensionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.DimensionUniqueSettingEnum;
 import org.eclipse.daanse.xmla.api.common.enums.HierarchyOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.InterfaceNameEnum;
-import org.eclipse.daanse.xmla.api.common.enums.InvocationEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelOriginEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelTypeEnum;
@@ -85,7 +81,6 @@ import org.eclipse.daanse.xmla.api.discover.dbschema.schemata.DbSchemaSchemataRe
 import org.eclipse.daanse.xmla.api.discover.dbschema.sourcetables.DbSchemaSourceTablesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.dbschema.tables.DbSchemaTablesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.dbschema.tablesinfo.DbSchemaTablesInfoResponseRow;
-import org.eclipse.daanse.xmla.api.discover.mdschema.actions.MdSchemaActionsResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.cubes.MdSchemaCubesResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.demensions.MdSchemaDimensionsResponseRow;
 import org.eclipse.daanse.xmla.api.discover.mdschema.functions.MdSchemaFunctionsResponseRow;
@@ -103,7 +98,6 @@ import org.eclipse.daanse.xmla.model.record.discover.dbschema.schemata.DbSchemaS
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.sourcetables.DbSchemaSourceTablesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.tables.DbSchemaTablesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.tablesinfo.DbSchemaTablesInfoResponseRowR;
-import org.eclipse.daanse.xmla.model.record.discover.mdschema.actions.MdSchemaActionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.cubes.MdSchemaCubesResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.demensions.MdSchemaDimensionsResponseRowR;
 import org.eclipse.daanse.xmla.model.record.discover.mdschema.functions.MdSchemaFunctionsResponseRowR;
@@ -125,10 +119,6 @@ import mondrian.olap.Util;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapStoredMeasure;
 import mondrian.xmla.VarType;
-
-import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.getCoordinateElements;
-import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.getDrillThroughQuery;
-import static org.eclipse.daanse.olap.xmla.bridge.discover.DrillThroughUtils.isDrillThroughElementsExist;
 
 public class Utils {
 
@@ -888,121 +878,6 @@ public class Utils {
             MappingSchema schema = dsp.get();
             return getMdSchemaKpisResponseRow(context.getName(), schema, oCubeName, oKpiName);
         }).flatMap(Collection::stream).toList();
-    }
-
-    static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
-        Context context,
-        Optional<String> oSchemaName,
-        String cubeName,
-        Optional<String> oActionName,
-        Optional<ActionTypeEnum> oActionType,
-        Optional<String> oCoordinate,
-        CoordinateTypeEnum coordinateType,
-        InvocationEnum invocation,
-        Optional<CubeSourceEnum> oCubeSource
-    ) {
-        List<Schema> schemas = context.getConnection().getSchemas();
-        if (schemas != null) {
-            return getSchemasWithFilter(schemas, oSchemaName).stream()
-                .map(schema -> getMdSchemaActionsResponseRow(context.getName(), schema, cubeName, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource)
-                ).flatMap(Collection::stream).toList();
-        }
-        return List.of();
-    }
-
-
-
-    private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
-        String catalogName,
-        Schema schema,
-        String cubeName,
-        Optional<String> oActionName,
-        Optional<ActionTypeEnum> oActionType,
-        Optional<String> oCoordinate,
-        CoordinateTypeEnum coordinateType,
-        InvocationEnum invocation,
-        Optional<CubeSourceEnum> oCubeSource
-    ) {
-        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        List<Cube> cubes = schema.getCubes() == null ? List.of() : Arrays.asList(schema.getCubes());
-        result.addAll(getCubesWithFilter(cubes, cubeName).stream()
-            .map(c -> getMdSchemaActionsResponseRow(catalogName, schema.getName(), c, oActionName, oActionType, oCoordinate, coordinateType, invocation, oCubeSource))
-            .flatMap(Collection::stream)
-            .toList());
-
-        return result;
-    }
-
-    private static List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
-        String catalogName,
-        String schemaName,
-        Cube cube,
-        Optional<String> oActionName,
-        Optional<ActionTypeEnum> oActionType,
-        Optional<String> oCoordinate,
-        CoordinateTypeEnum coordinateType,
-        InvocationEnum invocation,
-        Optional<CubeSourceEnum> oCubeSource
-    ) {
-        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        if (cube.getDrillThroughActions() != null && coordinateType.equals(CoordinateTypeEnum.CELL)) {
-            result.addAll(getMappingDrillThroughActionWithFilter(cube.getDrillThroughActions(), oActionName).stream()
-                .map(da -> getMdSchemaDrillThroughActionsResponseRow(catalogName, schemaName, cube, da, oCoordinate))
-                .flatMap(Collection::stream)
-                .toList());
-
-        }
-        return result;
-    }
-
-    public static List<MdSchemaActionsResponseRow> getMdSchemaUrlActionsResponseRow(Optional<String> coordinate, List<UrlAction> urlActions) {
-        //TODO add filter for URLs
-        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        for (UrlAction urlAction : urlActions) {
-            result.add(new MdSchemaActionsResponseRowR(
-                urlAction.catalogName(),
-                urlAction.schemaName(),
-                urlAction.cubeName(),
-                urlAction.actionName(),
-                Optional.of(ActionTypeEnum.URL),
-                coordinate.orElse(null),
-                urlAction.coordinateType(),
-                urlAction.actionCaption(),
-                urlAction.description(),
-                Optional.ofNullable(urlAction.url()),
-                Optional.empty(),
-                Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
-            ));
-        }
-        return result;
-    }
-
-
-    private static List<MdSchemaActionsResponseRow> getMdSchemaDrillThroughActionsResponseRow(
-        String catalogName, String schemaName,
-        Cube cube, DrillThroughAction da, Optional<String> oCoordinate) {
-        List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        if (oCoordinate != null && oCoordinate.isPresent()) {
-            List<String> coordinateElements = getCoordinateElements(oCoordinate.get());
-            String query = getDrillThroughQuery(coordinateElements, da.getOlapElements(), cube);
-            String coordinate = oCoordinate.get();
-
-            result.add(new MdSchemaActionsResponseRowR(
-                Optional.ofNullable(catalogName),
-                Optional.ofNullable(schemaName),
-                cube.getName(),
-                Optional.ofNullable(da.getName()),
-                Optional.of(ActionTypeEnum.DRILL_THROUGH),
-                coordinate,
-                CoordinateTypeEnum.CELL,
-                Optional.ofNullable(da.getCaption()),
-                Optional.ofNullable(da.getDescription()),
-                Optional.of(query),
-                Optional.empty(),
-                Optional.ofNullable(InvocationEnum.NORMAL_OPERATION)
-            ));
-        }
-        return result;
     }
 
     static List<MdSchemaSetsResponseRow> getMdSchemaSetsResponseRow(

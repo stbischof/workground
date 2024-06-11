@@ -13,12 +13,8 @@
 */
 package org.eclipse.daanse.olap.xmla.bridge;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.api.ContextGroup;
-import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DelegatingDiscoverService;
 import org.eclipse.daanse.olap.xmla.bridge.execute.OlapExecuteService;
 import org.eclipse.daanse.xmla.api.XmlaService;
@@ -29,19 +25,22 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
+
+import java.util.Map;
 
 @Component(service = XmlaService.class)
 @Designate(factory = true, ocd = ContextGroupXmlaServiceConfig.class)
 public class ContextGroupXmlaService implements XmlaService {
 
 	private static final Converter CONVERTER = Converters.standardConverter();
-    public static final String REF_NAME_URL_ACTIONS = "urlAction";
+    public static final String REF_NAME_ACTION_SERVICE = "actionService";
 	private ContextGroupXmlaServiceConfig config;
-    private List<UrlAction> urlActions = new ArrayList<>();
+
+	@Reference(name = REF_NAME_ACTION_SERVICE)
+    private ActionService actionService;
 
 	public ContextGroupXmlaService() {
 
@@ -51,8 +50,8 @@ public class ContextGroupXmlaService implements XmlaService {
 	 void activate(Map<String, Object> props) {
 		this.config = CONVERTER.convert(props).to(ContextGroupXmlaServiceConfig.class);
 		 ContextListSupplyer contextsListSupplyer = new ContextsSupplyerImpl(contextGroup);
-		 executeService = new OlapExecuteService(contextsListSupplyer, urlActions, config);
-		 discoverService = new DelegatingDiscoverService(contextsListSupplyer, urlActions, config);
+		 executeService = new OlapExecuteService(contextsListSupplyer, actionService, config);
+		 discoverService = new DelegatingDiscoverService(contextsListSupplyer, actionService, config);
 
 	}
 
@@ -73,16 +72,12 @@ public class ContextGroupXmlaService implements XmlaService {
 		this.contextGroup = contextGroup;
 	}
 
-    @Reference(name = REF_NAME_URL_ACTIONS, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    public void bindUrlAction(UrlAction action) {
-        urlActions.add(action);
-    }
+    //@Reference(cardinality = ReferenceCardinality.MANDATORY,  name = REF_NAME_ACTION_SERVICE, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
+    //void bindActionService(ActionService actionService) {
+    //    this.actionService = actionService;
+    //}
 
-    public void unbindUrlAction(UrlAction action) {
-        urlActions.remove(action);
-    }
-
-	@Override
+    @Override
 	public DiscoverService discover() {
 		return discoverService;
 	}

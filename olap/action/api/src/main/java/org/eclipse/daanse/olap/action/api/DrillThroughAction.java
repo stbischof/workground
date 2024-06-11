@@ -13,10 +13,11 @@
  */
 package org.eclipse.daanse.olap.action.api;
 
-import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
-
+import java.util.List;
 import java.util.Optional;
 
-public interface UrlAction extends XmlaAcriton {
+public interface DrillThroughAction extends XmlaAcriton {
 
+
+    Optional<List<String>> catalogs();
 }

@@ -11,7 +11,7 @@
  *   SmartCity Jena - initial
  *   Stefan Bischof (bipolis.org) - initial
  */
-package org.eclipse.daanse.olap.xmla.bridge.discover;
+package org.eclipse.daanse.olap.action.impl;
 
 import mondrian.rolap.RolapBaseCubeMeasure;
 import mondrian.rolap.RolapCubeLevel;
@@ -48,14 +48,20 @@ public class DrillThroughUtils {
 
     public static List<String> getCoordinateElements(String coordinate) {
         List<String> result = new ArrayList<>();
-        String[] r = coordinate.split(",");
-        for(String s : r) {
-            result.add(s.replace(")", "").replace("(", ""));
+        if (coordinate != null) {
+            String[] r = coordinate.split(",");
+            for (String s : r) {
+                result.add(s.replace(")", "").replace("(", ""));
+            }
         }
         return result;
     }
 
     public static String getDrillThroughQuery(List<String> coordinateElements, List<OlapElement> olapElements,  Cube c) {
+        return getDrillThroughQuery(coordinateElements, olapElements,  c.getName());
+    }
+
+    public static String getDrillThroughQueryByColumns(List<String> coordinateElements, List<String> columns,  String cubeName) {
         StringBuilder sb = new StringBuilder("DRILLTHROUGH MAXROWS 1000 SELECT ");
         if (!coordinateElements.isEmpty()) {
             sb.append("(");
@@ -70,7 +76,39 @@ public class DrillThroughUtils {
             }
             sb.append(") ON 0 ");
         }
-        sb.append("FROM ").append(c.getName());
+        sb.append("FROM ").append(cubeName);
+        boolean flag = true;
+        for (String  column : columns) {
+            if (flag) {
+                flag = false;
+                sb.append(" RETURN ");
+            } else {
+                sb.append(",");
+            }
+
+            sb.append(column);
+
+        }
+        return sb.toString();
+
+    }
+
+    public static String getDrillThroughQuery(List<String> coordinateElements, List<OlapElement> olapElements,  String cubeName) {
+        StringBuilder sb = new StringBuilder("DRILLTHROUGH MAXROWS 1000 SELECT ");
+        if (!coordinateElements.isEmpty()) {
+            sb.append("(");
+            boolean flag = true;
+            for(String element : coordinateElements) {
+                if (flag) {
+                    flag = false;
+                } else {
+                    sb.append(",");
+                }
+                sb.append(element);
+            }
+            sb.append(") ON 0 ");
+        }
+        sb.append("FROM ").append(cubeName);
         boolean flag = true;
         for (OlapElement olapElement : olapElements) {
             if (flag) {

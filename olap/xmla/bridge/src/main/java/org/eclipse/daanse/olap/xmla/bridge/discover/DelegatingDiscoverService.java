@@ -13,9 +13,7 @@
 */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
-import java.util.List;
-
-import org.eclipse.daanse.olap.action.api.UrlAction;
+import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.xmla.api.RequestMetaData;
@@ -76,6 +74,8 @@ import org.eclipse.daanse.xmla.api.discover.mdschema.properties.MdSchemaProperti
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsRequest;
 import org.eclipse.daanse.xmla.api.discover.mdschema.sets.MdSchemaSetsResponseRow;
 
+import java.util.List;
+
 /*
  * Delegates to a other class that share same kind of information.
  * Encapsulates the Logic.
@@ -86,9 +86,9 @@ public class DelegatingDiscoverService implements DiscoverService {
 	private MDSchemaDiscoverService mdSchemaService;
 	private OtherDiscoverService otherSchemaService;
 
-	public DelegatingDiscoverService(ContextListSupplyer contextsListSupplyer, List<UrlAction> urlActions, ContextGroupXmlaServiceConfig config) {
+	public DelegatingDiscoverService(ContextListSupplyer contextsListSupplyer, ActionService actionService, ContextGroupXmlaServiceConfig config) {
 		this.dbSchemaService = new DBSchemaDiscoverService(contextsListSupplyer);
-		this.mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer, urlActions);
+		this.mdSchemaService = new MDSchemaDiscoverService(contextsListSupplyer, actionService);
 		this.otherSchemaService = new OtherDiscoverService(contextsListSupplyer, config);
 	}
 

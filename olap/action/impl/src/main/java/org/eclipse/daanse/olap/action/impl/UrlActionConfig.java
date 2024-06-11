@@ -17,49 +17,9 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition()
-public interface UrlActionConfig {
+public interface UrlActionConfig extends AbstractActionConfig {
 
-    @AttributeDefinition(name = "%CATALOG_NAME", required = false)
-    default String catalogName() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%SCHEMA_NAME", required = false)
-    default String schemaName() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%CUBE_NAME", required = false)
-    default String cubeName() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_NAME", required = false)
-    default String actionName() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_CAPTION", required = false)
-    default String actionCaption() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_DESCRIPTION", required = false)
-    default String actionDescription() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_COORDINATE", required = false)
-    default String actionCoordinate() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_COORDINATE_TYPE", required = false)
-    default String actionCoordinateType() {
-        return null;
-    }
-
-    @AttributeDefinition(name = "%ACTION_URL", required = true)
+    @AttributeDefinition(name = "%ACTION_URL")
     default String actionUrl() {
         return null;
     }

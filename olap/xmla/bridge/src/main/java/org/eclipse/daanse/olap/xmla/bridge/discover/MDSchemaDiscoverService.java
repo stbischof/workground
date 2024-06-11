@@ -13,7 +13,7 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
-import org.eclipse.daanse.olap.action.api.UrlAction;
+import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
@@ -60,7 +60,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaActionsResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaCubesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaDimensionsResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaFunctionsResponseRow;
@@ -74,16 +73,15 @@ import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaMemb
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaPropertiesResponseRow;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaPropertiesResponseRowCell;
 import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaSetsResponseRow;
-import static org.eclipse.daanse.olap.xmla.bridge.discover.Utils.getMdSchemaUrlActionsResponseRow;
 
 public class MDSchemaDiscoverService {
 
     private ContextListSupplyer contextsListSupplyer;
-    private List<UrlAction> urlActions;
+    private ActionService actionService;
 
-    public MDSchemaDiscoverService(ContextListSupplyer contextsListSupplyer, List<UrlAction> urlActions) {
+    public MDSchemaDiscoverService(ContextListSupplyer contextsListSupplyer, ActionService actionService) {
         this.contextsListSupplyer = contextsListSupplyer;
-        this.urlActions = urlActions;
+        this.actionService = actionService;
     }
 
     public List<MdSchemaActionsResponseRow> mdSchemaActions(MdSchemaActionsRequest request) {
@@ -102,7 +100,7 @@ public class MDSchemaDiscoverService {
         String catalogName = null;
 
         if (oCatalogName.isPresent()) {
-
+            catalogName = oCatalogName.get();
         } else {
             oCatalogName = request.properties().catalog();
             if (oCatalogName.isPresent()) {
@@ -113,15 +111,24 @@ public class MDSchemaDiscoverService {
             Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(catalogName);
             if (oContext.isPresent()) {
                 Context context = oContext.get();
-                result.addAll(getMdSchemaActionsResponseRow(context, schemaName, cubeName, actionName, actionType, coordinate, coordinateType, invocation, cubeSource));
+                result.addAll(actionService.getResponses(List.of(context), schemaName,
+                    cubeName,
+                    actionName,
+                    actionType,
+                    coordinate,
+                    coordinateType,
+                    invocation,
+                    cubeSource));
             }
         } else {
-            result.addAll(contextsListSupplyer.get().stream().map(c ->
-                getMdSchemaActionsResponseRow(c, schemaName, cubeName, actionName, actionType, coordinate, coordinateType, invocation, cubeSource)
-            ).flatMap(Collection::stream).toList());
-        }
-        if (CoordinateTypeEnum.CELL.equals(coordinateType)) {
-            result.addAll(getMdSchemaUrlActionsResponseRow(coordinate, urlActions));
+            result.addAll(actionService.getResponses(contextsListSupplyer.get(), schemaName,
+                cubeName,
+                actionName,
+                actionType,
+                coordinate,
+                coordinateType,
+                invocation,
+                cubeSource));
         }
         return result;
     }

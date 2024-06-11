@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
 import org.eclipse.daanse.olap.api.Context;
@@ -43,6 +44,8 @@ public class DemoSetup {
     public static final String PID_DESCRIPTION_DOC = "org.eclipse.daanse.olap.documentation.common.MarkdownDocumentationProvider";
 
     public static final String PID_URL_ACTION = "org.eclipse.daanse.olap.action.impl.UrlActionImpl";
+
+    public static final String PID_DRILL_THROUGH_ACTION = "org.eclipse.daanse.olap.action.impl.DrillThroughActionImpl";
 
 	public static final String PID_MS_SOAP = "org.eclipse.daanse.xmla.server.jakarta.jws.MsXmlAnalysisSoap";
 
@@ -82,6 +85,10 @@ public class DemoSetup {
 
     private Configuration cDoc;
 
+    private Configuration cUrlAction;
+
+    private Configuration cDrThAction;
+
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     public void bindContext(Context context) {
 
@@ -110,6 +117,8 @@ public class DemoSetup {
         initDocumentation();
 
         initUrlAction();
+
+        initDrillThroughAction();
 	}
 
 	private void runTest(Context context) {
@@ -205,18 +214,35 @@ public class DemoSetup {
         props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
         props.put("schemaName", "Actions");
         props.put("cubeName", "Actions");
-        props.put("actionName", "testActions");
-        props.put("actionCaption", "testActions");
-        props.put("actionDescription", "testActionsDescription");
+        props.put("actionName", "urlActions");
+        props.put("actionCaption", "urlActions");
+        props.put("actionDescription", "urlActionsDescription");
         props.put("actionCoordinate", "");
         props.put("actionCoordinateType", "CELL");
         props.put("actionUrl", "https://google.com");
 
-        cDoc = configurationAdmin.getFactoryConfiguration(PID_URL_ACTION, "1", "?");
-        cDoc.update(props);
+        cUrlAction = configurationAdmin.getFactoryConfiguration(PID_URL_ACTION, "1", "?");
+        cUrlAction.update(props);
     }
 
-	private void initXmlaService() throws IOException {
+    private void initDrillThroughAction() throws IOException {
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put("drillThroughAction" + TARGET_EXT, "(service.pid=*)");
+        props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
+        props.put("schemaName", "Actions");
+        props.put("cubeName", "CubeActions");
+        props.put("actionName", "drillThroughActions");
+        props.put("actionCaption", "drillThroughActions");
+        props.put("actionDescription", "drillThroughActionsDescription");
+        props.put("actionCoordinate", "");
+        props.put("actionCoordinateType", "CELL");
+        props.put("columns", List.of("[Dimension1.Hierarchy1].[H1_Level1]","[Dimension1.Hierarchy1].[H1_Level1]","[Dimension1.Hierarchy2].[H2_Level1]","[Dimension1.Hierarchy1].[H1_Level2]","[Measures].[Measure1]"));
+
+        cDrThAction = configurationAdmin.getFactoryConfiguration(PID_DRILL_THROUGH_ACTION, "1", "?");
+        cDrThAction.update(props);
+    }
+
+    private void initXmlaService() throws IOException {
 		Dictionary<String, Object> dict;
 		contextGroupXmlaService = configurationAdmin.getFactoryConfiguration(PID_XMLA_SERVICE, "1", "?");
 		dict = new Hashtable<>();

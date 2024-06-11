@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ContextGroup;
@@ -195,6 +196,9 @@ class MDSchemaDiscoverServiceTest {
 
     private ContextsSupplyerImpl cls;
 
+    @Mock
+    private ActionService actionService;
+
     @BeforeEach
     void setup() {
         /*
@@ -203,7 +207,8 @@ class MDSchemaDiscoverServiceTest {
          */
 
         cls = Mockito.spy(new ContextsSupplyerImpl(contextGroup));
-        service = new MDSchemaDiscoverService(cls, List.of());
+
+        service = new MDSchemaDiscoverService(cls, actionService);
     }
 
     @Test

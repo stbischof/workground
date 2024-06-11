@@ -1,19 +1,6 @@
-/*
- * Copyright (c) 2022 Contributors to the Eclipse Foundation.
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *   SmartCity Jena - initial
- *   Stefan Bischof (bipolis.org) - initial
- */
 package org.eclipse.daanse.olap.action.impl;
 
-import org.eclipse.daanse.olap.action.api.UrlAction;
+import org.eclipse.daanse.olap.action.api.DrillThroughAction;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 import org.osgi.service.component.annotations.Activate;
@@ -22,19 +9,22 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Component(service = UrlAction.class)
-@Designate(factory = true, ocd = UrlActionConfig.class)
-public class UrlActionImpl implements UrlAction {
+import static org.eclipse.daanse.olap.action.impl.DrillThroughUtils.getCoordinateElements;
+
+@Component(service = DrillThroughAction.class)
+@Designate(factory = true, ocd = DrillThroughActionConfig.class)
+public class DrillThroughActionImpl implements DrillThroughAction {
 
     private static final Converter CONVERTER = Converters.standardConverter();
-    private UrlActionConfig config;
+    private DrillThroughActionConfig config;
 
     @Activate
     void activate(Map<String, Object> props) {
-        this.config = CONVERTER.convert(props).to(UrlActionConfig.class);
+        this.config = CONVERTER.convert(props).to(DrillThroughActionConfig.class);
     }
 
     @Override
@@ -78,13 +68,18 @@ public class UrlActionImpl implements UrlAction {
     }
 
     @Override
-    public ActionTypeEnum actionType() {
-        return ActionTypeEnum.URL;
+    public String content(String coordinate, String cubeName) {
+        List<String> coordinateElements = getCoordinateElements(coordinate);
+        return DrillThroughUtils.getDrillThroughQueryByColumns(coordinateElements, catalogs().orElse(List.of()), cubeName);
     }
 
     @Override
-    public String content(String coordinate, String cubeName) {
-        return config.actionUrl();
+    public ActionTypeEnum actionType() {
+        return ActionTypeEnum.DRILL_THROUGH;
     }
 
+    @Override
+    public Optional<List<String>> catalogs() {
+        return Optional.ofNullable(config.columns());
+    }
 }
