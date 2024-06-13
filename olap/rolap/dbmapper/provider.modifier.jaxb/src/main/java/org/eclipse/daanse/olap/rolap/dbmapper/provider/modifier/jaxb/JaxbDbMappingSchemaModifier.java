@@ -795,12 +795,13 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     @Override
     protected MappingDrillThroughElement new_DrillThroughAttribute(
         String dimension, String level,
-        String hierarchy
+        String hierarchy, String property
     ) {
         DrillThroughAttributeImpl drillThroughAttribute = new DrillThroughAttributeImpl();
         drillThroughAttribute.setDimension(dimension);
         drillThroughAttribute.setLevel(level);
         drillThroughAttribute.setHierarchy(hierarchy);
+        drillThroughAttribute.setProperty(property);
         return drillThroughAttribute;
     }
 

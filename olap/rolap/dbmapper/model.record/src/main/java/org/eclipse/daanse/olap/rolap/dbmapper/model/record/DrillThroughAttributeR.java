@@ -17,7 +17,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttri
 
 public record DrillThroughAttributeR(String dimension,
                                      String level,
-                                     String hierarchy)
+                                     String hierarchy,
+                                     String property)
         implements MappingDrillThroughAttribute {
 
 }

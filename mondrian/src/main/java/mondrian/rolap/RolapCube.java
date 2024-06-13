@@ -456,6 +456,7 @@ public class RolapCube extends CubeBase {
                         Dimension dimension = null;
                         Hierarchy hierarchy = null;
                         Level level = null;
+                        RolapProperty property = null;
                         for(Dimension currntDimension: this.getDimensions()) {
                             if(currntDimension.getName().equals(mappingDrillThroughAttribute.dimension())) {
                                 dimension = currntDimension;
@@ -495,6 +496,16 @@ public class RolapCube extends CubeBase {
                                                     new StringBuilder("Error while creating DrillThrough  action. Level '")
                                                         .append(mappingDrillThroughAttribute.level())
                                                         .append("' not found").toString());
+                                        } else {
+                                            if(mappingDrillThroughAttribute.property() != null && !mappingDrillThroughAttribute.property().equals("")) {
+                                                for(Property currentProperty: level.getProperties()) {
+                                                    if(currentProperty instanceof RolapProperty rolapProperty
+                                                        &&  currentProperty.getName().equals(mappingDrillThroughAttribute.property())) {
+                                                        property = rolapProperty;
+                                                        break;
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
 
@@ -506,7 +517,7 @@ public class RolapCube extends CubeBase {
                                 new RolapDrillThroughAttribute(
                                         dimension,
                                         hierarchy,
-                                        level
+                                        level, property
                                 )
                         );
 

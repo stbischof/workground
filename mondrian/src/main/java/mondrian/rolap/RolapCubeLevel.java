@@ -159,7 +159,8 @@ public class RolapCubeLevel extends RolapLevel {
                     old.getCaption(),
                     old.dependsOnLevelValue(),
                     old.isInternal(),
-                    old.getDescription());
+                    old.getDescription(),
+                    old.getLevel());
         }
         return convertedProperties;
     }

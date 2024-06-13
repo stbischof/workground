@@ -31,6 +31,8 @@ public class DrillThroughAttributeImpl implements MappingDrillThroughAttribute {
     protected String hierarchy;
     @XmlAttribute(name = "level")
     protected String level;
+    @XmlAttribute(name = "property")
+    protected String property;
 
     @Override
     public String dimension() {
@@ -57,6 +59,15 @@ public class DrillThroughAttributeImpl implements MappingDrillThroughAttribute {
 
     public void setLevel(String value) {
         this.level = value;
+    }
+
+    @Override
+    public String property() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
     }
 
 }

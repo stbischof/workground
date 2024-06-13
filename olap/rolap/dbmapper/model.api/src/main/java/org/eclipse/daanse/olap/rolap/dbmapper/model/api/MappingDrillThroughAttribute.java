@@ -21,4 +21,5 @@ public non-sealed interface MappingDrillThroughAttribute extends MappingDrillThr
 
     String level();
 
+    String property();
 }

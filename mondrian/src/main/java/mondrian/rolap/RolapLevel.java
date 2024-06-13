@@ -381,6 +381,7 @@ public class RolapLevel extends LevelBase {
             mappingLevel.approxRowCount(),
             RolapHierarchy.createMetadataMap(mappingLevel.annotations()));
 
+        setLevelInProperties();
         if (!Util.isEmpty(mappingLevel.caption())) {
             setCaption(mappingLevel.caption());
         }
@@ -395,6 +396,15 @@ public class RolapLevel extends LevelBase {
                 .createRolapMemberFormatter(memberFormatterContext);
     }
 
+    private void setLevelInProperties() {
+        RolapProperty[] properties = getProperties();
+        if (properties != null) {
+            for (RolapProperty property : properties) {
+                property.setLevel(this);
+            }
+        }
+    }
+
     // helper for constructor
     private static RolapProperty[] createProperties(MappingLevel xmlLevel)
     {
@@ -406,7 +416,7 @@ public class RolapLevel extends LevelBase {
                 new RolapProperty(
                     Property.NAME_PROPERTY.name, Property.Datatype.TYPE_STRING,
                     nameExp, null, null, null, true,
-                    Property.NAME_PROPERTY.description));
+                    Property.NAME_PROPERTY.description, null));
         }
         for (int i = 0; i < xmlLevel.properties().size(); i++) {
             MappingProperty xmlProperty = xmlLevel.properties().get(i);
@@ -429,7 +439,7 @@ public class RolapLevel extends LevelBase {
                     xmlProperty.caption(),
                     xmlLevel.properties().get(i).dependsOnLevelValue(),
                     false,
-                    xmlProperty.description()));
+                    xmlProperty.description(), null));
         }
         return list.toArray(new RolapProperty[list.size()]);
     }
@@ -610,6 +620,18 @@ public class RolapLevel extends LevelBase {
             return getHierarchy().getMemberReader().getMemberByKey(
                 this, keyValues);
         }
+
+        if (name instanceof NameSegment nameSegment) {
+            RolapProperty[] properties = getProperties();
+            if (properties != null) {
+                for (RolapProperty property : properties) {
+                    if (nameSegment.getName().equals(property.getName())) {
+                        return property;
+                    }
+                }
+            }
+        }
+
         List<Member> levelMembers = schemaReader.getLevelMembers(this, true);
         if (levelMembers.size() > 0) {
             Member parent = levelMembers.get(0).getParentMember();

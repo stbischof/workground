@@ -16,6 +16,7 @@ package org.eclipse.daanse.olap.action.impl;
 import mondrian.rolap.RolapBaseCubeMeasure;
 import mondrian.rolap.RolapCubeLevel;
 import mondrian.rolap.RolapCubeMember;
+import mondrian.rolap.RolapProperty;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
@@ -111,17 +112,16 @@ public class DrillThroughUtils {
         sb.append("FROM ").append(cubeName);
         boolean flag = true;
         for (OlapElement olapElement : olapElements) {
-            if (flag) {
-                flag = false;
-                sb.append(" RETURN ");
-            } else {
-                sb.append(",");
-            }
-            if (olapElement instanceof RolapBaseCubeMeasure mes) {
-                sb.append(mes.getUniqueName());
-            }
-            if (olapElement instanceof RolapCubeLevel lev) {
-                sb.append(lev.getUniqueName());
+            if (olapElement instanceof RolapBaseCubeMeasure
+                || olapElement instanceof RolapCubeLevel
+                || olapElement instanceof RolapProperty) {
+                if (flag) {
+                    flag = false;
+                    sb.append(" RETURN ");
+                } else {
+                    sb.append(",");
+                }
+                sb.append(olapElement.getUniqueName());
             }
         }
         return sb.toString();

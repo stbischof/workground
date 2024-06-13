@@ -1498,6 +1498,22 @@ public class RolapStar {
             if (column != null) {
                 level.setStarKeyColumn(column);
             }
+            RolapProperty[] properties = level.getProperties();
+            if (properties != null) {
+                for (RolapProperty property : properties) {
+                    Column propertyColumn = makeColumnForPropertyExpr(
+                        property,
+                        level,
+                        name,
+                        property.getExp(),
+                        level.getDatatype(),
+                        level.getInternalType(),
+                        nameColumn,
+                        parentColumn,
+                        usagePrefix);
+                    property.setColumn(propertyColumn);
+                }
+            }
 
             return column;
         }
@@ -1564,6 +1580,69 @@ public class RolapStar {
             return column;
         }
 
+        private Column makeColumnForPropertyExpr(
+            RolapProperty property,
+            RolapLevel level,
+            String name,
+            MappingExpression expr,
+            Datatype datatype,
+            BestFitColumnType internalType,
+            Column nameColumn,
+            Column parentColumn,
+            String usagePrefix)
+        {
+            Table table = this;
+            if (expr instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn column) {
+                String tableName = column.table();
+                table = findAncestor(tableName);
+                if (table == null) {
+                    throw Util.newError(
+                        new StringBuilder("Level '").append(level.getUniqueName())
+                            .append("' Property '").append(property.name)
+                            .append("' of cube '")
+                            .append(this)
+                            .append("' is invalid: table '").append(tableName)
+                            .append("' is not found in current scope")
+                            .append(Util.NL)
+                            .append(", star:")
+                            .append(Util.NL)
+                            .append(getStar()).toString());
+                }
+                RolapStar.AliasReplacer aliasReplacer =
+                    new RolapStar.AliasReplacer(tableName, table.getAlias());
+                expr = aliasReplacer.visit(expr);
+            }
+            // does the column already exist??
+            Column c = lookupColumnByExpression(expr);
+
+            RolapStar.Column column;
+            // Verify Column is not null and not the same as the
+            // nameColumn created previously (bug 1438285)
+            if (c != null && !c.equals(nameColumn)) {
+                // Yes, well just reuse it
+                // You might wonder why the column need be returned if it
+                // already exists. Well, it might have been created for one
+                // cube, but for another cube using the same fact table, it
+                // still needs to be put into the cube level to column map.
+                // Trust me, return null and a junit test fails.
+                column = c;
+            } else {
+                // Make a new column and add it
+                column = new RolapStar.Column(
+                    name,
+                    table,
+                    expr,
+                    datatype,
+                    internalType,
+                    nameColumn,
+                    parentColumn,
+                    usagePrefix,
+                    level.getApproxRowCount(),
+                    star.nextColumnCount());
+                addColumn(column);
+            }
+            return column;
+        }
         /**
          * Extends this 'leg' of the star by adding <code>relation</code>
          * joined by <code>joinCondition</code>. If the same expression is

@@ -20,15 +20,18 @@ public class RolapDrillThroughAttribute implements DrillThroughColumn {
     private final Dimension dimension;
     private final Hierarchy hierarchy;
     private final Level level;
+    private final RolapProperty property;
 
     public RolapDrillThroughAttribute(
             Dimension dimension,
             Hierarchy hierarchy,
-            Level level
+            Level level,
+            RolapProperty property
     ) {
         this.dimension = dimension;
         this.hierarchy = hierarchy;
         this.level = level;
+        this.property = property;
     }
 
     public Dimension getDimension() { return this.dimension; }
@@ -39,6 +42,9 @@ public class RolapDrillThroughAttribute implements DrillThroughColumn {
 
     @Override
 	public OlapElement getOlapElement() {
+        if(this.property != null) {
+            return this.property;
+        }
         if(this.level != null) {
             return this.level;
         }

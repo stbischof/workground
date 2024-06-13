@@ -25,8 +25,8 @@ import mondrian.spi.PropertyFormatter;
 public class TestPublicRolapProperty extends RolapProperty {
 
 	TestPublicRolapProperty(String name, Datatype type, MappingExpression exp, PropertyFormatter formatter, String caption,
-                            Boolean dependsOnLevelValue, boolean internal, String description) {
-		super(name, type, exp, formatter, caption, dependsOnLevelValue, internal, description);
+                            Boolean dependsOnLevelValue, boolean internal, String description, RolapLevel level) {
+		super(name, type, exp, formatter, caption, dependsOnLevelValue, internal, description, level);
 	}
 
 }

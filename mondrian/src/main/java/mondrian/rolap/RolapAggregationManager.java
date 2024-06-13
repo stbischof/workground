@@ -134,6 +134,9 @@ public abstract class RolapAggregationManager {
             if (isClosureFor(olapElement)) {
                 continue;
             }
+            if (olapElement instanceof RolapProperty) {
+            	applicableReturnClauseMembers.add(olapElement);
+            }
             if (hierarchyPresentOnCube(drillthroughCube, olapElement)) {
                 applicableReturnClauseMembers.add(olapElement);
             } else if (measureUniqueNameMap
@@ -457,6 +460,13 @@ public abstract class RolapAggregationManager {
             if (level.isAll()) {
                 level = level.getChildLevel();
             }
+        } else if (member instanceof RolapProperty property) {
+            RolapStar.Column propertyColumn = property.getColumn();
+            if (propertyColumn != null) {
+                request.addConstrainedColumn(propertyColumn, null);
+                ((DrillThroughCellRequest)request).addDrillThroughColumn(propertyColumn);
+            }
+            return;
         } else if (member instanceof RolapStar.Measure) {
             ((DrillThroughCellRequest)request)
                 .addDrillThroughMeasure((RolapStar.Measure)member);
@@ -486,6 +496,7 @@ public abstract class RolapAggregationManager {
                 request.addConstrainedColumn(nameColumn, null);
                 ((DrillThroughCellRequest)request).addDrillThroughColumn(nameColumn);
             }
+
         }
     }
 

@@ -11,21 +11,32 @@
 
 package mondrian.rolap;
 
+import mondrian.olap.Property;
+import mondrian.spi.PropertyFormatter;
+import org.eclipse.daanse.olap.api.MatchType;
+import org.eclipse.daanse.olap.api.SchemaReader;
+import org.eclipse.daanse.olap.api.Segment;
+import org.eclipse.daanse.olap.api.element.Dimension;
+import org.eclipse.daanse.olap.api.element.Hierarchy;
+import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import mondrian.olap.Property;
-import mondrian.spi.PropertyFormatter;
+import java.text.MessageFormat;
+import java.util.Locale;
+
+import static mondrian.olap.Util.makeFqName;
 
 /**
  * <code>RolapProperty</code> is the definition of a member property.
  *
  * @author jhyde
  */
-public class RolapProperty extends Property {
+public class RolapProperty extends Property implements OlapElement {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RolapProperty.class);
+    private final static String mdxPropertyName = "property ''{0}''";
 
     /** Array of RolapProperty of length 0. */
     static final RolapProperty[] emptyArray = new RolapProperty[0];
@@ -33,9 +44,12 @@ public class RolapProperty extends Property {
     private final PropertyFormatter formatter;
     private final String caption;
     private final boolean dependsOnLevelValue;
+    private RolapLevel level;
 
     /** The column or expression which yields the property's value. */
     private final MappingExpression exp;
+
+    private RolapStar.Column column = null;
 
 
     /**
@@ -58,7 +72,8 @@ public class RolapProperty extends Property {
         String caption,
         Boolean dependsOnLevelValue,
         boolean internal,
-        String description)
+        String description,
+        RolapLevel level)
     {
         super(name, type, -1, internal, false, false, description);
         this.exp = exp;
@@ -66,6 +81,7 @@ public class RolapProperty extends Property {
         this.formatter = formatter;
         this.dependsOnLevelValue =
             dependsOnLevelValue != null && dependsOnLevelValue;
+        this.level = level;
     }
 
     public MappingExpression getExp() {
@@ -100,5 +116,71 @@ public class RolapProperty extends Property {
      */
     public boolean dependsOnLevelValue() {
         return dependsOnLevelValue;
+    }
+
+    public RolapStar.Column getColumn() {
+        return column;
+    }
+
+    public void setColumn(RolapStar.Column column) {
+        this.column = column;
+    }
+
+    @Override
+    public String getUniqueName() {
+        if (level != null) {
+            return makeFqName(level.getUniqueName(), name);
+        }
+        return null;
+    }
+
+    @Override
+    public OlapElement lookupChild(SchemaReader schemaReader, Segment s, MatchType matchType) {
+        return null;
+    }
+
+    @Override
+    public String getQualifiedName() {
+        if (getUniqueName() != null) {
+            return MessageFormat.format(mdxPropertyName, getUniqueName());
+        }
+        return MessageFormat.format(mdxPropertyName, getName());
+    }
+
+    @Override
+    public String getLocalized(LocalizedProperty prop, Locale locale) {
+        if (level != null) {
+            return level.getLocalized(prop, locale);
+        }
+        return null;
+    }
+
+    @Override
+    public Hierarchy getHierarchy() {
+        if (level != null) {
+            return level.getHierarchy();
+        }
+        return null;
+    }
+
+    @Override
+    public Dimension getDimension() {
+        if (level != null) {
+            return level.getDimension();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return level != null && level.isVisible();
+    }
+
+    public RolapLevel getLevel() {
+        return this.level;
+    }
+
+    public void setLevel(RolapLevel level) {
+        this.level = level;
     }
 }

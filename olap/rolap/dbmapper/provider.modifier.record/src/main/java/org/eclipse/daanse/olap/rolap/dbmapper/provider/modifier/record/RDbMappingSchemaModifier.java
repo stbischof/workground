@@ -871,11 +871,13 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     protected MappingDrillThroughElement new_DrillThroughAttribute(
         String dimension,
         String level,
-        String hierarchy
+        String hierarchy,
+        String property
     ) {
         return new DrillThroughAttributeR(dimension,
             level,
-            hierarchy);
+            hierarchy,
+            property);
     }
 
     protected MappingMeasure new_Measure(

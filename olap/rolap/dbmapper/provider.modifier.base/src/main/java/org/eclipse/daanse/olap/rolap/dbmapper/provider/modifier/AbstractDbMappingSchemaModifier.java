@@ -2291,14 +2291,19 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             String dimension = drillThroughAttributeDimension(drillThroughAttribute);
             String hierarchy = drillThroughAttributeHierarchy(drillThroughAttribute);
             String level = drillThroughAttributeLevel(drillThroughAttribute);
+            String property = drillThroughAttributeProperty(drillThroughAttribute);
 
-            return new_DrillThroughAttribute(dimension, level, hierarchy);
+            return new_DrillThroughAttribute(dimension, level, hierarchy, property);
         }
         return null;
     }
 
     protected String drillThroughAttributeLevel(MappingDrillThroughAttribute drillThroughAttribute) {
         return drillThroughAttribute.level();
+    }
+
+    protected String drillThroughAttributeProperty(MappingDrillThroughAttribute drillThroughAttribute) {
+        return drillThroughAttribute.property();
     }
 
     protected String drillThroughAttributeHierarchy(MappingDrillThroughAttribute drillThroughAttribute) {
@@ -2310,7 +2315,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected abstract MappingDrillThroughElement new_DrillThroughAttribute(
-        String dimension, String level, String hierarchy);
+        String dimension, String level, String hierarchy, String property);
 
     protected MappingDrillThroughElement mappingDrillThroughMeasure(MappingDrillThroughMeasure drillThroughMeasure) {
         if (drillThroughMeasure != null) {
