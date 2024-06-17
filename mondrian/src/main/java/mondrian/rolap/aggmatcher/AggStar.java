@@ -572,7 +572,7 @@ public class AggStar {
                 if (left instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn c) {
                     mondrian.rolap.RolapStar.Column col =
                         getTable().getAggStar().getStar().getFactTable()
-                        .lookupColumn(c.name());
+                        .lookupColumn(c.getName());
                     if (col != null) {
                         pw.print(" (");
                         pw.print(col.getBitPosition());
@@ -687,7 +687,7 @@ public class AggStar {
                     org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn columnExpr =
                         (org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)expressionInner;
                     String prefixedName = usagePrefix
-                        + columnExpr.name();
+                        + columnExpr.getName();
                     String tableName = getTableAlias(columnExpr);
                     exprString = query.getDialect().quoteIdentifier(
                         tableName, prefixedName);
@@ -959,7 +959,7 @@ public class AggStar {
                     usage.rightJoinConditionColumnName);
             } else {
                 if (rleft instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn lcolumn) {
-                	left = new ColumnR(getName(), lcolumn.name());
+                	left = new ColumnR(getName(), lcolumn.getName());
                 } else {
                     throw Util.newInternal("not implemented: rleft=" + rleft);
 /*
@@ -976,7 +976,7 @@ public class AggStar {
             // based upon a foreign key (see AggregationManager findAgg
             // method).
             mondrian.rolap.RolapStar.Column col =
-                getAggStar().getStar().getFactTable().lookupColumn(left.name());
+                getAggStar().getStar().getFactTable().lookupColumn(left.getName());
             if (col != null) {
                 getAggStar().setForeignKey(col.getBitPosition());
             }
@@ -1452,7 +1452,7 @@ public class AggStar {
                             getTableAlias(parentLevel.getKeyExp())},
                         new String[] {
                             parentLevel.getKeyExp()
-                                .name()});
+                                .getName()});
                     final int bitPos = bk.nextSetBit(0);
                     if (bitPos == -1) {
                         throw new MondrianException(
@@ -1479,7 +1479,7 @@ public class AggStar {
                         bitPos,
                         new Column(
                             ((org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)parentLevel.getKeyExp())
-                                .name(),
+                                .getName(),
                             parentLevel.getKeyExp(),
                             AggStar.this.star.getColumn(bitPos).getDatatype(),
                             bitPos)

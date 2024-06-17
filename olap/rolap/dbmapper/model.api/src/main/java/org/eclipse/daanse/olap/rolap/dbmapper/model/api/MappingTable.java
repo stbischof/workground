@@ -17,16 +17,16 @@ import java.util.List;
 
 public non-sealed interface MappingTable extends MappingRelation {
 
-    MappingSQL sql();
+    MappingSQL getSql();
 
-    List<MappingAggExclude> aggExcludes();
+    List<MappingAggExclude> getAggExcludes();
 
-    List<MappingAggTable> aggTables();
+    List<MappingAggTable> getAggTables();
 
-    List<MappingHint> hints();
+    List<MappingHint> getHints();
 
-    String name();
+    String getName();
 
-    String schema();
+    String getSchema();
 
 }

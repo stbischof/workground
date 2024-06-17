@@ -40,4 +40,23 @@ public record VirtualCubeMeasureR(String name,
         this.cubeName = cubeName;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getCubeName() {
+        return cubeName;
+    }
 }

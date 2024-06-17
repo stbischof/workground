@@ -88,4 +88,71 @@ public record CubeR(String name,
                 this.kpis = kpis == null ? List.of() : kpis;
 	}
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getDefaultMeasure() {
+        return defaultMeasure;
+    }
+
+    public List<MappingCubeDimension> getDimensionUsageOrDimensions() {
+        return dimensionUsageOrDimensions;
+    }
+
+    public List<MappingMeasure> getMeasures() {
+        return measures;
+    }
+
+    public List<MappingCalculatedMember> getCalculatedMembers() {
+        return calculatedMembers;
+    }
+
+    public List<MappingNamedSet> getNamedSets() {
+        return namedSets;
+    }
+
+    public List<MappingDrillThroughAction> getDrillThroughActions() {
+        return drillThroughActions;
+    }
+
+    public Optional<MappingWritebackTable> getWritebackTable() {
+        return writebackTable;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public Boolean getCache() {
+        return cache;
+    }
+
+    public MappingRelation getFact() {
+        return fact;
+    }
+
+    public List<MappingAction> getActions() {
+        return actions;
+    }
+
+    public List<MappingKpi> getKpis() {
+        return kpis;
+    }
 }

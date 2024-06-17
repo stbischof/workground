@@ -33,7 +33,7 @@ public class TableR implements MappingTable {
     private List<MappingAggTable> aggTables;
 
     public TableR(MappingTable table) {
-        this(table.schema(), table.name(), table.alias(), table.hints());
+        this(table.getSchema(), table.getName(), table.getAlias(), table.getHints());
     }
 
     public TableR(String name, List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables) {
@@ -64,13 +64,13 @@ public class TableR implements MappingTable {
     }
 
     public TableR(MappingTable tbl, String possibleName) {
-        this(tbl.schema(), tbl.name(), possibleName, tbl.hints());
+        this(tbl.getSchema(), tbl.getName(), possibleName, tbl.getHints());
 
         // Remake the filter with the new alias
-        if (tbl.sql() != null) {
-            String aliasOrName = tbl.alias() == null ? tbl.name() : tbl.alias();
-            this.sql = new SQLR(tbl.sql().content() != null ? tbl.sql().content().replace(aliasOrName, possibleName) : null,
-                tbl.sql().dialect());
+        if (tbl.getSql() != null) {
+            String aliasOrName = tbl.getAlias() == null ? tbl.getName() : tbl.getAlias();
+            this.sql = new SQLR(tbl.getSql().content() != null ? tbl.getSql().content().replace(aliasOrName, possibleName) : null,
+                tbl.getSql().dialect());
         }
     }
 
@@ -93,47 +93,40 @@ public class TableR implements MappingTable {
     	this.aggTables = List.of();
     }
 
-    @Override
-    public String alias() {
+    public String getAlias() {
         return alias;
     }
 
-    @Override
-    public MappingSQL sql() {
+    public MappingSQL getSql() {
         return sql;
     }
 
-    @Override
-    public List<MappingAggExclude> aggExcludes() {
+    public List<MappingAggExclude> getAggExcludes() {
         return aggExcludes;
     }
 
-    @Override
-    public List<MappingAggTable> aggTables() {
+    public List<MappingAggTable> getAggTables() {
         return aggTables;
     }
 
-    @Override
-    public List<MappingHint> hints() {
+    public List<MappingHint> getHints() {
         return hints;
     }
 
-    @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    @Override
-    public String schema() {
+    public String getSchema() {
         return schema;
     }
 
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingTable that) {
-            return this.name.equals(that.name()) &&
-                Objects.equals(this.alias, that.alias()) &&
-                Objects.equals(this.schema, that.schema());
+            return this.name.equals(that.getName()) &&
+                Objects.equals(this.alias, that.getAlias()) &&
+                Objects.equals(this.schema, that.getSchema());
         } else {
             return false;
         }

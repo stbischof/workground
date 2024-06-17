@@ -48,12 +48,12 @@ public class ExpressionViewImpl implements MappingExpressionView {
     }
 
     @Override
-    public String table() {
+    public String getTable() {
         return table;
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 

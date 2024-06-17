@@ -21,7 +21,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 
 public record RoleR(
-		String name, 
+		String name,
 		String description,
 		List<MappingAnnotation> annotations,
 		List<MappingSchemaGrant> schemaGrants,
@@ -31,7 +31,7 @@ public record RoleR(
 
 
 	public  RoleR(
-			String name, 
+			String name,
 			String description,
 			List<MappingAnnotation> annotations,
 			List<MappingSchemaGrant> schemaGrants,
@@ -43,8 +43,25 @@ public record RoleR(
 				this.annotations = annotations == null ? List.of() : annotations;
 				this.schemaGrants = schemaGrants == null ? List.of() : schemaGrants;
 				this.union = union;
-		
 	          }
 
-		
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public List<MappingSchemaGrant> getSchemaGrants() {
+        return schemaGrants;
+    }
+
+    public MappingUnion getUnion() {
+        return union;
+    }
 }

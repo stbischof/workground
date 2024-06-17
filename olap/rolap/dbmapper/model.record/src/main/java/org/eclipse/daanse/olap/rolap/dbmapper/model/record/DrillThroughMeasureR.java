@@ -9,7 +9,7 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
@@ -17,4 +17,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasu
 
 public record DrillThroughMeasureR(String name) implements MappingDrillThroughMeasure {
 
+    public String getName() {
+        return name;
+    }
 }

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
@@ -22,4 +22,23 @@ public record CalculatedMemberPropertyR(String name,
                                         String value)
         implements MappingCalculatedMemberProperty {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

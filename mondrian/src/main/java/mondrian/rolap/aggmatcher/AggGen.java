@@ -131,7 +131,7 @@ public class AggGen {
     protected String getRolapStarColumnName(RolapStar.Column rColumn) {
         MappingExpression expr = rColumn.getExpression();
         if (expr instanceof MappingColumn cx) {
-            return cx.name();
+            return cx.getName();
         }
         return null;
     }
@@ -233,7 +233,7 @@ public class AggGen {
 
                 MappingExpression expr = column.getExpression();
                 if (expr instanceof MappingColumn exprColumn) {
-                    String name = exprColumn.name();
+                    String name = exprColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {
                         String msg = new StringBuilder(INIT)
@@ -266,7 +266,7 @@ public class AggGen {
                 }
                 MappingExpression left = cond.getLeft();
                 if (left instanceof MappingColumn leftColumn) {
-                    String name = leftColumn.name();
+                    String name = leftColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {
                         String msg = new StringBuilder(INIT)

@@ -17,4 +17,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackMeasure;
 
 public record WritebackMeasureR(String name, String column) implements MappingWritebackMeasure {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getColumn() {
+        return column;
+    }
 }

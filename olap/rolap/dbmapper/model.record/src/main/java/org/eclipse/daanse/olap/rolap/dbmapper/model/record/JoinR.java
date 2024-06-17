@@ -39,28 +39,23 @@ public class JoinR implements MappingJoin {
         this.rightKey = rightKey;
     }
 
-    @Override
-    public List<MappingRelationOrJoin> relations() {
+    public List<MappingRelationOrJoin> getRelations() {
         return relations;
     }
 
-    @Override
-    public String leftAlias() {
+    public String getLeftAlias() {
         return leftAlias;
     }
 
-    @Override
-    public String leftKey() {
+    public String getLeftKey() {
         return leftKey;
     }
 
-    @Override
-    public String rightAlias() {
+    public String getRightAlias() {
         return rightAlias;
     }
 
-    @Override
-    public String rightKey() {
+    public String getRightKey() {
         return rightKey;
     }
 

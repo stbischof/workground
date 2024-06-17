@@ -48,4 +48,35 @@ public record PropertyR(String name,
 
 	}
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public PropertyTypeEnum getType() {
+        return type;
+    }
+
+    public String getFormatter() {
+        return formatter;
+    }
+
+    public Boolean getDependsOnLevelValue() {
+        return dependsOnLevelValue;
+    }
+
+    public MappingElementFormatter getPropertyFormatter() {
+        return propertyFormatter;
+    }
 }

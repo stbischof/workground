@@ -89,9 +89,9 @@ class RolapStarTest {
           "NewAlias");
 
       assertEquals("NewAlias", RelationUtil.getAlias(cloned));
-      assertEquals("TestTable", cloned.name());
-      assertNotNull(cloned.sql());
-      assertEquals("NewAlias.clicked = 'true'", cloned.sql().content());
+      assertEquals("TestTable", cloned.getName());
+      assertNotNull(cloned.getSql());
+      assertEquals("NewAlias.clicked = 'true'", cloned.getSql().content());
   }
 
    //Below there are tests for mondrian.rolap.RolapStar.ColumnComparator

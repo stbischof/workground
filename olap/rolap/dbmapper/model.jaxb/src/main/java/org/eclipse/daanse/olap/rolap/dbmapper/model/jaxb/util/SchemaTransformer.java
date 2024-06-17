@@ -186,21 +186,21 @@ public class SchemaTransformer {
 
     private static TableImpl transformTable(MappingTable t) {
         TableImpl table = new TableImpl();
-        table.setAlias(t.alias());
-        table.setSchema(t.schema());
-        table.setName(t.name());
+        table.setAlias(t.getAlias());
+        table.setSchema(t.getSchema());
+        table.setName(t.getName());
         //TODO use transformer for others fields
         return table;
     }
 
     private static JoinImpl transformJoin(MappingJoin j) {
         JoinImpl join = new JoinImpl();
-        join.setLeftAlias(j.leftAlias());
-        join.setLeftKey(j.leftKey());
-        join.setRightAlias(j.rightAlias());
-        join.setRightKey(j.rightKey());
+        join.setLeftAlias(j.getLeftAlias());
+        join.setLeftKey(j.getLeftKey());
+        join.setRightAlias(j.getRightAlias());
+        join.setRightKey(j.getRightKey());
         join.setRelations(
-            j.relations() == null ? null : j.relations().stream()
+            j.getRelations() == null ? null : j.getRelations().stream()
                 .map(SchemaTransformer::transformRelationOrJoin).toList());
         return join;
     }

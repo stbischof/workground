@@ -23,4 +23,8 @@ public record RowR(List<MappingValue> values) implements MappingRow {
 		this.values = values == null ? List.of() : values;
 
 	}
+
+    public List<MappingValue> getValues() {
+        return values;
+    }
 }

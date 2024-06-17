@@ -46,4 +46,27 @@ public record HierarchyGrantR(
         this.memberGrants = memberGrants == null ? List.of() : memberGrants;
     }
 
+    public String getHierarchy() {
+        return hierarchy;
+    }
+
+    public AccessEnum getAccess() {
+        return access;
+    }
+
+    public String getTopLevel() {
+        return topLevel;
+    }
+
+    public String getBottomLevel() {
+        return bottomLevel;
+    }
+
+    public String getRollupPolicy() {
+        return rollupPolicy;
+    }
+
+    public List<MappingMemberGrant> getMemberGrants() {
+        return memberGrants;
+    }
 }

@@ -24,4 +24,12 @@ public record MemberGrantR(String member,
         this.member = member;
         this.access = access ;//== null ? MemberGrantAccessEnum.NONE : access;
     }
+
+    public String getMember() {
+        return member;
+    }
+
+    public MemberGrantAccessEnum getAccess() {
+        return access;
+    }
 }

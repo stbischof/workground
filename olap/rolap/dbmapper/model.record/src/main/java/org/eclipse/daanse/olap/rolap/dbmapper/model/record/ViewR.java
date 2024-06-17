@@ -35,7 +35,7 @@ public record ViewR(String alias,
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingView that) {
-            if (!Objects.equals(alias(), that.alias())) {
+            if (!Objects.equals(getAlias(), that.getAlias())) {
                 return false;
             }
             if (sqls() == null || that.sqls() == null || sqls().size() != that.sqls().size()) {
@@ -52,5 +52,13 @@ public record ViewR(String alias,
         } else {
             return false;
         }
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public List<MappingSQL> getSqls() {
+        return sqls;
     }
 }

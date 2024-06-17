@@ -1584,15 +1584,15 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected String tableSchema(MappingTable table) {
-        return table.schema();
+        return table.getSchema();
     }
 
     protected String tableName(MappingTable table) {
-        return table.name();
+        return table.getName();
     }
 
     protected List<MappingHint> tableHints(MappingTable table) {
-        return hints(table.hints());
+        return hints(table.getHints());
     }
 
     protected List<MappingHint> hints(List<MappingHint> hints) {
@@ -1622,7 +1622,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     protected abstract MappingHint new_Hint(String content, String type);
 
     protected List<MappingAggTable> tableAggTables(MappingTable table) {
-        return aggTables(table.aggTables());
+        return aggTables(table.getAggTables());
     }
 
     protected List<MappingAggTable> aggTables(List<MappingAggTable> aggTables) {
@@ -1952,7 +1952,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected List<MappingAggExclude> tableAggExcludes(MappingTable table) {
-        return aggExcludes(table.aggExcludes());
+        return aggExcludes(table.getAggExcludes());
     }
 
     protected List<MappingAggExclude> aggExcludes(List<MappingAggExclude> aggExcludes) {
@@ -1995,7 +1995,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     );
 
     protected MappingSQL tableSql(MappingTable table) {
-        return sql(table.sql());
+        return sql(table.getSql());
     }
 
     protected MappingSQL sql(MappingSQL sql) {
@@ -2114,7 +2114,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     );
 
     protected String relationAlias(MappingRelation relation) {
-        return relation.alias();
+        return relation.getAlias();
     }
 
     protected Optional<MappingWritebackTable> cubeWritebackTable(MappingCube cube) {
@@ -2875,7 +2875,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected String tableAlias(MappingTable table) {
-        return table.alias();
+        return table.getAlias();
     }
 
     protected abstract MappingClosure new_Closure(
@@ -2899,11 +2899,11 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected String expressionName(MappingExpressionView expression) {
-        return expression.name();
+        return expression.getName();
     }
 
     protected String expressionTable(MappingExpressionView expression) {
-        return expression.table();
+        return expression.getTable();
     }
 
     protected List<MappingSQL> expressionSqls(MappingExpressionView expression){
@@ -2996,25 +2996,25 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected String joinRightKey(MappingJoin join) {
-        return join.rightKey();
+        return join.getRightKey();
     }
 
     protected String joinRightAlias(MappingJoin join) {
-        return join.rightAlias();
+        return join.getRightAlias();
     }
 
     protected String joinLeftKey(MappingJoin join) {
-        return join.leftKey();
+        return join.getLeftKey();
     }
 
     ;
 
     protected String joinLeftAlias(MappingJoin join) {
-        return join.leftAlias();
+        return join.getLeftAlias();
     }
 
     protected List<MappingRelationOrJoin> joinRelations(MappingJoin join) {
-        return relationOrJoins(join.relations());
+        return relationOrJoins(join.getRelations());
     }
 
     protected List<MappingRelationOrJoin> relationOrJoins(List<MappingRelationOrJoin> relations) {

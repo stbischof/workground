@@ -9,7 +9,7 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
@@ -19,4 +19,11 @@ public record ValueR(String column,
                      String content)
         implements MappingValue {
 
+    public String getColumn() {
+        return column;
+    }
+
+    public String getContent() {
+        return content;
+    }
 }

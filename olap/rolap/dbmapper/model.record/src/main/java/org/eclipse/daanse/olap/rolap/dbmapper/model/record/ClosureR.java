@@ -21,4 +21,15 @@ public record ClosureR(MappingTable table,
                        String childColumn)
         implements MappingClosure {
 
+    public MappingTable getTable() {
+        return table;
+    }
+
+    public String getParentColumn() {
+        return parentColumn;
+    }
+
+    public String getChildColumn() {
+        return childColumn;
+    }
 }

@@ -21,4 +21,12 @@ public record  ScriptR(String language, String cdata) implements MappingScript {
         this.language = language == null ? "JavaScript" : language;
         this.cdata = cdata;
     }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getCdata() {
+        return cdata;
+    }
 }

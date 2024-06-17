@@ -522,8 +522,8 @@ public class WriteBackService {
             RolapWritebackTable writebackTable = oWritebackTable.get();
             if (cube.getWritebackTable() != null && cube.getWritebackTable().isPresent()) {
                 if (fact instanceof MappingTable mappingTable) {
-                    String alias = mappingTable.alias() != null ? mappingTable.alias() : mappingTable.name();
-                    StringBuilder sql = new StringBuilder("select * from ").append(mappingTable.name());
+                    String alias = mappingTable.getAlias() != null ? mappingTable.getAlias() : mappingTable.getName();
+                    StringBuilder sql = new StringBuilder("select * from ").append(mappingTable.getName());
                     sql.append(getWriteBackSql(dialect, writebackTable, sessionValues));
                     List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
                         dialect.getDialectName()));
@@ -551,7 +551,7 @@ public class WriteBackService {
                         .toString(),
                     sql.dialect()))
                 .toList();
-            changeFact(cube, sqls, mappingView.alias());
+            changeFact(cube, sqls, mappingView.getAlias());
         }
     }
 

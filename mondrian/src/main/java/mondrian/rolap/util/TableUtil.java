@@ -22,13 +22,13 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 public class TableUtil {
 	public static Map<String, String> getHintMap(MappingTable table) {
 
-		if (table.hints() != null) {
+		if (table.getHints() != null) {
 			return Map.of();
 		}
-		return table.hints().stream().collect(Collectors.toMap(MappingHint::type, MappingHint::content));
+		return table.getHints().stream().collect(Collectors.toMap(MappingHint::type, MappingHint::content));
 	}
 
     public static String getFilter(MappingTable table) {
-        return (table.sql() == null) ? null : table.sql().content();
+        return (table.getSql() == null) ? null : table.getSql().content();
     }
 }

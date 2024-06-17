@@ -382,10 +382,10 @@ public class SqlQuery {
                 ? RelationUtil.getAlias(table)
                 : alias;
             return addFromTable(
-                table.schema(),
-                table.name(),
+                table.getSchema(),
+                table.getName(),
                 tableAlias,
-                table.sql() == null ? null : table.sql().content(),
+                table.getSql() == null ? null : table.getSql().content(),
                 getHintMap(table),
                 failIfExists);
 
@@ -393,10 +393,10 @@ public class SqlQuery {
             return addJoin(
                 left(join),
                 getLeftAlias(join),
-                join.leftKey(),
+                join.getLeftKey(),
                 right(join),
                 getRightAlias(join),
-                join.rightKey(),
+                join.getRightKey(),
                 failIfExists);
         } else {
             throw Util.newInternal("bad relation type " + relation);
@@ -775,8 +775,8 @@ public class SqlQuery {
     {
         if (root instanceof MappingJoin join) {
             flatten(
-                relations, left(join), join.leftKey(), getLeftAlias(join),
-                join.rightKey(), getRightAlias(join));
+                relations, left(join), join.getLeftKey(), getLeftAlias(join),
+                join.getRightKey(), getRightAlias(join));
             flatten(
                 relations, right(join), leftKey, leftAlias, rightKey,
                 rightAlias);

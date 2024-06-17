@@ -37,4 +37,23 @@ public record ParameterR(String name,
         this.defaultValue = defaultValue;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public ParameterTypeEnum getType() {
+        return type;
+    }
+
+    public Boolean getModifiable() {
+        return modifiable;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 }

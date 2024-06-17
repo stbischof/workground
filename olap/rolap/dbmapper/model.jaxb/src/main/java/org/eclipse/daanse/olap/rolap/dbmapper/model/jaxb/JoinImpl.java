@@ -44,7 +44,7 @@ public class JoinImpl implements MappingJoin {
     protected String rightKey;
 
     @Override
-    public List<MappingRelationOrJoin> relations() {
+    public List<MappingRelationOrJoin> getRelations() {
         if (relations == null) {
             relations = new ArrayList<>();
         }
@@ -52,7 +52,7 @@ public class JoinImpl implements MappingJoin {
     }
 
     @Override
-    public String leftAlias() {
+    public String getLeftAlias() {
         return leftAlias;
     }
 
@@ -62,7 +62,7 @@ public class JoinImpl implements MappingJoin {
     }
 
     @Override
-    public String leftKey() {
+    public String getLeftKey() {
         return leftKey;
     }
 
@@ -72,7 +72,7 @@ public class JoinImpl implements MappingJoin {
     }
 
     @Override
-    public String rightAlias() {
+    public String getRightAlias() {
         return rightAlias;
     }
 
@@ -82,7 +82,7 @@ public class JoinImpl implements MappingJoin {
     }
 
     @Override
-    public String rightKey() {
+    public String getRightKey() {
         return rightKey;
     }
 

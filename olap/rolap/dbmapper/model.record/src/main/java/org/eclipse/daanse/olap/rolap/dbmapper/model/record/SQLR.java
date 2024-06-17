@@ -23,4 +23,12 @@ public record SQLR(String content,
         this.content = content;
         this.dialect = dialect != null ? dialect : "generic";
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getDialect() {
+        return dialect;
+    }
 }

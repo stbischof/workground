@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -56,7 +55,7 @@ public class RolapStatisticsCache {
         }
         if (relation instanceof MappingTable table) {
             return getTableCardinality(
-                null, table.schema(), table.name());
+                null, table.getSchema(), table.getName());
         } else {
             final SqlQuery sqlQuery = star.getSqlQuery();
             sqlQuery.addSelect("*", null);
@@ -144,9 +143,9 @@ public class RolapStatisticsCache {
         {
             return getColumnCardinality(
                 null,
-                table.schema(),
-                table.name(),
-                column.name());
+                table.getSchema(),
+                table.getName(),
+                column.getName());
         } else {
             final SqlQuery sqlQuery = star.getSqlQuery();
             sqlQuery.setDistinct(true);

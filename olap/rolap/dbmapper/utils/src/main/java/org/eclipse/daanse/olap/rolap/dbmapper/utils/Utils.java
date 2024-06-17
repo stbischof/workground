@@ -119,12 +119,12 @@ public class Utils {
     }
 
     private static String processingInlineTable(MappingInlineTable table, Map<String, Table> tables, String schemaName) {
-        if (table.alias() != null) {
-            Table t = getTableOrCreateNew(tables, table.alias(), schemaName);
+        if (table.getAlias() != null) {
+            Table t = getTableOrCreateNew(tables, table.getAlias(), schemaName);
             if (table.columnDefs() != null) {
                 table.columnDefs().forEach(c -> processingColumnDef(c, t.getColumns()));
             }
-            return table.alias();
+            return table.getAlias();
         }
         return null;
     }
@@ -151,24 +151,24 @@ public class Utils {
         Map<String, Table> tables,
         String schemaName
     ) {
-        if (table.name() != null) {
-            getTableOrCreateNew(tables, table.name(), schemaName);
-            return table.name();
+        if (table.getName() != null) {
+            getTableOrCreateNew(tables, table.getName(), schemaName);
+            return table.getName();
         }
         return null;
     }
 
     private static String processingJoin(MappingJoin relation, Map<String, Table> tables, String schemaName) {
         String name = null;
-        if (relation.relations() != null) {
-            for (int i = 0; i < relation.relations().size(); i++) {
-                String tableName = processingRelation(relation.relations().get(i), tables, schemaName);
+        if (relation.getRelations() != null) {
+            for (int i = 0; i < relation.getRelations().size(); i++) {
+                String tableName = processingRelation(relation.getRelations().get(i), tables, schemaName);
                 String columnName;
                 if (i == 0) {
                     name = tableName;
-                    columnName = relation.leftKey();
+                    columnName = relation.getLeftKey();
                 } else {
-                    columnName = relation.rightKey();
+                    columnName = relation.getRightKey();
                 }
                 Table t = tables.get(tableName);
                 getColumnOrCreateNew(t.getColumns(), columnName, getSqlType(Type.INTEGER));

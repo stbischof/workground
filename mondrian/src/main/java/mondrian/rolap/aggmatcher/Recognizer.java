@@ -662,7 +662,7 @@ public abstract class Recognizer {
                             dbFactTable.getName(),
                             aggColumn.getName(),
                             aggUsage.relation.toString(),
-                            aggColumn.column.name(),
+                            aggColumn.column.getName(),
                             rel.toString(),
                             levelColumnName);
                         msgRecorder.reportError(msg);
@@ -695,7 +695,7 @@ public abstract class Recognizer {
 
                 String tableAlias;
                 if (aggUsage.joinExp instanceof MappingColumn mcolumn) {
-                    tableAlias = mcolumn.table();
+                    tableAlias = mcolumn.getTable();
                 } else {
                     tableAlias = getAlias(aggUsage.relation);
                 }
@@ -790,7 +790,7 @@ public abstract class Recognizer {
         MappingRelation rel = hierarchyUsage.getJoinTable();
 
         JdbcSchema.Table.Column aggColumn = aggUsage.getColumn();
-        String aggColumnName = aggColumn.column.name();
+        String aggColumnName = aggColumn.column.getName();
         String usagePrefix = hierarchyUsage.getUsagePrefix() == null
             ? "" : hierarchyUsage.getUsagePrefix();
 
@@ -1039,7 +1039,7 @@ public abstract class Recognizer {
 
         try {
             if (expr instanceof MappingColumn column) {
-                return column.name();
+                return column.getName();
             } else if (expr instanceof MappingExpressionView key) {
                 return key.toString();
             }

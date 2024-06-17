@@ -17,4 +17,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggMeasureFactCou
 
 public record AggMeasureFactCountR(String factColumn, String column) implements MappingAggMeasureFactCount {
 
+    public String getFactColumn() {
+        return factColumn;
+    }
+
+    public String getColumn() {
+        return column;
+    }
 }

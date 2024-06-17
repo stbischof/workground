@@ -164,7 +164,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 this.cubeDimension.getCube().getStar().getUniqueRelation(
                     rolapHierarchy.getRelation(),
                     usage.getForeignKey(),
-                    ((MappingColumn)usage.getJoinExp()).name(),
+                    ((MappingColumn)usage.getJoinExp()).getName(),
                     RelationUtil.getAlias(usage.getJoinTable()));
         } else {
             currentRelation = rolapHierarchy.getRelation();

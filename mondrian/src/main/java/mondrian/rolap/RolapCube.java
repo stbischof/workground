@@ -2164,9 +2164,9 @@ public class RolapCube extends CubeBase {
                         MappingJoin newRelation = new JoinR(
                         List.of(right(((MappingJoin) relation)), left(((MappingJoin) relation))),
                         getRightAlias((MappingJoin) relation),
-                        ((MappingJoin) relation).rightKey(),
+                        ((MappingJoin) relation).getRightKey(),
                         getLeftAlias(((MappingJoin) relation)),
-                        ((MappingJoin) relation).leftKey());
+                        ((MappingJoin) relation).getLeftKey());
                         relation = newRelation;
                     }
 
@@ -2288,10 +2288,10 @@ public class RolapCube extends CubeBase {
     {
         if (relation instanceof MappingTable table) {
             buf.append(indent);
-            buf.append(table.name());
-            if (table.alias() != null) {
+            buf.append(table.getName());
+            if (table.getAlias() != null) {
                 buf.append('(');
-                buf.append(table.alias());
+                buf.append(table.getAlias());
                 buf.append(')');
             }
             buf.append(Util.NL);
@@ -2302,11 +2302,11 @@ public class RolapCube extends CubeBase {
             buf.append(indent);
             buf.append(getLeftAlias(join));
             buf.append('.');
-            buf.append(join.leftKey());
+            buf.append(join.getLeftKey());
             buf.append('=');
             buf.append(getRightAlias(join));
             buf.append('.');
-            buf.append(join.rightKey());
+            buf.append(join.getRightKey());
             buf.append(Util.NL);
             format(left(join), buf, subindent);
             format(right(join), buf, indent);
@@ -2364,7 +2364,7 @@ public class RolapCube extends CubeBase {
         {
             RelNode relNode;
             if (table instanceof MappingTable t) {
-                relNode = map.get(t.name());
+                relNode = map.get(t.getName());
                 if (relNode != null) {
                     return relNode;
                 }
@@ -2587,10 +2587,10 @@ public class RolapCube extends CubeBase {
             if (rightDepth > leftDepth) {
                 // switch
                 String leftAlias = getLeftAlias(join);
-                String leftKey = join.leftKey();
+                String leftKey = join.getLeftKey();
                 MappingRelationOrJoin left = left(join);
                 join.setLeftAlias(getRightAlias(join));
-                join.setLeftKey(join.rightKey());
+                join.setLeftKey(join.getRightKey());
                 changeLeftRight(join, right(join), left);
                 join.setRightAlias(leftAlias);
                 join.setRightKey(leftKey);
@@ -2623,14 +2623,14 @@ public class RolapCube extends CubeBase {
                 changeLeftRight(join, left(jleft), new JoinR(
                     List.of(right(jleft), right(join)),
                     getLeftAlias(join),
-                    join.leftKey(),
+                    join.getLeftKey(),
                     getRightAlias(join),
-                    join.rightKey()
+                    join.getRightKey()
                     ));
                 join.setRightAlias(getRightAlias(jleft));
-                join.setRightKey(jleft.rightKey());
+                join.setRightKey(jleft.getRightKey());
                 join.setLeftAlias(getLeftAlias(jleft));
-                join.setLeftKey(jleft.leftKey());
+                join.setLeftKey(jleft.getLeftKey());
             }
         }
     }
@@ -2655,8 +2655,8 @@ public class RolapCube extends CubeBase {
 
             return new JoinR(
                 List.of(left, right),
-                getLeftAlias(join), join.leftKey(),
-                getRightAlias(join), join.rightKey());
+                getLeftAlias(join), join.getLeftKey(),
+                getRightAlias(join), join.getRightKey());
 
         } else {
             throw Util.newInternal(BAD_RELATION_TYPE + relation);
@@ -2677,10 +2677,10 @@ public class RolapCube extends CubeBase {
     {
         if (relation instanceof MappingTable table) {
             // Return null if the table's name or alias matches tableName
-            if ((table.alias() != null) && table.alias().equals(tableName)) {
+            if ((table.getAlias() != null) && table.getAlias().equals(tableName)) {
                 return null;
             } else {
-                return table.name().equals(tableName) ? null : table;
+                return table.getName().equals(tableName) ? null : table;
             }
 
         } else if (relation instanceof MappingJoin join) {

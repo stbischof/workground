@@ -225,7 +225,7 @@ public class AggTableManager {
                     // are measure or foreign key columns
 
                     bindToStar(dbFactTable, star, msgRecorder);
-                    String schemaInner = dbFactTable.table.schema();
+                    String schemaInner = dbFactTable.table.getSchema();
 
                     // Now look at all tables in the database and per table,
                     // first see if it is a match for an aggregate table for
@@ -363,8 +363,8 @@ public class AggTableManager {
             String schemaInner = null;
             List<MappingHint> tableHints = null;
             if (relation instanceof MappingTable table) {
-                schemaInner = table.schema();
-                tableHints = table.hints();
+                schemaInner = table.getSchema();
+                tableHints = table.getHints();
             }
             String tableName = dbFactTable.getName();
             String alias = null;

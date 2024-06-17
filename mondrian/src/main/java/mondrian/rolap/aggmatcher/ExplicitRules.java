@@ -130,7 +130,7 @@ public class ExplicitRules {
 
             if (relation instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table) {
                 List<? extends org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude> aggExcludes =
-                    table.aggExcludes();
+                    table.getAggExcludes();
                 if (aggExcludes != null) {
                     for (org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude aggExclude : aggExcludes) {
                         Exclude exclude =
@@ -139,7 +139,7 @@ public class ExplicitRules {
                     }
                 }
                 List<? extends MappingAggTable> aggTables =
-                    table.aggTables();
+                    table.getAggTables();
                 if (aggTables != null) {
                     for (MappingAggTable aggTable : aggTables) {
                         TableDef tableDef = TableDef.make(aggTable, group);
@@ -276,7 +276,7 @@ public class ExplicitRules {
             MappingRelation relation = table.getRelation();
 
             if (relation instanceof MappingTable mtable) {
-                schema = mtable.schema();
+                schema = mtable.getSchema();
             }
             return schema;
         }

@@ -17,15 +17,15 @@ import java.util.List;
 
 public non-sealed interface MappingJoin extends MappingRelationOrJoin {
 
-    List<MappingRelationOrJoin> relations();
+    List<MappingRelationOrJoin> getRelations();
 
-    String leftAlias();
+    String getLeftAlias();
 
-    String leftKey();
+    String getLeftKey();
 
-    String rightAlias();
+    String getRightAlias();
 
-    String rightKey();
+    String getRightKey();
 
     void setLeftAlias(String rightAlias);
 

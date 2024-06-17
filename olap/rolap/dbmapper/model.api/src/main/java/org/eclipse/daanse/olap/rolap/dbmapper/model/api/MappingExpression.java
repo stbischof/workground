@@ -15,8 +15,8 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
 public interface MappingExpression {
 
-    String table();
+    String getTable();
 
-    String name();
+    String getName();
 
 }

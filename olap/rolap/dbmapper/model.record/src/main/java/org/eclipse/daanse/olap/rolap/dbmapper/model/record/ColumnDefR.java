@@ -24,4 +24,12 @@ public record ColumnDefR(String name,
         this.name = name;
         this.type = type;// == null ? TypeEnum.STRING : type;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public TypeEnum getType() {
+        return type;
+    }
 }

@@ -784,11 +784,11 @@ class SteelwheelReadTest {
         } else {
             Map<String, Object> map = (Map<String, Object>) o;
             assertNotNull(join);
-            assertEquals(get(LEFT_KEY, map), join.leftKey());
-            assertEquals(get(RIGHT_KEY, map), join.rightKey());
-            assertEquals(get(LEFT_ALIAS, map), join.leftAlias());
-            assertEquals(get(RIGHT_ALIAS, map), join.rightAlias());
-            List<MappingRelationOrJoin> relations = join.relations();
+            assertEquals(get(LEFT_KEY, map), join.getLeftKey());
+            assertEquals(get(RIGHT_KEY, map), join.getRightKey());
+            assertEquals(get(LEFT_ALIAS, map), join.getLeftAlias());
+            assertEquals(get(RIGHT_ALIAS, map), join.getRightAlias());
+            List<MappingRelationOrJoin> relations = join.getRelations();
             assertEquals(relations.size(), ((List) get(RELATION, map)).size());
             for (int i = 0; i < relations.size(); i++) {
                 checkHierarchyJoinRelationItem(relations.get(i), (Map) ((List) get(RELATION, map)).get(i));
@@ -803,13 +803,13 @@ class SteelwheelReadTest {
     }
 
     private void checkTableItem(MappingTable table, Map<String, Object> map) {
-        assertNull(table.sql());
-        assertNotNull(table.aggExcludes());
-        assertNotNull(table.aggTables());
-        assertNotNull(table.hints());
-        assertEquals(table.name(), get(NAME, map));
-        assertNull(table.schema());
-        assertNull(table.alias());
+        assertNull(table.getSql());
+        assertNotNull(table.getAggExcludes());
+        assertNotNull(table.getAggTables());
+        assertNotNull(table.getHints());
+        assertEquals(table.getName(), get(NAME, map));
+        assertNull(table.getSchema());
+        assertNull(table.getAlias());
     }
 
     private void checkLevel(List<? extends MappingLevel> level, List<Map<String, Object>> list) {
@@ -853,7 +853,7 @@ class SteelwheelReadTest {
             assertNull(closure);
         } else {
             Map<String, Object> map = (Map<String, Object>) o;
-            assertEquals(closure.table().name(), get(TABLE, map));
+            assertEquals(closure.table().getName(), get(TABLE, map));
             assertEquals(closure.parentColumn(), get(PARENT_COLUMN, map));
             assertEquals(closure.childColumn(), get(CHILD_COLUMN, map));
         }

@@ -232,7 +232,7 @@ public abstract class AbstractSchemaWalker {
 
     protected void checkJoin(MappingJoin join) {
         if (join != null) {
-            checkRelationOrJoinList(join.relations());
+            checkRelationOrJoinList(join.getRelations());
         }
     }
 
@@ -282,13 +282,13 @@ public abstract class AbstractSchemaWalker {
 
     protected void checkTable(MappingTable table) {
         if (table != null) {
-            checkSQL(table.sql());
+            checkSQL(table.getSql());
 
-            checkAggExcludeList(table.aggExcludes(), table.schema());
+            checkAggExcludeList(table.getAggExcludes(), table.getSchema());
 
-            checkAggTableList(table.aggTables(), table.schema());
+            checkAggTableList(table.getAggTables(), table.getSchema());
 
-            checkHintList(table.hints());
+            checkHintList(table.getHints());
         }
     }
 

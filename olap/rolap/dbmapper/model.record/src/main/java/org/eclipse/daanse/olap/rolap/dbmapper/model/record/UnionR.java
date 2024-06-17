@@ -22,6 +22,10 @@ public record UnionR(List<MappingRoleUsage> roleUsages) implements MappingUnion 
 
 	public  UnionR(List<MappingRoleUsage> roleUsages)   {
 		this.roleUsages = roleUsages == null ? List.of() : roleUsages;
-		
+
 	}
+
+    public List<MappingRoleUsage> getRoleUsages() {
+        return roleUsages;
+    }
 }

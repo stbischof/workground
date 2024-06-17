@@ -9,7 +9,7 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
@@ -19,4 +19,11 @@ public record HintR(String content,
                     String type)
         implements MappingHint {
 
+    public String getContent() {
+        return content;
+    }
+
+    public String getType() {
+        return type;
+    }
 }

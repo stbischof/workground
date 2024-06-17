@@ -116,8 +116,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkFact(MappingCube cube, MappingSchema schema) {
         if (cube.fact() instanceof MappingTable table) {
-            String schemaName = table.schema();
-            String factTable = table.name();
+            String schemaName = table.getSchema();
+            String factTable = table.getName();
             TableReference tableReference = getTableReference(schemaName, factTable);
             try {
                 if (!databaseService.tableExists(databaseMetaData, tableReference)) {
@@ -126,8 +126,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
                     results.add(new VerificationResultR(CUBE, message, ERROR, DATABASE));
                 }
 
-                if (table.aggExcludes() != null && !table.aggExcludes().isEmpty()) {
-                    table.aggExcludes()
+                if (table.getAggExcludes() != null && !table.getAggExcludes().isEmpty()) {
+                    table.getAggExcludes()
                         .forEach(ae -> checkAggExclude(ae, schemaName));
                 }
             } catch (SQLException e) {
@@ -165,7 +165,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             // Database validity check, if database connection is
             // successful
             String column = measure.column();
-            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             try {
                 if (databaseService.columnExists(databaseMetaData, columnReference)) {
@@ -177,7 +177,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             } catch (SQLException e) {
 
                 String msg = String.format(COULD_NOT_EVALUEATE_DOES_COLUMN_EXIST_SCHEMA_TABLE_COLUMN,
-                    factTable.schema(), factTable.name(), column);
+                    factTable.getSchema(), factTable.getName(), column);
                 results.add(new VerificationResultR(MEASURE, msg, ERROR, DATABASE));
             }
         }
@@ -193,7 +193,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             cube.fact() instanceof MappingTable factTable) {
 
             String foreignKey = (cubeDimension).foreignKey();
-            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), foreignKey);
 
             try {
@@ -205,7 +205,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             } catch (SQLException e) {
                 String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE,
                     isEmpty(foreignKey.trim()) ? "' '" : foreignKey, FOREIGN_KEY,
-                    factTable.name());
+                    factTable.getName());
                 results.add(new VerificationResultR(CUBE_DIMENSION, msg, ERROR, DATABASE));
             }
 
@@ -227,8 +227,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             schema = schemaAndTable[0];
             pkTable = schemaAndTable[1];
         } else if (hierarchy.relation() instanceof MappingTable table) {
-            pkTable = table.name();
-            schema = table.schema();
+            pkTable = table.getName();
+            schema = table.getSchema();
         }
         try {
             TableReference tableReference = getTableReference(schema, pkTable);
@@ -295,7 +295,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkTable(MappingTable table) {
         super.checkTable(table);
-        String tableName = table.name();
+        String tableName = table.getName();
         try {
             TableReference tableReference = getTableReference(null, tableName);
             if (!databaseService.tableExists(databaseMetaData, tableReference)) {
@@ -307,7 +307,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             results.add(new VerificationResultR(TABLE, message, ERROR, DATABASE));
         }
 
-        String theSchema = table.schema();
+        String theSchema = table.getSchema();
         try {
             List<SchemaReference> schemaList = databaseService.getSchemas(databaseMetaData);
             if (!isEmpty(theSchema) &&  !schemaList.stream().filter(sr -> theSchema.equals(sr.name())).findFirst().isPresent()) {
@@ -400,18 +400,18 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkMeasureColumnInMappingTable(MappingMeasure measure, MappingCube cube, MappingTable mappingTable) {
         try {
-            TableReference tableReference = getTableReference(mappingTable.schema(), mappingTable.name());
+            TableReference tableReference = getTableReference(mappingTable.getSchema(), mappingTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(
                     MEASURE_COLUMN_DOES_NOT_EXIST_IN_CUBE_TABLE,
-                    measure.name(), measure.column(), mappingTable.name(), cube.name());
+                    measure.name(), measure.column(), mappingTable.getName(), cube.name());
                 results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
             }
         } catch (SQLException e) {
             String msg = String.format(
                 COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_IN_TABLE,
-                measure.column(), mappingTable.name());
+                measure.column(), mappingTable.getName());
             results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
         }
     }
@@ -461,17 +461,17 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkPropertyHierarchyRelationTable(MappingTable parentTable, String column) {
         try {
-            TableReference tableReference = getTableReference(parentTable.schema(), parentTable.name());
+            TableReference tableReference = getTableReference(parentTable.getSchema(), parentTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(PROPERTY_COLUMN_0_DOES_NOT_EXIST_IN_HIERARCHY_TABLE,
-                    column, parentTable.name());
+                    column, parentTable.getName());
                 results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
             }
         } catch (SQLException e) {
             String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN +
                     "table {2}",
-                isEmpty(column.trim()) ? "' '" : column, PARENT_TABLE_NAME, parentTable.name());
+                isEmpty(column.trim()) ? "' '" : column, PARENT_TABLE_NAME, parentTable.getName());
             results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
         }
     }
@@ -481,7 +481,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         // hierarchy table not specified
         final MappingTable factTable = (MappingTable) cube.fact();
         try {
-            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(
@@ -491,7 +491,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             }
         } catch (SQLException e) {
             String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE,
-                isEmpty(column.trim()) ? "' '" : column, RELATON, factTable.name());
+                isEmpty(column.trim()) ? "' '" : column, RELATON, factTable.getName());
             results.add(new VerificationResultR(PROPERTY, msg, ERROR, DATABASE));
         }
     }
@@ -501,7 +501,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         // the data type of the column selected.
         Optional<ColumnDefinition> optionalColumnDefinition = Optional.empty();
         try {
-            TableReference tableReference = getTableReference(factTable.schema(), factTable.name());
+            TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
             List<ColumnDefinition> columnDefinitionList = databaseService.getColumnDefinitions(databaseMetaData, columnReference);
             optionalColumnDefinition  = columnDefinitionList.stream().findFirst();
@@ -550,25 +550,25 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnWithHierarchyRelationTable(MappingTable parentTable, String column, String fieldName, MappingHierarchy parentHierarchy) {
         try {
-            TableReference tableReference = getTableReference(parentTable.schema(), parentTable.name());
+            TableReference tableReference = getTableReference(parentTable.getSchema(), parentTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg = String.format(COLUMN_DEFINED_IN_FIELD_DOES_NOT_EXIST_IN_TABLE,
                     isEmpty(column.trim()) ? "' '" : column, fieldName,
-                    parentTable.name());
+                    parentTable.getName());
                 results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
                 checkTable((MappingTable) parentHierarchy.relation());
             }
         } catch (SQLException e) {
             String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE,
-                isEmpty(column.trim()) ? "' '" : column, fieldName, parentTable.name());
+                isEmpty(column.trim()) ? "' '" : column, fieldName, parentTable.getName());
             results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
         }
     }
 
     private void checkColumnWithCubeFctTable(String column, String fieldName, MappingCube cube) {
         try {
-            TableReference tableReference = getTableReference(((MappingTable) cube.fact()).schema(), ((MappingTable) cube.fact()).name());
+            TableReference tableReference = getTableReference(((MappingTable) cube.fact()).getSchema(), ((MappingTable) cube.fact()).getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg =
@@ -578,7 +578,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         } catch (SQLException e) {
             String msg =
                 String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE_24,
-                    isEmpty(column.trim()) ? "' '" : column, fieldName, ((MappingTable) cube.fact()).name());
+                    isEmpty(column.trim()) ? "' '" : column, fieldName, ((MappingTable) cube.fact()).getName());
             results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
         }
     }

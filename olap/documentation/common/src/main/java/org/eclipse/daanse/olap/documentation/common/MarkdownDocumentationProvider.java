@@ -213,7 +213,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             if (relation instanceof MappingTable mt) {
                 return context.getStatisticsProvider().getTableCardinality(
                     context.getConnection().getDataSource().getConnection().getCatalog(),
-                    context.getConnection().getDataSource().getConnection().getSchema(), mt.name());
+                    context.getConnection().getDataSource().getConnection().getSchema(), mt.getName());
             }
             if (relation instanceof MappingInlineTable it) {
                 result = it.rows() == null ? 0l : it.rows().size();
@@ -1157,18 +1157,18 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private Optional<String> getFactTableName(MappingRelationOrJoin relation) {
         if (relation instanceof MappingTable mt) {
-            return Optional.of(mt.name());
+            return Optional.of(mt.getName());
         }
         if (relation instanceof MappingInlineTable it) {
-            return Optional.ofNullable(it.alias());
+            return Optional.ofNullable(it.getAlias());
         }
         if (relation instanceof MappingView mv) {
-            return Optional.ofNullable(mv.alias());
+            return Optional.ofNullable(mv.getAlias());
         }
         if (relation instanceof MappingJoin mj) {
-            if (mj.relations() != null) {
-                if (mj.relations().size() > 0) {
-                    return getFactTableName(mj.relations().get(0));
+            if (mj.getRelations() != null) {
+                if (mj.getRelations().size() > 0) {
+                    return getFactTableName(mj.getRelations().get(0));
                 }
             }
         }
@@ -1186,16 +1186,16 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             return List.of();
         }
         if (relation instanceof MappingJoin mj) {
-            if (mj.relations() != null && mj.relations().size() > 1) {
+            if (mj.getRelations() != null && mj.getRelations().size() > 1) {
                 ArrayList<String> res = new ArrayList<>();
-                String t1 = getFirstTable(mj.relations().get(0));
+                String t1 = getFirstTable(mj.getRelations().get(0));
                 String flag1  = missedTableNames.contains(t1) ? NEGATIVE_FLAG : POSITIVE_FLAG;
-                String t2 = getFirstTable(mj.relations().get(1));
+                String t2 = getFirstTable(mj.getRelations().get(1));
                 String flag2  = missedTableNames.contains(t2) ? NEGATIVE_FLAG : POSITIVE_FLAG;
                 if (t1 != null && !t1.equals(t2)) {
-                    res.add(connection(t1, t2, flag1, flag2, mj.leftKey(), mj.rightKey()));
+                    res.add(connection(t1, t2, flag1, flag2, mj.getLeftKey(), mj.getRightKey()));
                 }
-                res.addAll(getFactTableConnections(mj.relations().get(1), missedTableNames));
+                res.addAll(getFactTableConnections(mj.getRelations().get(1), missedTableNames));
                 return res;
             }
         }
@@ -1216,11 +1216,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private String getFirstTable(MappingRelationOrJoin relation) {
         if (relation instanceof MappingTable mt) {
-            return mt.name();
+            return mt.getName();
         }
         if (relation instanceof MappingJoin mj) {
-            if (mj.relations() != null && mj.relations().size() > 0) {
-                return getFirstTable(mj.relations().get(0));
+            if (mj.getRelations() != null && mj.getRelations().size() > 0) {
+                return getFirstTable(mj.getRelations().get(0));
             }
         }
         return null;
@@ -1228,7 +1228,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     private String getTable(MappingRelationOrJoin relation) {
         if (relation instanceof MappingTable mt) {
-            return mt.name();
+            return mt.getName();
         }
         if (relation instanceof MappingInlineTable it) {
             //TODO
@@ -1242,8 +1242,8 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             return sb.toString();
         }
         if (relation instanceof MappingJoin mj) {
-            if (mj.relations() != null) {
-                return mj.relations().stream().map(this::getTable).collect(Collectors.joining(","));
+            if (mj.getRelations() != null) {
+                return mj.getRelations().stream().map(this::getTable).collect(Collectors.joining(","));
             }
         }
         return "";

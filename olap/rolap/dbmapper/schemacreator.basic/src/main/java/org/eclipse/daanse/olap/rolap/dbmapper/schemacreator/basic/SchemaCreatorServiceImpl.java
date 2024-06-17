@@ -338,20 +338,20 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             String schemaName = columnReference.table().get().schema().isPresent() ? columnReference.table().get().schema().get().name() : null;
             MappingLevel l = new LevelR(
                 getLevelName(tableName),
-                getLevelDescription(table.name()),
+                getLevelDescription(table.getName()),
                 List.of(),
                 getLevelCaption(),
                 true,
                 tableName,
                 columnReference.name(),
-                getColumnNameByPostfix(schemaName, table.name(), columnName, "name", databaseMetaData),
+                getColumnNameByPostfix(schemaName, table.getName(), columnName, "name", databaseMetaData),
                 getLevelOrdinalName(),
                 getLevelParentColumn(),
                 getLevelNullParentValue(),
-                getLevelColumnType(schemaName, table.name(), columnName, databaseMetaData),
+                getLevelColumnType(schemaName, table.getName(), columnName, databaseMetaData),
                 getLevelApproxRowCount(),
                 true,
-                getLevelType(schemaName, table.name(), columnName, databaseMetaData),
+                getLevelType(schemaName, table.getName(), columnName, databaseMetaData),
                 null,
                 null,
                 getLevelCaptionColumn(),
@@ -376,11 +376,11 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         DatabaseMetaData databaseMetaData
     ) {
         List<MappingLevel> result = new ArrayList<>();
-        if (relation instanceof MappingJoin join && join.relations() != null && join.relations().size() > 1) {
+        if (relation instanceof MappingJoin join && join.getRelations() != null && join.getRelations().size() > 1) {
             result.addAll(getHierarchyLevelsForJoinRight(columnReference.table().get(),
-                join.relations().get(1),
+                join.getRelations().get(1),
                 databaseMetaData));
-            if (join.relations().get(0) instanceof MappingTable t) {
+            if (join.getRelations().get(0) instanceof MappingTable t) {
                 result.addAll(getHierarchyLevels(t, columnReference, databaseMetaData));
             }
         }
@@ -396,7 +396,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         if (relationRight instanceof MappingTable t) {
             List<ImportedKey> listFK = getImportedKeys(databaseMetaData, tableReference);
             ImportedKey key =
-                listFK.stream().filter(k -> t.name().equals(k.primaryKeyColumn().table().get().name())).findFirst().orElse(null);
+                listFK.stream().filter(k -> t.getName().equals(k.primaryKeyColumn().table().get().name())).findFirst().orElse(null);
             if (key != null) {
                 result.addAll(getHierarchyLevels(t, key.primaryKeyColumn(),
                     databaseMetaData));
@@ -406,7 +406,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             if (t != null) {
                 List<ImportedKey> listFK = getImportedKeys(databaseMetaData, tableReference);
                 ImportedKey key =
-                    listFK.stream().filter(k -> t.name().equals(k.primaryKeyColumn().table().get().name())).findFirst().orElse(null);
+                    listFK.stream().filter(k -> t.getName().equals(k.primaryKeyColumn().table().get().name())).findFirst().orElse(null);
                 if (key != null) {
                     result.addAll(getHierarchyLevels(j, key.primaryKeyColumn(),
                         databaseMetaData));
@@ -426,13 +426,13 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     }
 
     private MappingTable getFistTable(MappingJoin j) {
-        if (j.relations().get(0) instanceof MappingTable t) {
+        if (j.getRelations().get(0) instanceof MappingTable t) {
             return t;
         }
-        if (j.relations().get(1) instanceof MappingTable t) {
+        if (j.getRelations().get(1) instanceof MappingTable t) {
             return t;
         }
-        if (j.relations().get(0) instanceof MappingJoin join) {
+        if (j.getRelations().get(0) instanceof MappingJoin join) {
             return getFistTable(join);
         }
         return null;

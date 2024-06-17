@@ -38,4 +38,71 @@ public record KpiR(String name,
                    String parentKpiID
 ) implements MappingKpi {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<MappingTranslation> getTranslations() {
+        return translations;
+    }
+
+    public String getDisplayFolder() {
+        return displayFolder;
+    }
+
+    public String getAssociatedMeasureGroupID() {
+        return associatedMeasureGroupID;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getGoal() {
+        return goal;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getTrend() {
+        return trend;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public String getTrendGraphic() {
+        return trendGraphic;
+    }
+
+    public String getStatusGraphic() {
+        return statusGraphic;
+    }
+
+    public String getCurrentTimeMember() {
+        return currentTimeMember;
+    }
+
+    public String getParentKpiID() {
+        return parentKpiID;
+    }
 }

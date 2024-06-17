@@ -37,12 +37,12 @@ public class SchemaExplorer {
                 // Searches first using the Left Join and then the Right.
                 MappingRelationOrJoin theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
                 if (theCurrentRelOrJoin instanceof MappingTable theTable) {
-                    if (theTable.alias() != null && theTable.alias()
+                    if (theTable.getAlias() != null && theTable.getAlias()
                             .equals(table)) {
                         // If the alias was found get its table name and return
                         // it.
-                        theTableName = theTable.name();
-                        schemaName = theTable.schema();
+                        theTableName = theTable.getName();
+                        schemaName = theTable.getSchema();
                     }
                 } else {
                     // otherwise continue down the join tree.
@@ -64,9 +64,9 @@ public class SchemaExplorer {
                 // Searches first using the Left Join and then the Right.
                 MappingRelationOrJoin theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
                 if (theCurrentRelOrJoin instanceof MappingTable theTable) {
-                    String theTableName = (theTable.alias() != null && theTable.alias()
+                    String theTableName = (theTable.getAlias() != null && theTable.getAlias()
                             .trim()
-                            .length() > 0) ? theTable.alias() : theTable.name();
+                            .length() > 0) ? theTable.getAlias() : theTable.getName();
                     joinTables.add(theTableName);
                 } else {
                     // Calls recursively collecting all table names down the
@@ -79,17 +79,17 @@ public class SchemaExplorer {
     }
 
     private static MappingRelationOrJoin left(MappingJoin join) {
-        if (join.relations() != null && !join.relations().isEmpty()) {
-            return join.relations()
+        if (join.getRelations() != null && !join.getRelations().isEmpty()) {
+            return join.getRelations()
                     .get(0);
         }
         throw new SchemaExplorerException("Join left error");
     }
 
     private static MappingRelationOrJoin right(MappingJoin join) {
-        if (join.relations() != null && join.relations()
+        if (join.getRelations() != null && join.getRelations()
                 .size() > 1) {
-            return join.relations()
+            return join.getRelations()
                     .get(1);
         }
         throw new SchemaExplorerException("Join left error");

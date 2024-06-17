@@ -22,12 +22,28 @@ public record ActionR(String name,
                       String description,
                       List<MappingAnnotation> annotations,
                       String caption
-   ) implements MappingAction {
+) implements MappingAction {
 
-		public ActionR(String name, String description, List<MappingAnnotation> annotations, String caption) {
-			this.name = name;
-			this.description = description;
-			this.annotations = annotations == null ? List.of() : annotations;
-			this.caption = caption;
-		}
+    public ActionR(String name, String description, List<MappingAnnotation> annotations, String caption) {
+        this.name = name;
+        this.description = description;
+        this.annotations = annotations == null ? List.of() : annotations;
+        this.caption = caption;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
 }

@@ -45,4 +45,32 @@ public record SharedDimensionR(String name,
 		this.foreignKey = foreignKey;
 
 	}
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public List<MappingHierarchy> getHierarchies() {
+        return hierarchies;
+    }
+
+    public String getForeignKey() {
+        return foreignKey;
+    }
 }

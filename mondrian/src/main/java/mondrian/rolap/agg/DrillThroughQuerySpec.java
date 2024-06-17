@@ -100,7 +100,7 @@ class DrillThroughQuerySpec extends AbstractQuerySpec {
         if (columnName != null) {
             // nothing
         } else if (column.getExpression() instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn col) {
-            columnName = col.name();
+            columnName = col.getName();
         } else {
             columnName = "c" + Integer.toString(columnNames.size());
         }

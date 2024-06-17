@@ -69,4 +69,55 @@ public record VirtualCubeR(String name,
         this.kpis = kpis == null ? List.of() : kpis;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getDefaultMeasure() {
+        return defaultMeasure;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public List<MappingCubeUsage> getCubeUsages() {
+        return cubeUsages;
+    }
+
+    public List<MappingVirtualCubeDimension> getVirtualCubeDimensions() {
+        return virtualCubeDimensions;
+    }
+
+    public List<MappingVirtualCubeMeasure> getVirtualCubeMeasures() {
+        return virtualCubeMeasures;
+    }
+
+    public List<MappingCalculatedMember> getCalculatedMembers() {
+        return calculatedMembers;
+    }
+
+    public List<MappingNamedSet> getNamedSets() {
+        return namedSets;
+    }
+
+    public List<MappingKpi> getKpis() {
+        return kpis;
+    }
 }

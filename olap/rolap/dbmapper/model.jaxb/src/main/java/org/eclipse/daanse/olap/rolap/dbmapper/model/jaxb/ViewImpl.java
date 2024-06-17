@@ -56,7 +56,7 @@ public class ViewImpl implements MappingView {
     }
 
     @Override
-    public String alias() {
+    public String getAlias() {
         return alias;
     }
 
@@ -72,7 +72,7 @@ public class ViewImpl implements MappingView {
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingView that) {
-            if (!Objects.equals(alias(), that.alias())) {
+            if (!Objects.equals(getAlias(), that.getAlias())) {
                 return false;
             }
             if (sqls() == null || that.sqls() == null || sqls().size() != that.sqls().size()) {

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
@@ -19,4 +19,11 @@ public record AggForeignKeyR(String factColumn,
                              String aggColumn)
         implements MappingAggForeignKey {
 
+    public String getFactColumn() {
+        return factColumn;
+    }
+
+    public String getAggColumn() {
+        return aggColumn;
+    }
 }

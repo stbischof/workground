@@ -27,10 +27,10 @@ public record NamedSetR(String name,
         String displayFolder,
         MappingFormula formulaElement)
         implements MappingNamedSet {
-	
 
 
-	public 
+
+	public
  NamedSetR(String name,
 			String description,
 			List<MappingAnnotation> annotations,
@@ -46,7 +46,34 @@ public record NamedSetR(String name,
 			this.formula = formula;
 			this.displayFolder = displayFolder;
 			this.formulaElement = formulaElement;
-		
+
 	     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getFormula() {
+        return formula;
+    }
+
+    public String getDisplayFolder() {
+        return displayFolder;
+    }
+
+    public MappingFormula getFormulaElement() {
+        return formulaElement;
+    }
 }

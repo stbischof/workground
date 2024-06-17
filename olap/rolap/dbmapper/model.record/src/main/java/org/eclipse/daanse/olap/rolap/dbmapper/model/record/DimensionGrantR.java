@@ -24,4 +24,12 @@ public record DimensionGrantR(AccessEnum access,
         this.access = access ;//== null ? AccessEnum.NONE : access;
         this.dimension = dimension;
     }
+
+    public AccessEnum getAccess() {
+        return access;
+    }
+
+    public String getDimension() {
+        return dimension;
+    }
 }

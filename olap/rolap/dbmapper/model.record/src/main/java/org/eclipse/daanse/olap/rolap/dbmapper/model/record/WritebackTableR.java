@@ -34,4 +34,15 @@ public record WritebackTableR(String schema,
 
     }
 
+    public String getSchema() {
+        return schema;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<MappingWritebackColumn> getColumns() {
+        return columns;
+    }
 }

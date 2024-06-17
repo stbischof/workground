@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
@@ -678,11 +677,11 @@ public class RolapUtil {
         table = t;
       }
       // Add SQL filter to the key
-      if (!Util.isNull(table) && table != null && !Util.isNull(table.sql())
-          && !Util.isBlank(table.sql().content()))
+      if (!Util.isNull(table) && table != null && !Util.isNull(table.getSql())
+          && !Util.isBlank(table.getSql().content()))
       {
-        rlStarKey.add(table.sql().dialect());
-        rlStarKey.add(table.sql().content());
+        rlStarKey.add(table.getSql().dialect());
+        rlStarKey.add(table.getSql().content());
       }
       return Collections.unmodifiableList(rlStarKey);
     }

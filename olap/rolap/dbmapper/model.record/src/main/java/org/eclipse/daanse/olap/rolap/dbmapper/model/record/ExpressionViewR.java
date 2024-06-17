@@ -49,4 +49,15 @@ public record ExpressionViewR(List<MappingSQL> sqls,
 
     }
 
+    public List<MappingSQL> getSqls() {
+        return sqls;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

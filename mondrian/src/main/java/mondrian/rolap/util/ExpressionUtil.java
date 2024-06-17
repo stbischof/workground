@@ -26,7 +26,7 @@ public class ExpressionUtil {
 
     public static String getExpression(MappingExpression expression, final SqlQuery query) {
         if (expression instanceof MappingColumn) {
-            return query.getDialect().quoteIdentifier(expression.table(), expression.name());
+            return query.getDialect().quoteIdentifier(expression.getTable(), expression.getName());
         }
         if (expression instanceof MappingExpressionView expressionView) {
             SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
@@ -38,7 +38,7 @@ public class ExpressionUtil {
 
     public static int hashCode(MappingExpression expression) {
         if (expression instanceof MappingColumn) {
-            return expression.name().hashCode() ^ (expression.table()==null ? 0 : expression.table().hashCode());
+            return expression.getName().hashCode() ^ (expression.getTable()==null ? 0 : expression.getTable().hashCode());
         }
         if (expression instanceof MappingExpressionView expressionView) {
             int h = 17;
@@ -55,8 +55,8 @@ public class ExpressionUtil {
             if (!(obj instanceof MappingColumn that)) {
                 return false;
             }
-            return expression.name().equals(that.name()) &&
-                Objects.equals(expression.table(), that.table());
+            return expression.getName().equals(that.getName()) &&
+                Objects.equals(expression.getTable(), that.getTable());
         }
         if (expression instanceof MappingExpressionView expressionView) {
             if (!(obj instanceof MappingExpressionView that)) {
@@ -77,7 +77,7 @@ public class ExpressionUtil {
 
     public static String genericExpression(MappingExpression expression) {
         if (expression instanceof MappingColumn column) {
-            return column.genericExpression();
+            return column.getGenericExpression();
         }
         if (expression instanceof MappingExpressionView expressionView) {
             for (int i = 0; i < expressionView.sqls().size(); i++) {
@@ -103,7 +103,7 @@ public class ExpressionUtil {
 
     public static String getTableAlias(MappingExpression expression) {
         if (expression instanceof MappingColumn) {
-            return expression.table();
+            return expression.getTable();
         }
         if (expression instanceof MappingExpressionView) {
             return null;

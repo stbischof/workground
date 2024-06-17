@@ -42,7 +42,7 @@ public class ColumnImpl implements MappingColumn {
     }
 
     @Override
-    public String table() {
+    public String getTable() {
         return table;
     }
 
@@ -52,7 +52,7 @@ public class ColumnImpl implements MappingColumn {
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
@@ -62,7 +62,7 @@ public class ColumnImpl implements MappingColumn {
 
     @Override
 	public int hashCode() {
-        return name().hashCode() ^ (table()==null ? 0 : table().hashCode());
+        return getName().hashCode() ^ (getTable()==null ? 0 : getTable().hashCode());
     }
 
     @Override
@@ -70,12 +70,12 @@ public class ColumnImpl implements MappingColumn {
             if (!(obj instanceof MappingColumn that)) {
                 return false;
             }
-            return name().equals(that.name()) &&
-                Objects.equals(table(), that.table());
+            return getName().equals(that.getName()) &&
+                Objects.equals(getTable(), that.getTable());
     }
 
     @Override
-    public String genericExpression() {
+    public String getGenericExpression() {
         return genericExpression;
     }
 }

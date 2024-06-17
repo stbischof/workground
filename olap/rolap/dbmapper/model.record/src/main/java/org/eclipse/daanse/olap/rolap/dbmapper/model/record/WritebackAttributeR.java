@@ -17,4 +17,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribut
 
 public record WritebackAttributeR(String dimension, String column) implements MappingWritebackAttribute {
 
+    public String getDimension() {
+        return dimension;
+    }
+
+    public String getColumn() {
+        return column;
+    }
 }

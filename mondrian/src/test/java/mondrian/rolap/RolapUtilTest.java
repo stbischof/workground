@@ -126,7 +126,7 @@ class RolapUtilTest {
 
   private static MappingRelation getFactRelationMock() throws Exception {
     MappingRelation factMock = mock(MappingInlineTable.class);
-    when(factMock.alias()).thenReturn(RELATION_ALIAS);
+    when(factMock.getAlias()).thenReturn(RELATION_ALIAS);
     return factMock;
   }
 

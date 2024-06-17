@@ -29,23 +29,19 @@ public class ColumnR implements MappingColumn {
         this.genericExpression = table == null ? name : (new StringBuilder(table).append(".").append(name).toString());
     }
 
-    @Override
-    public String table() {
+    public String getTable() {
         return table;
     }
 
-    @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    @Override
     public void setTable(String table) {
         this.table = table;
     }
 
-    @Override
-    public String genericExpression() {
+    public String getGenericExpression() {
         return genericExpression;
     }
 
@@ -54,12 +50,12 @@ public class ColumnR implements MappingColumn {
         if (!(obj instanceof MappingColumn that)) {
             return false;
         }
-        return name().equals(that.name()) &&
-            Objects.equals(table(), that.table());
+        return getName().equals(that.getName()) &&
+            Objects.equals(getTable(), that.getTable());
     }
 
     @Override
 	public int hashCode() {
-        return name().hashCode() ^ (table()==null ? 0 : table().hashCode());
+        return getName().hashCode() ^ (getTable()==null ? 0 : getTable().hashCode());
     }
 }

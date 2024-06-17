@@ -31,4 +31,12 @@ public record SchemaGrantR(List<MappingCubeGrant> cubeGrants,
         this.access = access ;//== null ? AccessEnum.NONE : access;
 
     }
+
+    public List<MappingCubeGrant> getCubeGrants() {
+        return cubeGrants;
+    }
+
+    public AccessEnum getAccess() {
+        return access;
+    }
 }

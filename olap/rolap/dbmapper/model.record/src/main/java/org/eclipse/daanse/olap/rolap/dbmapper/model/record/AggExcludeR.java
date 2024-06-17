@@ -30,4 +30,16 @@ public record AggExcludeR(String pattern,
         this(pattern, name, Boolean.TRUE );
     }
 
+    public String getPattern() {
+        return pattern;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Boolean ignorecase() {
+        return ignorecase;
+    }
 }

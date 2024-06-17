@@ -58,7 +58,7 @@ public class InlineTableImpl implements MappingInlineTable {
     }
 
     @Override
-    public String alias() {
+    public String getAlias() {
         return alias;
     }
     public void setAlias(String alias) {
@@ -68,7 +68,7 @@ public class InlineTableImpl implements MappingInlineTable {
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingInlineTable that) {
-            return alias().equals(that.alias());
+            return getAlias().equals(that.getAlias());
         } else {
             return false;
         }

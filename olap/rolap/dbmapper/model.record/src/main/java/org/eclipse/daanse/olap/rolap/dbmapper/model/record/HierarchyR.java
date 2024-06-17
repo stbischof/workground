@@ -86,4 +86,79 @@ public record HierarchyR(String name,
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public List<MappingLevel> getLevels() {
+        return levels;
+    }
+
+    public List<MappingMemberReaderParameter> getMemberReaderParameters() {
+        return memberReaderParameters;
+    }
+
+    public Boolean getHasAll() {
+        return hasAll;
+    }
+
+    public String getAllMemberName() {
+        return allMemberName;
+    }
+
+    public String getAllMemberCaption() {
+        return allMemberCaption;
+    }
+
+    public String getAllLevelName() {
+        return allLevelName;
+    }
+
+    public String getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public String getPrimaryKeyTable() {
+        return primaryKeyTable;
+    }
+
+    public String getDefaultMember() {
+        return defaultMember;
+    }
+
+    public String getMemberReaderClass() {
+        return memberReaderClass;
+    }
+
+    public String getUniqueKeyLevelName() {
+        return uniqueKeyLevelName;
+    }
+
+    public String getDisplayFolder() {
+        return displayFolder;
+    }
+
+    public MappingRelationOrJoin getRelation() {
+        return relation;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
 }

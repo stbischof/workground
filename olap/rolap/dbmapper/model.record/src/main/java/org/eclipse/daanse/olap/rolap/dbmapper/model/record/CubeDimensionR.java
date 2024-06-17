@@ -34,4 +34,27 @@ public record CubeDimensionR(
 
 }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getForeignKey() {
+        return foreignKey;
+    }
 }

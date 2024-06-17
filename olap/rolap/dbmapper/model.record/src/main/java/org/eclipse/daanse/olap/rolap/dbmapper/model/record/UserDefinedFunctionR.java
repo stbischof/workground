@@ -20,4 +20,15 @@ public record UserDefinedFunctionR(String name,
                                    String className, MappingScript script)
         implements MappingUserDefinedFunction {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public MappingScript getScript() {
+        return script;
+    }
 }

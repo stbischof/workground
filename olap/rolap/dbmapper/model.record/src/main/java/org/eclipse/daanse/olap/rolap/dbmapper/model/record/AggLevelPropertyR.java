@@ -17,4 +17,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggLevelProperty;
 
 public record AggLevelPropertyR(String name, String column) implements MappingAggLevelProperty {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getClumn() {
+        return column;
+    }
 }

@@ -471,7 +471,7 @@ public class RolapLevel extends LevelBase {
 
     private void checkColumn(MappingColumn nameColumn) {
         final RolapHierarchy rolapHierarchy = (RolapHierarchy) hierarchy;
-        if (nameColumn.table() == null) {
+        if (nameColumn.getTable() == null) {
             final MappingRelation table = rolapHierarchy.getUniqueTable();
             if (table == null) {
                 throw Util.newError(
@@ -480,9 +480,9 @@ public class RolapLevel extends LevelBase {
             }
             nameColumn.setTable(RelationUtil.getAlias(table));
         } else {
-            if (!rolapHierarchy.tableExists(nameColumn.table())) {
+            if (!rolapHierarchy.tableExists(nameColumn.getTable())) {
                 throw Util.newError(
-                    new StringBuilder("Table '").append(nameColumn.table())
+                    new StringBuilder("Table '").append(nameColumn.getTable())
                         .append("' not found").toString());
             }
         }

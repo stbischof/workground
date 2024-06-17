@@ -185,7 +185,7 @@ public class RolapCubeLevel extends RolapLevel {
             if (rel instanceof MappingTable table) {
                 return new ColumnR(
                     RelationUtil.getAlias(table),
-                    col.name());
+                    col.getName());
             } else if (rel instanceof MappingJoin
                 || rel instanceof MappingRelation)
             {
@@ -193,7 +193,7 @@ public class RolapCubeLevel extends RolapLevel {
                 // this may be defined in level
                 // col.table
                 String alias = getHierarchy().lookupAlias(ExpressionUtil.getTableAlias(col));
-                return new ColumnR(alias, col.name());
+                return new ColumnR(alias, col.getName());
             }
         } else if (exp instanceof MappingExpressionView) {
             // this is a limitation, in the future, we may need

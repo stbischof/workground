@@ -395,11 +395,11 @@ class MandantoriesVerifyerTest {
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(level));
         when(hierarchy.relation()).thenReturn(join);
         when(hierarchy.primaryKeyTable()).thenReturn("primaryKeyTable");
-        when(join.relations()).thenAnswer(setupDummyListAnswer(table, table));
-        when(table.name()).thenReturn("tableName");
-        when(table.sql()).thenReturn(sql);
-        when(table.hints()).thenAnswer(setupDummyListAnswer(hint));
-        when(table.aggTables()).thenAnswer(setupDummyListAnswer(aggTable));
+        when(join.getRelations()).thenAnswer(setupDummyListAnswer(table, table));
+        when(table.getName()).thenReturn("tableName");
+        when(table.getSql()).thenReturn(sql);
+        when(table.getHints()).thenAnswer(setupDummyListAnswer(hint));
+        when(table.getAggTables()).thenAnswer(setupDummyListAnswer(aggTable));
         when(level.memberFormatter()).thenReturn(elementFormatter);
         when(aggTable.aggIgnoreColumns()).thenAnswer(setupDummyListAnswer(aggColumnName));
         when(aggTable.aggForeignKeys()).thenAnswer(setupDummyListAnswer(aggForeignKey));
@@ -511,7 +511,7 @@ class MandantoriesVerifyerTest {
         when(dimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(l));
         when(hierarchy.relation()).thenReturn(table);
-        when(table.name()).thenReturn("tableName");
+        when(table.getName()).thenReturn("tableName");
         List<VerificationResult> result = verifyer.verify(schema, null);
         assertThat(result).isNotNull()
             .hasSize(20);
@@ -548,8 +548,8 @@ class MandantoriesVerifyerTest {
         when(dimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(l));
         when(hierarchy.relation()).thenReturn(join);
-        when(join.relations()).thenAnswer(setupDummyListAnswer(table, table));
-        when(table.name()).thenReturn("tableName");
+        when(join.getRelations()).thenAnswer(setupDummyListAnswer(table, table));
+        when(table.getName()).thenReturn("tableName");
         List<VerificationResult> result = verifyer.verify(schema, null);
         assertThat(result).isNotNull()
             .hasSize(36);

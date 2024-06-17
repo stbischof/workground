@@ -29,15 +29,15 @@ public class JoinUtil {
     }
 
     public static MappingRelationOrJoin left(MappingJoin join) {
-        if (join.relations() != null && !join.relations().isEmpty()) {
-            return join.relations().get(0);
+        if (join.getRelations() != null && !join.getRelations().isEmpty()) {
+            return join.getRelations().get(0);
         }
         throw new RolapRuntimeException("Join left error");
     }
 
     public static MappingRelationOrJoin right(MappingJoin join) {
-        if (join.relations() != null && join.relations().size() > 1) {
-            return join.relations().get(1);
+        if (join.getRelations() != null && join.getRelations().size() > 1) {
+            return join.getRelations().get(1);
         }
         throw new RolapRuntimeException("Join left error");
     }
@@ -51,8 +51,8 @@ public class JoinUtil {
      * alias if left is a table.
      */
     public static String getLeftAlias(MappingJoin join) {
-        if (join.leftAlias() != null) {
-            return join.leftAlias();
+        if (join.getLeftAlias() != null) {
+            return join.getLeftAlias();
         }
         MappingRelationOrJoin left = left(join);
         if (left instanceof MappingRelation relation) {
@@ -67,8 +67,8 @@ public class JoinUtil {
      * alias if right is a table.
      */
     public static String getRightAlias(MappingJoin join) {
-        if (join.rightAlias() != null) {
-            return join.rightAlias();
+        if (join.getRightAlias() != null) {
+            return join.getRightAlias();
         }
         MappingRelationOrJoin right = right(join);
         if (right instanceof MappingRelation relation) {

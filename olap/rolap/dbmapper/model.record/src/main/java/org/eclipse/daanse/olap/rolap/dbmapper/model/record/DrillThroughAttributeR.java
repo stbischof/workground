@@ -21,4 +21,19 @@ public record DrillThroughAttributeR(String dimension,
                                      String property)
         implements MappingDrillThroughAttribute {
 
+    public String getDimension() {
+        return dimension;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public String getHierarchy() {
+        return hierarchy;
+    }
+
+    public String getProperty() {
+        return property;
+    }
 }

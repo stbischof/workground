@@ -1428,7 +1428,7 @@ public TupleList readTuples(
             sqlQuery.getDialect().quoteIdentifier(
                 ExpressionUtil.getTableAlias(propExp),
 
-                column.name() );
+                column.getName() );
         } else {
           propSql = getExpression( property.getExp(), sqlQuery );
         }

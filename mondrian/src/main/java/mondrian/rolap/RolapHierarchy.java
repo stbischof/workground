@@ -912,7 +912,7 @@ public class RolapHierarchy extends HierarchyBase {
         RolapStar.Table targetTable)
     {
         if (relation instanceof MappingTable table) {
-            if (table.name().equals(targetTable.getTableName())) {
+            if (table.getName().equals(targetTable.getTableName())) {
                 return relation;
             } else {
                 // Not the same table if table names are different
@@ -1236,7 +1236,7 @@ public class RolapHierarchy extends HierarchyBase {
         int index = peerHier.levels.length;
         int flags = src.getFlags() &~ RolapLevel.FLAG_UNIQUE;
         MappingExpression keyExp =
-            new ColumnR(clos.table().name(), clos.parentColumn());
+            new ColumnR(clos.table().getName(), clos.parentColumn());
 
         RolapLevel level =
             new RolapLevel(
@@ -1260,7 +1260,7 @@ public class RolapHierarchy extends HierarchyBase {
         // indirect report of every employee (which is more than the number
         // of employees).
         flags = src.getFlags() | RolapLevel.FLAG_UNIQUE;
-        keyExp = new ColumnR(clos.table().name(), clos.childColumn());
+        keyExp = new ColumnR(clos.table().getName(), clos.childColumn());
         RolapLevel sublevel = new RolapLevel(
             peerHier,
             "Item",

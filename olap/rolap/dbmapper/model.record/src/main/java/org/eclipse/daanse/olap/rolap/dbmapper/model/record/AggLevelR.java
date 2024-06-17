@@ -44,4 +44,32 @@ public record AggLevelR(String column,
 		this.collapsed = collapsed == null ? Boolean.TRUE : collapsed;
 		this.properties = properties == null ? List.of() : properties;
 	}
+
+    public String getColumn() {
+        return column;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getOrdinalColumn() {
+        return ordinalColumn;
+    }
+
+    public String getNameColumn() {
+        return nameColumn;
+    }
+
+    public String getCaptionColumn() {
+        return captionColumn;
+    }
+
+    public Boolean getCollapsed() {
+        return collapsed;
+    }
+
+    public List<MappingAggLevelProperty> getProperties() {
+        return properties;
+    }
 }

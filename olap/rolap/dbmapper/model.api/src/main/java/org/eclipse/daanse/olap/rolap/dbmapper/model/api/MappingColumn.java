@@ -17,5 +17,5 @@ public interface MappingColumn extends MappingExpression{
 
     void setTable(String alias);
 
-    String genericExpression();
+    String getGenericExpression();
 }

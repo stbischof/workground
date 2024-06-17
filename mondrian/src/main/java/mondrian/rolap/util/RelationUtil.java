@@ -35,17 +35,17 @@ public class RelationUtil {
 
     public static MappingRelation find(MappingRelationOrJoin relationOrJoin, String tableName) {
         if (relationOrJoin instanceof MappingInlineTable inlineTable) {
-            return tableName.equals(inlineTable.alias()) ? (MappingRelation) relationOrJoin : null;
+            return tableName.equals(inlineTable.getAlias()) ? (MappingRelation) relationOrJoin : null;
         }
         if (relationOrJoin instanceof MappingTable table) {
-            if (tableName.equals(table.name())) {
+            if (tableName.equals(table.getName())) {
                 return (MappingRelation) relationOrJoin;
             } else {
                     return null; //old version of code had wrong condition with equals
             }
         }
         if (relationOrJoin instanceof MappingView view) {
-            if (tableName.equals(view.alias())) {
+            if (tableName.equals(view.getAlias())) {
                 return (MappingRelation) relationOrJoin;
             } else {
                 return null;
@@ -65,17 +65,17 @@ public class RelationUtil {
 
     public static String getAlias(MappingRelation relation) {
         if (relation instanceof MappingTable table) {
-            return (relation.alias() != null) ? relation.alias() : table.name();
+            return (relation.getAlias() != null) ? relation.getAlias() : table.getName();
         }
         else {
-            return relation.alias();
+            return relation.getAlias();
         }
     }
 
     public static boolean equals(MappingRelation relation, Object o) {
         if (relation instanceof MappingView view) {
             if (o instanceof MappingView that) {
-                if (!Objects.equals(relation.alias(), that.alias())) {
+                if (!Objects.equals(relation.getAlias(), that.getAlias())) {
                     return false;
                 }
                 if (view.sqls() == null || that.sqls() == null || view.sqls().size() != that.sqls().size()) {
@@ -95,16 +95,16 @@ public class RelationUtil {
         }
         if (relation instanceof MappingTable table) {
             if (o instanceof MappingTable that) {
-                return table.name().equals(that.name()) &&
-                    Objects.equals(relation.alias(), that.alias()) &&
-                    Objects.equals(table.schema(), that.schema());
+                return table.getName().equals(that.getName()) &&
+                    Objects.equals(relation.getAlias(), that.getAlias()) &&
+                    Objects.equals(table.getSchema(), that.getSchema());
             } else {
                 return false;
             }
         }
         if (relation instanceof MappingInlineTable) {
             if (o instanceof MappingInlineTable that) {
-                return relation.alias().equals(that.alias());
+                return relation.getAlias().equals(that.getAlias());
             } else {
                 return false;
             }
@@ -125,14 +125,14 @@ public class RelationUtil {
 
     private static Object toString(MappingRelation relation) {
         if (relation instanceof MappingTable table) {
-            return (table.schema() == null) ?
-                table.name() :
-                new StringBuilder(table.schema()).append(".").append(table.name()).toString();
+            return (table.getSchema() == null) ?
+                table.getName() :
+                new StringBuilder(table.getSchema()).append(".").append(table.getName()).toString();
         }
         if (relation instanceof MappingJoin join) {
             return new StringBuilder("(").append(left(join)).append(") join (").append(right(join)).append(") on ")
-                .append((join).leftAlias()).append(".").append((join).leftKey()).append(" = ")
-                .append((join).rightAlias()).append(".").append((join).rightKey()).toString();
+                .append((join).getLeftAlias()).append(".").append((join).getLeftKey()).append(" = ")
+                .append((join).getRightAlias()).append(".").append((join).getRightKey()).toString();
         }
         if (relation instanceof MappingInlineTable) {
             return "<inline data>";

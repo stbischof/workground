@@ -20,4 +20,15 @@ public record AggMeasureR(String column,
                           String rollupType)
         implements MappingAggMeasure {
 
+    public String getColumn() {
+        return column;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getRollupType() {
+        return rollupType;
+    }
 }

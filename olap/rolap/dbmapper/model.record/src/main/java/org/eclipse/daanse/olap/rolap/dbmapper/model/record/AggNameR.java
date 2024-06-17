@@ -58,4 +58,39 @@ public record AggNameR(String name,
 
  }
 
+    public String getName() {
+        return name;
+    }
+
+    public MappingAggColumnName getAggFactCount() {
+        return aggFactCount;
+    }
+
+    public List<MappingAggMeasure> getAggMeasures() {
+        return aggMeasures;
+    }
+
+    public List<MappingAggColumnName> getAggIgnoreColumns() {
+        return aggIgnoreColumns;
+    }
+
+    public List<MappingAggForeignKey> getAggForeignKeys() {
+        return aggForeignKeys;
+    }
+
+    public List<MappingAggLevel> getAggLevels() {
+        return aggLevels;
+    }
+
+    public Boolean getIgnorecase() {
+        return ignorecase;
+    }
+
+    public List<MappingAggMeasureFactCount> getMeasuresFactCounts() {
+        return measuresFactCounts;
+    }
+
+    public String getApproxRowCount() {
+        return approxRowCount;
+    }
 }

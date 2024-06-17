@@ -25,7 +25,7 @@ public record InlineTableR(List<MappingColumnDef> columnDefs,
         implements MappingInlineTable {
 
     public InlineTableR(MappingInlineTable inlineTable) {
-        this(new ArrayList<>(inlineTable.columnDefs()), new ArrayList<>(inlineTable.rows()), inlineTable.alias());
+        this(new ArrayList<>(inlineTable.columnDefs()), new ArrayList<>(inlineTable.rows()), inlineTable.getAlias());
     }
 
     public InlineTableR(MappingInlineTable inlineTable, String alias) {
@@ -41,7 +41,7 @@ public record InlineTableR(List<MappingColumnDef> columnDefs,
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingInlineTable that) {
-            return alias().equals(that.alias());
+            return getAlias().equals(that.getAlias());
         } else {
             return false;
         }
@@ -55,5 +55,20 @@ public record InlineTableR(List<MappingColumnDef> columnDefs,
     @Override
 	public int hashCode() {
         return toString().hashCode();
+    }
+
+    @Override
+    public List<MappingColumnDef> columnDefs() {
+        return columnDefs;
+    }
+
+    @Override
+    public List<MappingRow> rows() {
+        return rows;
+    }
+
+    @Override
+    public String getAlias() {
+        return alias;
     }
 }

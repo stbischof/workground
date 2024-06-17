@@ -70,4 +70,59 @@ public record CalculatedMemberR(String name,
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getFormatString() {
+        return formatString;
+    }
+
+    public String getDimension() {
+        return dimension;
+    }
+
+    public String DisplayFolder() {
+        return displayFolder;
+    }
+
+    public String getFormula() {
+        return formula;
+    }
+
+    public List<MappingCalculatedMemberProperty> getCalculatedMemberProperties() {
+        return calculatedMemberProperties;
+    }
+
+    public String getHierarchy() {
+        return hierarchy;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public MappingCellFormatter getCellFormatter() {
+        return cellFormatter;
+    }
+
+    public MappingFormula getFormulaElement() {
+        return formulaElement;
+    }
 }

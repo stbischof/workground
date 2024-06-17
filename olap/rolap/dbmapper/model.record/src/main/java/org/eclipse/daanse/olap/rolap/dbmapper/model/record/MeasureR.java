@@ -75,4 +75,63 @@ public record MeasureR(String name,
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public MeasureDataTypeEnum getDatatype() {
+        return datatype;
+    }
+
+    public String getFormatString() {
+        return formatString;
+    }
+
+    public String getAggregator() {
+        return aggregator;
+    }
+
+    public String getFormatter() {
+        return formatter;
+    }
+
+    public String getDisplayFolder() {
+        return displayFolder;
+    }
+
+    public MappingExpressionView getMeasureExpression() {
+        return measureExpression;
+    }
+
+    public List<MappingCalculatedMemberProperty> getCalculatedMemberProperties() {
+        return calculatedMemberProperties;
+    }
+
+    public MappingElementFormatter getCellFormatter() {
+        return cellFormatter;
+    }
+
+    public String getBackColor() {
+        return backColor;
+    }
 }

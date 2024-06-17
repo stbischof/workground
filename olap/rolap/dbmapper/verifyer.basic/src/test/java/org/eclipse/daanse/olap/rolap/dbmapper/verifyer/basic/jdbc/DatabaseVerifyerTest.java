@@ -91,8 +91,8 @@ class DatabaseVerifyerTest {
         when(rs.next()).thenReturn(false);
         when(schema.cubes()).thenAnswer(setupDummyListAnswer(cube));
         when(cube.fact()).thenReturn(table);
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(2);
@@ -117,8 +117,8 @@ class DatabaseVerifyerTest {
         when(cube.fact()).thenReturn(table);
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
         when(measure.column()).thenReturn("column");
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(1);
@@ -146,8 +146,8 @@ class DatabaseVerifyerTest {
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
         when(measure.column()).thenReturn("column");
         when(measure.aggregator()).thenReturn("sum");
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(3);
@@ -172,8 +172,8 @@ class DatabaseVerifyerTest {
         when(cube.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimension));
         when(dimension.foreignKey()).thenReturn("foreignKey");
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(3);
@@ -202,8 +202,8 @@ class DatabaseVerifyerTest {
         when(hierarchy.primaryKey()).thenReturn("primaryKey");
 
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(4);
@@ -235,8 +235,8 @@ class DatabaseVerifyerTest {
         when(level.properties()).thenAnswer(setupDummyListAnswer(property));
         when(property.column()).thenReturn("column");
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(7);
@@ -269,8 +269,8 @@ class DatabaseVerifyerTest {
         when(level.table()).thenReturn("table");
         when(property.column()).thenReturn("column");
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(5);
@@ -305,8 +305,8 @@ class DatabaseVerifyerTest {
 
         when(property.column()).thenReturn("column");
         when(cube.measures()).thenAnswer(setupDummyListAnswer(measure));
-        when(table.name()).thenReturn("name");
-        when(table.schema()).thenReturn("schema");
+        when(table.getName()).thenReturn("name");
+        when(table.getSchema()).thenReturn("schema");
         List<VerificationResult> result = verifyer.verify(schema, dataSource);
         assertThat(result).isNotNull()
             .hasSize(7);

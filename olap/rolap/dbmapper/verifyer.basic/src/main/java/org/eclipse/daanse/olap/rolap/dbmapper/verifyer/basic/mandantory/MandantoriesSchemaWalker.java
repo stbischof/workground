@@ -111,8 +111,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             }
 
             if (cube.fact() == null
-                || ((cube.fact() instanceof MappingTable table) && isEmpty(table.name()))
-                || ((cube.fact() instanceof MappingView view) && isEmpty(view.alias()))) {
+                || ((cube.fact() instanceof MappingTable table) && isEmpty(table.getName()))
+                || ((cube.fact() instanceof MappingView view) && isEmpty(view.getAlias()))) {
                 String msg = String.format(FACT_NAME_MUST_BE_SET, orNotSet(cube.name()));
                 results.add(new VerificationResultR(CUBE, msg, ERROR,
                     Cause.SCHEMA));
@@ -351,15 +351,15 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     protected void checkJoin(MappingJoin join) {
         super.checkJoin(join);
         if (join != null) {
-            if (isEmpty(join.leftKey())) {
+            if (isEmpty(join.getLeftKey())) {
                 results.add(new VerificationResultR(JOIN, JOIN_LEFT_KEY_MUST_BE_SET, ERROR,
                     Cause.SCHEMA));
             }
-            if (isEmpty(join.rightKey())) {
+            if (isEmpty(join.getRightKey())) {
                 results.add(new VerificationResultR(JOIN, JOIN_RIGHT_KEY_MUST_BE_SET,
                     ERROR, Cause.SCHEMA));
             }
-            if (join.relations() == null || join.relations().size() < 2) {
+            if (join.getRelations() == null || join.getRelations().size() < 2) {
                 results.add(new VerificationResultR(JOIN, JOIN_RELATION_MUST_BE_SET_LEFT_AND_RIGHT,
                     ERROR, Cause.SCHEMA));
             }
@@ -370,12 +370,12 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     protected void checkTable(MappingTable table) {
         super.checkTable(table);
         if (table != null) {
-            if (isEmpty(table.name())) {
+            if (isEmpty(table.getName())) {
                 results.add(
                     new VerificationResultR(TABLE, TABLE_NAME_MUST_BE_SET, ERROR, Cause.DATABASE));
             }
 
-            String theSchema = table.schema();
+            String theSchema = table.getSchema();
             if (isEmpty(theSchema) && isSchemaRequired()) {
                 results.add(
                     new VerificationResultR(TABLE, SCHEMA_MUST_BE_SET, WARNING, Cause.DATABASE));
@@ -628,7 +628,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkView(MappingView view) {
         super.checkView(view);
-        if (view != null && isEmpty(view.alias())) {
+        if (view != null && isEmpty(view.getAlias())) {
             results.add(new VerificationResultR(VIEW, VIEW_ALIAS_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
         }
@@ -784,7 +784,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkColumn(MappingColumn column) {
         super.checkColumn(column);
-        if (column != null && column.name() == null) {
+        if (column != null && column.getName() == null) {
             results.add(new VerificationResultR(COLUMN, COLUMN_NAME_MUST_BE_SET,
                 ERROR, Cause.SCHEMA));
         }
@@ -1002,8 +1002,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
                                     ERROR, Cause.SCHEMA));
                             }
                         }
-                    }                	
-                }                
+                    }
+                }
             }
             if (isEmpty(writebackAttribute.column())) {
                 results.add(new VerificationResultR(WRITEBACK_ATTRIBUTE, WRITEBACK_ATTRIBUTE_COLUMN_MUST_BE_SET,
@@ -1116,9 +1116,9 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
         }
 
         if (!isEmpty(primaryKeyTable) && (hierarchy.relation() instanceof MappingTable theTable)) {
-            String compareTo = (theTable.alias() != null && theTable.alias()
+            String compareTo = (theTable.getAlias() != null && theTable.getAlias()
                 .trim()
-                .length() > 0) ? theTable.alias() : theTable.name();
+                .length() > 0) ? theTable.getAlias() : theTable.getName();
             if (!primaryKeyTable.equals(compareTo)) {
                 String msg = String.format(HIERARCHY_TABLE_VALUE_DOES_NOT_CORRESPOND_TO_HIERARCHY_RELATION,
                     orNotSet(cubeDimension.name()));
@@ -1209,9 +1209,9 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
         if (!isEmpty(table) && parentHierarchy != null
             && parentHierarchy.relation() instanceof MappingTable parentTable) {
             MappingTable theTable = parentTable;
-            String compareTo = (theTable.alias() != null && theTable.alias()
+            String compareTo = (theTable.getAlias() != null && theTable.getAlias()
                 .trim()
-                .length() > 0) ? theTable.alias() : theTable.name();
+                .length() > 0) ? theTable.getAlias() : theTable.getName();
             if (!table.equals(compareTo)) {
                 results.add(new VerificationResultR(LEVEL,
                     TABLE_VALUE_DOES_NOT_CORRESPOND_TO_HIERARCHY_RELATION, ERROR, Cause.SCHEMA));

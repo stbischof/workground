@@ -19,5 +19,12 @@ public record AnnotationR(String name,
                           String content)
         implements MappingAnnotation {
 
+    public String getName() {
+        return name;
+    }
+
+    public String getContent() {
+        return content;
+    }
 }
 

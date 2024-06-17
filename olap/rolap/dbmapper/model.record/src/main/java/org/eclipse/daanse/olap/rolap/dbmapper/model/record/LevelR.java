@@ -113,4 +113,112 @@ public record LevelR(String name,
         this.internalType = internalType;// == null ? InternalTypeEnum.STRING : internalType;
         this.memberFormatter = memberFormatter;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public String getNameColumn() {
+        return nameColumn;
+    }
+
+    public String getOrdinalColumn() {
+        return ordinalColumn;
+    }
+
+    public String getParentColumn() {
+        return parentColumn;
+    }
+
+    public String getNullParentValue() {
+        return nullParentValue;
+    }
+
+    public TypeEnum getType() {
+        return type;
+    }
+
+    public String getApproxRowCount() {
+        return approxRowCount;
+    }
+
+    public Boolean getUniqueMembers() {
+        return uniqueMembers;
+    }
+
+    public LevelTypeEnum getLevelType() {
+        return levelType;
+    }
+
+    public HideMemberIfEnum getHideMemberIf() {
+        return hideMemberIf;
+    }
+
+    public String getFormatter() {
+        return formatter;
+    }
+
+    public String getCaptionColumn() {
+        return captionColumn;
+    }
+
+    public MappingExpressionView getKeyExpression() {
+        return keyExpression;
+    }
+
+    public MappingExpressionView getNameExpression() {
+        return nameExpression;
+    }
+
+    public MappingExpressionView getCaptionExpression() {
+        return captionExpression;
+    }
+
+    public MappingExpressionView getOrdinalExpression() {
+        return ordinalExpression;
+    }
+
+    public MappingExpressionView getParentExpression() {
+        return parentExpression;
+    }
+
+    public MappingClosure getClosure() {
+        return closure;
+    }
+
+    public List<MappingProperty> getProperties() {
+        return properties;
+    }
+
+    public InternalTypeEnum getInternalType() {
+        return internalType;
+    }
+
+    public MappingElementFormatter getMemberFormatter() {
+        return memberFormatter;
+    }
 }

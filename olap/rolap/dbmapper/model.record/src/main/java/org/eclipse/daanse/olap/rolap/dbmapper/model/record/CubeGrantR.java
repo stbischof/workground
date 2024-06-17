@@ -25,7 +25,7 @@ public record CubeGrantR(String cube,
                          List<MappingHierarchyGrant> hierarchyGrants)
         implements MappingCubeGrant {
 
-	
+
 
 
 	public  CubeGrantR(String cube,
@@ -37,6 +37,22 @@ public record CubeGrantR(String cube,
 	this.access = access;
 	this.dimensionGrants = dimensionGrants == null ? List.of() : dimensionGrants;
 	this.hierarchyGrants = hierarchyGrants == null ? List.of() : hierarchyGrants;
-		
+
  }
+
+    public String getCube() {
+        return cube;
+    }
+
+    public String getAccess() {
+        return access;
+    }
+
+    public List<MappingDimensionGrant> getDimensionGrants() {
+        return dimensionGrants;
+    }
+
+    public List<MappingHierarchyGrant> getHierarchyGrants() {
+        return hierarchyGrants;
+    }
 }

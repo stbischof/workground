@@ -73,5 +73,55 @@ public record SchemaR(String name,
 	this.documentation = documentation;
 	}
 
+    public String getName() {
+        return name;
+    }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public String getMeasuresCaption() {
+        return measuresCaption;
+    }
+
+    public String getDefaultRole() {
+        return defaultRole;
+    }
+
+    public List<MappingParameter> getParameters() {
+        return parameters;
+    }
+
+    public List<MappingPrivateDimension> getDimensions() {
+        return dimensions;
+    }
+
+    public List<MappingCube> getCubes() {
+        return cubes;
+    }
+
+    public List<MappingVirtualCube> getVirtualCubes() {
+        return virtualCubes;
+    }
+
+    public List<MappingNamedSet> getNamedSets() {
+        return namedSets;
+    }
+
+    public List<MappingRole> getRoles() {
+        return roles;
+    }
+
+    public List<MappingUserDefinedFunction> getUserDefinedFunctions() {
+        return userDefinedFunctions;
+    }
+
+    public Optional<MappingDocumentation> getDocumentation() {
+        return documentation;
+    }
 }

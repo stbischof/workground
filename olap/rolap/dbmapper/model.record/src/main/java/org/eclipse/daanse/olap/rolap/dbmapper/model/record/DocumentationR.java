@@ -17,4 +17,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDocumentation;
 
 public record DocumentationR(String documentation) implements MappingDocumentation {
 
+    public String getDocumentation() {
+        return documentation;
+    }
 }

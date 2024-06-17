@@ -177,7 +177,7 @@ class SchemaCreatorServiceImplTest {
 
         assertThat(s.cubes()).hasSize(1);
         MappingTable t = (MappingTable)c.fact();
-        assertThat(t.name()).isEqualTo("population");
+        assertThat(t.getName()).isEqualTo("population");
 
         marshallSchema(s);
     }
@@ -363,7 +363,7 @@ class SchemaCreatorServiceImplTest {
         assertThat(c.fact()).isNotNull();
         assertThat(c.fact()).isInstanceOf(MappingTable.class);
         MappingTable t = (MappingTable)c.fact();
-        assertThat(t.name()).isEqualTo("employees");
+        assertThat(t.getName()).isEqualTo("employees");
         assertThat(c.dimensionUsageOrDimensions()).hasSize(8);
         assertThat(c.dimensionUsageOrDimensions().get(0)).isInstanceOf(MappingDimensionUsage.class);
         assertThat(c.dimensionUsageOrDimensions().get(1)).isInstanceOf(MappingDimensionUsage.class);

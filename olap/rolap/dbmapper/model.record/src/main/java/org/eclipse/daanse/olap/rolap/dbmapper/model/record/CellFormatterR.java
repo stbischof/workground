@@ -18,4 +18,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 
 public record  CellFormatterR(String className, MappingScript script) implements MappingCellFormatter {
 
+    public String getClassName() {
+        return className;
+    }
+
+    public MappingScript getScript() {
+        return script;
+    }
 }

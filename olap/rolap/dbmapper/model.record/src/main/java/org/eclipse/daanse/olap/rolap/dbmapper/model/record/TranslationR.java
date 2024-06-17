@@ -26,4 +26,23 @@ public record TranslationR(
     List<MappingAnnotation> annotations
 ) implements MappingTranslation {
 
+    public long getLanguage() {
+        return language;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDisplayFolder() {
+        return displayFolder;
+    }
+
+    public List<MappingAnnotation> getAnnotations() {
+        return annotations;
+    }
 }

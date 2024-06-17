@@ -17,4 +17,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 
 public record FormulaR(String cdata)
         implements MappingFormula {
+
+    public String getCdata() {
+        return cdata;
+    }
 }

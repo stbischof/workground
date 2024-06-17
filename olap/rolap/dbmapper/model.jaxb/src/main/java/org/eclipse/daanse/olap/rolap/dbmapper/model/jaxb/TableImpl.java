@@ -53,7 +53,7 @@ public class TableImpl implements MappingTable {
     protected String alias;
 
     @Override
-    public MappingSQL sql() {
+    public MappingSQL getSql() {
         return sql;
     }
 
@@ -62,7 +62,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public List<MappingAggExclude> aggExcludes() {
+    public List<MappingAggExclude> getAggExcludes() {
         if (aggExcludes == null) {
             aggExcludes = new ArrayList<>();
         }
@@ -70,7 +70,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public List<MappingAggTable> aggTables() {
+    public List<MappingAggTable> getAggTables() {
         if (aggTables == null) {
             aggTables = new ArrayList<>();
         }
@@ -78,7 +78,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public List<MappingHint> hints() {
+    public List<MappingHint> getHints() {
         if (hints == null) {
             hints = new ArrayList<>();
         }
@@ -86,7 +86,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
@@ -95,7 +95,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public String schema() {
+    public String getSchema() {
         return schema;
     }
 
@@ -104,7 +104,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public String alias() {
+    public String getAlias() {
         return alias;
     }
 
@@ -115,9 +115,9 @@ public class TableImpl implements MappingTable {
     @Override
 	public boolean equals(Object o) {
         if (o instanceof MappingTable that) {
-            return this.name.equals(that.name()) &&
-                Objects.equals(this.alias, that.alias()) &&
-                Objects.equals(this.schema, that.schema());
+            return this.name.equals(that.getName()) &&
+                Objects.equals(this.alias, that.getAlias()) &&
+                Objects.equals(this.schema, that.getSchema());
         } else {
             return false;
         }

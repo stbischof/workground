@@ -112,7 +112,7 @@ class DbCreatorServiceImplTest {
         when(schema.dimensions()).thenAnswer(setupDummyListAnswer(privateDimension));
         when(privateDimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.relation()).thenReturn(table);
-        when(table.name()).thenReturn("tableName");
+        when(table.getName()).thenReturn("tableName");
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(level1, level2));
         when(hierarchy.primaryKey()).thenReturn("id");
         when(level1.type()).thenReturn(TypeEnum.INTEGER);
@@ -181,7 +181,7 @@ class DbCreatorServiceImplTest {
         when(schema.name()).thenReturn("schemaName");
         when(privateDimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.relation()).thenReturn(table);
-        when(table.name()).thenReturn("tableName");
+        when(table.getName()).thenReturn("tableName");
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(level1, level2));
         when(hierarchy.primaryKey()).thenReturn("id");
         when(level1.type()).thenReturn(TypeEnum.INTEGER);
@@ -207,7 +207,7 @@ class DbCreatorServiceImplTest {
         when(measure2.column()).thenReturn("measure2Column");
         when(measure1.datatype()).thenReturn(MeasureDataTypeEnum.NUMERIC);
 
-        when(tableFact.name()).thenReturn("tableFact");
+        when(tableFact.getName()).thenReturn("tableFact");
         when(dimensionUsage.foreignKey()).thenReturn("tableFactId");
 
         dbCreatorService = dbCreatorServiceFactory.create(dataSource);
@@ -286,7 +286,7 @@ class DbCreatorServiceImplTest {
         when(schema.name()).thenReturn("schemaName");
         when(privateDimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.relation()).thenReturn(table);
-        when(table.name()).thenReturn("tableName");
+        when(table.getName()).thenReturn("tableName");
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(level1, level2));
         when(hierarchy.primaryKey()).thenReturn("id");
         when(level1.type()).thenReturn(TypeEnum.INTEGER);
@@ -306,7 +306,7 @@ class DbCreatorServiceImplTest {
         when(property1.type()).thenReturn(PropertyTypeEnum.INTEGER);
         when(schema.cubes()).thenAnswer(setupDummyListAnswer(cube));
         when(cube.fact()).thenReturn(inlineTable);
-        when(inlineTable.alias()).thenReturn("inlineTableName");
+        when(inlineTable.getAlias()).thenReturn("inlineTableName");
         when(inlineTable.columnDefs()).thenAnswer(setupDummyListAnswer(columnDef1, columnDef2));
         when(columnDef1.name()).thenReturn("columnDef1Name");
         when(columnDef2.name()).thenReturn("columnDef2Name");
