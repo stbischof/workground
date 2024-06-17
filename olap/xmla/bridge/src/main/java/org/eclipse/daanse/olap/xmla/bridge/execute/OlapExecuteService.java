@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap.xmla.bridge.execute;
 
 import mondrian.olap.MondrianException;
 import mondrian.olap.UpdateImpl;
+import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapCube;
 import mondrian.xmla.XmlaException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
@@ -251,22 +252,22 @@ public class OlapExecuteService implements ExecuteService {
 				String statement = statementRequest.command().statement();
 				if (statement != null && statement.length() > 0) {
 
-                    QueryComponent queryComponent = context.getConnection().parseStatement(statement);
+                    QueryComponent queryComponent = context.getConnection(new RolapConnectionPropsR(userPrincipal.getRole())).parseStatement(statement);
 
 					if (queryComponent instanceof DrillThrough) {
-						return executeDrillThroughQuery(context, statementRequest);
+						return executeDrillThroughQuery(context, userPrincipal, statementRequest);
 					} else if (queryComponent instanceof CalculatedFormula calculatedFormula) {
-						return executeCalculatedFormula(context, calculatedFormula);
+						return executeCalculatedFormula(context, userPrincipal, calculatedFormula);
 					} else if (queryComponent instanceof DmvQuery dmvQuery) {
-						return executeDmvQuery(dmvQuery, statementRequest);
+						return executeDmvQuery(dmvQuery, userPrincipal, statementRequest);
 					} else if (queryComponent instanceof Refresh refresh) {
-						return executeRefresh(context, refresh);
+						return executeRefresh(context, userPrincipal, refresh);
 					} else if (queryComponent instanceof Update update) {
 						return executeUpdate(context, statementRequest, update);
 					} else if (queryComponent instanceof TransactionCommand transactionCommand) {
 						return executeTransactionCommand(context, userPrincipal, statementRequest, transactionCommand);
 					} else if (queryComponent instanceof Query query){
-						return executeQuery(statementRequest,query);
+						return executeQuery(statementRequest, userPrincipal, query);
 					}
 				}
 
@@ -275,7 +276,7 @@ public class OlapExecuteService implements ExecuteService {
 		return new StatementResponseR(null, null);
 	}
 
-    private StatementResponse executeQuery(StatementRequest statementRequest, Query query) {
+    private StatementResponse executeQuery(StatementRequest statementRequest, UserPrincipal userPrincipal, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         MappingRelation fact = null;
         try {
@@ -425,7 +426,7 @@ public class OlapExecuteService implements ExecuteService {
     }
 
 
-    private StatementResponse executeRefresh(Context context, Refresh refresh) {
+    private StatementResponse executeRefresh(Context context, UserPrincipal userPrincipal, Refresh refresh) {
         Connection connection = context.getConnection();
         Schema schema = connection.getSchema();
         Cube cube = schema.lookupCube(refresh.getCubeName(), true);
@@ -440,7 +441,7 @@ public class OlapExecuteService implements ExecuteService {
 
     }
 
-    private StatementResponse executeDmvQuery(DmvQuery dmvQuery, StatementRequest statementRequest) {
+    private StatementResponse executeDmvQuery(DmvQuery dmvQuery, UserPrincipal userPrincipal, StatementRequest statementRequest) {
         String tableName = dmvQuery.getTableName().toUpperCase();
         RowSetR rowSet = null;
         switch (tableName) {
@@ -716,7 +717,7 @@ public class OlapExecuteService implements ExecuteService {
         return new StatementResponseR(null, rowSet);
     }
 
-    private StatementResponse executeCalculatedFormula(Context context, CalculatedFormula calculatedFormula) {
+    private StatementResponse executeCalculatedFormula(Context context, UserPrincipal userPrincipal, CalculatedFormula calculatedFormula) {
         Formula formula = calculatedFormula.getFormula();
         Connection connection = context.getConnection();
         final Schema schema = connection.getSchema();
@@ -729,7 +730,7 @@ public class OlapExecuteService implements ExecuteService {
         return new StatementResponseR(null, null);
     }
 
-    private StatementResponse executeDrillThroughQuery(Context context, StatementRequest statementRequest) {
+    private StatementResponse executeDrillThroughQuery(Context context, UserPrincipal userPrincipal, StatementRequest statementRequest) {
         Optional<String> tabFields = statementRequest.properties().tableFields();
         Optional<Boolean> advanced = statementRequest.properties().advancedFlag();
         final boolean enableRowCount = context.getConfig().enableTotalCount();
@@ -741,7 +742,7 @@ public class OlapExecuteService implements ExecuteService {
         RolapCube cube = null;
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         try {
-            connection = context.getConnection();
+            connection = context.getConnection(new RolapConnectionPropsR(userPrincipal.getRole()));
             QueryComponent parseTree;
             try {
                 parseTree =

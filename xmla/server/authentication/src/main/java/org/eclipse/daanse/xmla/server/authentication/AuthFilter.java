@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   SmartCity Jena - initial
+ *   Stefan Bischof (bipolis.org) - initial
+ */
 package org.eclipse.daanse.xmla.server.authentication;
 
 import jakarta.servlet.Filter;
@@ -23,6 +36,12 @@ import static org.osgi.service.servlet.context.ServletContextHelper.REMOTE_USER;
 public class AuthFilter implements Filter {
 
     public static final String ADMIN = "admin";
+    public static final String USER1 = "user1";
+    public static final String ROLE1 = "role1";
+    public static final String USER2 = "user2";
+    public static final String ROLE2 = "role2";
+    public static final String USER3 = "user3";
+    public static final String ROLE3 = "role3";
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -37,18 +56,20 @@ public class AuthFilter implements Filter {
             httpResponse.addHeader("WWW-Authenticate", "Basic");
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        if (authenticated(httpRequest)) {
-            chain.doFilter(request, response);//sends request to next resource
+        HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(httpRequest);
+        if (authenticated(requestWrapper)) {
+            chain.doFilter(requestWrapper, response);//sends request to next resource
         } else {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
     }
 
-    protected boolean authenticated(HttpServletRequest request) {
+    protected boolean authenticated(HeaderMapRequestWrapper request) {
         request.setAttribute(AUTHENTICATION_TYPE, HttpServletRequest.BASIC_AUTH);
         boolean success = false;
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader != null) {
         	String usernameAndPassword = new String(Base64.getDecoder().decode(authHeader.substring(6).getBytes()));
 
@@ -57,11 +78,35 @@ public class AuthFilter implements Filter {
         	String password = usernameAndPassword.substring(userNameIndex + 1);
 
 
-        	success = (username.equals(ADMIN) && password
-        			.equals(ADMIN));
+        	success = (username.equals(ADMIN) && password.equals(ADMIN))
+                || (username.equals(USER1) && password.equals(USER1))
+                || (username.equals(USER2) && password.equals(USER2))
+                || (username.equals(USER3) && password.equals(USER3));
+
         	if (success) {
-        		request.setAttribute(REMOTE_USER, ADMIN);
-        		request.setAttribute("ROLE", ADMIN);
+        	    switch (username) {
+                    case ADMIN:
+                        request.setAttribute(REMOTE_USER, ADMIN);
+                        request.setAttribute("ROLE", ADMIN);
+                        //request.addHeader("ROLE", ADMIN);
+                        request.addHeader("USER", ADMIN);
+                        break;
+                    case USER1:
+                        request.setAttribute(REMOTE_USER, USER1);
+                        request.addHeader("ROLE", ROLE1);
+                        request.addHeader("USER", USER1);
+                        break;
+                    case USER2:
+                        request.setAttribute(REMOTE_USER, USER2);
+                        request.addHeader("ROLE", ROLE2);
+                        request.addHeader("USER", USER2);
+                        break;
+                    case USER3:
+                        request.setAttribute(REMOTE_USER, USER3);
+                        request.addHeader("ROLE", ROLE3);
+                        request.addHeader("USER", USER3);
+                        break;
+                }
         	}
         }
         return success;
@@ -71,4 +116,5 @@ public class AuthFilter implements Filter {
     public void destroy() {
         //empty
     }
+
 }

@@ -91,6 +91,7 @@ import org.eclipse.daanse.xmla.api.execute.statement.StatementRequest;
 import org.eclipse.daanse.xmla.api.execute.statement.StatementResponse;
 import org.eclipse.daanse.xmla.api.xmla.Command;
 import org.eclipse.daanse.xmla.api.xmla.Session;
+import org.eclipse.daanse.xmla.model.record.UserPrincipalR;
 import org.eclipse.daanse.xmla.model.record.discover.PropertiesR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.catalogs.DbSchemaCatalogsRequestR;
 import org.eclipse.daanse.xmla.model.record.discover.dbschema.catalogs.DbSchemaCatalogsRestrictionsR;
@@ -158,6 +159,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -218,7 +220,9 @@ public class XmlaApiAdapter {
             envelopeResponse.addNamespaceDeclaration(Constants.XSI.PREFIX, Constants.XSI.NS_URN);
 
             SOAPBody bodyResponse = envelopeResponse.getBody();
-            UserPrincipal userPrincipal = null;
+            Object role = headers.get("ROLE");
+            Object user = headers.get("USER");
+            UserPrincipal userPrincipal = new UserPrincipalR(getStringOrNull(user), getRiles(role));
             Optional<Session> ses = SessionUtil.getSession(messageRequest.getSOAPHeader(), sessions);
             if (ses.isPresent()) {
                 SOAPHeader header = envelopeResponse.getHeader();
@@ -231,6 +235,20 @@ public class XmlaApiAdapter {
             return messageResponse;
         } catch (SOAPException e) {
             LOGGER.error("handleRequest error", e);
+        }
+        return null;
+    }
+
+    private List<String> getRiles(Object ob) {
+        if (ob != null && ob instanceof String str) {
+            return Arrays.asList(str.split(","));
+        }
+        return List.of();
+    }
+
+    private String getStringOrNull(Object ob) {
+        if (ob != null && ob instanceof String str) {
+            return str;
         }
         return null;
     }

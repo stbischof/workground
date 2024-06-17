@@ -15,4 +15,7 @@ public record RolapConnectionPropsR(List<String> roles, boolean useSchemaPool, L
 		this(List.of(), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
 	}
 
+    public RolapConnectionPropsR(List<String> roles) {
+        this(roles, true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
+    }
 }
