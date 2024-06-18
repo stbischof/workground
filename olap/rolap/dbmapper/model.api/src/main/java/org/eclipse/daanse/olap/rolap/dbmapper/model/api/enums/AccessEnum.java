@@ -15,7 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums;
 
 public enum AccessEnum {
 
-    ALL("all"), CUSTOM("custom"), NONE("none"), ALL_DIMENSION("all_dimensions");
+    ALL("all"), CUSTOM("custom"), NONE("none"), ALL_DIMENSIONS("all_dimensions");
 
     private final String value;
 
