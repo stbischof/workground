@@ -155,6 +155,8 @@ public class SchemaWalkerMessages {
         "Measure column must be set for cube with name %s";
     public static final String FORMATTER_EITHER_A_CLASS_NAME_OR_A_SCRIPT_ARE_REQUIRED =
         "Formatter: either a Class Name or a Script are required";
+    public static final String FORMATTER_CLASS_NAME_NOT_FOUND =
+        "Formatter: Class Name %s not found";
     public static final String CUBE_DIMENSION_NAME_MUST_BE_SET =
         "Cube Dimension name must be set for element with name %s";
     public static final String CUBE_DIMENSION_WITH_NAME_MEETS_MORE_THEN_ONE_TIMES_IN_CUBE =

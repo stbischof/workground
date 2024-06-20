@@ -238,14 +238,27 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     @Override
     protected void checkElementFormatter(MappingElementFormatter elementFormatter) {
-        super.checkElementFormatter(elementFormatter);
-        if (elementFormatter != null
-            && isEmpty(elementFormatter.className())
-            && elementFormatter.script() == null) {
-            results.add(new VerificationResultR(ELEMENT_FORMATTER,
-                FORMATTER_EITHER_A_CLASS_NAME_OR_A_SCRIPT_ARE_REQUIRED, ERROR, Cause.SCHEMA));
-        }
+        super.checkElementFormatter(elementFormatter);        
+        if (elementFormatter != null) {
+            if (isEmpty(elementFormatter.className()) && elementFormatter.script() == null) {
+            	results.add(new VerificationResultR(ELEMENT_FORMATTER,
+            			FORMATTER_EITHER_A_CLASS_NAME_OR_A_SCRIPT_ARE_REQUIRED, ERROR, Cause.SCHEMA));
+            } else {
+            	if (!isEmpty(elementFormatter.className())) {
+            		checkElementFormatterClass(elementFormatter.className());
+            	}
+            }
+        }     
+    }
 
+    protected void checkElementFormatterClass(String className) {
+        try {
+            Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            String msg = String.format(FORMATTER_CLASS_NAME_NOT_FOUND, orNotSet(className));
+            results.add(new VerificationResultR(ELEMENT_FORMATTER,
+                msg, ERROR, Cause.SCHEMA));
+        }
     }
 
     @Override

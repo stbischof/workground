@@ -204,6 +204,10 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
+    protected void checkElementFormatterClass(String className) {
+        //empty
+    }
+
     protected void checkCubeDimension(MappingCubeDimension cubeDimension, MappingCube cube, MappingSchema schema) {
         if (cubeDimension != null) {
             checkAnnotationList(cubeDimension.annotations());
