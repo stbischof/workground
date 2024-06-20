@@ -219,7 +219,7 @@ public class DemoSetup {
         props.put("urlAction" + TARGET_EXT, "(service.pid=*)");
         props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
         props.put("schemaName", "Actions");
-        props.put("cubeName", "Actions");
+        props.put("cubeName", "CubeActions");
         props.put("actionName", "urlActions");
         props.put("actionCaption", "urlActions");
         props.put("actionDescription", "urlActionsDescription");
@@ -236,7 +236,7 @@ public class DemoSetup {
         props.put("reportAction" + TARGET_EXT, "(service.pid=*)");
         props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
         props.put("schemaName", "Actions");
-        props.put("cubeName", "Actions");
+        props.put("cubeName", "CubeActions");
         props.put("actionName", "reportActions");
         props.put("actionCaption", "reportActions");
         props.put("actionDescription", "reportActionsDescription");

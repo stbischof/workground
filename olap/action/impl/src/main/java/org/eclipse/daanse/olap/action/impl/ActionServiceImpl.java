@@ -16,7 +16,7 @@ package org.eclipse.daanse.olap.action.impl;
 import org.eclipse.daanse.olap.action.api.ActionService;
 import org.eclipse.daanse.olap.action.api.ReportAction;
 import org.eclipse.daanse.olap.action.api.UrlAction;
-import org.eclipse.daanse.olap.action.api.XmlaAcriton;
+import org.eclipse.daanse.olap.action.api.XmlaAction;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DrillThroughAction;
 import org.eclipse.daanse.olap.api.element.Cube;
@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.eclipse.daanse.olap.action.impl.DrillThroughUtils.getCoordinateElements;
 import static org.eclipse.daanse.olap.action.impl.DrillThroughUtils.getDrillThroughQuery;
@@ -49,7 +50,7 @@ public class ActionServiceImpl implements ActionService {
     public static final String REF_NAME_REPORT_ACTIONS = "reportAction";
     public static final String REF_NAME_DRILL_THROUGH_ACTIONS = "drillThroughAction";
 
-    private List<XmlaAcriton> xmlaActions = new ArrayList<>();
+    private List<XmlaAction> xmlaActions = new ArrayList<>();
 
     @Reference(name = REF_NAME_URL_ACTIONS, cardinality = ReferenceCardinality.MULTIPLE, policy =
         ReferencePolicy.DYNAMIC)
@@ -100,18 +101,39 @@ public class ActionServiceImpl implements ActionService {
         ).flatMap(Collection::stream).toList());
 
         if (CoordinateTypeEnum.CELL.equals(coordinateType)) {
-            result.addAll(getMdSchemaUrlActionsResponseRow(coordinate, xmlaActions));
+            result.addAll(contexts.stream().map(c ->
+            getMdSchemaActionsResponseRow(c, schemaName, cubeName, actionName, actionType, coordinate, xmlaActions)
+            ).flatMap(Collection::stream).toList());
         }
         return result;
     }
 
-    private static List<MdSchemaActionsResponseRow> getMdSchemaUrlActionsResponseRow(
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(Context context, Optional<String> schemaName, String cubeName, Optional<String> actionName, Optional<ActionTypeEnum> actionType, Optional<String> coordinate, List<XmlaAction> xmlaActions) {
+        return getMdSchemaActionsResponseRow(schemaName, cubeName, actionName, actionType, coordinate, getXmlaActionWithFilterByOptional(xmlaActions, context.getName(), XmlaAction::catalogName));
+    }
+
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(Optional<String> schemaName, String cubeName, Optional<String> actionName, Optional<ActionTypeEnum> actionType, Optional<String> coordinate, List<XmlaAction> xmlaActions) {
+        return getMdSchemaActionsResponseRow(cubeName, actionName, actionType, coordinate, getXmlaActionWithFilterBy(xmlaActions, schemaName, XmlaAction::schemaName));
+    }
+
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(String cubeName, Optional<String> actionName, Optional<ActionTypeEnum> actionType, Optional<String> coordinate, List<XmlaAction> xmlaActions) {
+        return getMdSchemaActionsResponseRow(actionName, actionType, coordinate, getXmlaActionWithFilterBy(xmlaActions, cubeName, XmlaAction::cubeName));
+    }
+
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(Optional<String> actionName, Optional<ActionTypeEnum> actionType, Optional<String> coordinate, List<XmlaAction> xmlaActions) {
+        return getMdSchemaActionsResponseRow(actionType, coordinate, getXmlaActionWithFilterBy(xmlaActions, actionName, XmlaAction::actionName));
+    }
+
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(Optional<ActionTypeEnum> actionType, Optional<String> coordinate, List<XmlaAction> xmlaActions) {
+        return getMdSchemaActionsResponseRow(coordinate, getXmlaActionWithFilterByActionType(xmlaActions, actionType));
+    }
+
+    private List<MdSchemaActionsResponseRow> getMdSchemaActionsResponseRow(
         Optional<String> coordinate,
-        List<XmlaAcriton> urlActions
+        List<XmlaAction> xmlaActions
     ) {
-        //TODO add filter for schema, catalogs,
         List<MdSchemaActionsResponseRow> result = new ArrayList<>();
-        for (XmlaAcriton xmlaAcriton : urlActions) {
+        for (XmlaAction xmlaAcriton : xmlaActions) {
             result.add(new MdSchemaActionsResponseRowR(
                 xmlaAcriton.catalogName(),
                 xmlaAcriton.schemaName(),
@@ -242,10 +264,56 @@ public class ActionServiceImpl implements ActionService {
         return schemas;
     }
 
-    private static List<Cube> getCubesWithFilter(List<Cube> cubes, String cubeName) {
+    private List<Cube> getCubesWithFilter(List<Cube> cubes, String cubeName) {
         if (cubeName != null) {
             return cubes.stream().filter(c -> cubeName.equals(c.getName())).toList();
         }
         return cubes;
     }
+
+
+    private List<XmlaAction> getXmlaActionWithFilterBy(List<XmlaAction> actions, Optional<String> param, Function<XmlaAction, Optional<String>> f) {
+        if (actions != null && !actions.isEmpty()) {
+            if (param.isPresent()) {
+                return actions.stream().filter(a -> !f.apply(a).isPresent() || param.get().equals(f.apply(a).get())).toList();
+            } else {
+                return actions;
+            }
+        }
+        return List.of();
+    }
+
+    private List<XmlaAction> getXmlaActionWithFilterByActionType(List<XmlaAction> actions, Optional<ActionTypeEnum> param) {
+        if (actions != null && !actions.isEmpty()) {
+            if (param.isPresent()) {
+                return actions.stream().filter(a -> a.actionType() == null || param.get().equals(a.actionType())).toList();
+            } else {
+                return actions;
+            }
+        }
+        return List.of();
+    }
+
+    private List<XmlaAction> getXmlaActionWithFilterBy(List<XmlaAction> actions, String param, Function<XmlaAction, String> f) {
+        if (actions != null && !actions.isEmpty()) {
+            if (param != null) {
+                return actions.stream().filter(a -> f.apply(a) == null || param.equals(f.apply(a))).toList();
+            } else {
+                return actions;
+            }
+        }
+        return List.of();
+    }
+
+    private List<XmlaAction> getXmlaActionWithFilterByOptional(List<XmlaAction> actions, String param, Function<XmlaAction, Optional<String>> f) {
+        if (actions != null && !actions.isEmpty()) {
+            if (param != null) {
+                return actions.stream().filter(a -> !f.apply(a).isPresent() || param.equals(f.apply(a).get())).toList();
+            } else {
+                return actions;
+            }
+        }
+        return List.of();
+    }
+
 }

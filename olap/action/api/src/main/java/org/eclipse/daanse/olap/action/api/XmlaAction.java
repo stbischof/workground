@@ -18,7 +18,7 @@ import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 
 import java.util.Optional;
 
-public interface XmlaAcriton{
+public interface XmlaAction {
     String content( String coordinate, String cubeName );
     Optional<String> catalogName();
     Optional<String> schemaName();

@@ -13,13 +13,13 @@
  */
 package org.eclipse.daanse.olap.action.impl;
 
-import org.eclipse.daanse.olap.action.api.XmlaAcriton;
+import org.eclipse.daanse.olap.action.api.XmlaAction;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CoordinateTypeEnum;
 
 import java.util.Optional;
 
-public abstract class AbstractAction implements XmlaAcriton {
+public abstract class AbstractAction implements XmlaAction {
 
 
     @Override
