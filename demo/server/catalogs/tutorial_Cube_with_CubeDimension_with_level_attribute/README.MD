@@ -49,6 +49,8 @@ Levels: "H1_Level1, H1_Level2"
 ##### Dimensions:
 ##### Dimension: "Diml1 -> Dim":
 
+##### Dimension: "Diml2 -> Dim":
+
 ### Cube "Cube" diagram:
 
 ---
@@ -69,6 +71,7 @@ erDiagram
 c0["Cube"]{
 M Measure ""
 D Diml1 ""
+D Diml2 ""
 }
 d00["Dim"] {
 H Hierarchy1 ""
@@ -77,9 +80,19 @@ h000["Hierarchy1"] {
 L H1_Level1 ""
 L H1_Level2 ""
 }
+d01["Dim"] {
+H Hierarchy1 ""
+}
+h010["Hierarchy1"] {
+L H1_Level1 ""
+L H1_Level2 ""
+}
 "c0" ||--|| "d00" : "DIM_KEY-"
 "d00" ||--|| "h000" : "KEY"
 "d00" ||--|| "h000" : "KEY"
+"c0" ||--|| "d01" : "DIM_KEY-"
+"d01" ||--|| "h010" : "KEY"
+"d01" ||--|| "h010" : "KEY"
 ```
 ---
 ### Cube Matrix for Minimal_Cube_with_cube_dimension_level_with_property:
@@ -93,7 +106,7 @@ quadrant-2 Deep
 quadrant-3 Simple
 quadrant-4 Wide
 
-Cube Cube: [0.1000, 0.0000]
+Cube Cube: [0.2000, 0.0000]
 ```
 ---
 ### Database :
@@ -118,6 +131,8 @@ int H1L1_KEY "✔"
 int H2L1_KEY "✔"
 }
 
+"Fact✔" ||--o{ "HX_L2✔" : "DIM_KEY-"
+"HX_L2✔" ||--o{ "H1_L1✔" : "H1L1_KEY-KEY"
 "Fact✔" ||--o{ "HX_L2✔" : "DIM_KEY-"
 "HX_L2✔" ||--o{ "H1_L1✔" : "H1L1_KEY-KEY"
 ```

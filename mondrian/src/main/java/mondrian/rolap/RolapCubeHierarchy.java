@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.element.Level;
@@ -286,6 +287,16 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 
     public String lookupAlias(String origTable) {
         return aliases.get(origTable);
+    }
+
+    public String lookupTableNameByAlias(String origTable) {
+        if (!aliases.isEmpty()) {
+            Optional<Map.Entry<String, String>> op = aliases.entrySet().stream().filter(e -> e.getValue().equals(origTable)).findAny();
+            if (op.isPresent()) {
+                return op.get().getKey();
+            }
+        }
+        return origTable;
     }
 
     public final RolapHierarchy getRolapHierarchy() {

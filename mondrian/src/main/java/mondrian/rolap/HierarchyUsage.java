@@ -375,8 +375,12 @@ public class HierarchyUsage {
                         cube.getName(),
                         cubeDim.level()));
             }
+            String tableName = getTableAlias(joinLevel.getKeyExp());
+            if (hierarchy instanceof RolapCubeHierarchy rch) {
+                tableName = rch.lookupTableNameByAlias(tableName);
+            }
             this.joinTable =
-                findJoinTable(hierarchy, getTableAlias(joinLevel.getKeyExp()));
+                findJoinTable(hierarchy, tableName);
             this.joinExp = joinLevel.getKeyExp();
         } else if (hierarchy.getXmlHierarchy() != null
             && hierarchy.getXmlHierarchy().primaryKey() != null)

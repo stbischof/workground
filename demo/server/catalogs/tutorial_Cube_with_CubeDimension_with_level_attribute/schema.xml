@@ -33,6 +33,7 @@
   <Cube name="Cube">
     <Table name="Fact"/>
     <DimensionUsage name="Diml1" source="Dim" level="H1_Level2" foreignKey="DIM_KEY"/>
+    <DimensionUsage name="Diml2" source="Dim" level="H1_Level1" foreignKey="DIM_KEY"/>
     <Measure aggregator="sum" name="Measure" column="VALUE"/>
   </Cube>
 </Schema>
