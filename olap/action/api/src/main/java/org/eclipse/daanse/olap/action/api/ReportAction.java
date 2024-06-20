@@ -13,6 +13,6 @@
  */
 package org.eclipse.daanse.olap.action.api;
 
-public interface UrlAction extends XmlaAcriton {
+public interface ReportAction extends XmlaAcriton {
 
 }

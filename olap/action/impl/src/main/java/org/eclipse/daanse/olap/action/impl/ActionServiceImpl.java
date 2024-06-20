@@ -14,6 +14,7 @@
 package org.eclipse.daanse.olap.action.impl;
 
 import org.eclipse.daanse.olap.action.api.ActionService;
+import org.eclipse.daanse.olap.action.api.ReportAction;
 import org.eclipse.daanse.olap.action.api.UrlAction;
 import org.eclipse.daanse.olap.action.api.XmlaAcriton;
 import org.eclipse.daanse.olap.api.Context;
@@ -45,6 +46,7 @@ import static org.eclipse.daanse.olap.action.impl.DrillThroughUtils.getDrillThro
 public class ActionServiceImpl implements ActionService {
 
     public static final String REF_NAME_URL_ACTIONS = "urlAction";
+    public static final String REF_NAME_REPORT_ACTIONS = "reportAction";
     public static final String REF_NAME_DRILL_THROUGH_ACTIONS = "drillThroughAction";
 
     private List<XmlaAcriton> xmlaActions = new ArrayList<>();
@@ -56,6 +58,16 @@ public class ActionServiceImpl implements ActionService {
     }
 
     public void unbindUrlAction(UrlAction action) {
+        xmlaActions.remove(action);
+    }
+
+    @Reference(name = REF_NAME_REPORT_ACTIONS, cardinality = ReferenceCardinality.MULTIPLE, policy =
+        ReferencePolicy.DYNAMIC)
+    public void bindReportAction(ReportAction action) {
+        xmlaActions.add(action);
+    }
+
+    public void unbindReportAction(ReportAction action) {
         xmlaActions.remove(action);
     }
 

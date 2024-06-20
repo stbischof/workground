@@ -13,7 +13,7 @@
  */
 package org.eclipse.daanse.olap.action.impl;
 
-import org.eclipse.daanse.olap.action.api.UrlAction;
+import org.eclipse.daanse.olap.action.api.ReportAction;
 import org.eclipse.daanse.xmla.api.common.enums.ActionTypeEnum;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -23,16 +23,16 @@ import org.osgi.util.converter.Converters;
 
 import java.util.Map;
 
-@Component(service = UrlAction.class)
-@Designate(factory = true, ocd = UrlActionConfig.class)
-public class UrlActionImpl extends AbstractAction implements UrlAction {
+@Component(service = ReportAction.class)
+@Designate(factory = true, ocd = ReportActionConfig.class)
+public class ReportActionImpl extends AbstractAction implements ReportAction {
 
     private static final Converter CONVERTER = Converters.standardConverter();
-    private UrlActionConfig config;
+    private ReportActionConfig config;
 
     @Activate
     void activate(Map<String, Object> props) {
-        this.config = CONVERTER.convert(props).to(UrlActionConfig.class);
+        this.config = CONVERTER.convert(props).to(ReportActionConfig.class);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UrlActionImpl extends AbstractAction implements UrlAction {
 
     @Override
     public ActionTypeEnum actionType() {
-        return ActionTypeEnum.URL;
+        return ActionTypeEnum.REPORT;
     }
 
     @Override

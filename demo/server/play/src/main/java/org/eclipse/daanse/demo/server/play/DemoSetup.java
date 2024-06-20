@@ -45,6 +45,8 @@ public class DemoSetup {
 
     public static final String PID_URL_ACTION = "org.eclipse.daanse.olap.action.impl.UrlActionImpl";
 
+    public static final String PID_REPORT_ACTION = "org.eclipse.daanse.olap.action.impl.ReportActionImpl";
+
     public static final String PID_DRILL_THROUGH_ACTION = "org.eclipse.daanse.olap.action.impl.DrillThroughActionImpl";
 
 	public static final String PID_MS_SOAP = "org.eclipse.daanse.xmla.server.jakarta.jws.MsXmlAnalysisSoap";
@@ -87,6 +89,8 @@ public class DemoSetup {
 
     private Configuration cUrlAction;
 
+    private Configuration cReportAction;
+
     private Configuration cDrThAction;
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
@@ -117,6 +121,8 @@ public class DemoSetup {
         initDocumentation();
 
         initUrlAction();
+
+        initReportAction();
 
         initDrillThroughAction();
 	}
@@ -219,10 +225,26 @@ public class DemoSetup {
         props.put("actionDescription", "urlActionsDescription");
         props.put("actionCoordinate", "");
         props.put("actionCoordinateType", "CELL");
-        props.put("actionUrl", "https://google.com");
+        props.put("actionUrl", "https://projects.eclipse.org/projects/technology.daanse");
 
         cUrlAction = configurationAdmin.getFactoryConfiguration(PID_URL_ACTION, "1", "?");
         cUrlAction.update(props);
+    }
+
+    private void initReportAction() throws IOException {
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put("reportAction" + TARGET_EXT, "(service.pid=*)");
+        props.put("catalogName", "tutorial_15-03_Cube_with_share_dimension_with_DrillThroughAction");
+        props.put("schemaName", "Actions");
+        props.put("cubeName", "Actions");
+        props.put("actionName", "reportActions");
+        props.put("actionCaption", "reportActions");
+        props.put("actionDescription", "reportActionsDescription");
+        props.put("actionCoordinate", "");
+        props.put("actionCoordinateType", "CELL");
+        props.put("actionUrl", "https://projects.eclipse.org/projects/technology.daanse");
+        cReportAction = configurationAdmin.getFactoryConfiguration(PID_REPORT_ACTION, "1", "?");
+        cReportAction.update(props);
     }
 
     private void initDrillThroughAction() throws IOException {
