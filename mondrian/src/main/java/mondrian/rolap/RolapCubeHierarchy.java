@@ -30,9 +30,9 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
@@ -57,7 +57,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
     private final RolapCubeLevel currentNullLevel;
     private RolapCubeMember currentNullMember;
     private RolapCubeMember currentAllMember;
-    private final MappingRelationOrJoin currentRelation;
+    private final MappingQuery currentRelation;
     private final RolapCubeHierarchyMemberReader reader;
     private HierarchyUsage usage;
     private final Map<String, String> aliases = new HashMap<>();
@@ -319,8 +319,8 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * shared between all cubes with similar structure
      */
     protected void extractNewAliases(
-        MappingRelationOrJoin oldrel,
-        MappingRelationOrJoin newrel)
+        MappingQuery oldrel,
+        MappingQuery newrel)
     {
         if (oldrel != null && newrel != null) {
             if (oldrel instanceof MappingRelation oldrelRelation
@@ -328,8 +328,8 @@ public class RolapCubeHierarchy extends RolapHierarchy {
                 aliases.put(
                     RelationUtil.getAlias(oldrelRelation),
                     RelationUtil.getAlias(newrelRelation));
-            } else if (oldrel instanceof MappingJoin oldjoin
-                && newrel instanceof MappingJoin newjoin) {
+            } else if (oldrel instanceof MappingJoinQuery oldjoin
+                && newrel instanceof MappingJoinQuery newjoin) {
                 extractNewAliases(left(oldjoin), left(newjoin));
                 extractNewAliases(right(oldjoin), right(newjoin));
             } else {
@@ -410,7 +410,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * @return rolap cube hierarchy relation
      */
     @Override
-	public MappingRelationOrJoin getRelation() {
+	public MappingQuery getRelation() {
         return currentRelation;
     }
 

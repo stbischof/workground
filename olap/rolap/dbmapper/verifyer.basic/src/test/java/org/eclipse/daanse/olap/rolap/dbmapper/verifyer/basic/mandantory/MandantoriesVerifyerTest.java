@@ -116,7 +116,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
@@ -170,8 +171,10 @@ class MandantoriesVerifyerTest {
     MappingDrillThroughAction drillThroughAction = mock(MappingDrillThroughAction.class);
     MappingAction action = mock(MappingAction.class);
     MappingElementFormatter elementFormatter = mock(MappingElementFormatter.class);
-    MappingJoin join = mock(MappingJoin.class);
+    MappingJoinQuery join = mock(MappingJoinQuery.class);
     MappingTable table = mock(MappingTable.class);
+    MappingJoinedQueryElement left = mock(MappingJoinedQueryElement.class);
+    MappingJoinedQueryElement right = mock(MappingJoinedQueryElement.class);
     MappingFormula formula = mock(MappingFormula.class);
     MappingUserDefinedFunction userDefinedFunction = mock(MappingUserDefinedFunction.class);
     MappingWritebackTable writebackTable = mock(MappingWritebackTable.class);
@@ -395,7 +398,10 @@ class MandantoriesVerifyerTest {
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(level));
         when(hierarchy.relation()).thenReturn(join);
         when(hierarchy.primaryKeyTable()).thenReturn("primaryKeyTable");
-        when(join.getRelations()).thenAnswer(setupDummyListAnswer(table, table));
+        when(join.left()).thenReturn(left);
+        when(join.right()).thenReturn(right);
+        when(left.getQuery()).thenReturn(table);
+        when(right.getQuery()).thenReturn(table);
         when(table.getName()).thenReturn("tableName");
         when(table.getSql()).thenReturn(sql);
         when(table.getHints()).thenAnswer(setupDummyListAnswer(hint));
@@ -548,7 +554,10 @@ class MandantoriesVerifyerTest {
         when(dimension.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy));
         when(hierarchy.levels()).thenAnswer(setupDummyListAnswer(l));
         when(hierarchy.relation()).thenReturn(join);
-        when(join.getRelations()).thenAnswer(setupDummyListAnswer(table, table));
+        when(join.left()).thenReturn(left);
+        when(join.right()).thenReturn(right);
+        when(left.getQuery()).thenReturn(table);
+        when(right.getQuery()).thenReturn(table);
         when(table.getName()).thenReturn("tableName");
         List<VerificationResult> result = verifyer.verify(schema, null);
         assertThat(result).isNotNull()

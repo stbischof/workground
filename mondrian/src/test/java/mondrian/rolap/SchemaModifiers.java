@@ -43,6 +43,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessE
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PrivateDimensionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
@@ -379,13 +380,12 @@ public class SchemaModifiers {
                         .hasAll(true)
                         .primaryKey("employee_id")
                         .primaryKeyTable("employee")
-                        .relation(new JoinR(List.of(
-                            new TableR(null, "employee", "employee", List.of()),
-                            new TableR(null, "employee", "employee_manager", List.of())
-                        ),
-                            null, "supervisor_id",
-                            null, "employee_id"
-                            ))
+                        .relation(
+                            new JoinR(
+                                new JoinedQueryElementR(null, "supervisor_id", new TableR(null, "employee", "employee", List.of())),
+                                new JoinedQueryElementR(null, "employee_id", new TableR(null, "employee", "employee_manager", List.of()))
+                            )
+                        )
                         .levels(List.of(
                             LevelRBuilder.builder()
                                 .name("Role")
@@ -1409,10 +1409,12 @@ public class SchemaModifiers {
                     .allMemberName("All Employees")
                     .primaryKey("employee_id")
                     .primaryKeyTable("employee_closure")
-                    .relation(new JoinR(List.of(
-                        new TableR("employee_closure"),
-                        new TableR(null, "employee", "employee2", List.of())),
-                        null, "supervisor_id", null, "employee_id"))
+                    .relation(
+                        new JoinR(
+                            new JoinedQueryElementR(null, "supervisor_id", new TableR("employee_closure")),
+                            new JoinedQueryElementR(null, "employee_id", new TableR(null, "employee", "employee2", List.of()))
+                        )
+                    )
                     .levels(List.of(level1, level2))
                     .build();
                 MappingCubeDimension dimension = PrivateDimensionRBuilder
@@ -1521,10 +1523,12 @@ public class SchemaModifiers {
                     .allMemberName("All Employees")
                     .primaryKey("employee_id")
                     .primaryKeyTable("employee")
-                    .relation(new JoinR(List.of(
-                        new TableR("employee"),
-                        new TableR("store")),
-                        null, "store_id", "store", "store_id"))
+                    .relation(
+                        new JoinR(
+                            new JoinedQueryElementR(null, "store_id", new TableR("employee")),
+                            new JoinedQueryElementR("store", "store_id", new TableR("store"))
+                        )
+                    )
                     .levels(List.of(level1, level2))
                     .build();
 
@@ -1656,9 +1660,12 @@ public class SchemaModifiers {
                         .hasAll(true)
                         .primaryKey("employee_id")
                         .primaryKeyTable("employee")
-                        .relation(new JoinR(
-                            List.of(new TableR("employee"), new TableR("store")),
-                            null, "store_id", "store", "store_id"))
+                        .relation(
+                            new JoinR(
+                                new JoinedQueryElementR(null, "store_id", new TableR("employee")),
+                                new JoinedQueryElementR("store", "store_id", new TableR("store"))
+                            )
+                        )
                         .levels(List.of(
                             LevelRBuilder.builder()
                                 .name("Employee Id")
@@ -2547,9 +2554,12 @@ public class SchemaModifiers {
                                 .hasAll(false)
                                 .primaryKey("store_id")
                                 .primaryKeyTable("bri_store_employee")
-                                .relation( new JoinR(
-                                    List.of(it, t),
-                                    null, "employee_id", null, "employee_id"))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "employee_id", it),
+                                        new JoinedQueryElementR(null, "employee_id", t)
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Employee")
@@ -2655,9 +2665,12 @@ public class SchemaModifiers {
                                 .hasAll(true)
                                 .primaryKey("product_id")
                                 .primaryKeyTable("product")
-                                .relation( new JoinR(
-                                    List.of(new TableR("product"), new TableR("product_class")),
-                                    null, "product_class_id", null, "product_class_id"))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Product Name")
@@ -2672,11 +2685,12 @@ public class SchemaModifiers {
                                 .hasAll(true)
                                 .primaryKey("product_id")
                                 .primaryKeyTable("product")
-                                .relation(new JoinR(
-                                    List.of(new TableR("product"), new TableR("product_class")),
-                                    null, "product_class_id",
-                                    null, "product_class_id"
-                                ))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Product")
@@ -3853,8 +3867,12 @@ public class SchemaModifiers {
                             .hasAll(true)
                             .primaryKey("product_id")
                             .primaryKeyTable("product")
-                            .relation(new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                null, "product_class_id", null, "product_class_id"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Drink")
@@ -4240,8 +4258,12 @@ public class SchemaModifiers {
                             .allMemberCaption("All")
                             .primaryKey("product_id")
                             .primaryKeyTable("product")
-                            .relation(new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                null, "product_class_id", null, "product_class_id"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("IsZero")
@@ -4625,8 +4647,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKey("product_id")
                                         .primaryKeyTable("product")
-                                        .relation(new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id", null, "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Subcategory")
@@ -4783,11 +4809,12 @@ public class SchemaModifiers {
                                 .hasAll(true)
                                 .primaryKey("product_id")
                                 .primaryKeyTable("product")
-                                .relation(new JoinR(List.of(
-                                    new TableR("product"),
-                                    new TableR("product_class")),
-                                    null, "product_class_id",
-                                    null, "product_class_id"))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Product Family")
@@ -5412,11 +5439,12 @@ public class SchemaModifiers {
                                 .hasAll(false)
                                 .primaryKey("product_id")
                                 .primaryKeyTable("product")
-                                .relation(new JoinR(List.of(
-                                    new TableR("product"),
-                                    new TableR("product_class")
-                                ),
-                                    null, "product_class_id", null, "product_class_id"))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Product Family")
@@ -6064,12 +6092,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKeyTable("product")
                                         .primaryKey("product_id")
-                                        .relation(new JoinR(List.of(
-                                            new TableR(null, "product_class", "product_class", List.of()),
-                                            new TableR(null, "product", "product", List.of())
-                                        ),
-                                            "product_class", "product_class_id",
-                                            "product", "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR("product_class", "product_class_id", new TableR(null, "product_class", "product_class", List.of())),
+                                                new JoinedQueryElementR("product", "product_class_id", new TableR(null, "product", "product", List.of()))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Family")
@@ -6101,12 +6129,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKeyTable("product")
                                         .primaryKey("product_id")
-                                        .relation(new JoinR(List.of(
-                                            new TableR(null, "product", "product", List.of()),
-                                            new TableR(null, "product_class", "product_class", List.of())
-                                        ),
-                                            "product", "product_class_id",
-                                            "product_class", "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR("product", "product_class_id", new TableR(null, "product", "product", List.of())),
+                                                new JoinedQueryElementR("product", "product_class_id", new TableR(null, "product_class", "product_class", List.of()))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Family")
@@ -6799,10 +6827,12 @@ public class SchemaModifiers {
                                 .hasAll(true)
                                 .primaryKey("product_id")
                                 .primaryKeyTable("product")
-                                .relation(new JoinR(List.of(
-                                    new TableR("product"),
-                                    new TableR("product_class")),
-                                    null, "product_class_id", null, "product_class_id"))
+                                .relation(
+                                    new JoinR(
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                    )
+                                )
                                 .levels(List.of(
                                     LevelRBuilder.builder()
                                         .name("Product Family")
@@ -10149,8 +10179,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKey("product_id")
                                         .primaryKeyTable("product")
-                                        .relation(new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id", null, "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Family")
@@ -10655,8 +10689,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKey("product_id")
                                         .primaryKeyTable("product")
-                                        .relation(new JoinR(List.of(new TableR("product"), new TableR("product_class"))
-                                            , null, "product_class_id", null, "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Family")
@@ -17719,10 +17757,12 @@ public class SchemaModifiers {
                                 .hierarchies(List.of(
                                     HierarchyRBuilder.builder()
                                         .hasAll(true).name("Products").primaryKey("product_id").primaryKeyTable("product")
-                                        .relation(new JoinR(List.of(
-                                            new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id",
-                                            null, "product_class_id"))
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                            )
+                                        )
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Family")
@@ -17768,11 +17808,12 @@ public class SchemaModifiers {
                                         .hasAll(true)
                                         .primaryKey("product_id")
                                         .primaryKeyTable("product")
-                                        .relation(new JoinR(List.of(
-                                            new TableR("product"),
-                                            new TableR("product_class")
+                                        .relation(
+                                            new JoinR(
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                                new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                            )
                                         )
-                                            , null, "product_class_id", null, "product_class_id"))
                                         .levels(List.of(
                                             LevelRBuilder.builder()
                                                 .name("Product Name")

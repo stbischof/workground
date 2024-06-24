@@ -24,6 +24,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessE
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberPropertyRBuilder;
@@ -741,10 +743,12 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                             .hasAll(true)
                             .primaryKey("product_id")
                             .primaryKeyTable("product")
-                            .relation(new JoinR(
-                                List.of(new TableR("product"), new TableR("product_class")),
-                                null, "product_class_id",
-                                null, "product_class_id"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Product Family")
@@ -1285,9 +1289,12 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                     .hasAll(true)
                                     .primaryKey("employee_id")
                                     .primaryKeyTable("employee")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("employee"),new TableR("store")),
-                                        null, "store_id", null, "store_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "store_id", new TableR("employee")),
+                                            new JoinedQueryElementR(null, "store_id", new TableR("store"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("Store Country")
@@ -1365,9 +1372,12 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                     .hasAll(true)
                                     .primaryKey("employee_id")
                                     .primaryKeyTable("employee")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("employee"),new TableR("position")),
-                                        null, "position_id", null, "position_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "position_id", new TableR("employee")),
+                                            new JoinedQueryElementR(null, "position_id", new TableR("position"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("Pay Type")
@@ -1387,9 +1397,12 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                     .hasAll(true)
                                     .primaryKey("employee_id")
                                     .primaryKeyTable("employee")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("employee"),new TableR("store")),
-                                        null, "store_id", null, "store_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "store_id", new TableR("employee")),
+                                            new JoinedQueryElementR(null, "store_id", new TableR("store"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("Store Type")

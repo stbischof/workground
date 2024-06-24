@@ -21,6 +21,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
@@ -484,17 +485,16 @@ class NonCollapsedAggTest extends AggTableTestCase {
                                     .allMemberName("All tenants")
                                     .primaryKey("line_id")
                                     .primaryKeyTable("line")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("line"),
-                                        new JoinR(List.of(
-                                            new TableR("line_tenant"),
-                                            new TableR("tenant")
-                                        ),
-                                            null, "tenant_id",
-                                            null, "tenant_id")
-                                    ),
-                                        null, "line_id",
-                                        "line_tenant", "line_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "line_id", new TableR("line")),
+                                            new JoinedQueryElementR("line_tenant", "line_id",
+                                                new JoinR(
+                                                    new JoinedQueryElementR(null, "tenant_id", new TableR("line_tenant")),
+                                                    new JoinedQueryElementR(null, "tenant_id", new TableR("tenant"))
+                                                ))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("tenant")
@@ -518,25 +518,26 @@ class NonCollapsedAggTest extends AggTableTestCase {
                                     .allMemberName("All distributors")
                                     .primaryKey("line_id")
                                     .primaryKeyTable("line")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("line"),
-                                        new JoinR(List.of(
-                                            new TableR("line_line_class"),
-                                            new JoinR(List.of(
-                                                new TableR("line_class"),
-                                                new JoinR(List.of(
-                                                    new TableR("line_class_distributor"),
-                                                    new TableR("distributor")),
-                                                    null, "distributor_id", null, "distributor_id")
-                                            ),
-                                                null, "line_class_id",
-                                                "line_class_distributor", "line_class_id" )
-                                        ),
-                                            null, "line_class_id",
-                                            "line_class", "line_class_id")
-                                    ),
-                                        null, "line_id",
-                                        "line_line_class", "line_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "line_id", new TableR("line")),
+                                            new JoinedQueryElementR("line_line_class", "line_id",
+                                                new JoinR(
+                                                    new JoinedQueryElementR(null, "line_class_id", new TableR("line_line_class")),
+                                                    new JoinedQueryElementR("line_class", "line_class_id",
+                                                        new JoinR(
+                                                            new JoinedQueryElementR(null, "line_class_id", new TableR("line_class")),
+                                                            new JoinedQueryElementR("line_class_distributor", "line_class_id",
+                                                                new JoinR(
+                                                                    new JoinedQueryElementR(null, "distributor_id", new TableR("line_class_distributor")),
+                                                                    new JoinedQueryElementR(null, "distributor_id", new TableR("distributor"))
+                                                                ))
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("distributor")
@@ -565,25 +566,25 @@ class NonCollapsedAggTest extends AggTableTestCase {
                                     .allMemberName("All networks")
                                     .primaryKey("line_id")
                                     .primaryKeyTable("line")
-                                    .relation(new JoinR(List.of(
-                                        new TableR("line"),
-                                        new JoinR(List.of(
-                                            new TableR("line_line_class"),
-                                            new JoinR(List.of(
-                                                new TableR("line_class"),
-                                                new JoinR(List.of(
-                                                    new TableR("line_class_network"),
-                                                    new TableR("network")),
-                                                    null, "network_id", null, "network_id")
-                                            ),
-                                                null, "line_class_id",
-                                                "line_class_network", "line_class_id" )
-                                        ),
-                                            null, "line_class_id",
-                                            "line_class", "line_class_id")
-                                    ),
-                                        null, "line_id",
-                                        "line_line_class", "line_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "line_id", new TableR("line")),
+                                            new JoinedQueryElementR("line_line_class", "line_id",
+                                                new JoinR(
+                                                    new JoinedQueryElementR(null, "line_class_id", new TableR("line_line_class")),
+                                                    new JoinedQueryElementR("line_class", "line_class_id",
+                                                        new JoinR(
+                                                            new JoinedQueryElementR(null, "line_class_id", new TableR("line_class")),
+                                                            new JoinedQueryElementR("line_class_network", "line_class_id",
+                                                                new JoinR(
+                                                                    new JoinedQueryElementR(null, "network_id", new TableR("line_class_network")),
+                                                                    new JoinedQueryElementR(null, "network_id", new TableR("network"))
+                                                                )
+                                                            )
+                                                        ))
+                                                ))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("network")

@@ -13,8 +13,8 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 
 import java.util.SortedSet;
@@ -25,17 +25,17 @@ public class SchemaExplorer {
         //constructor
     }
 
-    public static String[] getTableNameForAlias(MappingRelationOrJoin relation, String table) {
+    public static String[] getTableNameForAlias(MappingQuery relation, String table) {
         String theTableName = table;
         String schemaName = null;
 
         // EC: Loops join tree and finds the table name for an alias.
-        if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin theRelOrJoinL = left(join);
-            MappingRelationOrJoin theRelOrJoinR = right(join);
+        if (relation instanceof MappingJoinQuery join) {
+            MappingQuery theRelOrJoinL = left(join);
+            MappingQuery theRelOrJoinR = right(join);
             for (int i = 0; i < 2; i++) {
                 // Searches first using the Left Join and then the Right.
-                MappingRelationOrJoin theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
+                MappingQuery theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
                 if (theCurrentRelOrJoin instanceof MappingTable theTable) {
                     if (theTable.getAlias() != null && theTable.getAlias()
                             .equals(table)) {
@@ -55,14 +55,14 @@ public class SchemaExplorer {
         return new String[] { schemaName, theTableName };
     }
 
-    public static void getTableNamesForJoin(MappingRelationOrJoin relation, SortedSet<String> joinTables) {
+    public static void getTableNamesForJoin(MappingQuery relation, SortedSet<String> joinTables) {
         // EC: Loops join tree and collects table names.
-        if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin theRelOrJoinL = left(join);
-            MappingRelationOrJoin theRelOrJoinR = right(join);
+        if (relation instanceof MappingJoinQuery join) {
+            MappingQuery theRelOrJoinL = left(join);
+            MappingQuery theRelOrJoinR = right(join);
             for (int i = 0; i < 2; i++) {
                 // Searches first using the Left Join and then the Right.
-                MappingRelationOrJoin theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
+                MappingQuery theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
                 if (theCurrentRelOrJoin instanceof MappingTable theTable) {
                     String theTableName = (theTable.getAlias() != null && theTable.getAlias()
                             .trim()
@@ -78,20 +78,17 @@ public class SchemaExplorer {
 
     }
 
-    private static MappingRelationOrJoin left(MappingJoin join) {
-        if (join.getRelations() != null && !join.getRelations().isEmpty()) {
-            return join.getRelations()
-                    .get(0);
+    private static MappingQuery left(MappingJoinQuery join) {
+        if (join != null && join.left() != null) {
+            return join.left().getQuery();
         }
         throw new SchemaExplorerException("Join left error");
     }
 
-    private static MappingRelationOrJoin right(MappingJoin join) {
-        if (join.getRelations() != null && join.getRelations()
-                .size() > 1) {
-            return join.getRelations()
-                    .get(1);
+    private static MappingQuery right(MappingJoinQuery join) {
+        if (join != null && join.right() != null) {
+            return join.right().getQuery();
         }
-        throw new SchemaExplorerException("Join left error");
+        throw new SchemaExplorerException("Join right error");
     }
 }

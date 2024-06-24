@@ -35,6 +35,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ExpressionViewR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.NamedSetR;
@@ -893,29 +894,18 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
         .uniqueMembers(true)
         .build();
 
-    private static final JoinR JOIN_SHARED_1 = new JoinR(List.of(TABLE_JOIN_1_A, TABLE_JOIN_1_B),
-        null,
-        "product_class_id",
-        null,
-        "product_class_id");
-    private static final JoinR JOIN_4_2 = new JoinR(List.of(TABLE_JOIN_4_2_A,
-        TABLE_JOIN_4_2_B),
-        null,
-        STORE_ID_KEY,
-        null,
-        STORE_ID_KEY);
-    private static final JoinR JOIN_4_3 = new JoinR(List.of(TABLE_JOIN_4_3_A,
-        TABLE_JOIN_4_3_B),
-        null,
-        POSITION_ID,
-        null,
-        POSITION_ID);
-    private static final JoinR JOIN_4_4 = new JoinR(List.of(TABLE_JOIN_4_4_A,
-        TABLE_JOIN_4_4_B),
-        null,
-        STORE_ID_KEY,
-        null,
-        STORE_ID_KEY);
+    private static final JoinR JOIN_SHARED_1 = new JoinR(
+        new JoinedQueryElementR(null, "product_class_id", TABLE_JOIN_1_A),
+        new JoinedQueryElementR(null, "product_class_id", TABLE_JOIN_1_B));
+    private static final JoinR JOIN_4_2 = new JoinR(
+        new JoinedQueryElementR(null, STORE_ID_KEY, TABLE_JOIN_4_2_A),
+        new JoinedQueryElementR(null, STORE_ID_KEY, TABLE_JOIN_4_2_B));
+    private static final JoinR JOIN_4_3 = new JoinR(
+        new JoinedQueryElementR(null, POSITION_ID, TABLE_JOIN_4_3_A),
+        new JoinedQueryElementR(null, POSITION_ID, TABLE_JOIN_4_3_B));
+    private static final JoinR JOIN_4_4 = new JoinR(
+        new JoinedQueryElementR(null, STORE_ID_KEY, TABLE_JOIN_4_4_A),
+        new JoinedQueryElementR(null, STORE_ID_KEY, TABLE_JOIN_4_4_B));
 
     private static final CalculatedMemberPropertyR CALCULATEDMEMBER_PROPERTY_1 = CalculatedMemberPropertyRBuilder
         .builder()

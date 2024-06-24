@@ -19,9 +19,9 @@ import static mondrian.rolap.util.JoinUtil.right;
 import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 
@@ -33,7 +33,7 @@ public class RelationUtil {
         // constructor
     }
 
-    public static MappingRelation find(MappingRelationOrJoin relationOrJoin, String tableName) {
+    public static MappingRelation find(MappingQuery relationOrJoin, String tableName) {
         if (relationOrJoin instanceof MappingInlineTable inlineTable) {
             return tableName.equals(inlineTable.getAlias()) ? (MappingRelation) relationOrJoin : null;
         }
@@ -51,8 +51,8 @@ public class RelationUtil {
                 return null;
             }
         }
-        if (relationOrJoin instanceof MappingJoin join) {
-            MappingRelationOrJoin relation = find(left(join), tableName);
+        if (relationOrJoin instanceof MappingJoinQuery join) {
+            MappingQuery relation = find(left(join), tableName);
             if (relation == null) {
                 relation = find(right(join), tableName);
             }
@@ -129,10 +129,10 @@ public class RelationUtil {
                 table.getName() :
                 new StringBuilder(table.getSchema()).append(".").append(table.getName()).toString();
         }
-        if (relation instanceof MappingJoin join) {
+        if (relation instanceof MappingJoinQuery join) {
             return new StringBuilder("(").append(left(join)).append(") join (").append(right(join)).append(") on ")
-                .append((join).getLeftAlias()).append(".").append((join).getLeftKey()).append(" = ")
-                .append((join).getRightAlias()).append(".").append((join).getRightKey()).toString();
+                .append(join.left().getAlias()).append(".").append(join.left().getKey()).append(" = ")
+                .append(join.right().getAlias()).append(".").append(join.right().getKey()).toString();
         }
         if (relation instanceof MappingInlineTable) {
             return "<inline data>";

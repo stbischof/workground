@@ -13,9 +13,6 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public sealed interface MappingRelation extends MappingQuery
-		permits MappingInlineTable, MappingTable, MappingView {
-
-	String getAlias();
+public sealed interface MappingQuery permits MappingJoinQuery, MappingRelation{
 
 }

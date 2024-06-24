@@ -53,7 +53,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -64,7 +65,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
@@ -317,7 +318,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             String uniqueKeyLevelName = hierarchyUniqueKeyLevelName(hierarchy);
             boolean visible = hierarchyVisible(hierarchy);
             String displayFolder = hierarchyDisplayFolder(hierarchy);
-            MappingRelationOrJoin relation = hierarchyRelation(hierarchy);
+            MappingQuery relation = hierarchyRelation(hierarchy);
             String origin = hierarchyOrigin(hierarchy);
 
             return new_Hierarchy(name, caption, description, annotations, levels, memberReaderParameters, hasAll,
@@ -333,7 +334,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         List<MappingMemberReaderParameter> memberReaderParameters, boolean hasAll, String allMemberName,
         String allMemberCaption, String allLevelName, String primaryKey, String primaryKeyTable,
         String defaultMember, String memberReaderClass, String uniqueKeyLevelName, boolean visible,
-        String displayFolder, MappingRelationOrJoin relation, String origin
+        String displayFolder, MappingQuery relation, String origin
     );
 
     protected String hierarchyOrigin(MappingHierarchy hierarchy) {
@@ -2963,70 +2964,71 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         MappingElementFormatter memberFormatter
     );
 
-    protected MappingRelationOrJoin hierarchyRelation(MappingHierarchy hierarchy) {
+    protected MappingQuery hierarchyRelation(MappingHierarchy hierarchy) {
         return relationOrJoin(hierarchy.relation());
     }
 
-    protected MappingRelationOrJoin relationOrJoin(MappingRelationOrJoin relationOrJoin) {
+    protected MappingQuery relationOrJoin(MappingQuery relationOrJoin) {
         if (relationOrJoin != null) {
             if (relationOrJoin instanceof MappingRelation relation) {
                 return relation(relation);
             }
-            if (relationOrJoin instanceof MappingJoin join) {
+            if (relationOrJoin instanceof MappingJoinQuery join) {
                 return join(join);
             }
         }
         return null;
     }
 
-    protected MappingJoin join(MappingJoin join) {
+    protected MappingJoinQuery join(MappingJoinQuery join) {
         if (join != null) {
-            List<MappingRelationOrJoin> relations = joinRelations(join);
-            String leftAlias = joinLeftAlias(join);
-            String leftKey = joinLeftKey(join);
-            String rightAlias = joinRightAlias(join);
-            String rightKey = joinRightKey(join);
-            return new_Join(relations,
-                leftAlias,
-                leftKey,
-                rightAlias,
-                rightKey);
+            MappingJoinedQueryElement left = joinLeft(join);
+            MappingJoinedQueryElement right = joinRight(join);
+            return new_Join(left, right);
         }
         return null;
     }
 
-    protected String joinRightKey(MappingJoin join) {
-        return join.getRightKey();
+    protected MappingJoinedQueryElement joinLeft(MappingJoinQuery join) {
+        return joinedQueryElement(join.left());
     }
 
-    protected String joinRightAlias(MappingJoin join) {
-        return join.getRightAlias();
+    protected MappingJoinedQueryElement joinRight(MappingJoinQuery join) {
+        return joinedQueryElement(join.right());
     }
 
-    protected String joinLeftKey(MappingJoin join) {
-        return join.getLeftKey();
+    protected MappingJoinedQueryElement joinedQueryElement(MappingJoinedQueryElement element) {
+        if (element != null) {
+            String alias = joinedQueryElementAlias(element);
+            String key = joinedQueryElementKey(element);
+            MappingQuery query = joinedQueryElementQuery(element);
+            return new_JoinedQueryElement(alias, key, query);
+        }
+        return null;
     }
 
-    ;
-
-    protected String joinLeftAlias(MappingJoin join) {
-        return join.getLeftAlias();
+    protected  MappingQuery joinedQueryElementQuery(MappingJoinedQueryElement element) {
+        return relationOrJoin(element.getQuery());
     }
 
-    protected List<MappingRelationOrJoin> joinRelations(MappingJoin join) {
-        return relationOrJoins(join.getRelations());
+    protected String joinedQueryElementKey(MappingJoinedQueryElement element) {
+        return element.getKey();
     }
 
-    protected List<MappingRelationOrJoin> relationOrJoins(List<MappingRelationOrJoin> relations) {
+    protected String joinedQueryElementAlias(MappingJoinedQueryElement element) {
+        return element.getAlias();
+    }
+
+    protected List<MappingQuery> relationOrJoins(List<MappingQuery> relations) {
         return relations.stream().map(this::relationOrJoin).toList();
     }
 
-    protected abstract MappingJoin new_Join(
-        List<MappingRelationOrJoin> relations,
-        String leftAlias,
-        String leftKey,
-        String rightAlias,
-        String rightKey
+    protected abstract MappingJoinedQueryElement new_JoinedQueryElement(
+        String alias, String key, MappingQuery query);
+
+    protected abstract MappingJoinQuery new_Join(
+        MappingJoinedQueryElement left,
+        MappingJoinedQueryElement right
     );
 
     protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {

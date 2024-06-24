@@ -190,8 +190,8 @@ public class ObjectFactory {
         return new AggLevelImpl();
     }
 
-    public JoinImpl createHierarchyJoin() {
-        return new JoinImpl();
+    public JoinQueryImpl createHierarchyJoin() {
+        return new JoinQueryImpl();
     }
 
     public MemberReaderParameterImpl createHierarchyMemberReaderParameter() {

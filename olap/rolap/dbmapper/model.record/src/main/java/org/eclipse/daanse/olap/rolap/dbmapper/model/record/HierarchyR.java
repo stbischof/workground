@@ -19,7 +19,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberReaderParameter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 public record HierarchyR(String name,
                          String description,
@@ -38,7 +38,7 @@ public record HierarchyR(String name,
                          String memberReaderClass,
                          String uniqueKeyLevelName,
                          String displayFolder,
-                         MappingRelationOrJoin relation,
+                         MappingQuery relation,
                          String origin
 )
     implements MappingHierarchy {
@@ -61,7 +61,7 @@ public record HierarchyR(String name,
         String memberReaderClass,
         String uniqueKeyLevelName,
         String displayFolder,
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         String origin
     ) {
         this.name = name;
@@ -154,7 +154,7 @@ public record HierarchyR(String name,
         return displayFolder;
     }
 
-    public MappingRelationOrJoin getRelation() {
+    public MappingQuery getRelation() {
         return relation;
     }
 

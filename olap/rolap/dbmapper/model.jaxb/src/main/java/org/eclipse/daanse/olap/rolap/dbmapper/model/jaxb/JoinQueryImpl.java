@@ -11,22 +11,24 @@
  *   SmartCity Jena, Stefan Bischof - initial
  *
  */
-package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
+package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 
-public class JoinR implements MappingJoinQuery {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = { "left", "right" })
+public class JoinQueryImpl implements MappingJoinQuery {
 
-    private MappingJoinedQueryElement left;
-    private MappingJoinedQueryElement right;
+    @XmlElement(name = "Left", type = JoinedQueryElementImpl.class)
+    MappingJoinedQueryElement left;
 
-    public JoinR(MappingJoinedQueryElement left,
-                 MappingJoinedQueryElement right)
-    {
-        this.left = left;
-        this.right = right;
-    }
+    @XmlElement(name = "Right", type = JoinedQueryElementImpl.class)
+    MappingJoinedQueryElement right;
 
     @Override
     public MappingJoinedQueryElement left() {

@@ -86,12 +86,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughEleme
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
@@ -105,6 +105,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MeasureImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2003,7 +2004,7 @@ public class RolapCube extends CubeBase {
         for (Hierarchy hierarchy1 : hierarchies) {
             RolapHierarchy hierarchy = (RolapHierarchy) hierarchy1;
 
-            MappingRelationOrJoin relation = hierarchy.getRelation();
+            MappingQuery relation = hierarchy.getRelation();
             if (relation == null) {
                 continue; // e.g. [Measures] hierarchy
             }
@@ -2046,10 +2047,10 @@ public class RolapCube extends CubeBase {
                 // a Join, i.e., the dimension is not a snowflake,
                 // there is a single dimension table, then this is currently
                 // an unsupported configuation and all bets are off.
-                if (relation instanceof MappingJoin) {
+                if (relation instanceof MappingJoinQuery) {
                     // RME
                     // take out after things seem to be working
-                    MappingRelationOrJoin relationTmp1 = relation;
+                    MappingQuery relationTmp1 = relation;
 
                     relation = reorder(relation, levels);
 
@@ -2062,7 +2063,7 @@ public class RolapCube extends CubeBase {
                     }
                 }
 
-                MappingRelationOrJoin relationTmp2 = relation;
+                MappingQuery relationTmp2 = relation;
 
                 if (levelName != null) {
                     // When relation is a table, this does nothing. Otherwise
@@ -2092,7 +2093,7 @@ public class RolapCube extends CubeBase {
                     // If the child level is null, then the DimensionUsage
                     // level attribute was simply set to the default, lowest
                     // level and we do nothing.
-                    if (relation instanceof MappingJoin) {
+                    if (relation instanceof MappingJoinQuery) {
                         RolapLevel childLevel =
                             (RolapLevel) level.getChildLevel();
                         if (childLevel != null) {
@@ -2151,22 +2152,19 @@ public class RolapCube extends CubeBase {
                     if (hierarchy.getXmlHierarchy() != null
                             && hierarchy.getXmlHierarchy()
                             .primaryKeyTable() != null
-                            && relation instanceof MappingJoin join
+                            && relation instanceof MappingJoinQuery join
                             && right(join) instanceof MappingTable
                             && getAlias(((MappingTable)
-                            right(((MappingJoin) relation)))) != null
+                            right(((MappingJoinQuery) relation)))) != null
                             && getAlias(((MappingTable)
-                            right(((MappingJoin) relation))))
+                            right(((MappingJoinQuery) relation))))
                             .equals(
                                 hierarchy.getXmlHierarchy()
                               .primaryKeyTable()))
                     {
-                        MappingJoin newRelation = new JoinR(
-                        List.of(right(((MappingJoin) relation)), left(((MappingJoin) relation))),
-                        getRightAlias((MappingJoin) relation),
-                        ((MappingJoin) relation).getRightKey(),
-                        getLeftAlias(((MappingJoin) relation)),
-                        ((MappingJoin) relation).getLeftKey());
+                        MappingJoinQuery newRelation = new JoinR(
+                            new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right(join)),
+                            new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), left(join)));
                         relation = newRelation;
                     }
 
@@ -2270,19 +2268,19 @@ public class RolapCube extends CubeBase {
     // and snowflake dimensions only.
 
     /**
-     * Formats a {@link MappingRelationOrJoin}, indenting
+     * Formats a {@link MappingQuery}, indenting
      * joins for readability.
      *
      * @param relation A table or a join
      */
-    private static String format(MappingRelationOrJoin relation) {
+    private static String format(MappingQuery relation) {
         StringBuilder buf = new StringBuilder();
         format(relation, buf, "");
         return buf.toString();
     }
 
     private static void format(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         StringBuilder buf,
         String indent)
     {
@@ -2296,17 +2294,17 @@ public class RolapCube extends CubeBase {
             }
             buf.append(Util.NL);
         } else {
-            MappingJoin join = (MappingJoin) relation;
+            MappingJoinQuery join = (MappingJoinQuery) relation;
             String subindent = new StringBuilder(indent).append("  ").toString();
 
             buf.append(indent);
             buf.append(getLeftAlias(join));
             buf.append('.');
-            buf.append(join.getLeftKey());
+            buf.append(join.left().getKey());
             buf.append('=');
             buf.append(getRightAlias(join));
             buf.append('.');
-            buf.append(join.getRightKey());
+            buf.append(join.right().getKey());
             buf.append(Util.NL);
             format(left(join), buf, subindent);
             format(right(join), buf, indent);
@@ -2383,7 +2381,7 @@ public class RolapCube extends CubeBase {
     }
 
     /**
-     * Attempts to transform a {@link MappingRelationOrJoin}
+     * Attempts to transform a {@link MappingQuery}
      * into the "canonical" form.
      *
      * <p>What is the canonical form? It is only relevant
@@ -2492,8 +2490,8 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      * @param levels Levels in hierarchy
      */
-    private static MappingRelationOrJoin reorder(
-        MappingRelationOrJoin relation,
+    private static MappingQuery reorder(
+        MappingQuery relation,
         RolapLevel[] levels)
     {
         // Need at least two levels, with only one level theres nothing to do.
@@ -2543,14 +2541,14 @@ public class RolapCube extends CubeBase {
      * @param map Names of tables and {@link RelNode} pairs
      */
     private static boolean validateNodes(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         Map<String, RelNode> map)
     {
         if (relation instanceof MappingRelation table) {
             RelNode relNode = RelNode.lookup(table, map);
             return (relNode != null);
 
-        } else if (relation instanceof MappingJoin join) {
+        } else if (relation instanceof MappingJoinQuery join) {
             return validateNodes(left(join), map)
                 && validateNodes(right(join), map);
 
@@ -2568,7 +2566,7 @@ public class RolapCube extends CubeBase {
      * @param map Names of tables and {@link RelNode} pairs
      */
     private static int leftToRight(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         Map<String, RelNode> map)
     {
         if (relation instanceof MappingRelation table) {
@@ -2579,7 +2577,7 @@ public class RolapCube extends CubeBase {
 
             return relNode.depth;
 
-        } else if (relation instanceof MappingJoin join) {
+        } else if (relation instanceof MappingJoinQuery join) {
             int leftDepth = leftToRight(left(join), map);
             int rightDepth = leftToRight(right(join), map);
 
@@ -2587,13 +2585,13 @@ public class RolapCube extends CubeBase {
             if (rightDepth > leftDepth) {
                 // switch
                 String leftAlias = getLeftAlias(join);
-                String leftKey = join.getLeftKey();
-                MappingRelationOrJoin left = left(join);
-                join.setLeftAlias(getRightAlias(join));
-                join.setLeftKey(join.getRightKey());
+                String leftKey = join.left().getKey();;
+                MappingQuery left = left(join);
+                join.left().setAlias(getRightAlias(join));
+                join.left().setKey(join.right().getKey());
                 changeLeftRight(join, right(join), left);
-                join.setRightAlias(leftAlias);
-                join.setRightKey(leftKey);
+                join.right().setAlias(leftAlias);
+                join.right().setKey(leftKey);
             }
             // Does not currently matter which is returned because currently we
             // only support structures where the left and right depth values
@@ -2613,35 +2611,31 @@ public class RolapCube extends CubeBase {
      *
      * @param relation A table or a join
      */
-    private static void topToBottom(MappingRelationOrJoin relation) {
+    private static void topToBottom(MappingQuery relation) {
         if (relation instanceof MappingTable) {
             // nothing
 
-        } else if (relation instanceof MappingJoin join) {
-            while (left(join) instanceof MappingJoin leftJoin) {
-                MappingJoin jleft = leftJoin;
+        } else if (relation instanceof MappingJoinQuery join) {
+            while (left(join) instanceof MappingJoinQuery leftJoin) {
+                MappingJoinQuery jleft = leftJoin;
                 changeLeftRight(join, left(jleft), new JoinR(
-                    List.of(right(jleft), right(join)),
-                    getLeftAlias(join),
-                    join.getLeftKey(),
-                    getRightAlias(join),
-                    join.getRightKey()
-                    ));
-                join.setRightAlias(getRightAlias(jleft));
-                join.setRightKey(jleft.getRightKey());
-                join.setLeftAlias(getLeftAlias(jleft));
-                join.setLeftKey(jleft.getLeftKey());
+                    new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), right(jleft)),
+                    new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right(join))));
+                join.right().setAlias(getRightAlias(jleft));
+                join.right().setKey(jleft.right().getKey());
+                join.left().setAlias(getLeftAlias(jleft));
+                join.left().setKey(jleft.left().getKey());
             }
         }
     }
 
     /**
-     * Copies a {@link MappingRelationOrJoin}.
+     * Copies a {@link MappingQuery}.
      *
      * @param relation A table or a join
      */
-    private static MappingRelationOrJoin copy(
-        MappingRelationOrJoin relation)
+    private static MappingQuery copy(
+        MappingQuery relation)
     {
         if (relation instanceof MappingTable table) {
             return new TableR(table);
@@ -2649,14 +2643,13 @@ public class RolapCube extends CubeBase {
         } else if (relation instanceof MappingInlineTable table) {
             return new InlineTableR(table);
 
-        } else if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin left = copy(left(join));
-            MappingRelationOrJoin right = copy(right(join));
+        } else if (relation instanceof MappingJoinQuery join) {
+            MappingQuery left = copy(left(join));
+            MappingQuery right = copy(right(join));
 
             return new JoinR(
-                List.of(left, right),
-                getLeftAlias(join), join.getLeftKey(),
-                getRightAlias(join), join.getRightKey());
+                new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), left),
+                new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right));
 
         } else {
             throw Util.newInternal(BAD_RELATION_TYPE + relation);
@@ -2671,8 +2664,8 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      * @param tableName Table name in relation
      */
-    private static MappingRelationOrJoin snip(
-        MappingRelationOrJoin relation,
+    private static MappingQuery snip(
+        MappingQuery relation,
         String tableName)
     {
         if (relation instanceof MappingTable table) {
@@ -2683,9 +2676,9 @@ public class RolapCube extends CubeBase {
                 return table.getName().equals(tableName) ? null : table;
             }
 
-        } else if (relation instanceof MappingJoin join) {
+        } else if (relation instanceof MappingJoinQuery join) {
             // snip left
-            MappingRelationOrJoin left = snip(left(join), tableName);
+            MappingQuery left = snip(left(join), tableName);
             if (left == null) {
                 // left got snipped so return the right
                 // (the join is no longer a join).
@@ -2696,7 +2689,7 @@ public class RolapCube extends CubeBase {
                 changeLeftRight(join, left, right(join));
 
                 // snip right
-                MappingRelationOrJoin right = snip(right(join), tableName);
+                MappingQuery right = snip(right(join), tableName);
                 if (right == null) {
                     // right got snipped so return the left.
                     return left(join);

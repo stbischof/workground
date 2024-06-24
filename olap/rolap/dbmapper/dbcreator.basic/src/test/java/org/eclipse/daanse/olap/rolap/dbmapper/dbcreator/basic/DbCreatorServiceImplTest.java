@@ -27,7 +27,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
@@ -82,7 +82,7 @@ class DbCreatorServiceImplTest {
     MappingPrivateDimension privateDimension = mock(MappingPrivateDimension.class);
     MappingHierarchy hierarchy = mock(MappingHierarchy.class);
     MappingTable table = mock(MappingTable.class);
-    MappingJoin join = mock(MappingJoin.class);
+    MappingJoinQuery join = mock(MappingJoinQuery.class);
     MappingTable tableFact = mock(MappingTable.class);
     MappingLevel level1 = mock(MappingLevel.class);
     MappingLevel level2 = mock(MappingLevel.class);

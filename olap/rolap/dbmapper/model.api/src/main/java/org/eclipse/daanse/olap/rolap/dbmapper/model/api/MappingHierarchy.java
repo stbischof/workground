@@ -51,7 +51,7 @@ public interface MappingHierarchy {
 
     String displayFolder();
 
-    MappingRelationOrJoin relation();
+    MappingQuery relation();
 
     String origin();
 }

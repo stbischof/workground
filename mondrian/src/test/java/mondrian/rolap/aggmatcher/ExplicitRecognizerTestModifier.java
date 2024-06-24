@@ -23,6 +23,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
@@ -155,12 +156,12 @@ public class ExplicitRecognizerTestModifier extends RDbMappingSchemaModifier {
                             .hasAll(true)
                             .primaryKey("product_id")
                             .primaryKeyTable("product")
-                            .relation(new JoinR(List.of(
-                                new TableR("product"),
-                                new TableR("product_class")
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                    new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                )
                             )
-                                , null, "product_class_id",
-                                null, "product_class_id"))
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Product Family")

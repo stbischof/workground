@@ -13,16 +13,6 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.provider.sample.steelwheels.xml;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
@@ -33,17 +23,14 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -51,6 +38,16 @@ import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchema
 import org.junit.jupiter.api.Test;
 import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
 import org.osgi.test.common.annotation.InjectService;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RequireServiceComponentRuntime
 class SteelwheelReadTest {
@@ -776,40 +773,6 @@ class SteelwheelReadTest {
         assertEquals(map.get(CAPTION), hierarchy.caption());
         assertNull(hierarchy.description());
         assertNull(hierarchy.uniqueKeyLevelName());
-    }
-
-    private void checkHierarchyJoin(MappingJoin join, Object o) {
-        if (o == null) {
-            assertNull(join);
-        } else {
-            Map<String, Object> map = (Map<String, Object>) o;
-            assertNotNull(join);
-            assertEquals(get(LEFT_KEY, map), join.getLeftKey());
-            assertEquals(get(RIGHT_KEY, map), join.getRightKey());
-            assertEquals(get(LEFT_ALIAS, map), join.getLeftAlias());
-            assertEquals(get(RIGHT_ALIAS, map), join.getRightAlias());
-            List<MappingRelationOrJoin> relations = join.getRelations();
-            assertEquals(relations.size(), ((List) get(RELATION, map)).size());
-            for (int i = 0; i < relations.size(); i++) {
-                checkHierarchyJoinRelationItem(relations.get(i), (Map) ((List) get(RELATION, map)).get(i));
-            }
-        }
-    }
-
-    private void checkHierarchyJoinRelationItem(Object relation, Map<String, Object> map) {
-        if (relation instanceof MappingTable) {
-            checkTableItem((MappingTable) relation, map);
-        }
-    }
-
-    private void checkTableItem(MappingTable table, Map<String, Object> map) {
-        assertNull(table.getSql());
-        assertNotNull(table.getAggExcludes());
-        assertNotNull(table.getAggTables());
-        assertNotNull(table.getHints());
-        assertEquals(table.getName(), get(NAME, map));
-        assertNull(table.getSchema());
-        assertNull(table.getAlias());
     }
 
     private void checkLevel(List<? extends MappingLevel> level, List<Map<String, Object>> list) {

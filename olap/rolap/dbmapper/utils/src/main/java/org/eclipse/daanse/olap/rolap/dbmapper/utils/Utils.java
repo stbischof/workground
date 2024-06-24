@@ -10,12 +10,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 
 import java.util.HashMap;
@@ -105,11 +105,11 @@ public class Utils {
         }
     }
 
-    private static String processingRelation(MappingRelationOrJoin relation, Map<String, Table> tables, String schemaName) {
+    private static String processingRelation(MappingQuery relation, Map<String, Table> tables, String schemaName) {
         if (relation instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table) {
             return processingTable(table, tables, schemaName);
         }
-        if (relation instanceof MappingJoin join) {
+        if (relation instanceof MappingJoinQuery join) {
             return processingJoin(join, tables, schemaName);
         }
         if (relation instanceof MappingInlineTable inlineTable) {
@@ -158,21 +158,20 @@ public class Utils {
         return null;
     }
 
-    private static String processingJoin(MappingJoin relation, Map<String, Table> tables, String schemaName) {
+    private static String processingJoin(MappingJoinQuery relation, Map<String, Table> tables, String schemaName) {
         String name = null;
-        if (relation.getRelations() != null) {
-            for (int i = 0; i < relation.getRelations().size(); i++) {
-                String tableName = processingRelation(relation.getRelations().get(i), tables, schemaName);
-                String columnName;
-                if (i == 0) {
-                    name = tableName;
-                    columnName = relation.getLeftKey();
-                } else {
-                    columnName = relation.getRightKey();
-                }
-                Table t = tables.get(tableName);
-                getColumnOrCreateNew(t.getColumns(), columnName, getSqlType(Type.INTEGER));
-            }
+        if (relation.left() != null) {
+            String tableName = processingRelation(relation.left().getQuery(), tables, schemaName);
+            String columnName = relation.left().getKey();
+            Table t = tables.get(tableName);
+            getColumnOrCreateNew(t.getColumns(), columnName, getSqlType(Type.INTEGER));
+            name = tableName;
+        }
+        if (relation.right() != null) {
+            String tableName = processingRelation(relation.right().getQuery(), tables, schemaName);
+            String columnName = relation.right().getKey();
+            Table t = tables.get(tableName);
+            getColumnOrCreateNew(t.getColumns(), columnName, getSqlType(Type.INTEGER));
         }
         return name;
     }

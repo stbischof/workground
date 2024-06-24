@@ -16,11 +16,12 @@ package org.eclipse.daanse.olap.rolap.dbmapper.provider.sample.population.record
 import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PrivateDimensionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
@@ -51,17 +52,17 @@ public class PopulationRecordDbMappingSchemaProvider implements DatabaseMappingS
     private static final TableR TABLE21 = new TableR(STATE);
     private static final TableR TABLE3 = new TableR("gender");
     private static final TableR TABLE4 = new TableR("ageGroups");
-    private static final JoinR JOIN21 = new JoinR(List.of(TABLE22, TABLE23),
-        null,
-        "continent_id",
-        null,
-        "id");
+    private static final JoinR JOIN21 = new JoinR(
+        new JoinedQueryElementR(null,
+            "continent_id", TABLE22),
+        new JoinedQueryElementR(null,
+            "id", TABLE23));
 
-    private static final MappingJoin JOIN1 = new JoinR(List.of(TABLE21, JOIN21),
-        null,
-        "contry_id",
-        null,
-        "id");
+    private static final MappingJoinQuery JOIN1 = new JoinR(
+        new JoinedQueryElementR(null,
+            "contry_id", TABLE21),
+        new JoinedQueryElementR(null,
+            "id", JOIN21));
 
     private static final LevelR LEVEL1 = LevelRBuilder
         .builder()

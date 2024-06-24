@@ -53,7 +53,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
@@ -62,7 +63,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
@@ -234,18 +235,25 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    protected void checkJoin(MappingJoin join) {
+    protected void checkJoin(MappingJoinQuery join) {
         if (join != null) {
-            checkRelationOrJoinList(join.getRelations());
+            checkJoinedQueryElement(join.left());
+            checkJoinedQueryElement(join.right());
         }
     }
 
-    protected void checkRelationOrJoin(MappingRelationOrJoin relationOrJoin) {
+    protected void checkJoinedQueryElement(MappingJoinedQueryElement element) {
+        if (element != null) {
+            checkRelationOrJoin(element.getQuery());
+        }
+    }
+
+    protected void checkRelationOrJoin(MappingQuery relationOrJoin) {
         if (relationOrJoin != null) {
             if (relationOrJoin instanceof MappingInlineTable inlineTable) {
                 checkInlineTable(inlineTable);
             }
-            if (relationOrJoin instanceof MappingJoin join) {
+            if (relationOrJoin instanceof MappingJoinQuery join) {
                 checkJoin(join);
             }
             if (relationOrJoin instanceof MappingTable table) {
@@ -651,12 +659,6 @@ public abstract class AbstractSchemaWalker {
     private void checkMemberReaderParameterList(List<? extends MappingMemberReaderParameter> list) {
         if (list != null) {
             list.forEach(this::checkMemberReaderParameter);
-        }
-    }
-
-    private void checkRelationOrJoinList(List<MappingRelationOrJoin> list) {
-        if (list != null) {
-            list.forEach(this::checkRelationOrJoin);
         }
     }
 

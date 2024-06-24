@@ -40,6 +40,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
@@ -1649,10 +1650,10 @@ class TestAggregationManager extends BatchTestCase {
                                     .primaryKey("product_id")
                                     .primaryKeyTable("product")
                                     .relation(new JoinR(
-                                        List.of(new TableR("product"), new TableR("product_class")),
-                                        null, "product_class_id",
-                                        null, "product_class_id"
-                                    ))
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("Product Family")
@@ -2488,9 +2489,10 @@ class TestAggregationManager extends BatchTestCase {
                                     .primaryKey("product_id")
                                     .primaryKeyTable("product")
                                     .relation(
-                                        new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                            null,"product_class_id",
-                                            null,"product_class_id")
+                                        new JoinR(
+                                            new JoinedQueryElementR(null,"product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null,"product_class_id", new TableR("product_class"))
+                                            )
                                     )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
@@ -2915,9 +2917,9 @@ class TestAggregationManager extends BatchTestCase {
                                     .primaryKey("product_id")
                                     .primaryKeyTable("product")
                                     .relation(
-                                        new JoinR(List.of(new TableR("product"), new TableR("product_class")),
-                                            null,"product_class_id",
-                                            null,"product_class_id")
+                                        new JoinR(
+                                            new JoinedQueryElementR(null,"product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null,"product_class_id", new TableR("product_class")))
                                     )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
@@ -2975,9 +2977,11 @@ class TestAggregationManager extends BatchTestCase {
                                     .primaryKey("store_id")
                                     .primaryKeyTable("store")
                                     .relation(
-                                        new JoinR(List.of(new TableR("store"), new TableR("region")),
-                                            null,"region_id",
-                                            null,"region_id")
+                                        new JoinR(
+                                            new JoinedQueryElementR(
+                                            null,"region_id", new TableR("store")),
+                                            new JoinedQueryElementR(null,"region_id", new TableR("region"))
+                                        )
                                     )
                                     .levels(List.of(
                                         LevelRBuilder.builder()

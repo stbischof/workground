@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberReaderParameter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -64,9 +64,9 @@ public class HierarchyImpl extends AbstractMainElement implements MappingHierarc
 	@XmlAttribute(name = "origin")
 	private String origin;
 	@XmlElements({ @XmlElement(name = "Table", type = TableImpl.class),
-			@XmlElement(name = "View", type = ViewImpl.class), @XmlElement(name = "Join", type = JoinImpl.class),
+			@XmlElement(name = "View", type = ViewImpl.class), @XmlElement(name = "Join", type = JoinQueryImpl.class),
 			@XmlElement(name = "InlineTable", type = InlineTableImpl.class) })
-	protected MappingRelationOrJoin relation;
+	protected MappingQuery relation;
 
 	@Override
 	public List<MappingLevel> levels() {
@@ -172,7 +172,7 @@ public class HierarchyImpl extends AbstractMainElement implements MappingHierarc
 	}
 
 	@Override
-	public MappingRelationOrJoin relation() {
+	public MappingQuery relation() {
 		return relation;
 	}
 
@@ -197,7 +197,7 @@ public class HierarchyImpl extends AbstractMainElement implements MappingHierarc
 		this.levels = levels;
 	}
 
-	public void setRelation(MappingRelationOrJoin relation) {
+	public void setRelation(MappingQuery relation) {
 		this.relation = relation;
 	}
 

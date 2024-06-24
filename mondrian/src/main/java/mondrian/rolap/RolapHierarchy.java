@@ -65,13 +65,13 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +135,7 @@ public class RolapHierarchy extends HierarchyBase {
     private MemberReader memberReader;
     protected MappingHierarchy xmlHierarchy;
     private String memberReaderClass;
-    protected MappingRelationOrJoin relation;
+    protected MappingQuery relation;
     private Member defaultMember;
     private String defaultMemberName;
     private RolapNullMember nullMember;
@@ -277,7 +277,7 @@ public class RolapHierarchy extends HierarchyBase {
         assert !(this instanceof RolapCubeHierarchy);
 
         this.xmlHierarchy = xmlHierarchy;
-        MappingRelationOrJoin xmlHierarchyRelation = xmlHierarchy.relation();
+        MappingQuery xmlHierarchyRelation = xmlHierarchy.relation();
         if (xmlHierarchy.relation() == null
             && xmlHierarchy.memberReaderClass() == null
             && cube != null)
@@ -566,7 +566,7 @@ public class RolapHierarchy extends HierarchyBase {
     public MappingRelation getUniqueTable() {
         if (relation instanceof MappingRelation r) {
             return r;
-        } else if (relation instanceof MappingJoin) {
+        } else if (relation instanceof MappingJoinQuery) {
             return null;
         } else {
             throw Util.newInternal(
@@ -584,7 +584,7 @@ public class RolapHierarchy extends HierarchyBase {
 
     private static MappingRelation getTable(
         String tableName,
-        MappingRelationOrJoin relationOrJoin)
+        MappingQuery relationOrJoin)
     {
         if (relationOrJoin instanceof MappingRelation relation) {
             if (RelationUtil.getAlias(relation).equals(tableName)) {
@@ -593,7 +593,7 @@ public class RolapHierarchy extends HierarchyBase {
                 return null;
             }
         } else {
-            MappingJoin join = (MappingJoin) relationOrJoin;
+            MappingJoinQuery join = (MappingJoinQuery) relationOrJoin;
             MappingRelation rel = getTable(tableName, left(join));
             if (rel != null) {
                 return rel;
@@ -606,11 +606,11 @@ public class RolapHierarchy extends HierarchyBase {
         return (RolapSchema) dimension.getSchema();
     }
 
-    public MappingRelationOrJoin getRelation() {
+    public MappingQuery getRelation() {
         return relation;
     }
 
-    public void setRelation(MappingRelationOrJoin relation) {
+    public void setRelation(MappingQuery relation) {
         this.relation = relation;
     }
 
@@ -728,8 +728,8 @@ public class RolapHierarchy extends HierarchyBase {
                     .append(" to query: it does not have a <Table>, <View> or <Join>").toString());
         }
         final boolean failIfExists = false;
-        MappingRelationOrJoin subRelation = relation;
-        if (relation instanceof MappingJoin &&  expression != null) {
+        MappingQuery subRelation = relation;
+        if (relation instanceof MappingJoinQuery &&  expression != null) {
                 subRelation =
                     relationSubsetInverse(relation, getTableAlias(expression));
         }
@@ -757,8 +757,8 @@ public class RolapHierarchy extends HierarchyBase {
         }
         query.registerRootRelation(getRelation());
         final boolean failIfExists = false;
-        MappingRelationOrJoin subRelation = getRelation();
-        if (getRelation() instanceof MappingJoin && expression != null) {
+        MappingQuery subRelation = getRelation();
+        if (getRelation() instanceof MappingJoinQuery && expression != null) {
             // Suppose relation is
             //   (((A join B) join C) join D)
             // and the fact table is
@@ -797,7 +797,7 @@ public class RolapHierarchy extends HierarchyBase {
                     .append(" to query: it does not have a <Table>, <View> or <Join>").toString());
         }
         final boolean failIfExists = false;
-        MappingRelationOrJoin subRelation = null;
+        MappingQuery subRelation = null;
         if (table != null) {
             // Suppose relation is
             //   (((A join B) join C) join D)
@@ -842,8 +842,8 @@ public class RolapHierarchy extends HierarchyBase {
      * @return the smallest containing relation or null if no matching table
      * is found in <code>relation</code>
      */
-    private static MappingRelationOrJoin relationSubsetInverse(
-        MappingRelationOrJoin relation,
+    private static MappingQuery relationSubsetInverse(
+        MappingQuery relation,
         String alias)
     {
         if (relation instanceof MappingRelation table) {
@@ -851,8 +851,8 @@ public class RolapHierarchy extends HierarchyBase {
                 ? relation
                 : null;
 
-        } else if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin leftRelation =
+        } else if (relation instanceof MappingJoinQuery join) {
+            MappingQuery leftRelation =
                 relationSubsetInverse(left(join), alias);
             return (leftRelation == null)
                 ? relationSubsetInverse(right(join), alias)
@@ -872,8 +872,8 @@ public class RolapHierarchy extends HierarchyBase {
      * @return the smallest containing relation or null if no matching table
      * is found in <code>relation</code>
      */
-    private static MappingRelationOrJoin relationSubset(
-        MappingRelationOrJoin relation,
+    private static MappingQuery relationSubset(
+        MappingQuery relation,
         String alias)
     {
         if (relation instanceof MappingRelation table) {
@@ -881,8 +881,8 @@ public class RolapHierarchy extends HierarchyBase {
                 ? relation
                 : null;
 
-        } else if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin rightRelation =
+        } else if (relation instanceof MappingJoinQuery join) {
+            MappingQuery rightRelation =
                 relationSubset(right(join), alias);
             if (rightRelation == null) {
                 return relationSubset(left(join), alias);
@@ -907,8 +907,8 @@ public class RolapHierarchy extends HierarchyBase {
      * @return the smallest containing relation or null if no matching table
      * is found in <code>relation</code>
      */
-    private static MappingRelationOrJoin lookupRelationSubset(
-        MappingRelationOrJoin relation,
+    private static MappingQuery lookupRelationSubset(
+        MappingQuery relation,
         RolapStar.Table targetTable)
     {
         if (relation instanceof MappingTable table) {
@@ -918,8 +918,8 @@ public class RolapHierarchy extends HierarchyBase {
                 // Not the same table if table names are different
                 return null;
             }
-        } else if (relation instanceof MappingJoin join) {
-            MappingRelationOrJoin rightRelation =
+        } else if (relation instanceof MappingJoinQuery join) {
+            MappingQuery rightRelation =
                 lookupRelationSubset(right(join), targetTable);
             if (rightRelation == null) {
                 // Keep searching left.
@@ -1224,11 +1224,11 @@ public class RolapHierarchy extends HierarchyBase {
         peerHier.allMember = (RolapMemberBase) getAllMember();
         peerHier.allLevelName = getAllLevelName();
         peerHier.sharedHierarchyName = getSharedHierarchyName();
-        JoinImpl join = new JoinImpl();
+        JoinQueryImpl join = new JoinQueryImpl();
         peerHier.relation = join;
         changeLeftRight(join, clos.table(), relation);         // the closure table as left and the unclosed base table as right
-        join.setLeftKey( clos.parentColumn() );
-        join.setRightKey( clos.childColumn() );
+        join.left().setKey( clos.parentColumn() );
+        join.right().setKey( clos.childColumn() );
 
         // Create the upper level.
         // This represents all groups of descendants. For example, in the

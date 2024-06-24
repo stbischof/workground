@@ -40,7 +40,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
@@ -238,7 +238,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     @Override
     protected void checkElementFormatter(MappingElementFormatter elementFormatter) {
-        super.checkElementFormatter(elementFormatter);        
+        super.checkElementFormatter(elementFormatter);
         if (elementFormatter != null) {
             if (isEmpty(elementFormatter.className()) && elementFormatter.script() == null) {
             	results.add(new VerificationResultR(ELEMENT_FORMATTER,
@@ -248,7 +248,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             		checkElementFormatterClass(elementFormatter.className());
             	}
             }
-        }     
+        }
     }
 
     protected void checkElementFormatterClass(String className) {
@@ -361,20 +361,21 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkJoin(MappingJoin join) {
+    protected void checkJoin(MappingJoinQuery join) {
         super.checkJoin(join);
         if (join != null) {
-            if (isEmpty(join.getLeftKey())) {
-                results.add(new VerificationResultR(JOIN, JOIN_LEFT_KEY_MUST_BE_SET, ERROR,
-                    Cause.SCHEMA));
-            }
-            if (isEmpty(join.getRightKey())) {
-                results.add(new VerificationResultR(JOIN, JOIN_RIGHT_KEY_MUST_BE_SET,
-                    ERROR, Cause.SCHEMA));
-            }
-            if (join.getRelations() == null || join.getRelations().size() < 2) {
+            if (join.left() == null || join.right() == null) {
                 results.add(new VerificationResultR(JOIN, JOIN_RELATION_MUST_BE_SET_LEFT_AND_RIGHT,
                     ERROR, Cause.SCHEMA));
+            } else {
+                if (isEmpty(join.left().getKey())) {
+                    results.add(new VerificationResultR(JOIN, JOIN_LEFT_KEY_MUST_BE_SET, ERROR,
+                        Cause.SCHEMA));
+                }
+                if (isEmpty(join.right().getKey())) {
+                    results.add(new VerificationResultR(JOIN, JOIN_RIGHT_KEY_MUST_BE_SET,
+                        ERROR, Cause.SCHEMA));
+                }
             }
         }
     }
@@ -533,7 +534,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             checkColumnView(table, parentHierarchy);
 
             if (isEmpty(table)) {
-                if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoin join) {
+                if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoinQuery join) {
                     // relation is join, table should be specified
                     results.add(new VerificationResultR(LEVEL, TABLE_MUST_BE_SET, ERROR,
                         Cause.DATABASE));
@@ -543,7 +544,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             } else {
                 // if using Joins then gets the table name for doesColumnExist
                 // validation.
-                if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoin join) {
+                if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoinQuery join) {
                     checkJoin(join);
                 }
             }
@@ -1075,7 +1076,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
 
     private void checkHierarchyJoin(MappingHierarchy hierarchy, MappingPrivateDimension cubeDimension) {
-        if (hierarchy.relation() instanceof MappingJoin) {
+        if (hierarchy.relation() instanceof MappingJoinQuery) {
             if (isEmpty(hierarchy.primaryKeyTable())) {
                 if (isEmpty(hierarchy.primaryKey())) {
                     String msg = String.format(PRIMARY_KEY_TABLE_AND_PRIMARY_KEY_MUST_BE_SET_FOR_JOIN,
@@ -1117,7 +1118,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     private void checkHierarchyPrimaryKeyTable(MappingHierarchy hierarchy, MappingPrivateDimension cubeDimension) {
         String primaryKeyTable = hierarchy.primaryKeyTable();
-        if (!isEmpty(primaryKeyTable) && (hierarchy.relation() instanceof MappingJoin join)) {
+        if (!isEmpty(primaryKeyTable) && (hierarchy.relation() instanceof MappingJoinQuery join)) {
             TreeSet<String> joinTables = new TreeSet<>();
             SchemaExplorer.getTableNamesForJoin(hierarchy.relation(), joinTables);
             if (!joinTables.contains(primaryKeyTable)) {
@@ -1207,7 +1208,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
         // If table has been changed in join then sets the table value
         // to null to cause "tableMustBeSet" validation fail.
         if (!isEmpty(table) && parentHierarchy != null
-            && parentHierarchy.relation() instanceof MappingJoin) {
+            && parentHierarchy.relation() instanceof MappingJoinQuery) {
             TreeSet<String> joinTables = new TreeSet<>();
             SchemaExplorer.getTableNamesForJoin(parentHierarchy.relation(), joinTables);
             if (!joinTables.contains(table)) {

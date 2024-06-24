@@ -20,6 +20,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
@@ -99,15 +100,16 @@ public class SpeciesNonCollapsedAggTestModifier extends RDbMappingSchemaModifier
                             .allMemberName("All Animals")
                             .primaryKey("SPECIES_ID")
                             .primaryKeyTable("DIM_SPECIES")
-                            .relation(new JoinR(
-                                List.of(new TableR("DIM_SPECIES"), new JoinR(
-                                    List.of(new TableR("DIM_GENUS"), new TableR("DIM_FAMILY")),
-                                    null, "FAMILY_ID",
-                                    null, "FAMILY_ID"
-                                )),
-                                null, "GENUS_ID",
-                                "DIM_GENUS", "GENUS_ID"
-                            ))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "GENUS_ID", new TableR("DIM_SPECIES")),
+                                    new JoinedQueryElementR("DIM_GENUS", "GENUS_ID",
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "FAMILY_ID", new TableR("DIM_GENUS")),
+                                            new JoinedQueryElementR(null, "FAMILY_ID", new TableR("DIM_FAMILY"))
+                                        ))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Family")

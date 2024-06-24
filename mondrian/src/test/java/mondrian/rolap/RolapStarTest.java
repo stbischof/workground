@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
@@ -47,7 +47,7 @@ class RolapStarTest {
             super(schema, context, fact);
         }
 
-        public MappingRelationOrJoin cloneRelationForTests(
+        public MappingQuery cloneRelationForTests(
             MappingRelation rel,
             String possibleName)
         {

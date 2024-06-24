@@ -20,6 +20,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
@@ -171,16 +172,17 @@ public class MultipleColsInTupleAggTestModifier extends RDbMappingSchemaModifier
                             .hasAll(true)
                             .primaryKey("prod_id")
                             .primaryKeyTable("product_csv")
-                            .relation(new JoinR(List.of(
-                                new TableR("product_csv"),
-                                new JoinR(List.of(
-                                    new TableR("product_cat"),
-                                    new TableR("cat")
-                                ),
-                                    null, "cat", null, "cat")
-                            ),
-                                null, "prod_cat",
-                                 "product_cat", "prod_cat"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "prod_cat", new TableR("product_csv")),
+                                    new JoinedQueryElementR("product_cat", "prod_cat",
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "cat", new TableR("product_cat")),
+                                            new JoinedQueryElementR(null, "cat", new TableR("cat"))
+                                        )
+                                    )
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Category")

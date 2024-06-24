@@ -45,7 +45,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -56,7 +57,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
@@ -116,7 +117,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HintImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.InlineTableImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.KpiImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.LevelImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MeasureImpl;
@@ -231,7 +233,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingMemberReaderParameter> memberReaderParameters, boolean hasAll, String allMemberName,
         String allMemberCaption, String allLevelName, String primaryKey, String primaryKeyTable,
         String defaultMember, String memberReaderClass, String uniqueKeyLevelName, boolean visible,
-        String displayFolder, MappingRelationOrJoin relation, String origin
+        String displayFolder, MappingQuery relation, String origin
     ) {
         HierarchyImpl hierarchy = new HierarchyImpl();
         hierarchy.setName(name);
@@ -989,16 +991,25 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingJoin new_Join(
-        List<MappingRelationOrJoin> relations, String leftAlias, String leftKey,
-        String rightAlias, String rightKey
+    protected MappingJoinedQueryElement new_JoinedQueryElement(
+        String alias,
+        String key,
+        MappingQuery query
     ) {
-        JoinImpl join = new JoinImpl();
-        join.setRelations(relations);
-        join.setLeftAlias(leftAlias);
-        join.setLeftKey(leftKey);
-        join.setRightAlias(rightAlias);
-        join.setRightKey(rightKey);
+        JoinedQueryElementImpl joinedQueryElement = new JoinedQueryElementImpl();
+        joinedQueryElement.setAlias(alias);
+        joinedQueryElement.setKey(key);
+        joinedQueryElement.setQuery(query);
+        return joinedQueryElement;
+    }
+
+    @Override
+    protected MappingJoinQuery new_Join(
+        MappingJoinedQueryElement left, MappingJoinedQueryElement right
+    ) {
+        JoinQueryImpl join = new JoinQueryImpl();
+        join.setLeft(left);
+        join.setRight(left);
         return join;
     }
 

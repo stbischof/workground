@@ -17,9 +17,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 
@@ -85,7 +85,7 @@ public class RolapCubeLevel extends RolapLevel {
         if (parentCubeLevel != null) {
             parentCubeLevel.childCubeLevel = this;
         }
-        MappingRelationOrJoin hierarchyRel = cubeHierarchy.getRelation();
+        MappingQuery hierarchyRel = cubeHierarchy.getRelation();
         keyExp = convertExpression(level.getKeyExp(), hierarchyRel);
         nameExp = convertExpression(level.getNameExp(), hierarchyRel);
         captionExp = convertExpression(level.getCaptionExp(), hierarchyRel);
@@ -140,7 +140,7 @@ public class RolapCubeLevel extends RolapLevel {
 
     private RolapProperty[] convertProperties(
         RolapProperty[] properties,
-        MappingRelationOrJoin rel)
+        MappingQuery rel)
     {
         if (properties == null) {
             return new RolapProperty[0];
@@ -174,7 +174,7 @@ public class RolapCubeLevel extends RolapLevel {
      */
     private MappingExpression convertExpression(
         MappingExpression exp,
-        MappingRelationOrJoin rel)
+        MappingQuery rel)
     {
         if (getHierarchy().isUsingCubeFact()) {
             // no conversion necessary
@@ -186,7 +186,7 @@ public class RolapCubeLevel extends RolapLevel {
                 return new ColumnR(
                     RelationUtil.getAlias(table),
                     col.getName());
-            } else if (rel instanceof MappingJoin
+            } else if (rel instanceof MappingJoinQuery
                 || rel instanceof MappingRelation)
             {
                 // need to determine correct name of alias for this level.

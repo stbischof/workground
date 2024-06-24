@@ -19,11 +19,12 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ColumnDefRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
@@ -387,9 +388,9 @@ class InlineTableTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
                 result.addAll(super.cubes(cubes));
-                MappingJoin j = new JoinR(
-                    List.of(
-                        new TableR("store"),
+                MappingJoinQuery j = new JoinR(
+                    new JoinedQueryElementR(null, "store_country", new TableR("store")),
+                    new JoinedQueryElementR(null, "nation_name",
                         InlineTableRBuilder.builder()
                             .alias("nation")
                             .columnDefs(List.of(
@@ -441,11 +442,8 @@ class InlineTableTest {
                                     .build()
 
                             ))
-                            .build()
-                        ),
-                    null, "store_country",
-                    null, "nation_name");
-
+                            .build())
+                );
                 result.add(CubeRBuilder.builder()
                     .name(cubeName)
                     .fact(new TableR("sales_fact_1997"))
@@ -592,9 +590,10 @@ class InlineTableTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
                 result.addAll(super.cubes(cubes));
-                MappingJoin j = new JoinR(
-                    List.of(
-                        new TableR("store"),
+
+                MappingJoinQuery j = new JoinR(
+                    new JoinedQueryElementR(null, "store_country", new TableR("store")),
+                    new JoinedQueryElementR(null, "nation_name",
                         InlineTableRBuilder.builder()
                             .alias("nation")
                             .columnDefs(List.of(
@@ -646,10 +645,8 @@ class InlineTableTest {
                                     .build()
 
                             ))
-                            .build()
-                    ),
-                    null, "store_country",
-                    null, "nation_name");
+                            .build())
+                );
 
                 result.add(CubeRBuilder.builder()
                     .name(cubeName)

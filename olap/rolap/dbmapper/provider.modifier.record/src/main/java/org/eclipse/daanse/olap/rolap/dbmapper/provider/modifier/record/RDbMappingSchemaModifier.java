@@ -45,7 +45,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -56,7 +57,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
@@ -117,6 +118,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HintR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.KpiR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MeasureR;
@@ -202,7 +204,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingMemberReaderParameter> memberReaderParameters, boolean hasAll, String allMemberName,
         String allMemberCaption, String allLevelName, String primaryKey, String primaryKeyTable,
         String defaultMember, String memberReaderClass, String uniqueKeyLevelName, boolean visible,
-        String displayFolder, MappingRelationOrJoin relation, String origin
+        String displayFolder, MappingQuery relation, String origin
     ) {
         return new HierarchyR(name, description, annotations, caption, visible, levels, memberReaderParameters, hasAll,
             allMemberName, allMemberCaption, allLevelName, primaryKey, primaryKeyTable, defaultMember,
@@ -798,18 +800,20 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingJoin new_Join(
-        List<MappingRelationOrJoin> relations,
-        String leftAlias,
-        String leftKey,
-        String rightAlias,
-        String rightKey
+    protected MappingJoinedQueryElement new_JoinedQueryElement(
+        String alias,
+        String key,
+        MappingQuery query
     ) {
-        return new JoinR(relations,
-            leftAlias,
-            leftKey,
-            rightAlias,
-            rightKey);
+        return new JoinedQueryElementR(alias, key, query);
+    }
+
+    @Override
+    protected MappingJoinQuery new_Join(
+        MappingJoinedQueryElement left,
+        MappingJoinedQueryElement right
+    ) {
+        return new JoinR(left, right);
     }
 
     @Override

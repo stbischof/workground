@@ -57,7 +57,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
@@ -77,11 +77,13 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnu
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggColumnNameR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggExcludeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggMeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleUsageR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
@@ -375,15 +377,9 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingJoin join = new JoinR(
-                        List.of(
-                            new TableR("product"),
-                            new TableR("product_class")
-                            ),
-                        null,
-                        "product_class_id",
-                        null,
-                        "product_class_id"
+                    MappingJoinQuery join = new JoinR(
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
                     );
                     MappingLevel level1 = LevelRBuilder
                         .builder()
@@ -1418,36 +1414,24 @@ class SchemaTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
 
-                MappingJoin j1 = new JoinR(
-                    List.of(new TableR("region"), new TableR("promotion")),
-                    null,
-                    "sales_district_id",
-                    null,
-                    "promotion_id"
+                MappingJoinQuery j1 = new JoinR(
+                    new JoinedQueryElementR(null, "sales_district_id", new TableR("region")),
+                    new JoinedQueryElementR(null, "promotion_id", new TableR("promotion"))
                 );
 
-                MappingJoin join11 = new JoinR(
-                    List.of(new TableR("store"), j1),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join11 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", j1)
                 );
 
-                MappingJoin join12 = new JoinR(
-                    List.of(new TableR("customer"), new TableR("region")),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join12 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id", new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region"))
                 );
 
-                MappingJoin join21 = new JoinR(
-                    List.of(new TableR("customer"), new TableR("region")),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join21 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id", new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region"))
                 );
 
                 MappingLevel l11 = LevelRBuilder
@@ -1670,37 +1654,25 @@ class SchemaTest {
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
-                MappingJoin j1 = new JoinR(
-                    List.of(new TableR("region"), new TableR("promotion")),
-                    null,
-                    "sales_district_id",
-                    null,
-                    "promotion_id"
+                MappingJoinQuery j1 = new JoinR(
+                    new JoinedQueryElementR(null, "sales_district_id", new TableR("region")),
+                    new JoinedQueryElementR(null, "promotion_id", new TableR("promotion"))
                 );
 
-                MappingJoin join11 = new JoinR(
-                    List.of(new TableR("store"), j1),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join11 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", j1)
                 );
 
-                MappingJoin join12 = new JoinR(
-                    List.of(new TableR("store"), new TableR("region")),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join12 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region"))
                 );
 
 
-                MappingJoin join21 = new JoinR(
-                    List.of(new TableR("customer"), new TableR("region")),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery join21 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id",new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region"))
                 );
 
                 MappingLevel l11 = LevelRBuilder
@@ -1924,14 +1896,9 @@ class SchemaTest {
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
-                MappingJoin join1 = new JoinR(List.of(
-                    new TableR("store"),
-                    new TableR("region")
-                ),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join1 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id",new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region")));
                 MappingLevel l11 = LevelRBuilder
                     .builder()
                     .name("Store Country")
@@ -1963,14 +1930,9 @@ class SchemaTest {
                     .levels(List.of(l11, l12, l13))
                     .build();
 
-                MappingJoin join2 = new JoinR(List.of(
-                    new TableR("customer"),
-                    new TableR("region")
-                ),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join2 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id", new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region")));
 
                 MappingLevel l21 = LevelRBuilder
                     .builder()
@@ -2130,14 +2092,10 @@ class SchemaTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
 
-                MappingJoin join1 = new JoinR(List.of(
-                    new TableR("store"),
-                    new TableR("region")
-                ),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join1 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", new TableR("region"))
+                );
 
                 MappingLevel l11 = LevelRBuilder
                     .builder()
@@ -2170,14 +2128,10 @@ class SchemaTest {
                     .levels(List.of(l11, l12, l13))
                     .build();
 
-                MappingJoin join2 = new JoinR(List.of(
-                    new TableR("customer"),
-                    new TableR(null, "region", "customer_region", null)
-                ),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join2 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id", new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR(null, "region", "customer_region", null))
+                );
 
                 MappingLevel l21 = LevelRBuilder
                     .builder()
@@ -2337,14 +2291,10 @@ class SchemaTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
 
-                MappingJoin join1 = new JoinR(List.of(
-                    new TableR("store"),
-                    new TableR(null, "region", "store_region", null)
-                ),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join1 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", new TableR(null, "region", "store_region", null))
+                );
 
                 MappingLevel l11 = LevelRBuilder
                     .builder()
@@ -2377,14 +2327,10 @@ class SchemaTest {
                     .levels(List.of(l11, l12, l13))
                     .build();
 
-                MappingJoin join2 = new JoinR(List.of(
-                    new TableR("customer"),
-                    new TableR(null, "region", "customer_region", null)
-                ),
-                    null,
-                    "customer_region_id",
-                    null,
-                    "region_id");
+                MappingJoinQuery join2 = new JoinR(
+                    new JoinedQueryElementR(null, "customer_region_id", new TableR("customer")),
+                    new JoinedQueryElementR(null, "region_id", new TableR(null, "region", "customer_region", null))
+                );
 
                 MappingLevel l21 = LevelRBuilder
                     .builder()
@@ -6772,14 +6718,11 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingJoin join = new JoinR(List.of(
-                        new TableR("product"),
-                        new TableR("product_class")
-                    ),
-                        null,
-                        "product_class_id",
-                        null,
-                        "product_class_id");
+                    MappingJoinQuery join = new JoinR(
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                    );
+
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Product Class")
@@ -6842,14 +6785,11 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingJoin join = new JoinR(List.of(
-                        new TableR(null, "product", "product_class", null),
-                        new TableR("product_class")
-                    ),
-                        null,
-                        "product_class_id",
-                        null,
-                        "product_class_id");
+                    MappingJoinQuery join = new JoinR(
+                        new JoinedQueryElementR(null, "product_class_id", new TableR(null, "product", "product_class", null)),
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                    );
+
                     MappingLevel level = LevelRBuilder
                         .builder()
                         .name("Product Class")
@@ -7304,20 +7244,14 @@ class SchemaTest {
                     ))
                     .build();
 
-                MappingJoin j111 = new JoinR(
-                    List.of(new TableR("region"), new TableR("promotion")),
-                    null,
-                    "sales_district_id",
-                    null,
-                    "promotion_id"
+                MappingJoinQuery j111 = new JoinR(
+                    new JoinedQueryElementR(null, "sales_district_id", new TableR("region")),
+                    new JoinedQueryElementR(null, "promotion_id", new TableR("promotion"))
                 );
 
-                MappingJoin j11 = new JoinR(
-                    List.of(new TableR("store"), j111),
-                    null,
-                    "region_id",
-                    null,
-                    "region_id"
+                MappingJoinQuery j11 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "region_id", j111)
                 );
 
                 MappingHierarchy h11 = HierarchyRBuilder.builder()
@@ -8436,24 +8370,15 @@ class SchemaTest {
                         .uniqueMembers(true)
                         .build();
 
-                    MappingJoin j1 = new JoinR(List.of(
-                        new TableR("store"),
-                        new TableR("product_class")
-                    ),
-                        null,
-                        "region_id",
-                        null,
-                        "product_class_id");
+                    MappingJoinQuery j1 = new JoinR(
+                        new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                    );
 
-                    MappingJoin j = new JoinR(List.of(
-                        new TableR("product"),
-                        j1
-                    ),
-                        null,
-                        "product_class_id",
-                        null,
-                        "store_id");
-
+                    MappingJoinQuery j = new JoinR(
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                        new JoinedQueryElementR(null, "store_id", j1)
+                    );
 
                     MappingHierarchy h = HierarchyRBuilder.builder()
                         .hasAll(true).primaryKey("product_id")
@@ -8570,18 +8495,16 @@ class SchemaTest {
                     .uniqueMembers(true)
                     .build();
 
-                MappingJoin j1 = new JoinR(
-                    List.of(new TableR("store"), new TableR("product_class")),
-                    null,
-                    "region_id",
-                    null,
-                    "product_class_id");
-                MappingJoin j = new JoinR(
-                    List.of(new TableR("product"), j1),
-                    null,
-                    "product_class_id",
-                    null,
-                    "store_id");
+                MappingJoinQuery j1 = new JoinR(
+                    new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                    new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                );
+
+                MappingJoinQuery j = new JoinR(
+                    new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                    new JoinedQueryElementR(null, "store_id", j1)
+                );
+
                 MappingHierarchy h1 = HierarchyRBuilder.builder()
                     .hasAll(true)
                     .primaryKey("product_id")
@@ -8801,23 +8724,15 @@ class SchemaTest {
                         .uniqueMembers(true)
                         .build();
 
-                    MappingJoin j1 = new JoinR(List.of(
-                        new TableR("product"),
-                        new TableR("store")
-                    ),
-                        null,
-                        "product_class_id",
-                        null,
-                        "region_id");
+                    MappingJoinQuery j1 = new JoinR(
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                        new JoinedQueryElementR(null, "region_id", new TableR("store"))
+                    );
 
-                    MappingJoin j = new JoinR(List.of(
-                        j1,
-                        new TableR("product_class")
-                    ),
-                        null,
-                        "store_id",
-                        null,
-                        "product_class_id");
+                    MappingJoinQuery j = new JoinR(
+                        new JoinedQueryElementR(null, "store_id", j1),
+                        new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                    );
 
                     MappingHierarchy h = HierarchyRBuilder.builder()
                         .hasAll(true).primaryKey("product_id")
@@ -9708,9 +9623,10 @@ class SchemaTest {
                                     .primaryKeyTable("product")
                                     .relation(
                                         new JoinR(
-                                            List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id",
-                                            null, "product_class_id"))
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         l1, l2, l3, l4, l5, l6, l7
                                     ))
@@ -9903,9 +9819,10 @@ class SchemaTest {
                                     .primaryKeyTable("product")
                                     .relation(
                                         new JoinR(
-                                            List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id",
-                                            null, "product_class_id"))
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         l1, l2, l3, l4, l5, l6, l7
                                     ))
@@ -10089,9 +10006,10 @@ class SchemaTest {
                                     .primaryKeyTable("product")
                                     .relation(
                                         new JoinR(
-                                            List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id",
-                                            null, "product_class_id"))
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         l1, l2, l3, l4, l5, l6, l7
                                     ))
@@ -10106,8 +10024,12 @@ class SchemaTest {
                                     .hasAll(true)
                                     .primaryKey("store_id")
                                     .primaryKeyTable("store")
-                                    .relation(new JoinR(List.of(new TableR("store"), new TableR("region")),
-                                        null, "region_id", null, "region_id"))
+                                    .relation(
+                                        new JoinR(
+                                            new JoinedQueryElementR(null, "region_id", new TableR("store")),
+                                            new JoinedQueryElementR(null, "region_id", new TableR("region"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         LevelRBuilder.builder()
                                             .name("Store Region")
@@ -10466,9 +10388,10 @@ class SchemaTest {
                                     .primaryKeyTable("product")
                                     .relation(
                                         new JoinR(
-                                            List.of(new TableR("product"), new TableR("product_class")),
-                                            null, "product_class_id",
-                                            null, "product_class_id"))
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product")),
+                                            new JoinedQueryElementR(null, "product_class_id", new TableR("product_class"))
+                                        )
+                                    )
                                     .levels(List.of(
                                         l1, l2, l3, l4, l5, l6, l7
                                     ))
@@ -10883,11 +10806,12 @@ class SchemaTest {
                             .hasAll(true)
                             .primaryKey("employee_id")
                             .primaryKeyTable("employee")
-                            .relation(new JoinR(
-                                List.of(
-                                    new TableR("employee", new SQLR("1 = 1", null)),
-                                    new TableR("store")),
-                                null , "store_id", null , "store_id"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null , "store_id", new TableR("employee", new SQLR("1 = 1", null))),
+                                    new JoinedQueryElementR(null , "store_id", new TableR("store"))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Store Country")
@@ -10966,11 +10890,12 @@ class SchemaTest {
                             .hasAll(true)
                             .primaryKey("employee_id")
                             .primaryKeyTable("employee")
-                            .relation(new JoinR(
-                                List.of(
-                                    new TableR("employee", new SQLR("1 = 1", null)),
-                                    new TableR("position")),
-                                null, "position_id", null, "position_id"))
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null, "position_id", new TableR("employee", new SQLR("1 = 1", null))),
+                                    new JoinedQueryElementR(null, "position_id", new TableR("position"))
+                                )
+                            )
                             .levels(List.of(
                                 LevelRBuilder.builder()
                                     .name("Pay Type")
@@ -10991,10 +10916,11 @@ class SchemaTest {
                             .hasAll(true)
                             .primaryKeyTable("employee")
                             .primaryKey("employee_id")
-                            .relation(new JoinR(List.of(
-                                new TableR("employee", new SQLR("1 = 1", null)),
-                                new TableR("store")
-                            ), null, "store_id", null, "store_id")
+                            .relation(
+                                new JoinR(
+                                    new JoinedQueryElementR(null , "store_id", new TableR("employee", new SQLR("1 = 1", null))),
+                                    new JoinedQueryElementR(null , "store_id", new TableR("store"))
+                                )
                             )
                             .levels(List.of(
                                 LevelRBuilder.builder()

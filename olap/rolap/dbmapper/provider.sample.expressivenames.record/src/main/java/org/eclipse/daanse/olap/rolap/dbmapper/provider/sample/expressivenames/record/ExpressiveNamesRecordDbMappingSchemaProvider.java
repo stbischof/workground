@@ -17,11 +17,12 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PrivateDimensionR;
@@ -70,23 +71,17 @@ public class ExpressiveNamesRecordDbMappingSchemaProvider implements DatabaseMap
     private static final TableR TABLE6 = new TableR("D3H3L3Table");
     private static final TableR TABLE7 = new TableR("D3H3L2Table");
     private static final TableR TABLE8 = new TableR("D3H3L1Table");
-    private static final MappingJoin JOIN1 = new JoinR(List.of(TABLE7, TABLE8),
-        null,
-        "D3H3L1_id",
-        null,
-        D_3_H_3_L_1);
+    private static final MappingJoinQuery JOIN1 = new JoinR(
+        new JoinedQueryElementR(null, "D3H3L1_id", TABLE7),
+        new JoinedQueryElementR(null, D_3_H_3_L_1, TABLE8));
 
-    private static final JoinR JOIN = new JoinR(List.of(TABLE6, JOIN1),
-        null,
-        "D3H3L2_id",
-        null,
-        D_3_H_3_L_2);
+    private static final JoinR JOIN = new JoinR(
+        new JoinedQueryElementR(null, "D3H3L2_id", TABLE6),
+        new JoinedQueryElementR(null, D_3_H_3_L_2, JOIN1));
 
-    private static final JoinR JOIN0 = new JoinR(List.of(TABLE5_1, TABLE5_2),
-        null,
-        "D3H2L1_id",
-        null,
-        D_3_H_2_L_1);
+    private static final JoinR JOIN0 = new JoinR(
+        new JoinedQueryElementR(null, "D3H2L1_id", TABLE5_1),
+        new JoinedQueryElementR(null, D_3_H_2_L_1, TABLE5_2));
 
     private static final LevelR LEVEL1 = LevelRBuilder
         .builder()

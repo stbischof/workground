@@ -30,9 +30,9 @@ import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
 
@@ -134,11 +134,11 @@ public class SqlQuery {
     private final Set<MappingRelation> relations =
         new HashSet<>();
 
-    private final Map<MappingRelation, MappingRelationOrJoin>
+    private final Map<MappingRelation, MappingQuery>
         mapRelationToRoot =
         new HashMap<>();
 
-    private final Map<MappingRelationOrJoin, List<RelInfo>>
+    private final Map<MappingQuery, List<RelInfo>>
         mapRootToRelations =
         new HashMap<>();
 
@@ -331,7 +331,7 @@ public class SqlQuery {
      * @return true, if relation *was* added to query
      */
     public boolean addFrom(
-        final MappingRelationOrJoin relation,
+        final MappingQuery relation,
         final String alias,
         final boolean failIfExists)
     {
@@ -348,7 +348,7 @@ public class SqlQuery {
                 // (If FilterChildlessSnowflakeMembers were false,
                 // this would be unnecessary. Adding a relation automatically
                 // adds all relations between it and the fact table.)
-                MappingRelationOrJoin root =
+                MappingQuery root =
                     mapRelationToRoot.get(relation1);
                 List<MappingRelation> relationsCopy =
                     new ArrayList<>(relations);
@@ -389,14 +389,14 @@ public class SqlQuery {
                 getHintMap(table),
                 failIfExists);
 
-        } else if (relation instanceof MappingJoin join) {
+        } else if (relation instanceof MappingJoinQuery join) {
             return addJoin(
                 left(join),
                 getLeftAlias(join),
-                join.getLeftKey(),
+                join.left().getKey(),
                 right(join),
                 getRightAlias(join),
-                join.getRightKey(),
+                join.right().getKey(),
                 failIfExists);
         } else {
             throw Util.newInternal("bad relation type " + relation);
@@ -404,10 +404,10 @@ public class SqlQuery {
     }
 
     private boolean addJoin(
-        MappingRelationOrJoin left,
+        MappingQuery left,
         String leftAlias,
         String leftKey,
-        MappingRelationOrJoin right,
+        MappingQuery right,
         String rightAlias,
         String rightKey,
         boolean failIfExists)
@@ -435,7 +435,7 @@ public class SqlQuery {
     }
 
     private void addJoinBetween(
-        MappingRelationOrJoin root,
+        MappingQuery root,
         MappingRelation relation1,
         MappingRelation relation2)
     {
@@ -745,7 +745,7 @@ public class SqlQuery {
         return Pair.of(toString(), types);
     }
 
-    public void registerRootRelation(MappingRelationOrJoin root) {
+    public void registerRootRelation(MappingQuery root) {
         // REVIEW: In this method, we are building data structures about the
         // structure of a star schema. These should be built into the schema,
         // not constructed afresh for each SqlQuery. In mondrian-4.0,
@@ -767,16 +767,16 @@ public class SqlQuery {
 
     private void flatten(
         List<RelInfo> relations,
-        MappingRelationOrJoin root,
+        MappingQuery root,
         String leftKey,
         String leftAlias,
         String rightKey,
         String rightAlias)
     {
-        if (root instanceof MappingJoin join) {
+        if (root instanceof MappingJoinQuery join) {
             flatten(
-                relations, left(join), join.getLeftKey(), getLeftAlias(join),
-                join.getRightKey(), getRightAlias(join));
+                relations, left(join), join.left().getKey(), getLeftAlias(join),
+                join.right().getKey(), getRightAlias(join));
             flatten(
                 relations, right(join), leftKey, leftAlias, rightKey,
                 rightAlias);

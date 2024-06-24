@@ -17,18 +17,20 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CubeImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DimensionUsageImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.LevelImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MeasureImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.PrivateDimensionImpl;
@@ -173,9 +175,9 @@ public class SchemaTransformer {
         return r;
     }
 
-    private static MappingRelationOrJoin transformRelationOrJoin(MappingRelationOrJoin relation) {
-        MappingRelationOrJoin r = null;
-        if (relation instanceof MappingJoin j) {
+    private static MappingQuery transformRelationOrJoin(MappingQuery relation) {
+        MappingQuery r = null;
+        if (relation instanceof MappingJoinQuery j) {
             r = transformJoin(j);
         }
         if (relation instanceof MappingTable t) {
@@ -193,16 +195,16 @@ public class SchemaTransformer {
         return table;
     }
 
-    private static JoinImpl transformJoin(MappingJoin j) {
-        JoinImpl join = new JoinImpl();
-        join.setLeftAlias(j.getLeftAlias());
-        join.setLeftKey(j.getLeftKey());
-        join.setRightAlias(j.getRightAlias());
-        join.setRightKey(j.getRightKey());
-        join.setRelations(
-            j.getRelations() == null ? null : j.getRelations().stream()
-                .map(SchemaTransformer::transformRelationOrJoin).toList());
+    private static JoinQueryImpl transformJoin(MappingJoinQuery j) {
+        JoinQueryImpl join = new JoinQueryImpl();
+        join.setLeft(transformJoinedQueryElement(j.left()));
+        join.setRight(transformJoinedQueryElement(j.right()));
         return join;
+    }
+
+    private static MappingJoinedQueryElement transformJoinedQueryElement(MappingJoinedQueryElement element) {
+        JoinedQueryElementImpl el = new JoinedQueryElementImpl();
+        return el;
     }
 
     private static MappingLevel transformLevel(MappingLevel l) {

@@ -26,7 +26,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
@@ -221,7 +221,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         // Validates that value in primaryKey exists in Table.
         String schema = null;
         String pkTable = null;
-        if (hierarchy.relation() instanceof MappingJoin) {
+        if (hierarchy.relation() instanceof MappingJoinQuery) {
             String[] schemaAndTable = SchemaExplorer.getTableNameForAlias(hierarchy.relation(),
                 hierarchy.primaryKeyTable());
             schema = schemaAndTable[0];
@@ -587,7 +587,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         String schema = null;
         // if using Joins then gets the table name for doesColumnExist
         // validation.
-        if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoin join) {
+        if (parentHierarchy != null && parentHierarchy.relation() instanceof MappingJoinQuery join) {
             String[] schemaAndTable = SchemaExplorer.getTableNameForAlias(parentHierarchy.relation(), table);
             schema = schemaAndTable[0];
             table = schemaAndTable[1];

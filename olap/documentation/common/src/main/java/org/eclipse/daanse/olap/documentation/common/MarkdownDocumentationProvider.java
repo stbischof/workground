@@ -31,14 +31,14 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
@@ -222,7 +222,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 //TODO
                 return 0l;
             }
-            if (relation instanceof MappingJoin mj) {
+            if (relation instanceof MappingJoinQuery mj) {
                 Optional<String> tableName = getFactTableName(mj);
                 if (tableName.isPresent()) {
                     return context.getStatisticsProvider().getTableCardinality(
@@ -1155,7 +1155,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
     }
 
-    private Optional<String> getFactTableName(MappingRelationOrJoin relation) {
+    private Optional<String> getFactTableName(MappingQuery relation) {
         if (relation instanceof MappingTable mt) {
             return Optional.of(mt.getName());
         }
@@ -1165,17 +1165,15 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         if (relation instanceof MappingView mv) {
             return Optional.ofNullable(mv.getAlias());
         }
-        if (relation instanceof MappingJoin mj) {
-            if (mj.getRelations() != null) {
-                if (mj.getRelations().size() > 0) {
-                    return getFactTableName(mj.getRelations().get(0));
-                }
+        if (relation instanceof MappingJoinQuery mj) {
+            if (mj.left() != null && mj.left().getQuery() != null) {
+                return getFactTableName(mj.left().getQuery());
             }
         }
         return Optional.empty();
     }
 
-    private List<String> getFactTableConnections(MappingRelationOrJoin relation, List<String> missedTableNames) {
+    private List<String> getFactTableConnections(MappingQuery relation, List<String> missedTableNames) {
         if (relation instanceof MappingTable mt) {
             return List.of();
         }
@@ -1185,17 +1183,17 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         if (relation instanceof MappingView mv) {
             return List.of();
         }
-        if (relation instanceof MappingJoin mj) {
-            if (mj.getRelations() != null && mj.getRelations().size() > 1) {
+        if (relation instanceof MappingJoinQuery mj) {
+            if (mj.left() != null && mj.right() != null && mj.left().getQuery() != null && mj.right().getQuery() != null) {
                 ArrayList<String> res = new ArrayList<>();
-                String t1 = getFirstTable(mj.getRelations().get(0));
+                String t1 = getFirstTable(mj.left().getQuery());
                 String flag1  = missedTableNames.contains(t1) ? NEGATIVE_FLAG : POSITIVE_FLAG;
-                String t2 = getFirstTable(mj.getRelations().get(1));
+                String t2 = getFirstTable(mj.right().getQuery());
                 String flag2  = missedTableNames.contains(t2) ? NEGATIVE_FLAG : POSITIVE_FLAG;
                 if (t1 != null && !t1.equals(t2)) {
-                    res.add(connection(t1, t2, flag1, flag2, mj.getLeftKey(), mj.getRightKey()));
+                    res.add(connection(t1, t2, flag1, flag2, mj.left().getKey(), mj.right().getKey()));
                 }
-                res.addAll(getFactTableConnections(mj.getRelations().get(1), missedTableNames));
+                res.addAll(getFactTableConnections(mj.right().getQuery(), missedTableNames));
                 return res;
             }
         }
@@ -1214,19 +1212,19 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return "\"" + t1 + "\" ||--|| \"" + t2 + "\" : \"" + k1 + k2 + "\"";
     }
 
-    private String getFirstTable(MappingRelationOrJoin relation) {
+    private String getFirstTable(MappingQuery relation) {
         if (relation instanceof MappingTable mt) {
             return mt.getName();
         }
-        if (relation instanceof MappingJoin mj) {
-            if (mj.getRelations() != null && mj.getRelations().size() > 0) {
-                return getFirstTable(mj.getRelations().get(0));
+        if (relation instanceof MappingJoinQuery mj) {
+            if (mj.left() != null && mj.left().getQuery() != null) {
+                return getFirstTable(mj.left().getQuery());
             }
         }
         return null;
     }
 
-    private String getTable(MappingRelationOrJoin relation) {
+    private String getTable(MappingQuery relation) {
         if (relation instanceof MappingTable mt) {
             return mt.getName();
         }
@@ -1241,9 +1239,11 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
             }
             return sb.toString();
         }
-        if (relation instanceof MappingJoin mj) {
-            if (mj.getRelations() != null) {
-                return mj.getRelations().stream().map(this::getTable).collect(Collectors.joining(","));
+        if (relation instanceof MappingJoinQuery mj) {
+            StringBuilder sb = new StringBuilder();
+            if (mj.left() != null && mj.right() != null && mj.left().getQuery() != null && mj.right().getQuery() != null) {
+                sb.append(getTable(mj.left().getQuery())).append(",").append(getTable(mj.right().getQuery()));
+                return sb.toString();
             }
         }
         return "";

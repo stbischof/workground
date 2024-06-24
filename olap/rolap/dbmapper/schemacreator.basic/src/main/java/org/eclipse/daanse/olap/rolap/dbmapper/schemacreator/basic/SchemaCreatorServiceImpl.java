@@ -39,14 +39,14 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
@@ -60,6 +60,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.DimensionUsageR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.LevelR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.MeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PrivateDimensionR;
@@ -254,10 +255,10 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         DatabaseMetaData databaseMetaData,
         List<String> ignoreTables
     ) {
-        List<MappingRelationOrJoin> relationList = getHierarchyRelation(schemaName, fk, databaseMetaData, ignoreTables);
+        List<MappingQuery> relationList = getHierarchyRelation(schemaName, fk, databaseMetaData, ignoreTables);
         List<MappingHierarchy> result = new ArrayList<>();
         Map<String, Integer> hierarchyNamesMap = new HashMap<>();
-        for (MappingRelationOrJoin relation : relationList) {
+        for (MappingQuery relation : relationList) {
             result.add(
                 getHierarchy(fk.primaryKeyColumn(),
                     relation, hierarchyNamesMap, databaseMetaData)
@@ -266,7 +267,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         return result;
     }
 
-    private List<MappingRelationOrJoin> getHierarchyRelation(
+    private List<MappingQuery> getHierarchyRelation(
         String schemaName,
         ImportedKey fk,
         DatabaseMetaData databaseMetaData,
@@ -282,21 +283,24 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                 .toList();
         }
         if (listFK != null && !listFK.isEmpty()) {
-            List<MappingRelationOrJoin> result = new ArrayList<>();
+            List<MappingQuery> result = new ArrayList<>();
             for (ImportedKey foreignKey : listFK) {
                 List<String> ignoreTab = new ArrayList<>(ignoreTables);
                 ignoreTab.add(foreignKey.foreignKeyColumn().table().get().name());
-                List<MappingRelationOrJoin> rightRelations = getHierarchyRelation(schemaName, foreignKey,
+                List<MappingQuery> rightRelations = getHierarchyRelation(schemaName, foreignKey,
                     databaseMetaData, ignoreTab);
-                for (MappingRelationOrJoin relationOrJoin : rightRelations) {
-                    List<MappingRelationOrJoin> relations = List.of(
+                for (MappingQuery relationOrJoin : rightRelations) {
+                    List<MappingQuery> relations = List.of(
                         new TableR(fk.primaryKeyColumn().table().get().name()),
                         relationOrJoin);
-                    result.add(new JoinR(relations,
-                        null,
-                        listFK.get(0).foreignKeyColumn().name(),
-                        null,
-                        foreignKey.primaryKeyColumn().name()));
+                    result.add(new JoinR(
+                        new JoinedQueryElementR(null,
+                            listFK.get(0).foreignKeyColumn().name(),
+                            new TableR(fk.primaryKeyColumn().table().get().name())),
+                        new JoinedQueryElementR(null,
+                            foreignKey.primaryKeyColumn().name(),
+                            relationOrJoin)
+                    ));
                 }
             }
             return result;
@@ -313,7 +317,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     }
 
     private List<MappingLevel> getHierarchyLevels(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         ColumnReference columnReference,
         DatabaseMetaData databaseMetaData
 
@@ -327,7 +331,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     }
 
     private Collection<? extends MappingLevel> getHierarchyLevelsForTable(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         ColumnReference columnReference,
         DatabaseMetaData databaseMetaData
     ) {
@@ -371,16 +375,17 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     }
 
     private Collection<? extends MappingLevel> getHierarchyLevelsForJoin(
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         ColumnReference columnReference,
         DatabaseMetaData databaseMetaData
     ) {
         List<MappingLevel> result = new ArrayList<>();
-        if (relation instanceof MappingJoin join && join.getRelations() != null && join.getRelations().size() > 1) {
+        if (relation instanceof MappingJoinQuery join && join.left() != null && join.right() != null
+            && join.left().getQuery() != null && join.right().getQuery() != null ) {
             result.addAll(getHierarchyLevelsForJoinRight(columnReference.table().get(),
-                join.getRelations().get(1),
+                join.left().getQuery(),
                 databaseMetaData));
-            if (join.getRelations().get(0) instanceof MappingTable t) {
+            if (join.left().getQuery() instanceof MappingTable t) {
                 result.addAll(getHierarchyLevels(t, columnReference, databaseMetaData));
             }
         }
@@ -389,7 +394,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
 
     private Collection<? extends MappingLevel> getHierarchyLevelsForJoinRight(
         TableReference tableReference,
-        MappingRelationOrJoin relationRight,
+        MappingQuery relationRight,
         DatabaseMetaData databaseMetaData
     ) {
         List<MappingLevel> result = new ArrayList<>();
@@ -401,7 +406,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                 result.addAll(getHierarchyLevels(t, key.primaryKeyColumn(),
                     databaseMetaData));
             }
-        } else if (relationRight instanceof MappingJoin j) {
+        } else if (relationRight instanceof MappingJoinQuery j) {
             MappingTable t = getFistTable(j);
             if (t != null) {
                 List<ImportedKey> listFK = getImportedKeys(databaseMetaData, tableReference);
@@ -425,14 +430,14 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         return capitalize(tableName);
     }
 
-    private MappingTable getFistTable(MappingJoin j) {
-        if (j.getRelations().get(0) instanceof MappingTable t) {
+    private MappingTable getFistTable(MappingJoinQuery j) {
+        if (j.left().getQuery() instanceof MappingTable t) {
             return t;
         }
-        if (j.getRelations().get(1) instanceof MappingTable t) {
+        if (j.right().getQuery() instanceof MappingTable t) {
             return t;
         }
-        if (j.getRelations().get(0) instanceof MappingJoin join) {
+        if (j.left().getQuery() instanceof MappingJoinQuery join) {
             return getFistTable(join);
         }
         return null;
@@ -739,7 +744,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
 
     private MappingHierarchy getHierarchy(
         ColumnReference columnReference,
-        MappingRelationOrJoin relation,
+        MappingQuery relation,
         Map<String, Integer> hierarchyNamesMap, DatabaseMetaData databaseMetaData
     ) {
 

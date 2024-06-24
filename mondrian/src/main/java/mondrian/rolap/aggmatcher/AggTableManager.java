@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationOrJoin;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.slf4j.Logger;
@@ -358,7 +358,7 @@ public class AggTableManager {
 
             dbFactTable.setTableUsageType(JdbcSchema.TableUsageType.FACT);
 
-            MappingRelationOrJoin relation =
+            MappingQuery relation =
                 star.getFactTable().getRelation();
             String schemaInner = null;
             List<MappingHint> tableHints = null;
