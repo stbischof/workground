@@ -393,7 +393,7 @@ public class RolapStar {
                     RelationUtil.getAlias(((MappingRelation) left)));
                 right =
                     getUniqueRelation(
-                        parent, right(join), join.left().getAlias(),
+                        parent, right(join), join.left().getKey(),
                         join.right().getKey(), getRightAlias(join));
             } else if (getRightAlias(join).equals(joinKeyTable)) {
                 // right side must equal

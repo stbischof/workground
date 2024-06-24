@@ -72,6 +72,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1225,6 +1226,8 @@ public class RolapHierarchy extends HierarchyBase {
         peerHier.allLevelName = getAllLevelName();
         peerHier.sharedHierarchyName = getSharedHierarchyName();
         JoinQueryImpl join = new JoinQueryImpl();
+        join.setLeft(new JoinedQueryElementImpl());
+        join.setRight(new JoinedQueryElementImpl());
         peerHier.relation = join;
         changeLeftRight(join, clos.table(), relation);         // the closure table as left and the unclosed base table as right
         join.left().setKey( clos.parentColumn() );

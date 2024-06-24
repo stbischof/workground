@@ -34,10 +34,14 @@
   </Documentation>
   <Dimension name="Dimension1">
     <Hierarchy hasAll="true" name="Hierarchy1" primaryKey="KEY" primaryKeyTable="Level_2">
-      <Join leftKey="L1_KEY" rightKey="KEY">
-	      <Table name="Level_2"/>
+      <Join>
+	      <Left key="L1_KEY">
+          <Table name="Level_2"/>
+        </Left>
+        <Right key="KEY">
           <Table name="Level_1"/>
-       </Join>
+        </Right>
+      </Join>
 	  <Level name="Level1" column="KEY" nameColumn="NAME" type="Integer" table="Level_1"/>
 	  <Level name="Level2" column="KEY" nameColumn="NAME" type="Integer" table="Level_2"/>
     </Hierarchy>

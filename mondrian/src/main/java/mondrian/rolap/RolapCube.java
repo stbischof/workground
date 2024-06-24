@@ -1760,10 +1760,12 @@ public class RolapCube extends CubeBase {
      * Returns this cube's underlying star schema.
      */
     public RolapStar getStar() {
-        if (star != null && star.getFactTable().getRelation().equals(getFact())) {
-            return star;
+        if (!isVirtual()) {
+            if (star != null && star.getFactTable().getRelation().equals(getFact())) {
+                return star;
+            }
+            star = schema.makeRolapStar(getFact());
         }
-        star = schema.makeRolapStar(getFact());
         return star;
     }
 

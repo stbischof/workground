@@ -69,9 +69,13 @@
 
   <Dimension name="Product">
     <Hierarchy hasAll="true" primaryKey="product_id" primaryKeyTable="product">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
 <!--
       <Query>
@@ -102,48 +106,72 @@ WHERE "product"."product_class_id" = "product_class"."product_class_id"
     </Hierarchy>
 
     <Hierarchy hasAll="true" name="Product Family" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Product Family" table="product_class" column="product_family"
       uniqueMembers="true"/>
     </Hierarchy>
     <Hierarchy hasAll="true" name="Product Department" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Product Department" table="product_class" column="product_department"
       uniqueMembers="false"/>
     </Hierarchy>
     <Hierarchy hasAll="true" name="Product Category" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Product Category" table="product_class" column="product_category"
       uniqueMembers="false"/>
     </Hierarchy>
     <Hierarchy hasAll="true" name="Product Subcategory" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Product Subcategory" table="product_class" column="product_subcategory"
       uniqueMembers="false"/>
     </Hierarchy>
     <Hierarchy hasAll="true" name="Brand Name" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Brand Name" table="product" column="brand_name" uniqueMembers="false"/>
     </Hierarchy>
     <Hierarchy hasAll="true" name="Product Name" primaryKey="product_id" primaryKeyTable="product" displayFolder="Details">
-      <Join leftKey="product_class_id" rightKey="product_class_id">
-        <Table name="product"/>
-        <Table name="product_class"/>
+      <Join>
+        <Left key="product_class_id">
+          <Table name="product"/>
+        </Left>
+        <Right key="product_class_id">
+          <Table name="product_class"/>
+        </Right>
       </Join>
       <Level name="Product Name" table="product" column="product_name"
       uniqueMembers="true"/>
@@ -539,9 +567,13 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
   <Dimension name="Store" foreignKey="employee_id" >
     <Hierarchy hasAll="true" primaryKey="employee_id"
         primaryKeyTable="employee">
-      <Join leftKey="store_id" rightKey="store_id">
-        <Table name="employee"/>
-        <Table name="store"/>
+      <Join>
+        <Left key="store_id">
+          <Table name="employee"/>
+        </Left>
+        <Right key="store_id">
+          <Table name="store"/>
+        </Right>
       </Join>
       <Level name="Store Country" table="store" column="store_country"
           uniqueMembers="true"/>
@@ -567,9 +599,13 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
   <Dimension name="Pay Type" foreignKey="employee_id">
     <Hierarchy hasAll="true" primaryKey="employee_id"
         primaryKeyTable="employee">
-      <Join leftKey="position_id" rightKey="position_id">
-        <Table name="employee"/>
-        <Table name="position"/>
+      <Join>
+        <Left key="position_id">
+          <Table name="employee"/>
+        </Left>
+        <Right key="position_id">
+          <Table name="position"/>
+        </Right>
       </Join>
       <Level name="Pay Type" table="position" column="pay_type"
           uniqueMembers="true"/>
@@ -578,9 +614,13 @@ Iif("sales_fact_1997"."promotion_id" = 0, 0, "sales_fact_1997"."store_sales")
 
   <Dimension name="Store Type" foreignKey="employee_id">
     <Hierarchy hasAll="true" primaryKeyTable="employee" primaryKey="employee_id">
-      <Join leftKey="store_id" rightKey="store_id">
-        <Table name="employee"/>
-        <Table name="store"/>
+      <Join>
+        <Left key="store_id">
+          <Table name="employee"/>
+        </Left>
+        <Right key="store_id">
+          <Table name="store"/>
+        </Right>
       </Join>
       <Level name="Store Type" table="store" column="store_type"
           uniqueMembers="true"/>

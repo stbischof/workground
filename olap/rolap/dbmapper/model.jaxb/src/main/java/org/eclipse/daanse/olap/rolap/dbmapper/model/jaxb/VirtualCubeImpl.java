@@ -131,7 +131,7 @@ public class VirtualCubeImpl  extends AbstractMainElement  implements MappingVir
 
     @Override
     public List<MappingKpi> kpis() {
-        return kpis;
+        return kpis != null ? kpis : List.of();
     }
 
     public void setVisible(boolean visible) {
