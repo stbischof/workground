@@ -30,7 +30,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCellFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
@@ -44,7 +44,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
@@ -56,20 +59,17 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -273,7 +273,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
         Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
-        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
+        MappingRelationQuery fact, List<MappingAction> actions, List<MappingKpi> kpis
     ) {
         CubeImpl cube = new CubeImpl();
         cube.setName(name);
@@ -590,7 +590,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingHint new_Hint(String content, String type) {
+    protected MappingTableQueryOptimisationHint new_Hint(String content, String type) {
         HintImpl hint = new HintImpl();
         hint.setContent(content);
         hint.setType(type);
@@ -703,7 +703,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingSQL new_SQL(String content, String dialect) {
+    protected MappingSqlSelectQuery new_SQL(String content, String dialect) {
         SQLImpl sql = new SQLImpl();
         sql.setContent(content);
         sql.setDialect(dialect);
@@ -711,7 +711,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingValue new_Value(String column, String content) {
+    protected MappingInlineTableRowCell new_Value(String column, String content) {
         ValueImpl value = new ValueImpl();
         value.setColumn(column);
         value.setContent(content);
@@ -719,16 +719,16 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingRow new_Row(List<MappingValue> values) {
+    protected MappingInlineTableRow new_Row(List<MappingInlineTableRowCell> values) {
         RowImpl row = new RowImpl();
         row.setValues(values);
         return row;
     }
 
     @Override
-    protected MappingTable new_Table(
-        String schema, String name, String alias, List<MappingHint> hints, MappingSQL sql,
-        List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
+    protected MappingTableQuery new_Table(
+            String schema, String name, String alias, List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     ) {
         TableImpl table = new TableImpl();
         table.setSchema(schema);
@@ -742,7 +742,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingColumnDef new_ColumnDef(String name, TypeEnum type) {
+    protected MappingInlineTableColumnDefinition new_ColumnDef(String name, TypeEnum type) {
         ColumnDefImpl columnDef = new ColumnDefImpl();
         columnDef.setName(name);
         columnDef.setType(type);
@@ -750,7 +750,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingRelation new_View(String alias, List<MappingSQL> sqls) {
+    protected MappingRelationQuery new_View(String alias, List<MappingSqlSelectQuery> sqls) {
         ViewImpl view = new ViewImpl();
         view.setAlias(alias);
         view.setSqls(sqls);
@@ -758,7 +758,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingRelation new_InlineTable(List<MappingColumnDef> columnDefs, List<MappingRow> rows, String alias) {
+    protected MappingRelationQuery new_InlineTable(List<MappingInlineTableColumnDefinition> columnDefs, List<MappingInlineTableRow> rows, String alias) {
         InlineTableImpl inlineTable = new InlineTableImpl();
         inlineTable.setColumnDefs(columnDefs);
         inlineTable.setRows(rows);
@@ -927,7 +927,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingClosure new_Closure(MappingTable table, String parentColumn, String childColumn) {
+    protected MappingClosure new_Closure(MappingTableQuery table, String parentColumn, String childColumn) {
         ClosureImpl closure = new ClosureImpl();
         closure.setTable(table);
         closure.setParentColumn(parentColumn);
@@ -937,7 +937,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
 
     @Override
     protected MappingExpressionView new_ExpressionView(
-        List<MappingSQL> sqls,
+        List<MappingSqlSelectQuery> sqls,
         String table,
         String name
     ) {

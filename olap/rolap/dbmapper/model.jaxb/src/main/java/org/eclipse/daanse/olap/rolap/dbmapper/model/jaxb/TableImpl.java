@@ -20,9 +20,9 @@ import java.util.Objects;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -34,17 +34,17 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Table", propOrder = { "sql", "aggExcludes", "aggTables", "hints" })
 @XmlRootElement(name = "Table")
-public class TableImpl implements MappingTable {
+public class TableImpl implements MappingTableQuery {
 
     @XmlElement(name = "SQL", type = SQLImpl.class)
-    protected MappingSQL sql;
+    protected MappingSqlSelectQuery sql;
     @XmlElement(name = "AggExclude", type = AggExcludeImpl.class)
     protected List<MappingAggExclude> aggExcludes;
     @XmlElements({ @XmlElement(name = "AggName", type = AggNameImpl.class),
             @XmlElement(name = "AggPattern", type = AggPatternImpl.class) })
     protected List<MappingAggTable> aggTables;
     @XmlElement(name = "Hint", type = HintImpl.class)
-    protected List<MappingHint> hints;
+    protected List<MappingTableQueryOptimisationHint> hints;
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "schema")
@@ -53,11 +53,11 @@ public class TableImpl implements MappingTable {
     protected String alias;
 
     @Override
-    public MappingSQL getSql() {
+    public MappingSqlSelectQuery getSql() {
         return sql;
     }
 
-    public void setSql(MappingSQL value) {
+    public void setSql(MappingSqlSelectQuery value) {
         this.sql = value;
     }
 
@@ -78,7 +78,7 @@ public class TableImpl implements MappingTable {
     }
 
     @Override
-    public List<MappingHint> getHints() {
+    public List<MappingTableQueryOptimisationHint> getHints() {
         if (hints == null) {
             hints = new ArrayList<>();
         }
@@ -114,7 +114,7 @@ public class TableImpl implements MappingTable {
 
     @Override
 	public boolean equals(Object o) {
-        if (o instanceof MappingTable that) {
+        if (o instanceof MappingTableQuery that) {
             return this.name.equals(that.getName()) &&
                 Objects.equals(this.alias, that.getAlias()) &&
                 Objects.equals(this.schema, that.getSchema());
@@ -134,7 +134,7 @@ public class TableImpl implements MappingTable {
         return toString().hashCode();
     }
 
-    public void setHints(List<MappingHint> hints) {
+    public void setHints(List<MappingTableQueryOptimisationHint> hints) {
         this.hints = hints;
     }
 

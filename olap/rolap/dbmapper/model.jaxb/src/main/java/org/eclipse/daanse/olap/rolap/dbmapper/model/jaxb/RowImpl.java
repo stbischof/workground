@@ -16,8 +16,8 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -26,20 +26,20 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "value" })
-public class RowImpl implements MappingRow {
+public class RowImpl implements MappingInlineTableRow {
 
     @XmlElement(name = "Value", required = true, type = ValueImpl.class)
-    protected List<MappingValue> value;
+    protected List<MappingInlineTableRowCell> value;
 
     @Override
-    public List<MappingValue> values() {
+    public List<MappingInlineTableRowCell> values() {
         if (value == null) {
             value = new ArrayList<>();
         }
         return this.value;
     }
 
-    public void setValues(List<MappingValue> values) {
+    public void setValues(List<MappingInlineTableRowCell> values) {
         this.value = values;
     }
 }

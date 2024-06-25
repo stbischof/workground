@@ -30,7 +30,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCellFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
@@ -44,7 +44,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
@@ -56,20 +58,18 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -100,6 +100,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CalculatedMemberPrope
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CalculatedMemberR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CellFormatterR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ClosureR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HintR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnDefR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeDimensionR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.CubeGrantR;
@@ -115,7 +116,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ExpressionViewR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HintR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
@@ -131,7 +132,6 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PropertyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleUsageR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RowR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ScriptR;
@@ -223,7 +223,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
         Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
-        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
+        MappingRelationQuery fact, List<MappingAction> actions, List<MappingKpi> kpis
     ) {
         return new CubeR(name, description, annotations, caption, visible, defaultMeasure, dimensionUsageOrDimensions
             , measures,
@@ -489,15 +489,15 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingRelation new_InlineTable(
-        List<MappingColumnDef> columnDefs,
-        List<MappingRow> rows, String alias
+    protected MappingRelationQuery new_InlineTable(
+        List<MappingInlineTableColumnDefinition> columnDefs,
+        List<MappingInlineTableRow> rows, String alias
     ) {
         return new InlineTableR(columnDefs, rows, alias);
     }
 
     @Override
-    protected MappingSQL new_SQL(
+    protected MappingSqlSelectQuery new_SQL(
         String content,
         String dialect
     ) {
@@ -568,12 +568,12 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingRow new_Row(List<MappingValue> values) {
+    protected MappingInlineTableRow new_Row(List<MappingInlineTableRowCell> values) {
         return new RowR(values);
     }
 
     @Override
-    protected MappingValue new_Value(
+    protected MappingInlineTableRowCell new_Value(
         String column,
         String content
     ) {
@@ -581,7 +581,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingColumnDef new_ColumnDef(
+    protected MappingInlineTableColumnDefinition new_ColumnDef(
         String name,
         TypeEnum type
     ) {
@@ -632,7 +632,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingHint new_Hint(
+    protected MappingTableQueryOptimisationHint new_Hint(
         String content,
         String type
     ) {
@@ -691,18 +691,18 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingTable new_Table(
-        String schema, String name, String alias,
-        List<MappingHint> hints, MappingSQL sql,
-        List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
+    protected MappingTableQuery new_Table(
+            String schema, String name, String alias,
+            List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     ) {
         return new TableR(schema, name, alias, hints, sql, aggExcludes, aggTables);
     }
 
     @Override
-    protected MappingRelation new_View(
+    protected MappingRelationQuery new_View(
         String alias,
-        List<MappingSQL> sqls
+        List<MappingSqlSelectQuery> sqls
     ) {
         return new ViewR(alias, sqls);
     }
@@ -731,7 +731,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     protected MappingClosure new_Closure(
-        MappingTable table,
+        MappingTableQuery table,
         String parentColumn,
         String childColumn
     ) {
@@ -956,7 +956,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     protected MappingExpressionView new_ExpressionView(
-        List<MappingSQL> sqls,
+        List<MappingSqlSelectQuery> sqls,
         String table,
         String name
     ) {

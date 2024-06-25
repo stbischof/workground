@@ -30,10 +30,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Cause;
@@ -115,7 +115,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     @Override
     protected void checkFact(MappingCube cube, MappingSchema schema) {
-        if (cube.fact() instanceof MappingTable table) {
+        if (cube.fact() instanceof MappingTableQuery table) {
             String schemaName = table.getSchema();
             String factTable = table.getName();
             TableReference tableReference = getTableReference(schemaName, factTable);
@@ -161,7 +161,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     @Override
     protected void checkMeasure(MappingMeasure measure, MappingCube cube) {
         super.checkMeasure(measure, cube);
-        if (cube != null && cube.fact() != null && cube.fact() instanceof MappingTable factTable) {
+        if (cube != null && cube.fact() != null && cube.fact() instanceof MappingTableQuery factTable) {
             // Database validity check, if database connection is
             // successful
             String column = measure.column();
@@ -190,7 +190,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         if (cubeDimension instanceof MappingPrivateDimension &&
             !isEmpty((cubeDimension).foreignKey()) &&
             cube != null &&
-            cube.fact() instanceof MappingTable factTable) {
+            cube.fact() instanceof MappingTableQuery factTable) {
 
             String foreignKey = (cubeDimension).foreignKey();
             TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
@@ -226,7 +226,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
                 hierarchy.primaryKeyTable());
             schema = schemaAndTable[0];
             pkTable = schemaAndTable[1];
-        } else if (hierarchy.relation() instanceof MappingTable table) {
+        } else if (hierarchy.relation() instanceof MappingTableQuery table) {
             pkTable = table.getName();
             schema = table.getSchema();
         }
@@ -293,7 +293,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkTable(MappingTable table) {
+    protected void checkTable(MappingTableQuery table) {
         super.checkTable(table);
         String tableName = table.getName();
         try {
@@ -354,8 +354,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     protected void checkMeasureColumn(MappingMeasure measure, MappingCube cube) {
         super.checkMeasureColumn(measure, cube);
         if (measure != null && !isEmpty(measure.column())) {
-            final MappingRelation relation = cube.fact();
-            if (relation instanceof MappingTable mappingTable) {
+            final MappingRelationQuery relation = cube.fact();
+            if (relation instanceof MappingTableQuery mappingTable) {
                 checkMeasureColumnInMappingTable(measure, cube, mappingTable);
             }
         }
@@ -398,7 +398,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         }
     }
 
-    private void checkMeasureColumnInMappingTable(MappingMeasure measure, MappingCube cube, MappingTable mappingTable) {
+    private void checkMeasureColumnInMappingTable(MappingMeasure measure, MappingCube cube, MappingTableQuery mappingTable) {
         try {
             TableReference tableReference = getTableReference(mappingTable.getSchema(), mappingTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), measure.column());
@@ -422,10 +422,10 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSQLList(List<? extends MappingSQL> list) {
+    protected void checkSQLList(List<? extends MappingSqlSelectQuery> list) {
         if (list != null && optionalDialect.isPresent()) {
             String dialectName = optionalDialect.get().getDialectName();
-            List<? extends MappingSQL> sqls = list.stream().filter(sql -> dialectName.equals(sql.dialect())).toList();
+            List<? extends MappingSqlSelectQuery> sqls = list.stream().filter(sql -> dialectName.equals(sql.dialect())).toList();
             if (!sqls.isEmpty()) {
                 checkSQL(sqls.get(0));
             } else {
@@ -438,7 +438,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSQL(MappingSQL sql) {
+    protected void checkSQL(MappingSqlSelectQuery sql) {
     	if (sql != null && sql.content() != null) {
     		try {
     			Connection con = databaseMetaData.getConnection();
@@ -453,13 +453,13 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     private void checkPropertyHierarchy(String column, MappingHierarchy hierarchy, MappingCube cube) {
         if (hierarchy.relation() == null && cube != null) {
             checkPropertyHierarchyRelationNull(column, cube);
-        } else if (hierarchy.relation() instanceof MappingTable parentTable) {
+        } else if (hierarchy.relation() instanceof MappingTableQuery parentTable) {
             checkPropertyHierarchyRelationTable(parentTable, column);
             checkTable(parentTable);
         }
     }
 
-    private void checkPropertyHierarchyRelationTable(MappingTable parentTable, String column) {
+    private void checkPropertyHierarchyRelationTable(MappingTableQuery parentTable, String column) {
         try {
             TableReference tableReference = getTableReference(parentTable.getSchema(), parentTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
@@ -479,7 +479,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     private void checkPropertyHierarchyRelationNull(String column, MappingCube cube) {
         // Case of degenerate dimension within cube,
         // hierarchy table not specified
-        final MappingTable factTable = (MappingTable) cube.fact();
+        final MappingTableQuery factTable = (MappingTableQuery) cube.fact();
         try {
             TableReference tableReference = getTableReference(factTable.getSchema(), factTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
@@ -496,7 +496,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         }
     }
 
-    private void checkMeasureColumnDataType(MappingMeasure measure, MappingTable factTable) {
+    private void checkMeasureColumnDataType(MappingMeasure measure, MappingTableQuery factTable) {
         // Check if aggregator selected is valid on
         // the data type of the column selected.
         Optional<ColumnDefinition> optionalColumnDefinition = Optional.empty();
@@ -542,13 +542,13 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
                 // case of degenerate dimension within cube,
                 // hierarchy table not specified
                 checkColumnWithCubeFctTable(column, fieldName, cube);
-            } else if (parentHierarchy.relation() instanceof MappingTable parentTable) {
+            } else if (parentHierarchy.relation() instanceof MappingTableQuery parentTable) {
                 checkColumnWithHierarchyRelationTable(parentTable, column, fieldName, parentHierarchy);
             }
         }
     }
 
-    private void checkColumnWithHierarchyRelationTable(MappingTable parentTable, String column, String fieldName, MappingHierarchy parentHierarchy) {
+    private void checkColumnWithHierarchyRelationTable(MappingTableQuery parentTable, String column, String fieldName, MappingHierarchy parentHierarchy) {
         try {
             TableReference tableReference = getTableReference(parentTable.getSchema(), parentTable.getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
@@ -557,7 +557,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
                     isEmpty(column.trim()) ? "' '" : column, fieldName,
                     parentTable.getName());
                 results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
-                checkTable((MappingTable) parentHierarchy.relation());
+                checkTable((MappingTableQuery) parentHierarchy.relation());
             }
         } catch (SQLException e) {
             String msg = String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_DEFINED_IN_FIELD_IN_TABLE,
@@ -568,7 +568,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnWithCubeFctTable(String column, String fieldName, MappingCube cube) {
         try {
-            TableReference tableReference = getTableReference(((MappingTable) cube.fact()).getSchema(), ((MappingTable) cube.fact()).getName());
+            TableReference tableReference = getTableReference(((MappingTableQuery) cube.fact()).getSchema(), ((MappingTableQuery) cube.fact()).getName());
             ColumnReference columnReference = new ColumnReferenceR(Optional.of(tableReference), column);
             if (!databaseService.columnExists(databaseMetaData, columnReference)) {
                 String msg =
@@ -578,7 +578,7 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
         } catch (SQLException e) {
             String msg =
                 String.format(COULD_NOT_LOOKUP_EXISTANCE_OF_COLUMN_S_DEFINED_IN_FIELD_S_IN_TABLE_24,
-                    isEmpty(column.trim()) ? "' '" : column, fieldName, ((MappingTable) cube.fact()).getName());
+                    isEmpty(column.trim()) ? "' '" : column, fieldName, ((MappingTableQuery) cube.fact()).getName());
             results.add(new VerificationResultR(LEVEL, msg, ERROR, DATABASE));
         }
     }

@@ -9,13 +9,13 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
 public interface MappingClosure {
 
-    MappingTable table();
+    MappingTableQuery table();
 
     String parentColumn();
 

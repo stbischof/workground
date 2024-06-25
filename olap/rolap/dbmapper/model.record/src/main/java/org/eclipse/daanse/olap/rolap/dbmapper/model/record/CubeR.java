@@ -25,7 +25,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughActio
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
 
 public record CubeR(String name,
@@ -42,7 +42,7 @@ public record CubeR(String name,
                     Optional<MappingWritebackTable> writebackTable,
                     Boolean enabled,
                     Boolean cache,
-                    MappingRelation fact,
+                    MappingRelationQuery fact,
                     List<MappingAction> actions,
                     List<MappingKpi> kpis
                     )
@@ -65,7 +65,7 @@ public record CubeR(String name,
             Optional<MappingWritebackTable> writebackTable,
             Boolean enabled,
             Boolean cache,
-            MappingRelation fact,
+            MappingRelationQuery fact,
             List<MappingAction> actions,
             List<MappingKpi> kpis
             ) {
@@ -144,7 +144,7 @@ public record CubeR(String name,
         return cache;
     }
 
-    public MappingRelation getFact() {
+    public MappingRelationQuery getFact() {
         return fact;
     }
 

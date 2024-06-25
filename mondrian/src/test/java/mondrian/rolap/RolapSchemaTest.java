@@ -44,7 +44,7 @@ import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CubeGrantImpl;
@@ -267,7 +267,7 @@ class RolapSchemaTest {
     void testGetOrCreateStar_StarCreatedAndUsed()
         throws Exception {
       //Create the test fact
-      MappingRelation fact =
+      MappingRelationQuery fact =
           SchemaUtil.parse(getFactTableWithSQLFilter(), TableImpl.class);
       List<String> rolapStarKey = RolapUtil.makeRolapStarKey(fact);
       //Expected result star
@@ -294,7 +294,7 @@ class RolapSchemaTest {
     @Test
     void testGetStarFromRegistryByStarKey() throws Exception {
       //Create the test fact
-      MappingRelation fact =
+      MappingRelationQuery fact =
           SchemaUtil.parse(getFactTableWithSQLFilter(), TableImpl.class);
       List<String> rolapStarKey = RolapUtil.makeRolapStarKey(fact);
       //Expected result star
@@ -310,7 +310,7 @@ class RolapSchemaTest {
     @Test
     void testGetStarFromRegistryByFactTableName() throws Exception {
       //Create the test fact
-      MappingRelation fact =
+      MappingRelationQuery fact =
           SchemaUtil.parse(getFactTable(), TableImpl.class);
       //Expected result star
       RolapStarRegistry rolapStarRegistry =
@@ -323,7 +323,7 @@ class RolapSchemaTest {
     }
 
     private static RolapStarRegistry getStarRegistryLinkedToRolapSchemaSpy(
-        RolapSchema schemaSpy, MappingRelation fact) throws Exception
+        RolapSchema schemaSpy, MappingRelationQuery fact) throws Exception
     {
       //the rolap star registry is linked to the origin rolap schema,
       //not to the schemaSpy

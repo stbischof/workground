@@ -39,7 +39,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.VerificationResult;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Verifyer;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +70,7 @@ class DatabaseVerifyerTest {
     MappingHierarchy hierarchy = mock(MappingHierarchy.class);
     MappingLevel level = mock(MappingLevel.class);
     org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty property = mock(org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty.class);
-    MappingTable table = mock(MappingTable.class);
+    MappingTableQuery table = mock(MappingTableQuery.class);
     MappingClosure closure = mock(MappingClosure.class);
 
     @BeforeEach

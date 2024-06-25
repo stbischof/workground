@@ -18,12 +18,12 @@ import static mondrian.rolap.util.JoinUtil.right;
 
 import java.util.Objects;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 
 import mondrian.rolap.RolapRuntimeException;
 
@@ -33,20 +33,20 @@ public class RelationUtil {
         // constructor
     }
 
-    public static MappingRelation find(MappingQuery relationOrJoin, String tableName) {
-        if (relationOrJoin instanceof MappingInlineTable inlineTable) {
-            return tableName.equals(inlineTable.getAlias()) ? (MappingRelation) relationOrJoin : null;
+    public static MappingRelationQuery find(MappingQuery relationOrJoin, String tableName) {
+        if (relationOrJoin instanceof MappingInlineTableQuery inlineTable) {
+            return tableName.equals(inlineTable.getAlias()) ? (MappingRelationQuery) relationOrJoin : null;
         }
-        if (relationOrJoin instanceof MappingTable table) {
+        if (relationOrJoin instanceof MappingTableQuery table) {
             if (tableName.equals(table.getName())) {
-                return (MappingRelation) relationOrJoin;
+                return (MappingRelationQuery) relationOrJoin;
             } else {
                     return null; //old version of code had wrong condition with equals
             }
         }
-        if (relationOrJoin instanceof MappingView view) {
+        if (relationOrJoin instanceof MappingViewQuery view) {
             if (tableName.equals(view.getAlias())) {
-                return (MappingRelation) relationOrJoin;
+                return (MappingRelationQuery) relationOrJoin;
             } else {
                 return null;
             }
@@ -56,15 +56,15 @@ public class RelationUtil {
             if (relation == null) {
                 relation = find(right(join), tableName);
             }
-            return (MappingRelation) relation;
+            return (MappingRelationQuery) relation;
 
         }
 
         throw new RolapRuntimeException("Rlation: find error");
     }
 
-    public static String getAlias(MappingRelation relation) {
-        if (relation instanceof MappingTable table) {
+    public static String getAlias(MappingRelationQuery relation) {
+        if (relation instanceof MappingTableQuery table) {
             return (relation.getAlias() != null) ? relation.getAlias() : table.getName();
         }
         else {
@@ -72,9 +72,9 @@ public class RelationUtil {
         }
     }
 
-    public static boolean equals(MappingRelation relation, Object o) {
-        if (relation instanceof MappingView view) {
-            if (o instanceof MappingView that) {
+    public static boolean equals(MappingRelationQuery relation, Object o) {
+        if (relation instanceof MappingViewQuery view) {
+            if (o instanceof MappingViewQuery that) {
                 if (!Objects.equals(relation.getAlias(), that.getAlias())) {
                     return false;
                 }
@@ -93,8 +93,8 @@ public class RelationUtil {
                 return false;
             }
         }
-        if (relation instanceof MappingTable table) {
-            if (o instanceof MappingTable that) {
+        if (relation instanceof MappingTableQuery table) {
+            if (o instanceof MappingTableQuery that) {
                 return table.getName().equals(that.getName()) &&
                     Objects.equals(relation.getAlias(), that.getAlias()) &&
                     Objects.equals(table.getSchema(), that.getSchema());
@@ -102,8 +102,8 @@ public class RelationUtil {
                 return false;
             }
         }
-        if (relation instanceof MappingInlineTable) {
-            if (o instanceof MappingInlineTable that) {
+        if (relation instanceof MappingInlineTableQuery) {
+            if (o instanceof MappingInlineTableQuery that) {
                 return relation.getAlias().equals(that.getAlias());
             } else {
                 return false;
@@ -113,18 +113,18 @@ public class RelationUtil {
         return relation == o;
     }
 
-    public static int hashCode(MappingRelation relation) {
-        if (relation instanceof MappingTable) {
+    public static int hashCode(MappingRelationQuery relation) {
+        if (relation instanceof MappingTableQuery) {
             return toString(relation).hashCode();
         }
-        if (relation instanceof MappingInlineTable) {
+        if (relation instanceof MappingInlineTableQuery) {
             return toString(relation).hashCode();
         }
         return System.identityHashCode(relation);
     }
 
-    private static Object toString(MappingRelation relation) {
-        if (relation instanceof MappingTable table) {
+    private static Object toString(MappingRelationQuery relation) {
+        if (relation instanceof MappingTableQuery table) {
             return (table.getSchema() == null) ?
                 table.getName() :
                 new StringBuilder(table.getSchema()).append(".").append(table.getName()).toString();
@@ -134,7 +134,7 @@ public class RelationUtil {
                 .append(join.left().getAlias()).append(".").append(join.left().getKey()).append(" = ")
                 .append(join.right().getAlias()).append(".").append(join.right().getKey()).toString();
         }
-        if (relation instanceof MappingInlineTable) {
+        if (relation instanceof MappingInlineTableQuery) {
             return "<inline data>";
         }
         return relation.toString();

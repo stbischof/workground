@@ -35,7 +35,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
@@ -51,8 +51,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
@@ -66,17 +68,15 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSharedDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribute;
@@ -197,7 +197,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkSQL(MappingSQL sql) {
+    protected void checkSQL(MappingSqlSelectQuery sql) {
         //empty
     }
 
@@ -250,49 +250,49 @@ public abstract class AbstractSchemaWalker {
 
     protected void checkRelationOrJoin(MappingQuery relationOrJoin) {
         if (relationOrJoin != null) {
-            if (relationOrJoin instanceof MappingInlineTable inlineTable) {
+            if (relationOrJoin instanceof MappingInlineTableQuery inlineTable) {
                 checkInlineTable(inlineTable);
             }
             if (relationOrJoin instanceof MappingJoinQuery join) {
                 checkJoin(join);
             }
-            if (relationOrJoin instanceof MappingTable table) {
+            if (relationOrJoin instanceof MappingTableQuery table) {
                 checkTable(table);
             }
-            if (relationOrJoin instanceof MappingView view) {
+            if (relationOrJoin instanceof MappingViewQuery view) {
                 checkView(view);
             }
         }
     }
 
-    protected void checkView(MappingView relationOrJoin) {
+    protected void checkView(MappingViewQuery relationOrJoin) {
         if (relationOrJoin != null) {
             checkSQLList(relationOrJoin.sqls());
         }
     }
 
-    protected void checkInlineTable(MappingInlineTable relationOrJoin) {
+    protected void checkInlineTable(MappingInlineTableQuery relationOrJoin) {
         if (relationOrJoin != null) {
             checkColumnDefList(relationOrJoin.columnDefs());
             checkRowList(relationOrJoin.rows());
         }
     }
 
-    protected void checkRow(MappingRow row) {
+    protected void checkRow(MappingInlineTableRow row) {
         if (row != null) {
             checkValueList(row.values());
         }
     }
 
-    protected void checkValue(MappingValue value) {
+    protected void checkValue(MappingInlineTableRowCell value) {
         //empty
     }
 
-    protected void checkColumnDef(MappingColumnDef columnDef) {
+    protected void checkColumnDef(MappingInlineTableColumnDefinition columnDef) {
         //empty
     }
 
-    protected void checkTable(MappingTable table) {
+    protected void checkTable(MappingTableQuery table) {
         if (table != null) {
             checkSQL(table.getSql());
 
@@ -304,7 +304,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkHint(MappingHint hint) {
+    protected void checkHint(MappingTableQueryOptimisationHint hint) {
         //empty
     }
 
@@ -626,7 +626,7 @@ public abstract class AbstractSchemaWalker {
         //empty
     }
 
-    private void checkHintList(List<? extends MappingHint> list) {
+    private void checkHintList(List<? extends MappingTableQueryOptimisationHint> list) {
         if (list != null) {
             list.forEach(this::checkHint);
         }
@@ -650,7 +650,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkSQLList(List<? extends MappingSQL> list) {
+    protected void checkSQLList(List<? extends MappingSqlSelectQuery> list) {
         if (list != null) {
             list.forEach(this::checkSQL);
         }
@@ -662,19 +662,19 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    private void checkRowList(List<? extends MappingRow> list) {
+    private void checkRowList(List<? extends MappingInlineTableRow> list) {
         if (list != null) {
             list.forEach(this::checkRow);
         }
     }
 
-    private void checkValueList(List<? extends MappingValue> list) {
+    private void checkValueList(List<? extends MappingInlineTableRowCell> list) {
         if (list != null) {
             list.forEach(this::checkValue);
         }
     }
 
-    private void checkColumnDefList(List<? extends MappingColumnDef> list) {
+    private void checkColumnDefList(List<? extends MappingInlineTableColumnDefinition> list) {
         if (list != null) {
             list.forEach(this::checkColumnDef);
         }

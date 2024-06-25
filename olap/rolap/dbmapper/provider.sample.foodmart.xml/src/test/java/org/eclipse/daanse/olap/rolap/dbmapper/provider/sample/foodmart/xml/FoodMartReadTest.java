@@ -28,7 +28,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
@@ -1234,7 +1234,7 @@ class FoodMartReadTest {
 		}
 	}
 
-	private void checkExpressionItem(MappingSQL sql, Map<String, Object> map) {
+	private void checkExpressionItem(MappingSqlSelectQuery sql, Map<String, Object> map) {
 		assertEquals(sql.content().trim(), get(CONTENT, map));
 		assertEquals(sql.dialect(), get(DIALECT, map));
 	}

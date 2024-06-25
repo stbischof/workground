@@ -13,11 +13,11 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
 
 public record ValueR(String column,
                      String content)
-        implements MappingValue {
+        implements MappingInlineTableRowCell {
 
     public String getColumn() {
         return column;

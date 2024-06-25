@@ -37,7 +37,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.InternalTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.slf4j.Logger;
@@ -472,7 +472,7 @@ public class RolapLevel extends LevelBase {
     private void checkColumn(MappingColumn nameColumn) {
         final RolapHierarchy rolapHierarchy = (RolapHierarchy) hierarchy;
         if (nameColumn.getTable() == null) {
-            final MappingRelation table = rolapHierarchy.getUniqueTable();
+            final MappingRelationQuery table = rolapHierarchy.getUniqueTable();
             if (table == null) {
                 throw Util.newError(
                     new StringBuilder("must specify a table for level ").append(getUniqueName())

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
@@ -46,7 +46,7 @@ class RolapDimensionTest {
 
     schema = Mockito.mock(RolapSchema.class);
     cube = Mockito.mock(RolapCube.class);
-    MappingRelation fact = Mockito.mock(MappingRelation.class);
+    MappingRelationQuery fact = Mockito.mock(MappingRelationQuery.class);
 
     Mockito.when(cube.getSchema()).thenReturn(schema);
     Mockito.when(cube.getFact()).thenReturn(fact);
@@ -81,8 +81,8 @@ class RolapDimensionTest {
   @Disabled("disabled for CI build") //disabled for CI build
   @Test
   void testHierarchyRelation() {
-    MappingRelation hierarchyTable = Mockito
-            .mock(MappingRelation.class);
+    MappingRelationQuery hierarchyTable = Mockito
+            .mock(MappingRelationQuery.class);
     hierarchy.setRelation(hierarchyTable);
 
     new RolapDimension(schema, cube, xmlDimension, xmlCubeDimension);

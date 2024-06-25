@@ -31,7 +31,7 @@ import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.SystemWideProperties;
@@ -323,8 +323,8 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         MappingQuery newrel)
     {
         if (oldrel != null && newrel != null) {
-            if (oldrel instanceof MappingRelation oldrelRelation
-                && newrel instanceof MappingRelation newrelRelation) {
+            if (oldrel instanceof MappingRelationQuery oldrelRelation
+                && newrel instanceof MappingRelationQuery newrelRelation) {
                 aliases.put(
                     RelationUtil.getAlias(oldrelRelation),
                     RelationUtil.getAlias(newrelRelation));

@@ -56,17 +56,17 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
@@ -77,18 +77,17 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnu
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggColumnNameR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggExcludeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggMeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleUsageR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggForeignKeyRBuilder;
@@ -3414,7 +3413,7 @@ class SchemaTest {
                     .foreignKey("store_id")
                     .build();
 
-                MappingView v1 = ViewRBuilder.builder()
+                MappingViewQuery v1 = ViewRBuilder.builder()
                     .alias("FACT")
                     .sqls(List.of(
                         new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
@@ -3437,7 +3436,7 @@ class SchemaTest {
                     .name("Warehouse")
                     .hierarchies(List.of(h1))
                     .build();
-                MappingView view = ViewRBuilder.builder()
+                MappingViewQuery view = ViewRBuilder.builder()
                     .alias("FACT")
                     .sqls(List.of(
                         new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
@@ -3604,7 +3603,7 @@ class SchemaTest {
                     .foreignKey("store_id")
                     .build();
 
-                MappingView view = ViewRBuilder.builder()
+                MappingViewQuery view = ViewRBuilder.builder()
                     .alias("FACT")
                     .sqls(List.of(
                         new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
@@ -3734,7 +3733,7 @@ class SchemaTest {
                     .hierarchies(List.of(h1))
                     .build();
 
-                MappingView view = ViewRBuilder.builder()
+                MappingViewQuery view = ViewRBuilder.builder()
                     .alias("FACT")
                     .sqls(List.of(
                         new SQLR("select * from \"store\" as \"FOOBAR\"", "generic"),
@@ -3989,7 +3988,7 @@ class SchemaTest {
             }
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema schema) {
-                MappingTable t = new TableR(
+                MappingTableQuery t = new TableR(
                     "sales_fact_1997",
                     List.of(
                         AggExcludeRBuilder.builder().pattern("agg_c_14_sales_fact_1997").build(),
@@ -4177,7 +4176,7 @@ class SchemaTest {
             }
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema schema) {
-                MappingTable t = new TableR(
+                MappingTableQuery t = new TableR(
                     "sales_fact_1997",
                     List.of(
                         AggExcludeRBuilder.builder().pattern("agg_c_14_sales_fact_1997").build(),
@@ -5685,7 +5684,7 @@ class SchemaTest {
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
-                MappingView v1 = ViewRBuilder.builder()
+                MappingViewQuery v1 = ViewRBuilder.builder()
                     .alias("gender2")
                     .sqls(List.of(
                         new SQLR("SELECT * FROM customer", "generic"),
@@ -6310,7 +6309,7 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingInlineTable inlineTable = InlineTableRBuilder
+                    MappingInlineTableQuery inlineTable = InlineTableRBuilder
                         .builder()
                         .alias("binary")
                         .columnDefs(List.of(
@@ -6463,7 +6462,7 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingInlineTable inlineTable = InlineTableRBuilder
+                    MappingInlineTableQuery inlineTable = InlineTableRBuilder
                         .builder()
                         .alias("t")
                         .columnDefs(List.of(
@@ -6580,7 +6579,7 @@ class SchemaTest {
                 List<MappingCubeDimension> result = new ArrayList<>();
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
-                    MappingInlineTable inlineTable = InlineTableRBuilder
+                    MappingInlineTableQuery inlineTable = InlineTableRBuilder
                         .builder()
                         .alias("t")
                         .columnDefs(List.of(
@@ -6874,7 +6873,7 @@ class SchemaTest {
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> cs = new ArrayList<>();
-                MappingTable table = new TableR(null, "sales_fact_1997", null,
+                MappingTableQuery table = new TableR(null, "sales_fact_1997", null,
                     null,
                     SQLRBuilder.builder()
                         .content("`sales_fact_1997`.`store_id` in (select distinct `store_id` from `store` where `store`.`store_state` = \"CA\")")
@@ -9534,7 +9533,7 @@ class SchemaTest {
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
-                MappingTable t = new TableR("sales_fact_1997", List.of(
+                MappingTableQuery t = new TableR("sales_fact_1997", List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_pl_01_sales_fact_1997").build(),
@@ -9731,7 +9730,7 @@ class SchemaTest {
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
 
-                MappingTable t = new TableR("sales_fact_1997", List.of(
+                MappingTableQuery t = new TableR("sales_fact_1997", List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_pl_01_sales_fact_1997").build(),
@@ -9914,7 +9913,7 @@ class SchemaTest {
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
-                MappingTable t = new TableR("sales_fact_1997", List.of(
+                MappingTableQuery t = new TableR("sales_fact_1997", List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_pl_01_sales_fact_1997").build(),
@@ -10301,7 +10300,7 @@ class SchemaTest {
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
 
-                MappingTable t = new TableR("sales_fact_1997", List.of(
+                MappingTableQuery t = new TableR("sales_fact_1997", List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_pl_01_sales_fact_1997").build(),
@@ -10503,7 +10502,7 @@ class SchemaTest {
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("HR".equals(cube.name())) {
                     List<MappingPrivateDimension> dimensions = new ArrayList<>();
-                        MappingSQL sql = new SQLR("`position_title` + " + n,
+                        MappingSqlSelectQuery sql = new SQLR("`position_title` + " + n,
                             "generic");
                         MappingExpressionView ex = ExpressionViewRBuilder.builder().sqls(List.of(sql)).build();
                         MappingLevel level = LevelRBuilder.builder()
@@ -10581,7 +10580,7 @@ class SchemaTest {
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("Sales".equals(cube.name())) {
                     List<MappingPrivateDimension> dimensions = new ArrayList<>();
-                        MappingInlineTable i = InlineTableRBuilder.builder()
+                        MappingInlineTableQuery i = InlineTableRBuilder.builder()
                             .alias("meatShack")
                             .columnDefs(List.of(
                                 ColumnDefRBuilder.builder()

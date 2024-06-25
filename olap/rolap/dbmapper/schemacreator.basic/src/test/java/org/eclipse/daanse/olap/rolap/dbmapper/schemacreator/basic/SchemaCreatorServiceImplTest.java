@@ -23,7 +23,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.util.SchemaTransformer;
@@ -176,7 +176,7 @@ class SchemaCreatorServiceImplTest {
         assertThat(du.foreignKey()).isEqualTo("age");
 
         assertThat(s.cubes()).hasSize(1);
-        MappingTable t = (MappingTable)c.fact();
+        MappingTableQuery t = (MappingTableQuery)c.fact();
         assertThat(t.getName()).isEqualTo("population");
 
         marshallSchema(s);
@@ -361,8 +361,8 @@ class SchemaCreatorServiceImplTest {
         assertThat(c.enabled()).isTrue();
         assertThat(c.visible()).isTrue();
         assertThat(c.fact()).isNotNull();
-        assertThat(c.fact()).isInstanceOf(MappingTable.class);
-        MappingTable t = (MappingTable)c.fact();
+        assertThat(c.fact()).isInstanceOf(MappingTableQuery.class);
+        MappingTableQuery t = (MappingTableQuery)c.fact();
         assertThat(t.getName()).isEqualTo("employees");
         assertThat(c.dimensionUsageOrDimensions()).hasSize(8);
         assertThat(c.dimensionUsageOrDimensions().get(0)).isInstanceOf(MappingDimensionUsage.class);

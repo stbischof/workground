@@ -17,6 +17,6 @@ import java.util.List;
 
 public interface MappingExpressionView extends MappingExpression {
 
-    List<MappingSQL> sqls();
+    List<MappingSqlSelectQuery> sqls();
 
 }

@@ -29,12 +29,12 @@ import java.util.Set;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
@@ -131,10 +131,10 @@ public class SqlQuery {
     /** Scratch buffer. Clear it before use. */
     private final StringBuilder buf;
 
-    private final Set<MappingRelation> relations =
+    private final Set<MappingRelationQuery> relations =
         new HashSet<>();
 
-    private final Map<MappingRelation, MappingQuery>
+    private final Map<MappingRelationQuery, MappingQuery>
         mapRelationToRoot =
         new HashMap<>();
 
@@ -337,7 +337,7 @@ public class SqlQuery {
     {
         registerRootRelation(relation);
 
-        if (relation instanceof MappingRelation relation1) {
+        if (relation instanceof MappingRelationQuery relation1) {
             if (relations.add(relation1)
                 && !SystemWideProperties.instance()
                 .FilterChildlessSnowflakeMembers)
@@ -350,9 +350,9 @@ public class SqlQuery {
                 // adds all relations between it and the fact table.)
                 MappingQuery root =
                     mapRelationToRoot.get(relation1);
-                List<MappingRelation> relationsCopy =
+                List<MappingRelationQuery> relationsCopy =
                     new ArrayList<>(relations);
-                for (MappingRelation relation2 : relationsCopy) {
+                for (MappingRelationQuery relation2 : relationsCopy) {
                     if (relation2 != relation1
                         && mapRelationToRoot.get(relation2) == root)
                     {
@@ -362,7 +362,7 @@ public class SqlQuery {
             }
         }
 
-        if (relation instanceof MappingView view) {
+        if (relation instanceof MappingViewQuery view) {
             final String viewAlias =
                 (alias == null)
                 ? RelationUtil.getAlias(view)
@@ -370,13 +370,13 @@ public class SqlQuery {
             final String sqlString = getCodeSet(view).chooseQuery(dialect);
             return addFromQuery(sqlString, viewAlias, false);
 
-        } else if (relation instanceof MappingInlineTable) {
-            final org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation relation1 =
+        } else if (relation instanceof MappingInlineTableQuery) {
+            final MappingRelationQuery relation1 =
                 RolapUtil.convertInlineTableToRelation(
-                    (MappingInlineTable) relation, dialect);
+                    (MappingInlineTableQuery) relation, dialect);
             return addFrom(relation1, alias, failIfExists);
 
-        } else if (relation instanceof MappingTable table) {
+        } else if (relation instanceof MappingTableQuery table) {
             final String tableAlias =
                 (alias == null)
                 ? RelationUtil.getAlias(table)
@@ -436,8 +436,8 @@ public class SqlQuery {
 
     private void addJoinBetween(
         MappingQuery root,
-        MappingRelation relation1,
-        MappingRelation relation2)
+        MappingRelationQuery relation1,
+        MappingRelationQuery relation2)
     {
         List<RelInfo> relations = mapRootToRelations.get(root);
         int index1 = find(relations, relation1);
@@ -463,7 +463,7 @@ public class SqlQuery {
         }
     }
 
-    private int find(List<RelInfo> relations, MappingRelation relation) {
+    private int find(List<RelInfo> relations, MappingRelationQuery relation) {
         for (int i = 0, n = relations.size(); i < n; i++) {
             RelInfo relInfo = relations.get(i);
             if (relInfo.relation.equals(relation)) {
@@ -783,7 +783,7 @@ public class SqlQuery {
         } else {
             relations.add(
                 new RelInfo(
-                    (MappingRelation) root,
+                    (MappingRelationQuery) root,
                     leftKey,
                     leftAlias,
                     rightKey,
@@ -1029,14 +1029,14 @@ public class SqlQuery {
     }
 
     private static class RelInfo {
-        final MappingRelation relation;
+        final MappingRelationQuery relation;
         final String leftKey;
         final String leftAlias;
         final String rightKey;
         final String rightAlias;
 
         public RelInfo(
-            MappingRelation relation,
+            MappingRelationQuery relation,
             String leftKey,
             String leftAlias,
             String rightKey,

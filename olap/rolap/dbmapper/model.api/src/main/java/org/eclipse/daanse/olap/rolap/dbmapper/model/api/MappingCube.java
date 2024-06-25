@@ -38,7 +38,7 @@ public interface MappingCube extends MappingBaseInterface{
 
     Boolean visible();
 
-    MappingRelation fact();
+    MappingRelationQuery fact();
 
     List<MappingAction> actions();
 

@@ -34,7 +34,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCellFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
@@ -51,8 +51,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
@@ -64,21 +67,18 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTranslation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -464,7 +464,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             boolean enabled = cubeEnabled(cube);
             boolean cache = cubeCache(cube);
             boolean visible = cubeVisible(cube);
-            MappingRelation fact = cubeFact(cube);
+            MappingRelationQuery fact = cubeFact(cube);
             List<MappingAction> actions = cubeActions(cube);
             List<MappingKpi> kpis = cubeKpis(cube);
 
@@ -481,7 +481,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         List<MappingMeasure> measures, List<MappingCalculatedMember> calculatedMembers,
         List<MappingNamedSet> namedSets, List<MappingDrillThroughAction> drillThroughActions,
         Optional<MappingWritebackTable> writebackTable, boolean enabled, boolean cache, boolean visible,
-        MappingRelation fact, List<MappingAction> actions, List<MappingKpi> kpis
+        MappingRelationQuery fact, List<MappingAction> actions, List<MappingKpi> kpis
     );
 
     protected List<MappingAction> cubeActions(MappingCube cube) {
@@ -1543,67 +1543,67 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         AccessEnum access
     );
 
-    protected MappingRelation cubeFact(MappingCube cube) {
+    protected MappingRelationQuery cubeFact(MappingCube cube) {
         return relation(cube.fact());
     }
 
-    protected MappingRelation relation(MappingRelation relation) {
+    protected MappingRelationQuery relation(MappingRelationQuery relation) {
         if (relation != null) {
             String alias = relationAlias(relation);
-            if (relation instanceof MappingInlineTable inlineTable) {
-                List<MappingColumnDef> columnDefs = inlineTableColumnDefs(inlineTable);
-                List<MappingRow> rows = inlineTableRows(inlineTable);
+            if (relation instanceof MappingInlineTableQuery inlineTable) {
+                List<MappingInlineTableColumnDefinition> columnDefs = inlineTableColumnDefs(inlineTable);
+                List<MappingInlineTableRow> rows = inlineTableRows(inlineTable);
                 return new_InlineTable(columnDefs, rows, alias);
             }
-            if (relation instanceof MappingTable table) {
+            if (relation instanceof MappingTableQuery table) {
 
-                MappingSQL sql = tableSql(table);
+                MappingSqlSelectQuery sql = tableSql(table);
                 List<MappingAggExclude> aggExcludes = tableAggExcludes(table);
                 List<MappingAggTable> aggTables = tableAggTables(table);
-                List<MappingHint> hints = tableHints(table);
+                List<MappingTableQueryOptimisationHint> hints = tableHints(table);
                 String name = tableName(table);
                 String schema = tableSchema(table);
                 return new_Table(schema, name, alias, hints, sql, aggExcludes, aggTables);
             }
-            if (relation instanceof MappingView view) {
-                List<MappingSQL> sqls = viewSqls(view);
+            if (relation instanceof MappingViewQuery view) {
+                List<MappingSqlSelectQuery> sqls = viewSqls(view);
                 return new_View(alias, sqls);
             }
         }
         return null;
     }
 
-    protected List<MappingSQL> viewSqls(MappingView view) {
+    protected List<MappingSqlSelectQuery> viewSqls(MappingViewQuery view) {
         return sqls(view.sqls());
     }
 
-    protected List<MappingSQL> sqls(List<MappingSQL> sqls) {
+    protected List<MappingSqlSelectQuery> sqls(List<MappingSqlSelectQuery> sqls) {
         if (sqls != null) {
             return sqls.stream().map(this::sql).toList();
         }
         return null;
     }
 
-    protected String tableSchema(MappingTable table) {
+    protected String tableSchema(MappingTableQuery table) {
         return table.getSchema();
     }
 
-    protected String tableName(MappingTable table) {
+    protected String tableName(MappingTableQuery table) {
         return table.getName();
     }
 
-    protected List<MappingHint> tableHints(MappingTable table) {
+    protected List<MappingTableQueryOptimisationHint> tableHints(MappingTableQuery table) {
         return hints(table.getHints());
     }
 
-    protected List<MappingHint> hints(List<MappingHint> hints) {
+    protected List<MappingTableQueryOptimisationHint> hints(List<MappingTableQueryOptimisationHint> hints) {
         if (hints != null) {
             return hints.stream().map(this::hint).toList();
         }
         return null;
     }
 
-    private MappingHint hint(MappingHint hint) {
+    private MappingTableQueryOptimisationHint hint(MappingTableQueryOptimisationHint hint) {
         if (hint != null) {
             String content = hintContent(hint);
             String type = hintType(hint);
@@ -1612,17 +1612,17 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return null;
     }
 
-    protected String hintType(MappingHint hint) {
+    protected String hintType(MappingTableQueryOptimisationHint hint) {
         return hint.type();
     }
 
-    protected String hintContent(MappingHint hint) {
+    protected String hintContent(MappingTableQueryOptimisationHint hint) {
         return hint.content();
     }
 
-    protected abstract MappingHint new_Hint(String content, String type);
+    protected abstract MappingTableQueryOptimisationHint new_Hint(String content, String type);
 
-    protected List<MappingAggTable> tableAggTables(MappingTable table) {
+    protected List<MappingAggTable> tableAggTables(MappingTableQuery table) {
         return aggTables(table.getAggTables());
     }
 
@@ -1952,7 +1952,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return aggFactCount.column();
     }
 
-    protected List<MappingAggExclude> tableAggExcludes(MappingTable table) {
+    protected List<MappingAggExclude> tableAggExcludes(MappingTableQuery table) {
         return aggExcludes(table.getAggExcludes());
     }
 
@@ -1995,11 +1995,11 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         boolean ignorecase
     );
 
-    protected MappingSQL tableSql(MappingTable table) {
+    protected MappingSqlSelectQuery tableSql(MappingTableQuery table) {
         return sql(table.getSql());
     }
 
-    protected MappingSQL sql(MappingSQL sql) {
+    protected MappingSqlSelectQuery sql(MappingSqlSelectQuery sql) {
     	if (sql != null) {
     		String content = sqlContent(sql);
     		String dialect = sqlDialect(sql);
@@ -2008,47 +2008,47 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     	return null;
     }
 
-    protected String sqlDialect(MappingSQL sql) {
+    protected String sqlDialect(MappingSqlSelectQuery sql) {
         return sql.dialect();
     }
 
-    protected String sqlContent(MappingSQL sql) {
+    protected String sqlContent(MappingSqlSelectQuery sql) {
         return sql.content();
     }
 
-    protected abstract MappingSQL new_SQL(String content, String dialect);
+    protected abstract MappingSqlSelectQuery new_SQL(String content, String dialect);
 
-    protected List<MappingRow> inlineTableRows(MappingInlineTable inlineTable) {
+    protected List<MappingInlineTableRow> inlineTableRows(MappingInlineTableQuery inlineTable) {
         return rows(inlineTable.rows());
     }
 
-    protected List<MappingRow> rows(List<MappingRow> rows) {
+    protected List<MappingInlineTableRow> rows(List<MappingInlineTableRow> rows) {
         if (rows != null) {
             return rows.stream().map(this::row).toList();
         }
         return null;
     }
 
-    private MappingRow row(MappingRow row) {
+    private MappingInlineTableRow row(MappingInlineTableRow row) {
         if (row != null) {
-            List<MappingValue> values = rowValues(row);
+            List<MappingInlineTableRowCell> values = rowValues(row);
             return new_Row(values);
         }
         return null;
     }
 
-    protected List<MappingValue> rowValues(MappingRow row) {
+    protected List<MappingInlineTableRowCell> rowValues(MappingInlineTableRow row) {
         return values(row.values());
     }
 
-    protected List<MappingValue> values(List<MappingValue> values) {
+    protected List<MappingInlineTableRowCell> values(List<MappingInlineTableRowCell> values) {
         if (values != null) {
             return values.stream().map(this::value).toList();
         }
         return null;
     }
 
-    private MappingValue value(MappingValue value) {
+    private MappingInlineTableRowCell value(MappingInlineTableRowCell value) {
         if (value != null) {
             String content = valueContent(value);
             String column = valueColumn(value);
@@ -2057,38 +2057,38 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return null;
     }
 
-    protected abstract MappingValue new_Value(String column, String content);
+    protected abstract MappingInlineTableRowCell new_Value(String column, String content);
 
-    protected String valueColumn(MappingValue value) {
+    protected String valueColumn(MappingInlineTableRowCell value) {
         return value.column();
     }
 
-    protected String valueContent(MappingValue value) {
+    protected String valueContent(MappingInlineTableRowCell value) {
         return value.content();
     }
 
     ;
 
-    protected abstract MappingRow new_Row(List<MappingValue> values);
+    protected abstract MappingInlineTableRow new_Row(List<MappingInlineTableRowCell> values);
 
-    protected abstract MappingTable new_Table(
-        String schema, String name, String alias,
-        List<MappingHint> hints, MappingSQL sql,
-        List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
+    protected abstract MappingTableQuery new_Table(
+            String schema, String name, String alias,
+            List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     );
 
-    protected List<MappingColumnDef> inlineTableColumnDefs(MappingInlineTable inlineTable) {
+    protected List<MappingInlineTableColumnDefinition> inlineTableColumnDefs(MappingInlineTableQuery inlineTable) {
         return columnDefs(inlineTable.columnDefs());
     }
 
-    protected List<MappingColumnDef> columnDefs(List<MappingColumnDef> columnDefs) {
+    protected List<MappingInlineTableColumnDefinition> columnDefs(List<MappingInlineTableColumnDefinition> columnDefs) {
         if (columnDefs != null) {
             return columnDefs.stream().map(this::columnDef).toList();
         }
         return null;
     }
 
-    private MappingColumnDef columnDef(MappingColumnDef columnDef) {
+    private MappingInlineTableColumnDefinition columnDef(MappingInlineTableColumnDefinition columnDef) {
         if (columnDef != null) {
             String name = columnDefName(columnDef);
             TypeEnum type = columnDefType(columnDef);
@@ -2097,24 +2097,24 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return null;
     }
 
-    protected abstract MappingColumnDef new_ColumnDef(String name, TypeEnum type);
+    protected abstract MappingInlineTableColumnDefinition new_ColumnDef(String name, TypeEnum type);
 
-    protected TypeEnum columnDefType(MappingColumnDef columnDef) {
+    protected TypeEnum columnDefType(MappingInlineTableColumnDefinition columnDef) {
         return columnDef.type();
     }
 
-    protected String columnDefName(MappingColumnDef columnDef) {
+    protected String columnDefName(MappingInlineTableColumnDefinition columnDef) {
         return columnDef.name();
     }
 
-    protected abstract MappingRelation new_View(String alias, List<MappingSQL> sqls);
+    protected abstract MappingRelationQuery new_View(String alias, List<MappingSqlSelectQuery> sqls);
 
-    protected abstract MappingRelation new_InlineTable(
-        List<MappingColumnDef> columnDefs,
-        List<MappingRow> rows, String alias
+    protected abstract MappingRelationQuery new_InlineTable(
+        List<MappingInlineTableColumnDefinition> columnDefs,
+        List<MappingInlineTableRow> rows, String alias
     );
 
-    protected String relationAlias(MappingRelation relation) {
+    protected String relationAlias(MappingRelationQuery relation) {
         return relation.getAlias();
     }
 
@@ -2841,7 +2841,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected MappingClosure closure(MappingClosure closure) {
     	if (closure != null) {
-    		MappingTable table = closureTable(closure);
+    		MappingTableQuery table = closureTable(closure);
     		String parentColumn = closureParentColumn(closure);
     		String childColumn = closureChildColumn(closure);
     		return new_Closure(table, parentColumn, childColumn);
@@ -2857,16 +2857,16 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return closure.parentColumn();
     }
 
-    private MappingTable closureTable(MappingClosure closure) {
+    private MappingTableQuery closureTable(MappingClosure closure) {
         return table(closure.table());
     }
 
-    protected MappingTable table(MappingTable table) {
+    protected MappingTableQuery table(MappingTableQuery table) {
         if (table != null) {
-            MappingSQL sql = tableSql(table);
+            MappingSqlSelectQuery sql = tableSql(table);
             List<MappingAggExclude> aggExcludes = tableAggExcludes(table);
             List<MappingAggTable> aggTables = tableAggTables(table);
-            List<MappingHint> hints = tableHints(table);
+            List<MappingTableQueryOptimisationHint> hints = tableHints(table);
             String name = tableName(table);
             String schema = tableSchema(table);
             String alias = tableAlias(table);
@@ -2875,12 +2875,12 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return null;
     }
 
-    protected String tableAlias(MappingTable table) {
+    protected String tableAlias(MappingTableQuery table) {
         return table.getAlias();
     }
 
     protected abstract MappingClosure new_Closure(
-        MappingTable table,
+        MappingTableQuery table,
         String parentColumn,
         String childColumn
     );
@@ -2891,7 +2891,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected MappingExpressionView expressionView(MappingExpressionView expression) {
     	if (expression != null) {
-    		List<MappingSQL> sqls = expressionSqls(expression);
+    		List<MappingSqlSelectQuery> sqls = expressionSqls(expression);
     		String table = expressionTable(expression);
     		String name = expressionName(expression);
     		return new_ExpressionView(sqls, table, name);
@@ -2907,12 +2907,12 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return expression.getTable();
     }
 
-    protected List<MappingSQL> expressionSqls(MappingExpressionView expression){
+    protected List<MappingSqlSelectQuery> expressionSqls(MappingExpressionView expression){
         return sqls(expression.sqls());
     }
 
     protected abstract MappingExpressionView new_ExpressionView(
-        List<MappingSQL> sqls, String table, String name);
+        List<MappingSqlSelectQuery> sqls, String table, String name);
 
     protected MappingExpressionView levelOrdinalExpression(MappingLevel level) {
         return expressionView(level.ordinalExpression());
@@ -2970,7 +2970,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected MappingQuery relationOrJoin(MappingQuery relationOrJoin) {
         if (relationOrJoin != null) {
-            if (relationOrJoin instanceof MappingRelation relation) {
+            if (relationOrJoin instanceof MappingRelationQuery relation) {
                 return relation(relation);
             }
             if (relationOrJoin instanceof MappingJoinQuery join) {

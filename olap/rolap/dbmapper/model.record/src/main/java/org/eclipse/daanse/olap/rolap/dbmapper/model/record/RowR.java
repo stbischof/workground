@@ -15,16 +15,16 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
 
-public record RowR(List<MappingValue> values) implements MappingRow {
-	public  RowR(List<MappingValue> values)  {
+public record RowR(List<MappingInlineTableRowCell> values) implements MappingInlineTableRow {
+	public  RowR(List<MappingInlineTableRowCell> values)  {
 		this.values = values == null ? List.of() : values;
 
 	}
 
-    public List<MappingValue> getValues() {
+    public List<MappingInlineTableRowCell> getValues() {
         return values;
     }
 }

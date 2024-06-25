@@ -50,7 +50,6 @@ import java.util.UUID;
 
 import mondrian.olap.exceptions.RoleUnionGrantsException;
 import mondrian.olap.exceptions.UnknownRoleException;
-import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
@@ -84,7 +83,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
@@ -1112,7 +1111,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
     }
 
  // package-local visibility for testing purposes
-    public RolapStar makeRolapStar(final MappingRelation fact) {
+    public RolapStar makeRolapStar(final MappingRelationQuery fact) {
         return new RolapStar(this, context, fact);
     }
 
@@ -1132,7 +1131,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
          * <p> {@link RolapStar.Table#addJoin} works in a similar way.
          */
         synchronized RolapStar getOrCreateStar(
-            final MappingRelation fact)
+            final MappingRelationQuery fact)
         {
             final List<String> rolapStarKey = RolapUtil.makeRolapStarKey(fact);
             RolapStar star = stars.get(rolapStarKey);

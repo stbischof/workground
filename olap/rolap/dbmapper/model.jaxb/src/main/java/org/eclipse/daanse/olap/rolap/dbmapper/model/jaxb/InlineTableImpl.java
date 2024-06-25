@@ -15,9 +15,9 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -28,32 +28,32 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "InlineTable", propOrder = { "columnDefs", "rows" })
-public class InlineTableImpl implements MappingInlineTable {
+public class InlineTableImpl implements MappingInlineTableQuery {
 
     @XmlElementWrapper(name = "ColumnDefs")
     @XmlElement(name = "ColumnDef", required = true, type = ColumnDefImpl.class)
-    protected List<MappingColumnDef> columnDefs;
+    protected List<MappingInlineTableColumnDefinition> columnDefs;
     @XmlElementWrapper(name = "Rows", required = true)
     @XmlElement(name = "Row", required = true, type = RowImpl.class)
-    protected List<MappingRow> rows;
+    protected List<MappingInlineTableRow> rows;
     @XmlAttribute(name = "alias")
     private String alias;
 
     @Override
-    public List<MappingColumnDef> columnDefs() {
+    public List<MappingInlineTableColumnDefinition> columnDefs() {
         return columnDefs;
     }
 
-    public void setColumnDefs(List<MappingColumnDef> value) {
+    public void setColumnDefs(List<MappingInlineTableColumnDefinition> value) {
         this.columnDefs = value;
     }
 
     @Override
-    public List<MappingRow> rows() {
+    public List<MappingInlineTableRow> rows() {
         return rows;
     }
 
-    public void setRows(List<MappingRow> value) {
+    public void setRows(List<MappingInlineTableRow> value) {
         this.rows = value;
     }
 
@@ -67,7 +67,7 @@ public class InlineTableImpl implements MappingInlineTable {
 
     @Override
 	public boolean equals(Object o) {
-        if (o instanceof MappingInlineTable that) {
+        if (o instanceof MappingInlineTableQuery that) {
             return getAlias().equals(that.getAlias());
         } else {
             return false;

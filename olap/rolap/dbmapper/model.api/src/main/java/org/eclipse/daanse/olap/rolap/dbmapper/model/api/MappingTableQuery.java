@@ -9,14 +9,24 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public interface MappingValue {
+import java.util.List;
 
-    String content();
+public non-sealed interface MappingTableQuery extends MappingRelationQuery {
 
-    String column();
+    MappingSqlSelectQuery getSql();
+
+    List<MappingAggExclude> getAggExcludes();
+
+    List<MappingAggTable> getAggTables();
+
+    List<MappingTableQueryOptimisationHint> getHints();
+
+    String getName();
+
+    String getSchema();
 
 }

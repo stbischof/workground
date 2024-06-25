@@ -18,9 +18,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 
 import mondrian.olap.Util;
@@ -182,12 +182,12 @@ public class RolapCubeLevel extends RolapLevel {
         } else if (exp == null || rel == null) {
             return null;
         } else if (exp instanceof MappingColumn col) {
-            if (rel instanceof MappingTable table) {
+            if (rel instanceof MappingTableQuery table) {
                 return new ColumnR(
                     RelationUtil.getAlias(table),
                     col.getName());
             } else if (rel instanceof MappingJoinQuery
-                || rel instanceof MappingRelation)
+                || rel instanceof MappingRelationQuery)
             {
                 // need to determine correct name of alias for this level.
                 // this may be defined in level

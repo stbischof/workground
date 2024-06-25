@@ -19,8 +19,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
 import org.junit.jupiter.api.Test;
 import org.opencube.junit5.SchemaUtil;
@@ -33,7 +33,7 @@ class RolapUtilTest {
   private static final String TABLE_ALIAS = "TableAlias";
   private static final String RELATION_ALIAS = "RelationAlias";
   private static final String FACT_NAME = "order_fact";
-  private MappingRelation fact;
+  private MappingRelationQuery fact;
 
   @Test
   void testMakeRolapStarKeyUnmodifiable() throws Exception {
@@ -124,8 +124,8 @@ class RolapUtilTest {
     return fact;
   }
 
-  private static MappingRelation getFactRelationMock() throws Exception {
-    MappingRelation factMock = mock(MappingInlineTable.class);
+  private static MappingRelationQuery getFactRelationMock() throws Exception {
+    MappingRelationQuery factMock = mock(MappingInlineTableQuery.class);
     when(factMock.getAlias()).thenReturn(RELATION_ALIAS);
     return factMock;
   }

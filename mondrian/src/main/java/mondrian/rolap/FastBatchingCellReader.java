@@ -30,7 +30,7 @@ import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Execution;
 import org.eclipse.daanse.olap.api.Locus;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -563,7 +563,7 @@ public class FastBatchingCellReader implements CellReader {
      * @return Dialect
      */
     Dialect getDialect() {
-    	
+
         final RolapStar star = cube.getStar();
         if (star != null) {
             return star.getSqlQueryDialect();
@@ -1519,7 +1519,7 @@ class BatchLoader {
                     && measure.getExpression() instanceof
                     MappingExpressionView measureExpr)
                 {
-                    MappingSQL measureSql = measureExpr.sqls().get(0);
+                    MappingSqlSelectQuery measureSql = measureExpr.sqls().get(0);
                     // Checks if the SQL contains "SELECT" to detect the case a
                     // subquery is used to define the measure. This is not a
                     // perfect check, because a SQL expression on column names

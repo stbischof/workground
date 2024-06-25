@@ -13,6 +13,6 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public sealed interface MappingQuery permits MappingJoinQuery, MappingRelation{
+public sealed interface MappingQuery permits MappingJoinQuery, MappingRelationQuery {
 
 }

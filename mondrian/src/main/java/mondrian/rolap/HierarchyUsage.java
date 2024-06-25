@@ -27,7 +27,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
@@ -78,7 +78,7 @@ public class HierarchyUsage {
      * identifies the usage, and determines which join conditions need to be
      * used.
      */
-    protected final MappingRelation fact;
+    protected final MappingRelationQuery fact;
 
     /**
      * This matches the hierarchy - may not be unique.
@@ -129,7 +129,7 @@ public class HierarchyUsage {
      * Dimension table which contains the primary key for the hierarchy.
      * (Usually the table of the lowest level of the hierarchy.)
      */
-    private MappingRelation joinTable;
+    private MappingRelationQuery joinTable;
 
     /**
      * The expression (usually a {@link mondrian.olap.MappingColumn}) by
@@ -291,7 +291,7 @@ public class HierarchyUsage {
         return this.usagePrefix;
     }
 
-    public MappingRelation getJoinTable() {
+    public MappingRelationQuery getJoinTable() {
         return this.joinTable;
     }
 
@@ -435,11 +435,11 @@ public class HierarchyUsage {
      *   has only one table
      * @return A table, never null
      */
-    private MappingRelation findJoinTable(
+    private MappingRelationQuery findJoinTable(
         RolapHierarchy hierarchy,
         String tableName)
     {
-        final MappingRelation table;
+        final MappingRelationQuery table;
         if (tableName == null) {
             table = hierarchy.getUniqueTable();
             if (table == null) {

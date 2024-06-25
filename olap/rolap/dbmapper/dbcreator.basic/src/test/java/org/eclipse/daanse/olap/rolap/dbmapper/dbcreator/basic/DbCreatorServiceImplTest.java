@@ -22,18 +22,18 @@ import org.eclipse.daanse.db.jdbc.util.impl.SqlType;
 import org.eclipse.daanse.db.jdbc.util.impl.Type;
 import org.eclipse.daanse.olap.rolap.dbmapper.dbcreator.api.DbCreatorService;
 import org.eclipse.daanse.olap.rolap.dbmapper.dbcreator.api.DbCreatorServiceFactory;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
@@ -81,9 +81,9 @@ class DbCreatorServiceImplTest {
     Statement statement = mock(Statement.class);
     MappingPrivateDimension privateDimension = mock(MappingPrivateDimension.class);
     MappingHierarchy hierarchy = mock(MappingHierarchy.class);
-    MappingTable table = mock(MappingTable.class);
+    MappingTableQuery table = mock(MappingTableQuery.class);
     MappingJoinQuery join = mock(MappingJoinQuery.class);
-    MappingTable tableFact = mock(MappingTable.class);
+    MappingTableQuery tableFact = mock(MappingTableQuery.class);
     MappingLevel level1 = mock(MappingLevel.class);
     MappingLevel level2 = mock(MappingLevel.class);
     MappingProperty property1 = mock(MappingProperty.class);
@@ -92,9 +92,9 @@ class DbCreatorServiceImplTest {
     MappingDimensionUsage dimensionUsage = mock(MappingDimensionUsage.class);
     MappingMeasure measure1 = mock(MappingMeasure.class);
     MappingMeasure measure2 = mock(MappingMeasure.class);
-    MappingInlineTable inlineTable = mock(MappingInlineTable.class);
-    MappingColumnDef columnDef1 = mock(MappingColumnDef.class);
-    MappingColumnDef columnDef2 = mock(MappingColumnDef.class);
+    MappingInlineTableQuery inlineTable = mock(MappingInlineTableQuery.class);
+    MappingInlineTableColumnDefinition columnDef1 = mock(MappingInlineTableColumnDefinition.class);
+    MappingInlineTableColumnDefinition columnDef2 = mock(MappingInlineTableColumnDefinition.class);
 
 
     @BeforeEach

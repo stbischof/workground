@@ -30,19 +30,19 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -209,16 +209,16 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     private long getFactCount(Context context, MappingCube c) {
         long result = 0l;
         try {
-            MappingRelation relation = c.fact();
-            if (relation instanceof MappingTable mt) {
+            MappingRelationQuery relation = c.fact();
+            if (relation instanceof MappingTableQuery mt) {
                 return context.getStatisticsProvider().getTableCardinality(
                     context.getConnection().getDataSource().getConnection().getCatalog(),
                     context.getConnection().getDataSource().getConnection().getSchema(), mt.getName());
             }
-            if (relation instanceof MappingInlineTable it) {
+            if (relation instanceof MappingInlineTableQuery it) {
                 result = it.rows() == null ? 0l : it.rows().size();
             }
-            if (relation instanceof MappingView mv) {
+            if (relation instanceof MappingViewQuery mv) {
                 //TODO
                 return 0l;
             }
@@ -1156,13 +1156,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private Optional<String> getFactTableName(MappingQuery relation) {
-        if (relation instanceof MappingTable mt) {
+        if (relation instanceof MappingTableQuery mt) {
             return Optional.of(mt.getName());
         }
-        if (relation instanceof MappingInlineTable it) {
+        if (relation instanceof MappingInlineTableQuery it) {
             return Optional.ofNullable(it.getAlias());
         }
-        if (relation instanceof MappingView mv) {
+        if (relation instanceof MappingViewQuery mv) {
             return Optional.ofNullable(mv.getAlias());
         }
         if (relation instanceof MappingJoinQuery mj) {
@@ -1174,13 +1174,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private List<String> getFactTableConnections(MappingQuery relation, List<String> missedTableNames) {
-        if (relation instanceof MappingTable mt) {
+        if (relation instanceof MappingTableQuery mt) {
             return List.of();
         }
-        if (relation instanceof MappingInlineTable it) {
+        if (relation instanceof MappingInlineTableQuery it) {
             return List.of();
         }
-        if (relation instanceof MappingView mv) {
+        if (relation instanceof MappingViewQuery mv) {
             return List.of();
         }
         if (relation instanceof MappingJoinQuery mj) {
@@ -1213,7 +1213,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private String getFirstTable(MappingQuery relation) {
-        if (relation instanceof MappingTable mt) {
+        if (relation instanceof MappingTableQuery mt) {
             return mt.getName();
         }
         if (relation instanceof MappingJoinQuery mj) {
@@ -1225,13 +1225,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
     }
 
     private String getTable(MappingQuery relation) {
-        if (relation instanceof MappingTable mt) {
+        if (relation instanceof MappingTableQuery mt) {
             return mt.getName();
         }
-        if (relation instanceof MappingInlineTable it) {
+        if (relation instanceof MappingInlineTableQuery it) {
             //TODO
         }
-        if (relation instanceof MappingView mv) {
+        if (relation instanceof MappingViewQuery mv) {
             StringBuilder sb = new StringBuilder();
             if (mv.sqls() != null) {
                 mv.sqls().stream().filter(s -> "generic".equals(s.dialect()))

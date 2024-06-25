@@ -23,15 +23,15 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
@@ -2482,7 +2482,7 @@ public class SchemaModifiers {
          */
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingInlineTable it = InlineTableRBuilder.builder()
+            MappingInlineTableQuery it = InlineTableRBuilder.builder()
                 .alias("bri_store_employee")
                 .columnDefs(List.of(
                     ColumnDefRBuilder.builder()
@@ -2540,7 +2540,7 @@ public class SchemaModifiers {
 
                 ))
                 .build();
-            MappingTable t = new TableR(null, "employee", "employee", List.of());
+            MappingTableQuery t = new TableR(null, "employee", "employee", List.of());
 
             return SchemaRBuilder.builder()
                 .name("FoodMart")
@@ -3797,7 +3797,7 @@ public class SchemaModifiers {
             List<MappingCubeDimension> result = new ArrayList<>();
             result.addAll(super.cubeDimensionUsageOrDimensions(cube));
             if ("Sales".equals(cube.name())) {
-                MappingView v = ViewRBuilder.builder()
+                MappingViewQuery v = ViewRBuilder.builder()
                     .alias("gender2")
                     .sqls(List.of(
                         SQLRBuilder.builder().dialect("generic").content("SELECT * FROM customer").build(),
@@ -3952,7 +3952,7 @@ public class SchemaModifiers {
             List<MappingCubeDimension> result = new ArrayList<>();
             result.addAll(super.cubeDimensionUsageOrDimensions(cube));
             if ("Sales".equals(cube.name())) {
-                MappingView v = ViewRBuilder.builder()
+                MappingViewQuery v = ViewRBuilder.builder()
                     .alias("productView")
                     .sqls(List.of(
                         SQLRBuilder.builder().dialect("db2")
@@ -8454,7 +8454,7 @@ public class SchemaModifiers {
             List<MappingCubeDimension> result = new ArrayList<>();
             result.addAll(super.cubeDimensionUsageOrDimensions(cube));
             if ("Sales".equals(cube.name())) {
-                MappingInlineTable i = InlineTableRBuilder.builder()
+                MappingInlineTableQuery i = InlineTableRBuilder.builder()
                     .alias("sn")
                     .columnDefs(List.of(
                         ColumnDefRBuilder.builder()
@@ -10112,7 +10112,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
@@ -10336,7 +10336,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_c_special_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_lc_100_sales_fact_1997").build(),
@@ -10591,7 +10591,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_c_special_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_lc_100_sales_fact_1997").build(),
@@ -10940,7 +10940,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_c_special_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_10_sales_fact_1997").build(),
@@ -11165,7 +11165,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_c_special_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_lc_100_sales_fact_1997").build(),
@@ -11302,7 +11302,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t = new TableR("sales_fact_1997",
+            MappingTableQuery t = new TableR("sales_fact_1997",
                 List.of(
                     AggExcludeRBuilder.builder().name("agg_g_ms_pcat_sales_fact_1997").build(),
                     AggExcludeRBuilder.builder().name("agg_c_14_sales_fact_1997").build(),
@@ -11520,7 +11520,7 @@ public class SchemaModifiers {
 
         @Override
         protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-            MappingTable t1 = new TableR("sales_fact_1997",
+            MappingTableQuery t1 = new TableR("sales_fact_1997",
                 List.of(),
                 List.of(
                     AggNameRBuilder.builder()
@@ -11584,7 +11584,7 @@ public class SchemaModifiers {
                         .build()
                 ));
 
-            MappingTable t2 = new TableR("sales_fact_1997",
+            MappingTableQuery t2 = new TableR("sales_fact_1997",
                 List.of(),
                 List.of(
                     AggNameRBuilder.builder()

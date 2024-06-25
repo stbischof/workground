@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
@@ -37,7 +36,7 @@ import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.rolap.agg.Aggregator;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -813,11 +812,11 @@ public class AggStar {
 
         /** The name of the table in the database. */
         private final String name;
-        private final MappingRelation relation;
+        private final MappingRelationQuery relation;
         protected final List<Level> levels = new ArrayList<>();
         protected List<DimTable> children;
 
-        Table(final String name, final MappingRelation relation) {
+        Table(final String name, final MappingRelationQuery relation) {
             this.name = name;
             this.relation = relation;
             this.children = Collections.emptyList();
@@ -848,7 +847,7 @@ public class AggStar {
         public abstract boolean hasJoinCondition();
         public abstract Table.JoinCondition getJoinCondition();
 
-        public MappingRelation getRelation() {
+        public MappingRelationQuery getRelation() {
             return relation;
         }
 
@@ -938,7 +937,7 @@ public class AggStar {
             final Usage usage)
         {
             String tableName = rTable.getAlias();
-            MappingRelation relationInner = rTable.getRelation();
+            MappingRelationQuery relationInner = rTable.getRelation();
             RolapStar.Condition rjoinCondition = rTable.getJoinCondition();
             MappingExpression rleft = rjoinCondition.getLeft();
             final MappingExpression rright;
@@ -1187,7 +1186,7 @@ public class AggStar {
 
         FactTable(
             final String name,
-            final MappingRelation relation,
+            final MappingRelationQuery relation,
             final int totalColumnSize,
             final long numberOfRows)
         {
@@ -1592,7 +1591,7 @@ public class AggStar {
         DimTable(
             final Table parent,
             final String name,
-            final MappingRelation relation,
+            final MappingRelationQuery relation,
             final JoinCondition joinCondition)
         {
             super(name, relation);

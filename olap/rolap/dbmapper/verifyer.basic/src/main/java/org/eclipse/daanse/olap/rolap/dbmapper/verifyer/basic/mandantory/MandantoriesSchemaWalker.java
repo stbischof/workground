@@ -25,7 +25,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
@@ -38,8 +38,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingElementFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -50,14 +51,13 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUnion;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
@@ -111,8 +111,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             }
 
             if (cube.fact() == null
-                || ((cube.fact() instanceof MappingTable table) && isEmpty(table.getName()))
-                || ((cube.fact() instanceof MappingView view) && isEmpty(view.getAlias()))) {
+                || ((cube.fact() instanceof MappingTableQuery table) && isEmpty(table.getName()))
+                || ((cube.fact() instanceof MappingViewQuery view) && isEmpty(view.getAlias()))) {
                 String msg = String.format(FACT_NAME_MUST_BE_SET, orNotSet(cube.name()));
                 results.add(new VerificationResultR(CUBE, msg, ERROR,
                     Cause.SCHEMA));
@@ -381,7 +381,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkTable(MappingTable table) {
+    protected void checkTable(MappingTableQuery table) {
         super.checkTable(table);
         if (table != null) {
             if (isEmpty(table.getName())) {
@@ -640,7 +640,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkView(MappingView view) {
+    protected void checkView(MappingViewQuery view) {
         super.checkView(view);
         if (view != null && isEmpty(view.getAlias())) {
             results.add(new VerificationResultR(VIEW, VIEW_ALIAS_MUST_BE_SET,
@@ -649,7 +649,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSQL(MappingSQL sql) {
+    protected void checkSQL(MappingSqlSelectQuery sql) {
         super.checkSQL(sql);
         if (sql != null && isEmpty(sql.dialect())) {
             results.add(new VerificationResultR(SQL, SQL_DIALECT_MUST_BE_SET,
@@ -658,7 +658,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkHint(MappingHint hint) {
+    protected void checkHint(MappingTableQueryOptimisationHint hint) {
         super.checkHint(hint);
         if (hint != null && isEmpty(hint.type())) {
             results.add(new VerificationResultR(HINT, HINT_TYPE_MUST_BE_SET,
@@ -667,7 +667,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkInlineTable(MappingInlineTable inlineTable) {
+    protected void checkInlineTable(MappingInlineTableQuery inlineTable) {
         super.checkInlineTable(inlineTable);
         if (inlineTable != null) {
             if (inlineTable.columnDefs() == null) {
@@ -682,7 +682,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkColumnDef(MappingColumnDef columnDef) {
+    protected void checkColumnDef(MappingInlineTableColumnDefinition columnDef) {
         super.checkColumnDef(columnDef);
         if (columnDef != null) {
             if (isEmpty(columnDef.name())) {
@@ -697,7 +697,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkValue(MappingValue value) {
+    protected void checkValue(MappingInlineTableRowCell value) {
         super.checkValue(value);
         if (value != null && isEmpty(value.column())) {
             results.add(new VerificationResultR(VALUE, VALUE_COLUMN_MUST_BE_SET,
@@ -1107,7 +1107,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
     }
 
     private void checkHierarchyTable(MappingHierarchy hierarchy, MappingPrivateDimension cubeDimension) {
-        if (hierarchy.relation() instanceof MappingTable table) {
+        if (hierarchy.relation() instanceof MappingTableQuery table) {
             if (!isEmpty(hierarchy.primaryKeyTable())) {
                 String msg = String.format(HIERARCHY_TABLE_FIELD_MUST_BE_EMPTY, orNotSet(cubeDimension.name()));
                 results.add(new VerificationResultR(HIERARCHY, msg, ERROR, Cause.SCHEMA));
@@ -1129,7 +1129,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
             checkJoin(join);
         }
 
-        if (!isEmpty(primaryKeyTable) && (hierarchy.relation() instanceof MappingTable theTable)) {
+        if (!isEmpty(primaryKeyTable) && (hierarchy.relation() instanceof MappingTableQuery theTable)) {
             String compareTo = (theTable.getAlias() != null && theTable.getAlias()
                 .trim()
                 .length() > 0) ? theTable.getAlias() : theTable.getName();
@@ -1221,8 +1221,8 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnTable(String table, MappingHierarchy parentHierarchy) {
         if (!isEmpty(table) && parentHierarchy != null
-            && parentHierarchy.relation() instanceof MappingTable parentTable) {
-            MappingTable theTable = parentTable;
+            && parentHierarchy.relation() instanceof MappingTableQuery parentTable) {
+            MappingTableQuery theTable = parentTable;
             String compareTo = (theTable.getAlias() != null && theTable.getAlias()
                 .trim()
                 .length() > 0) ? theTable.getAlias() : theTable.getName();
@@ -1236,7 +1236,7 @@ public class MandantoriesSchemaWalker extends AbstractSchemaWalker {
 
     private void checkColumnView(String table, MappingHierarchy parentHierarchy) {
         if (!isEmpty(table) && parentHierarchy != null
-            && parentHierarchy.relation() instanceof MappingView) {
+            && parentHierarchy.relation() instanceof MappingViewQuery) {
             results.add(new VerificationResultR(LEVEL,
                 TABLE_FOR_COLUMN_CANNOT_BE_SET_IN_VIEW, ERROR, Cause.SCHEMA));
         }

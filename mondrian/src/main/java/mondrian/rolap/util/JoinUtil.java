@@ -13,10 +13,8 @@
  */
 package mondrian.rolap.util;
 
-import java.util.List;
-
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.Util;
@@ -56,7 +54,7 @@ public class JoinUtil {
             return join.left().getAlias();
         }
         MappingQuery left = left(join);
-        if (left instanceof MappingRelation relation) {
+        if (left instanceof MappingRelationQuery relation) {
             return RelationUtil.getAlias(relation);
         }
         throw Util.newInternal(
@@ -72,7 +70,7 @@ public class JoinUtil {
             return join.right().getAlias();
         }
         MappingQuery right = right(join);
-        if (right instanceof MappingRelation relation) {
+        if (right instanceof MappingRelationQuery relation) {
             return RelationUtil.getAlias(relation);
         }
         if (right instanceof MappingJoinQuery j) {

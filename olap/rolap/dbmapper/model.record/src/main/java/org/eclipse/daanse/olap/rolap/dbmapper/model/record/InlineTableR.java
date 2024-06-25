@@ -16,23 +16,23 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
 
-public record InlineTableR(List<MappingColumnDef> columnDefs,
-                           List<MappingRow> rows, String alias)
-        implements MappingInlineTable {
+public record InlineTableR(List<MappingInlineTableColumnDefinition> columnDefs,
+                           List<MappingInlineTableRow> rows, String alias)
+        implements MappingInlineTableQuery {
 
-    public InlineTableR(MappingInlineTable inlineTable) {
+    public InlineTableR(MappingInlineTableQuery inlineTable) {
         this(new ArrayList<>(inlineTable.columnDefs()), new ArrayList<>(inlineTable.rows()), inlineTable.getAlias());
     }
 
-    public InlineTableR(MappingInlineTable inlineTable, String alias) {
+    public InlineTableR(MappingInlineTableQuery inlineTable, String alias) {
         this(new ArrayList<>(inlineTable.columnDefs()), new ArrayList<>(inlineTable.rows()), alias);
     }
 
-    public InlineTableR(List<MappingColumnDef> columnDefs, List<MappingRow> rows, String alias) {
+    public InlineTableR(List<MappingInlineTableColumnDefinition> columnDefs, List<MappingInlineTableRow> rows, String alias) {
         this.columnDefs = columnDefs == null ? List.of() : columnDefs;
         this.rows = rows == null ? List.of() : rows;
         this.alias = alias;
@@ -40,7 +40,7 @@ public record InlineTableR(List<MappingColumnDef> columnDefs,
 
     @Override
 	public boolean equals(Object o) {
-        if (o instanceof MappingInlineTable that) {
+        if (o instanceof MappingInlineTableQuery that) {
             return getAlias().equals(that.getAlias());
         } else {
             return false;
@@ -58,12 +58,12 @@ public record InlineTableR(List<MappingColumnDef> columnDefs,
     }
 
     @Override
-    public List<MappingColumnDef> columnDefs() {
+    public List<MappingInlineTableColumnDefinition> columnDefs() {
         return columnDefs;
     }
 
     @Override
-    public List<MappingRow> rows() {
+    public List<MappingInlineTableRow> rows() {
         return rows;
     }
 

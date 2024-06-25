@@ -14,14 +14,14 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
-public record ClosureR(MappingTable table,
+public record ClosureR(MappingTableQuery table,
                        String parentColumn,
                        String childColumn)
         implements MappingClosure {
 
-    public MappingTable getTable() {
+    public MappingTableQuery getTable() {
         return table;
     }
 

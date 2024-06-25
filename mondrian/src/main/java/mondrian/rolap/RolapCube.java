@@ -85,15 +85,15 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttri
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribute;
@@ -150,7 +150,7 @@ public class RolapCube extends CubeBase {
     private final RolapHierarchy measuresHierarchy;
 
     /** For SQL generator. Fact table. */
-    private MappingRelation fact;
+    private MappingRelationQuery fact;
 
     /** Schema reader which can see this cube and nothing else. */
     private SchemaReader schemaReader;
@@ -255,7 +255,7 @@ public class RolapCube extends CubeBase {
         String caption,
         String description,
         boolean isCache,
-        MappingRelation fact,
+        MappingRelationQuery fact,
         List<? extends MappingCubeDimension> dimensions,
         Map<String, Object> metadata,
         Context context)
@@ -2155,10 +2155,10 @@ public class RolapCube extends CubeBase {
                             && hierarchy.getXmlHierarchy()
                             .primaryKeyTable() != null
                             && relation instanceof MappingJoinQuery join
-                            && right(join) instanceof MappingTable
-                            && getAlias(((MappingTable)
+                            && right(join) instanceof MappingTableQuery
+                            && getAlias(((MappingTableQuery)
                             right(((MappingJoinQuery) relation)))) != null
-                            && getAlias(((MappingTable)
+                            && getAlias(((MappingTableQuery)
                             right(((MappingJoinQuery) relation))))
                             .equals(
                                 hierarchy.getXmlHierarchy()
@@ -2286,7 +2286,7 @@ public class RolapCube extends CubeBase {
         StringBuilder buf,
         String indent)
     {
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             buf.append(indent);
             buf.append(table.getName());
             if (table.getAlias() != null) {
@@ -2355,15 +2355,15 @@ public class RolapCube extends CubeBase {
          * Finds a RelNode by table name or, if that fails, by table alias
          * from a map of RelNodes.
          *
-         * @param table Is supposed a {@link MappingTable}
+         * @param table Is supposed a {@link MappingTableQuery}
          * @param map Names of tables and {@link RelNode} pairs
          */
         private static RelNode lookup(
-            MappingRelation table,
+            MappingRelationQuery table,
             Map<String, RelNode> map)
         {
             RelNode relNode;
-            if (table instanceof MappingTable t) {
+            if (table instanceof MappingTableQuery t) {
                 relNode = map.get(t.getName());
                 if (relNode != null) {
                     return relNode;
@@ -2374,7 +2374,7 @@ public class RolapCube extends CubeBase {
 
         private int depth;
         private String alias;
-        private MappingRelation table;
+        private MappingRelationQuery table;
 
         RelNode(String alias, int depth) {
             this.alias = alias;
@@ -2546,7 +2546,7 @@ public class RolapCube extends CubeBase {
         MappingQuery relation,
         Map<String, RelNode> map)
     {
-        if (relation instanceof MappingRelation table) {
+        if (relation instanceof MappingRelationQuery table) {
             RelNode relNode = RelNode.lookup(table, map);
             return (relNode != null);
 
@@ -2571,7 +2571,7 @@ public class RolapCube extends CubeBase {
         MappingQuery relation,
         Map<String, RelNode> map)
     {
-        if (relation instanceof MappingRelation table) {
+        if (relation instanceof MappingRelationQuery table) {
             RelNode relNode = RelNode.lookup(table, map);
             // Associate the table with its RelNode!!!! This is where this
             // happens.
@@ -2614,7 +2614,7 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      */
     private static void topToBottom(MappingQuery relation) {
-        if (relation instanceof MappingTable) {
+        if (relation instanceof MappingTableQuery) {
             // nothing
 
         } else if (relation instanceof MappingJoinQuery join) {
@@ -2639,10 +2639,10 @@ public class RolapCube extends CubeBase {
     private static MappingQuery copy(
         MappingQuery relation)
     {
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             return new TableR(table);
 
-        } else if (relation instanceof MappingInlineTable table) {
+        } else if (relation instanceof MappingInlineTableQuery table) {
             return new InlineTableR(table);
 
         } else if (relation instanceof MappingJoinQuery join) {
@@ -2670,7 +2670,7 @@ public class RolapCube extends CubeBase {
         MappingQuery relation,
         String tableName)
     {
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             // Return null if the table's name or alias matches tableName
             if ((table.getAlias() != null) && table.getAlias().equals(tableName)) {
                 return null;
@@ -2784,11 +2784,11 @@ public class RolapCube extends CubeBase {
     /**
      * Returns this cube's fact table, null if the cube is virtual.
      */
-    public MappingRelation getFact() {
+    public MappingRelationQuery getFact() {
         return fact;
     }
 
-    public void setFact(MappingRelation fact) {
+    public void setFact(MappingRelationQuery fact) {
         this.fact = fact;
     }
 

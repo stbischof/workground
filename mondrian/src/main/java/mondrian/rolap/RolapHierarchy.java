@@ -64,12 +64,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
@@ -298,7 +298,7 @@ public class RolapHierarchy extends HierarchyBase {
         }
 
         this.relation = xmlHierarchyRelation;
-        if (xmlHierarchyRelation instanceof MappingInlineTable inlineTable) {
+        if (xmlHierarchyRelation instanceof MappingInlineTableQuery inlineTable) {
             this.relation =
                 RolapUtil.convertInlineTableToRelation(
                     inlineTable,
@@ -564,8 +564,8 @@ public class RolapHierarchy extends HierarchyBase {
      * if this hierarchy has no table, return the cube's fact-table;
      * otherwise, returns null.
      */
-    public MappingRelation getUniqueTable() {
-        if (relation instanceof MappingRelation r) {
+    public MappingRelationQuery getUniqueTable() {
+        if (relation instanceof MappingRelationQuery r) {
             return r;
         } else if (relation instanceof MappingJoinQuery) {
             return null;
@@ -579,15 +579,15 @@ public class RolapHierarchy extends HierarchyBase {
         return (relation != null) && getTable(tableName, relation) != null;
     }
 
-    MappingRelation getTable(String tableName) {
+    MappingRelationQuery getTable(String tableName) {
         return relation == null ? null : getTable(tableName, relation);
     }
 
-    private static MappingRelation getTable(
+    private static MappingRelationQuery getTable(
         String tableName,
         MappingQuery relationOrJoin)
     {
-        if (relationOrJoin instanceof MappingRelation relation) {
+        if (relationOrJoin instanceof MappingRelationQuery relation) {
             if (RelationUtil.getAlias(relation).equals(tableName)) {
                 return relation;
             } else {
@@ -595,7 +595,7 @@ public class RolapHierarchy extends HierarchyBase {
             }
         } else {
             MappingJoinQuery join = (MappingJoinQuery) relationOrJoin;
-            MappingRelation rel = getTable(tableName, left(join));
+            MappingRelationQuery rel = getTable(tableName, left(join));
             if (rel != null) {
                 return rel;
             }
@@ -847,7 +847,7 @@ public class RolapHierarchy extends HierarchyBase {
         MappingQuery relation,
         String alias)
     {
-        if (relation instanceof MappingRelation table) {
+        if (relation instanceof MappingRelationQuery table) {
             return RelationUtil.getAlias(table).equals(alias)
                 ? relation
                 : null;
@@ -877,7 +877,7 @@ public class RolapHierarchy extends HierarchyBase {
         MappingQuery relation,
         String alias)
     {
-        if (relation instanceof MappingRelation table) {
+        if (relation instanceof MappingRelationQuery table) {
             return RelationUtil.getAlias(table).equals(alias)
                 ? relation
                 : null;
@@ -912,7 +912,7 @@ public class RolapHierarchy extends HierarchyBase {
         MappingQuery relation,
         RolapStar.Table targetTable)
     {
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             if (table.getName().equals(targetTable.getTableName())) {
                 return relation;
             } else {

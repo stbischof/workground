@@ -21,8 +21,8 @@ import javax.sql.DataSource;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.server.ExecutionImpl;
@@ -46,14 +46,14 @@ public class RolapStatisticsCache {
     }
 
     public long getRelationCardinality(
-        MappingRelation relation,
+        MappingRelationQuery relation,
         String alias,
         long approxRowCount)
     {
         if (approxRowCount >= 0) {
             return approxRowCount;
         }
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             return getTableCardinality(
                 null, table.getSchema(), table.getName());
         } else {
@@ -131,14 +131,14 @@ public class RolapStatisticsCache {
     }
 
     public long getColumnCardinality(
-        MappingRelation relation,
+        MappingRelationQuery relation,
         MappingExpression expression,
         long approxCardinality)
     {
         if (approxCardinality >= 0) {
             return approxCardinality;
         }
-        if (relation instanceof MappingTable table
+        if (relation instanceof MappingTableQuery table
             && expression instanceof MappingColumn column)
         {
             return getColumnCardinality(

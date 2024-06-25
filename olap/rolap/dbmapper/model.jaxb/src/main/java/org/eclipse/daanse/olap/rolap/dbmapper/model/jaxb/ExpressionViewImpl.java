@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -33,14 +33,14 @@ import jakarta.xml.bind.annotation.XmlType;
 public class ExpressionViewImpl implements MappingExpressionView {
 
     @XmlElement(name = "SQL", required = true, type = SQLImpl.class)
-    protected List<MappingSQL> sqls;
+    protected List<MappingSqlSelectQuery> sqls;
     @XmlAttribute(name = "table")
     protected String table;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
     @Override
-    public List<MappingSQL> sqls() {
+    public List<MappingSqlSelectQuery> sqls() {
         if (sqls == null) {
             sqls = new ArrayList<>();
         }
@@ -86,7 +86,7 @@ public class ExpressionViewImpl implements MappingExpressionView {
         return Objects.hash(sqls, table, name);
     }
 
-    public void setSqls(List<MappingSQL> sqls) {
+    public void setSqls(List<MappingSqlSelectQuery> sqls) {
         this.sqls = sqls;
     }
 

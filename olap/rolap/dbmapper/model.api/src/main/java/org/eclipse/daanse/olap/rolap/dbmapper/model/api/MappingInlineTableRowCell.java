@@ -9,14 +9,14 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public interface MappingHint {
+public interface MappingInlineTableRowCell {
 
     String content();
 
-    String type();
+    String column();
 
 }

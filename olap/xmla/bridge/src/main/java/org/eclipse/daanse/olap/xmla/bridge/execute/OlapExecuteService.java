@@ -43,7 +43,7 @@ import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.api.result.Scenario;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.olap.xmla.bridge.discover.DBSchemaDiscoverService;
@@ -278,7 +278,7 @@ public class OlapExecuteService implements ExecuteService {
 
     private StatementResponse executeQuery(StatementRequest statementRequest, UserPrincipal userPrincipal, Query query) {
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
-        MappingRelation fact = null;
+        MappingRelationQuery fact = null;
         try {
         Scenario scenario;
         if (session != null) {
@@ -738,7 +738,7 @@ public class OlapExecuteService implements ExecuteService {
         Connection connection = null;
         Statement statement;
         ResultSet resultSet = null;
-        MappingRelation fact = null;
+        MappingRelationQuery fact = null;
         RolapCube cube = null;
         Session session = Session.getWithoutCheck(statementRequest.sessionId());
         try {

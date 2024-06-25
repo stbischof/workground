@@ -18,21 +18,21 @@ import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
-public class TableR implements MappingTable {
+public class TableR implements MappingTableQuery {
 
-    private MappingSQL sql=null;
+    private MappingSqlSelectQuery sql=null;
     private String alias=null;
     private List<MappingAggExclude> aggExcludes;
     private String name;
     private String schema=null;
-    private List<MappingHint> hints;
+    private List<MappingTableQueryOptimisationHint> hints;
     private List<MappingAggTable> aggTables;
 
-    public TableR(MappingTable table) {
+    public TableR(MappingTableQuery table) {
         this(table.getSchema(), table.getName(), table.getAlias(), table.getHints());
     }
 
@@ -42,7 +42,7 @@ public class TableR implements MappingTable {
         this.aggTables = aggTables == null ? List.of() : aggTables;
         this.hints =List.of();
     }
-    public TableR(String schema, String name, String alias, List<MappingHint> hints) {
+    public TableR(String schema, String name, String alias, List<MappingTableQueryOptimisationHint> hints) {
         this.name = name;
         this.schema = schema;
         this.alias = alias;
@@ -52,7 +52,7 @@ public class TableR implements MappingTable {
     }
 
     public TableR(String schema, String name, String alias,
-                  List<MappingHint> hints, MappingSQL sql,
+                  List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
                   List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables) {
         this.name = name;
         this.schema = schema;
@@ -63,7 +63,7 @@ public class TableR implements MappingTable {
         this.aggTables = aggTables == null ? List.of() : aggTables;
     }
 
-    public TableR(MappingTable tbl, String possibleName) {
+    public TableR(MappingTableQuery tbl, String possibleName) {
         this(tbl.getSchema(), tbl.getName(), possibleName, tbl.getHints());
 
         // Remake the filter with the new alias
@@ -74,7 +74,7 @@ public class TableR implements MappingTable {
         }
     }
 
-    public TableR(String name, MappingSQL sql) {
+    public TableR(String name, MappingSqlSelectQuery sql) {
         this.name = name;
         this.schema = null;
         this.alias = null;
@@ -97,7 +97,7 @@ public class TableR implements MappingTable {
         return alias;
     }
 
-    public MappingSQL getSql() {
+    public MappingSqlSelectQuery getSql() {
         return sql;
     }
 
@@ -109,7 +109,7 @@ public class TableR implements MappingTable {
         return aggTables;
     }
 
-    public List<MappingHint> getHints() {
+    public List<MappingTableQueryOptimisationHint> getHints() {
         return hints;
     }
 
@@ -123,7 +123,7 @@ public class TableR implements MappingTable {
 
     @Override
 	public boolean equals(Object o) {
-        if (o instanceof MappingTable that) {
+        if (o instanceof MappingTableQuery that) {
             return this.name.equals(that.getName()) &&
                 Objects.equals(this.alias, that.getAlias()) &&
                 Objects.equals(this.schema, that.getSchema());

@@ -13,11 +13,11 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHint;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 
 public record HintR(String content,
                     String type)
-        implements MappingHint {
+        implements MappingTableQueryOptimisationHint {
 
     public String getContent() {
         return content;

@@ -45,11 +45,11 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
@@ -336,7 +336,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         DatabaseMetaData databaseMetaData
     ) {
         List<MappingLevel> result = new ArrayList<>();
-        if (relation instanceof MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             String tableName = columnReference.table().get().name();
             String columnName = columnReference.name();
             String schemaName = columnReference.table().get().schema().isPresent() ? columnReference.table().get().schema().get().name() : null;
@@ -385,7 +385,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
             result.addAll(getHierarchyLevelsForJoinRight(columnReference.table().get(),
                 join.left().getQuery(),
                 databaseMetaData));
-            if (join.left().getQuery() instanceof MappingTable t) {
+            if (join.left().getQuery() instanceof MappingTableQuery t) {
                 result.addAll(getHierarchyLevels(t, columnReference, databaseMetaData));
             }
         }
@@ -398,7 +398,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         DatabaseMetaData databaseMetaData
     ) {
         List<MappingLevel> result = new ArrayList<>();
-        if (relationRight instanceof MappingTable t) {
+        if (relationRight instanceof MappingTableQuery t) {
             List<ImportedKey> listFK = getImportedKeys(databaseMetaData, tableReference);
             ImportedKey key =
                 listFK.stream().filter(k -> t.getName().equals(k.primaryKeyColumn().table().get().name())).findFirst().orElse(null);
@@ -407,7 +407,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
                     databaseMetaData));
             }
         } else if (relationRight instanceof MappingJoinQuery j) {
-            MappingTable t = getFistTable(j);
+            MappingTableQuery t = getFistTable(j);
             if (t != null) {
                 List<ImportedKey> listFK = getImportedKeys(databaseMetaData, tableReference);
                 ImportedKey key =
@@ -430,11 +430,11 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         return capitalize(tableName);
     }
 
-    private MappingTable getFistTable(MappingJoinQuery j) {
-        if (j.left().getQuery() instanceof MappingTable t) {
+    private MappingTableQuery getFistTable(MappingJoinQuery j) {
+        if (j.left().getQuery() instanceof MappingTableQuery t) {
             return t;
         }
-        if (j.right().getQuery() instanceof MappingTable t) {
+        if (j.right().getQuery() instanceof MappingTableQuery t) {
             return t;
         }
         if (j.left().getQuery() instanceof MappingJoinQuery join) {
@@ -579,7 +579,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
         List<MappingCubeDimension> dimensionUsageOrDimensions = getCubeDimensions(tableReference,
             sharedDimensionsMap, databaseMetaData);
         List<MappingMeasure> measures = getMeasures(schemaName, tableName, databaseMetaData);
-        MappingRelation fact = new TableR(tableName);
+        MappingRelationQuery fact = new TableR(tableName);
         return new CubeR(name,
             description,
             List.of(),

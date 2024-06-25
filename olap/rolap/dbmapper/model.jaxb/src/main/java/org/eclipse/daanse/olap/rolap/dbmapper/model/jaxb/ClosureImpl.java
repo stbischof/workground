@@ -14,7 +14,7 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -27,18 +27,18 @@ import jakarta.xml.bind.annotation.XmlType;
 public class ClosureImpl implements MappingClosure {
 
     @XmlElement(name = "Table", required = true, type = TableImpl.class)
-    protected MappingTable table;
+    protected MappingTableQuery table;
     @XmlAttribute(name = "parentColumn", required = true)
     protected String parentColumn;
     @XmlAttribute(name = "childColumn", required = true)
     protected String childColumn;
 
     @Override
-    public MappingTable table() {
+    public MappingTableQuery table() {
         return table;
     }
 
-    public void setTable(MappingTable value) {
+    public void setTable(MappingTableQuery value) {
         this.table = value;
     }
 

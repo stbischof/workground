@@ -5,11 +5,11 @@ import org.eclipse.daanse.db.jdbc.util.impl.Constraint;
 import org.eclipse.daanse.db.jdbc.util.impl.DBStructure;
 import org.eclipse.daanse.db.jdbc.util.impl.SqlType;
 import org.eclipse.daanse.db.jdbc.util.impl.Type;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumnDef;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableColumnDefinition;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
@@ -17,6 +17,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,19 +107,19 @@ public class Utils {
     }
 
     private static String processingRelation(MappingQuery relation, Map<String, Table> tables, String schemaName) {
-        if (relation instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table) {
+        if (relation instanceof MappingTableQuery table) {
             return processingTable(table, tables, schemaName);
         }
         if (relation instanceof MappingJoinQuery join) {
             return processingJoin(join, tables, schemaName);
         }
-        if (relation instanceof MappingInlineTable inlineTable) {
+        if (relation instanceof MappingInlineTableQuery inlineTable) {
             return processingInlineTable(inlineTable, tables, schemaName);
         }
         return null;
     }
 
-    private static String processingInlineTable(MappingInlineTable table, Map<String, Table> tables, String schemaName) {
+    private static String processingInlineTable(MappingInlineTableQuery table, Map<String, Table> tables, String schemaName) {
         if (table.getAlias() != null) {
             Table t = getTableOrCreateNew(tables, table.getAlias(), schemaName);
             if (table.columnDefs() != null) {
@@ -129,7 +130,7 @@ public class Utils {
         return null;
     }
 
-    private static void processingColumnDef(MappingColumnDef c, Map<String, Column> columns) {
+    private static void processingColumnDef(MappingInlineTableColumnDefinition c, Map<String, Column> columns) {
         if (!columns.containsKey(c.name())) {
             SqlType sqlType = getSqlType(c.type());
             columns.put(c.name(), new Column(c.name(), sqlType));
@@ -147,7 +148,7 @@ public class Utils {
     }
 
     private static String processingTable(
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table,
+        MappingTableQuery table,
         Map<String, Table> tables,
         String schemaName
     ) {

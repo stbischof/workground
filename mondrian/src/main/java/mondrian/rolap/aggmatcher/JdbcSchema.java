@@ -36,6 +36,8 @@ import javax.sql.DataSource;
 import mondrian.olap.MondrianException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.ConnectionProps;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -347,7 +349,7 @@ public class JdbcSchema {
                 public RolapStar.Measure rMeasure;
 
                 // hierarchy stuff
-                public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation relation;
+                public MappingRelationQuery relation;
                 public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression joinExp;
                 public String levelColumnName;
 
@@ -847,7 +849,7 @@ public class JdbcSchema {
         private final String tableType;
 
         // mondriandef stuff
-        public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table;
+        public MappingTableQuery table;
 
         private boolean allColumnsLoaded;
 

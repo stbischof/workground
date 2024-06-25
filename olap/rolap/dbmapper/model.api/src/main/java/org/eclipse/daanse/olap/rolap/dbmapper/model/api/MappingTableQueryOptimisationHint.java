@@ -9,14 +9,14 @@
  *
  * Contributors:
  *   SmartCity Jena, Stefan Bischof - initial
- *   
+ *
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public interface MappingSQL {
+public interface MappingTableQueryOptimisationHint {
 
     String content();
 
-    String dialect();
+    String type();
 
 }

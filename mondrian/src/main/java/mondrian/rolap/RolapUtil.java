@@ -47,11 +47,11 @@ import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRow;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ViewImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -531,8 +531,8 @@ public class RolapUtil {
         return bestMatch;
     }
 
-    public static MappingRelation convertInlineTableToRelation(
-        MappingInlineTable inlineTable,
+    public static MappingRelationQuery convertInlineTableToRelation(
+        MappingInlineTableQuery inlineTable,
         final Dialect dialect)
     {
         ViewImpl view = new ViewImpl();
@@ -546,9 +546,9 @@ public class RolapUtil {
             columnTypes.add(inlineTable.columnDefs().get(i).type().getValue());
         }
         List<String[]> valueList = new ArrayList<>();
-        for (MappingRow row : inlineTable.rows()) {
+        for (MappingInlineTableRow row : inlineTable.rows()) {
             String[] values = new String[columnCount];
-            for (MappingValue value : row.values()) {
+            for (MappingInlineTableRowCell value : row.values()) {
                 final int columnOrdinal = columnNames.indexOf(value.column());
                 if (columnOrdinal < 0) {
                     throw Util.newError(
@@ -668,12 +668,12 @@ public class RolapUtil {
      * @return the rolap star key
      */
     public static List<String> makeRolapStarKey(
-        final MappingRelation fact)
+        final MappingRelationQuery fact)
     {
       List<String> rlStarKey = new ArrayList<>();
-      MappingTable table = null;
+      MappingTableQuery table = null;
       rlStarKey.add(getAlias(fact));
-      if (fact instanceof MappingTable t) {
+      if (fact instanceof MappingTableQuery t) {
         table = t;
       }
       // Add SQL filter to the key

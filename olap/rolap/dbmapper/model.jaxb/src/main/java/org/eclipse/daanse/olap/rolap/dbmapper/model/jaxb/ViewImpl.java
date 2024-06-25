@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -29,15 +29,15 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "View", propOrder = { "sqls" })
-public class ViewImpl implements MappingView {
+public class ViewImpl implements MappingViewQuery {
 
     @XmlElement(name = "SQL", required = true, type = SQLImpl.class)
-    protected List<MappingSQL> sqls;
+    protected List<MappingSqlSelectQuery> sqls;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     @Override
-    public List<MappingSQL> sqls() {
+    public List<MappingSqlSelectQuery> sqls() {
         if (sqls == null) {
             sqls = new ArrayList<>();
         }
@@ -71,7 +71,7 @@ public class ViewImpl implements MappingView {
 
     @Override
 	public boolean equals(Object o) {
-        if (o instanceof MappingView that) {
+        if (o instanceof MappingViewQuery that) {
             if (!Objects.equals(getAlias(), that.getAlias())) {
                 return false;
             }
@@ -96,7 +96,7 @@ public class ViewImpl implements MappingView {
         return sqls.get(0).content();
     }
 
-    public void setSqls(List<MappingSQL> sqls) {
+    public void setSqls(List<MappingSqlSelectQuery> sqls) {
         this.sqls = sqls;
     }
 }

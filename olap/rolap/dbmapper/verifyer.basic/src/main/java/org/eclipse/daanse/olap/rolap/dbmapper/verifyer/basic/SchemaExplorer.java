@@ -15,7 +15,7 @@ package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import java.util.SortedSet;
 
@@ -36,7 +36,7 @@ public class SchemaExplorer {
             for (int i = 0; i < 2; i++) {
                 // Searches first using the Left Join and then the Right.
                 MappingQuery theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
-                if (theCurrentRelOrJoin instanceof MappingTable theTable) {
+                if (theCurrentRelOrJoin instanceof MappingTableQuery theTable) {
                     if (theTable.getAlias() != null && theTable.getAlias()
                             .equals(table)) {
                         // If the alias was found get its table name and return
@@ -63,7 +63,7 @@ public class SchemaExplorer {
             for (int i = 0; i < 2; i++) {
                 // Searches first using the Left Join and then the Right.
                 MappingQuery theCurrentRelOrJoin = (i == 0) ? theRelOrJoinL : theRelOrJoinR;
-                if (theCurrentRelOrJoin instanceof MappingTable theTable) {
+                if (theCurrentRelOrJoin instanceof MappingTableQuery theTable) {
                     String theTableName = (theTable.getAlias() != null && theTable.getAlias()
                             .trim()
                             .length() > 0) ? theTable.getAlias() : theTable.getName();

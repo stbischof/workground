@@ -26,7 +26,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughActio
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -67,7 +67,7 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	protected Boolean visible = true;
 	@XmlElements({ @XmlElement(name = "InlineTable", type = InlineTableImpl.class),
 			@XmlElement(name = "Table", type = TableImpl.class), @XmlElement(name = "View", type = ViewImpl.class) })
-	protected MappingRelation fact;
+	protected MappingRelationQuery fact;
 	@XmlElement(name = "Action", type = ActionImpl.class)
 	protected List<MappingAction> actions;
 
@@ -157,11 +157,11 @@ public class CubeImpl extends AbstractMainElement implements MappingCube {
 	}
 
 	@Override
-	public MappingRelation fact() {
+	public MappingRelationQuery fact() {
 		return fact;
 	}
 
-	public void setFact(MappingRelation fact) {
+	public void setFact(MappingRelationQuery fact) {
 		this.fact = fact;
 	}
 

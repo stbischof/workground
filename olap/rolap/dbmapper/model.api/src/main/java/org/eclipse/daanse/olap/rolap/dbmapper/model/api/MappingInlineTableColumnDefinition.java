@@ -13,12 +13,12 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-import java.util.List;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
 
-public non-sealed interface MappingInlineTable extends MappingRelation {
+public interface MappingInlineTableColumnDefinition {
 
-    List<MappingColumnDef> columnDefs();
+    String name();
 
-    List<MappingRow> rows();
+    TypeEnum type();
 
 }

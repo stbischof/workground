@@ -16,9 +16,9 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 import java.util.List;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 
-public record ExpressionViewR(List<MappingSQL> sqls,
+public record ExpressionViewR(List<MappingSqlSelectQuery> sqls,
                               String table,
                               String name) implements MappingExpressionView {
 
@@ -40,7 +40,7 @@ public record ExpressionViewR(List<MappingSQL> sqls,
         return true;
     }
 
-    public  ExpressionViewR(List<MappingSQL> sqls,
+    public  ExpressionViewR(List<MappingSqlSelectQuery> sqls,
             String table,
             String name)  {
 				this.sqls = sqls;
@@ -49,7 +49,7 @@ public record ExpressionViewR(List<MappingSQL> sqls,
 
     }
 
-    public List<MappingSQL> getSqls() {
+    public List<MappingSqlSelectQuery> getSqls() {
         return sqls;
     }
 

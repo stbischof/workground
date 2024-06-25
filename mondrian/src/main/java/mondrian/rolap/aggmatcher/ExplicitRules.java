@@ -44,8 +44,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggPattern;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggLevelPropertyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.slf4j.Logger;
@@ -126,9 +126,9 @@ public class ExplicitRules {
         {
             Group group = new Group(cube);
 
-            MappingRelation relation = xmlCube.fact();
+            MappingRelationQuery relation = xmlCube.fact();
 
-            if (relation instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable table) {
+            if (relation instanceof MappingTableQuery table) {
                 List<? extends org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude> aggExcludes =
                     table.getAggExcludes();
                 if (aggExcludes != null) {
@@ -261,7 +261,7 @@ public class ExplicitRules {
          */
         public String getTableName() {
             RolapStar.Table table = getStar().getFactTable();
-            MappingRelation relation = table.getRelation();
+            MappingRelationQuery relation = table.getRelation();
             return getAlias(relation);
         }
 
@@ -273,9 +273,9 @@ public class ExplicitRules {
             String schema = null;
 
             RolapStar.Table table = getStar().getFactTable();
-            MappingRelation relation = table.getRelation();
+            MappingRelationQuery relation = table.getRelation();
 
-            if (relation instanceof MappingTable mtable) {
+            if (relation instanceof MappingTableQuery mtable) {
                 schema = mtable.getSchema();
             }
             return schema;

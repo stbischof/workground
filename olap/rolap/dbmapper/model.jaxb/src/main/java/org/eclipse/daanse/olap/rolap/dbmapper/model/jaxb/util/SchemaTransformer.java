@@ -22,10 +22,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinedQueryElemen
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelation;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CubeImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.DimensionUsageImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyImpl;
@@ -167,9 +167,9 @@ public class SchemaTransformer {
         return hierarchyImpl;
     }
 
-    private static MappingRelation transformRelation(MappingRelation relation) {
-        MappingRelation r = null;
-        if (relation instanceof MappingTable t) {
+    private static MappingRelationQuery transformRelation(MappingRelationQuery relation) {
+        MappingRelationQuery r = null;
+        if (relation instanceof MappingTableQuery t) {
             r = transformTable(t);
         }
         return r;
@@ -180,13 +180,13 @@ public class SchemaTransformer {
         if (relation instanceof MappingJoinQuery j) {
             r = transformJoin(j);
         }
-        if (relation instanceof MappingTable t) {
+        if (relation instanceof MappingTableQuery t) {
             r = transformTable(t);
         }
         return r;
     }
 
-    private static TableImpl transformTable(MappingTable t) {
+    private static TableImpl transformTable(MappingTableQuery t) {
         TableImpl table = new TableImpl();
         table.setAlias(t.getAlias());
         table.setSchema(t.getSchema());
