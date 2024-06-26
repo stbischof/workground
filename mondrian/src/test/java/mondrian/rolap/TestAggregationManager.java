@@ -55,6 +55,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -1329,41 +1330,41 @@ class TestAggregationManager extends BatchTestCase {
                                 LevelRBuilder.builder()
                                     .name("Store Country")
                                     .uniqueMembers(true)
-                                    .keyExpression(ExpressionViewRBuilder.builder()
+                                    .keyExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("oracle")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("oracle"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("hsqldb")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("hsqldb"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("derby")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("derby"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("luciddb")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("luciddb"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("mysql")
-                                                .content("`store_country`")
+                                                .dialects(List.of("mysql"))
+                                                .statement("`store_country`")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("netezza")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("netezza"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("neoview")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("neoview"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content("store_country")
+                                                .dialects(List.of("generic"))
+                                                .statement("store_country")
                                                 .build()
-                                            ))
+                                            )).build())
                                         .build())
                                     .build()
                             ))
@@ -1381,29 +1382,29 @@ class TestAggregationManager extends BatchTestCase {
                                 LevelRBuilder.builder()
                                     .name("Store Country")
                                     .uniqueMembers(true)
-                                    .keyExpression(ExpressionViewRBuilder.builder()
+                                    .keyExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("oracle")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("oracle"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("derby")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("derby"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("luciddb")
-                                                .content("\"store_country\"")
+                                                .dialects(List.of("luciddb"))
+                                                .statement("\"store_country\"")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("mysql")
-                                                .content("`store_country`")
+                                                .dialects(List.of("mysql"))
+                                                .statement("`store_country`")
                                                 .build(),
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content("store_country")
+                                                .dialects(List.of("generic"))
+                                                .statement("store_country")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))

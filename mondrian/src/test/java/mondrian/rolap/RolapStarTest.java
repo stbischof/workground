@@ -22,6 +22,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -30,6 +31,8 @@ import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import mondrian.rolap.RolapStar.Column;
 import mondrian.rolap.util.RelationUtil;
+
+import java.util.List;
 
 /**
  * Unit test for {@link RolapStar}.
@@ -82,7 +85,7 @@ class RolapStarTest {
       original.setName("TestTable");
       original.setAlias("Alias");
       original.setSchema("Sechema");
-      original.setSql(new SQLR("Alias.clicked = 'true'", "generic"));
+      original.setSql(new SQLR("Alias.clicked = 'true'", List.of("generic")));
 
       MappingTableQuery cloned = (MappingTableQuery)rs.cloneRelationForTests(
           original,
@@ -91,7 +94,7 @@ class RolapStarTest {
       assertEquals("NewAlias", RelationUtil.getAlias(cloned));
       assertEquals("TestTable", cloned.getName());
       assertNotNull(cloned.getSql());
-      assertEquals("NewAlias.clicked = 'true'", cloned.getSql().content());
+      assertEquals("NewAlias.clicked = 'true'", cloned.getSql().statement());
   }
 
    //Below there are tests for mondrian.rolap.RolapStar.ColumnComparator

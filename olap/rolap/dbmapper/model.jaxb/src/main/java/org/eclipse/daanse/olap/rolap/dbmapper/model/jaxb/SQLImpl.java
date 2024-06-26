@@ -1,52 +1,69 @@
-
-/*
- * Copyright (c) 2022 Contributors to the Eclipse Foundation.
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *   SmartCity Jena, Stefan Bischof - initial
- *
- */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
-
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.XmlValue;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SQL", propOrder = { "content" })
-public class SQLImpl implements MappingSqlSelectQuery {
+@XmlType(name = "SQL", propOrder = { "statement", "dialects" })
+public class SQLImpl implements MappingSQL {
 
-    @XmlValue
-    protected String content;
-    @XmlAttribute(name = "dialect", required = true)
-    protected String dialect;
+    @XmlElement(name = "SQLStatement", required = true)
+    protected String statement;
 
-    @Override
-    public String content() {
-        return content != null ? content.trim() : content;
-    }
-
-    public void setContent(String value) {
-        this.content = value;
-    }
+    @XmlElement(name = "Dialect")
+    protected List<String> dialects;
 
     @Override
-    public String dialect() {
-        return dialect != null ? dialect : "generic";
+    public List<String> dialects() {
+        if (dialects == null) {
+            dialects = new ArrayList<>();
+        }
+        return dialects;
     }
 
-    public void setDialect(String value) {
-        this.dialect = value;
+    @Override
+    public String statement() {
+        return statement != null ? statement.trim() : statement;
     }
 
+    public void setStatement(String statement) {
+        this.statement = statement;
+    }
+
+    public void setDialects(List<String> dialects) {
+        this.dialects = dialects;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(statement, dialects);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof MappingSQL that) {
+            if (!Objects.equals(statement(), that.statement())) {
+                return false;
+            }
+            if (dialects() == null || that.dialects() == null ||
+                dialects().size() != that.dialects().size()) {
+                return false;
+            }
+            for (int i = 0; i < dialects().size(); i++) {
+                if (!dialects().get(i).equals(that.dialects().get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

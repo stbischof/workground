@@ -28,6 +28,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
@@ -1226,17 +1227,21 @@ class FoodMartReadTest {
 		} else {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) o;
 			if (expression instanceof MappingExpressionView expressionView) {
-				assertEquals(expressionView.sqls().size(), list.size());
-				for (int i = 0; i < expressionView.sqls().size(); i++) {
-					checkExpressionItem(expressionView.sqls().get(i), list.get(i));
+				assertEquals(expressionView.sql().sqls().size(), list.size());
+				for (int i = 0; i < expressionView.sql().sqls().size(); i++) {
+					checkExpressionItem(expressionView.sql().sqls().get(i), list.get(i));
 				}
 			}
 		}
 	}
 
-	private void checkExpressionItem(MappingSqlSelectQuery sql, Map<String, Object> map) {
-		assertEquals(sql.content().trim(), get(CONTENT, map));
-		assertEquals(sql.dialect(), get(DIALECT, map));
+	private void checkExpressionItem(MappingSQL sql, Map<String, Object> map) {
+		assertEquals(sql.statement().trim(), get(CONTENT, map));
+        List l = ((List)get(DIALECT, map));
+        assertTrue(sql.dialects().size() == l.size());
+        for (int i = 0; i < sql.dialects().size(); i++) {
+            assertEquals(sql.dialects().get(i), l.get(i));
+        }
 	}
 
 	private void checkCubeAnnotations(List<? extends MappingAnnotation> annotations, Object o) {

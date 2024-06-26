@@ -81,6 +81,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ScriptRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UserDefinedFunctionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
@@ -3799,17 +3800,13 @@ public class SchemaModifiers {
             if ("Sales".equals(cube.name())) {
                 MappingViewQuery v = ViewRBuilder.builder()
                     .alias("gender2")
+                    .sql(SqlSelectQueryRBuilder.builder()
                     .sqls(List.of(
-                        SQLRBuilder.builder().dialect("generic").content("SELECT * FROM customer").build(),
-                        SQLRBuilder.builder().dialect("oracle").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("hsqldb").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("derby").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("luciddb").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("db2").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("neoview").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("netezza").content("SELECT * FROM \"customer\"").build(),
-                        SQLRBuilder.builder().dialect("snowflake").content("SELECT * FROM \"customer\"").build()
-                    ))
+                        SQLRBuilder.builder().dialects(List.of("generic")).statement("SELECT * FROM customer").build(),
+                        SQLRBuilder.builder().dialects(
+                            List.of("oracle", "hsqldb", "derby", "luciddb", "db2", "neoview", "netezza", "snowflake"))
+                            .statement("SELECT * FROM \"customer\"").build()
+                    )).build())
                     .build();
                 result.add(PrivateDimensionRBuilder.builder()
                     .name("Gender2")
@@ -3954,14 +3951,15 @@ public class SchemaModifiers {
             if ("Sales".equals(cube.name())) {
                 MappingViewQuery v = ViewRBuilder.builder()
                     .alias("productView")
+                    .sql(SqlSelectQueryRBuilder.builder()
                     .sqls(List.of(
-                        SQLRBuilder.builder().dialect("db2")
-                            .content(
+                        SQLRBuilder.builder().dialects(List.of("db2"))
+                            .statement(
                                 "SELECT * FROM \"product\", \"product_class\" WHERE \"product\".\"product_class_id\" = \"product_class\".\"product_class_id\""
                             )
                             .build(),
-                        SQLRBuilder.builder().dialect("mssql")
-                            .content(
+                        SQLRBuilder.builder().dialects(List.of("mssql"))
+                            .statement(
                                 "SELECT \"product\".\"product_id\",\n" + "\"product\".\"brand_name\",\n"
                                     + "\"product\".\"product_name\",\n" + "\"product\".\"SKU\",\n" + "\"product\".\"SRP\",\n"
                                     + "\"product\".\"gross_weight\",\n" + "\"product\".\"net_weight\",\n"
@@ -3975,8 +3973,8 @@ public class SchemaModifiers {
                                     + "ON \"product\".\"product_class_id\" = \"product_class\".\"product_class_id\"\n"
                             )
                             .build(),
-                        SQLRBuilder.builder().dialect("mysql")
-                            .content(
+                        SQLRBuilder.builder().dialects(List.of("mysql"))
+                            .statement(
                                 "SELECT `product`.`product_id`,\n" + "`product`.`brand_name`,\n" + "`product`.`product_name`,\n"
                                     + "`product`.`SKU`,\n" + "`product`.`SRP`,\n" + "`product`.`gross_weight`,\n"
                                     + "`product`.`net_weight`,\n" + "`product`.`recyclable_package`,\n" + "`product`.`low_fat`,\n"
@@ -3988,14 +3986,14 @@ public class SchemaModifiers {
                                     + "WHERE `product`.`product_class_id` = `product_class`.`product_class_id`\n"
                             )
                             .build(),
-                        SQLRBuilder.builder().dialect("db2")
-                            .content(
+                        SQLRBuilder.builder().dialects(List.of("db2"))
+                            .statement(
                                 "SELECT *\n"
                                     + "FROM \"product\", \"product_class\"\n"
                                     + "WHERE \"product\".\"product_class_id\" = \"product_class\".\"product_class_id\"\n"
                             )
                             .build()
-                    ))
+                    )).build())
                     .build();
 
                 result.add(PrivateDimensionRBuilder.builder()
@@ -4189,17 +4187,18 @@ public class SchemaModifiers {
                 	.name("zero")
                 	.aggregator("sum")
                     .measureExpression(ExpressionViewRBuilder.builder()
+                        .sql(SqlSelectQueryRBuilder.builder()
                         .sqls(List.of(
                         	SQLRBuilder.builder()
-                                .dialect("generic")
-                                .content(" NULL ")
+                                .dialects(List.of("generic"))
+                                .statement(" NULL ")
                                 .build(),
                             SQLRBuilder.builder()
-                                .dialect("vertica")
-                                .content(" NULL::FLOAT ")
+                                .dialects(List.of("vertica"))
+                                .statement(" NULL::FLOAT ")
                                 .build()
                         ))
-                        .build())
+                        .build()).build())
                     .build());
             }
             return result;
@@ -4275,13 +4274,14 @@ public class SchemaModifiers {
                                     .levelType(LevelTypeEnum.REGULAR)
                                     .hideMemberIf(HideMemberIfEnum.NEVER)
                                     .nameExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content("case when " + dialect.quoteIdentifier( "product", "product_id" ) + "=0 then 'Zero' else 'Non-Zero' end")
+                                                .dialects(List.of("generic"))
+                                                .statement("case when " + dialect.quoteIdentifier( "product", "product_id" ) + "=0 then 'Zero' else 'Non-Zero' end")
                                                 .build()
                                         ))
-                                        .build())
+                                        .build()).build())
                                     .build(),
                                 LevelRBuilder.builder()
                                     .name("SubCat")
@@ -4293,12 +4293,13 @@ public class SchemaModifiers {
                                     .levelType(LevelTypeEnum.REGULAR)
                                     .hideMemberIf(HideMemberIfEnum.NEVER)
                                     .nameExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content(dialect.quoteIdentifier( "product_class", "product_subcategory" ))
+                                                .dialects(List.of("generic"))
+                                                .statement(dialect.quoteIdentifier( "product_class", "product_subcategory" ))
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build(),
                                 LevelRBuilder.builder()
@@ -4311,12 +4312,13 @@ public class SchemaModifiers {
                                     .levelType(LevelTypeEnum.REGULAR)
                                     .hideMemberIf(HideMemberIfEnum.NEVER)
                                     .nameExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content(dialect.quoteIdentifier( "product", "product_name" ))
+                                                .dialects(List.of("generic"))
+                                                .statement(dialect.quoteIdentifier( "product", "product_name" ))
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                                 ))
@@ -4466,13 +4468,14 @@ public class SchemaModifiers {
                     .name("zero")
                     .aggregator("sum")
                     .measureExpression(ExpressionViewRBuilder.builder()
+                        .sql(SqlSelectQueryRBuilder.builder()
                         .sqls(List.of(
                             SQLRBuilder.builder()
-                                .dialect("generic")
-                                .content("0")
+                                .dialects(List.of("generic"))
+                                .statement("0")
                                 .build()
                         ))
-                        .build())
+                        .build()).build())
                     .build());
             }
             return result;
@@ -4791,12 +4794,13 @@ public class SchemaModifiers {
                                         .uniqueMembers(false)
                                         .levelType(LevelTypeEnum.TIME_QUARTERS)
                                         .keyExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                             .sqls(List.of(
                                                 SQLRBuilder.builder()
-                                                    .content("RTRIM(quarter)")
+                                                    .statement("RTRIM(quarter)")
                                                     .build()
                                             ))
-                                            .build())
+                                            .build()).build())
                                         .build()
                                 ))
                                 .build()
@@ -5759,12 +5763,13 @@ public class SchemaModifiers {
                         .aggregator("sum")
                         .formatString("Standard")
                         .measureExpression(ExpressionViewRBuilder.builder()
+                            .sql(SqlSelectQueryRBuilder.builder()
                             .sqls(List.of(
                                 SQLRBuilder.builder()
-                                    .dialect("generic")
-                                    .content("unit_sales")
+                                    .dialects(List.of("generic"))
+                                    .statement("unit_sales")
                                     .build()
-                            ))
+                            )).build())
                             .build())
                         .build()
                 ))
@@ -5958,12 +5963,13 @@ public class SchemaModifiers {
                         .name("zero")
                         .aggregator("sum")
                         .measureExpression(ExpressionViewRBuilder.builder()
+                            .sql(SqlSelectQueryRBuilder.builder()
                             .sqls(List.of(
                                 SQLRBuilder.builder()
-                                    .dialect("generic")
-                                    .content("0")
+                                    .dialects(List.of("generic"))
+                                    .statement("0")
                                     .build()
-                            ))
+                            )).build())
                             .build())
                         .build()
                 ))
@@ -6014,7 +6020,7 @@ public class SchemaModifiers {
                 .cubes(List.of(
                     CubeRBuilder.builder()
                         .name("Bar")
-                        .fact(new TableR("warehouse", SQLRBuilder.builder().content("sleep(0.1) = 0").build()))
+                        .fact(new TableR("warehouse", SQLRBuilder.builder().statement("sleep(0.1) = 0").build()))
                         .dimensionUsageOrDimensions(List.of(
                             PrivateDimensionRBuilder.builder()
                                 .name("Dim")
@@ -6034,9 +6040,10 @@ public class SchemaModifiers {
                             MeasureRBuilder.builder()
                                 .name("Measure").aggregator("sum")
                                 .measureExpression(ExpressionViewRBuilder.builder()
+                                    .sql(SqlSelectQueryRBuilder.builder()
                                     .sqls(List.of(
-                                        SQLRBuilder.builder().content("1").build()
-                                    ))
+                                        SQLRBuilder.builder().statement("1").build()
+                                    )).build())
                                     .build())
                                 .build()
                         ))
@@ -6313,11 +6320,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .keyExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -6375,11 +6383,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .ordinalExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -6492,11 +6501,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .captionExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -6554,11 +6564,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .nameExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -6630,11 +6641,12 @@ public class SchemaModifiers {
                                     .nameColumn("full_name")
                                     .nullParentValue("0")
                                     .parentExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .closure(ClosureRBuilder.builder()
                                         .parentColumn("supervisor_id")
@@ -6713,11 +6725,12 @@ public class SchemaModifiers {
                                     .uniqueMembers(true)
                                     .keyExpression(ExpressionViewRBuilder.builder()
                                         .name("Rtrim Name")
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM("+ colName + ")")
+                                                .statement("RTRIM("+ colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -6809,11 +6822,12 @@ public class SchemaModifiers {
                                         .levelType(LevelTypeEnum.TIME_QUARTERS)
                                         .keyExpression(
                                             ExpressionViewRBuilder.builder()
+                                                .sql(SqlSelectQueryRBuilder.builder()
                                                 .sqls(List.of(
                                                     SQLRBuilder.builder()
-                                                        .content("RTRIM(quarter)")
+                                                        .statement("RTRIM(quarter)")
                                                         .build()
-                                                ))
+                                                )).build())
                                                 .build())
                                         .build()
                                 ))
@@ -7161,11 +7175,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .keyExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("ERROR_TEST_FUNCTION_NAME(" + colName + ")")
+                                                .statement("ERROR_TEST_FUNCTION_NAME(" + colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
 
@@ -7220,11 +7235,12 @@ public class SchemaModifiers {
                                     .column("promotion_name")
                                     .uniqueMembers(true)
                                     .keyExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .content("RTRIM(" + colName + ")")
+                                                .statement("RTRIM(" + colName + ")")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
 
@@ -7472,12 +7488,13 @@ public class SchemaModifiers {
                                     .uniqueMembers(true)
                                     .hideMemberIf(HideMemberIfEnum.IF_BLANK_NAME)
                                     .nameExpression(ExpressionViewRBuilder.builder()
+                                        .sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
                                             SQLRBuilder.builder()
-                                                .dialect("generic")
-                                                .content("case \"gender\" when 'F' then ' ' when 'M' then 'M' ")
+                                                .dialects(List.of("generic"))
+                                                .statement("case \"gender\" when 'F' then ' ' when 'M' then 'M' ")
                                                 .build()
-                                        ))
+                                        )).build())
                                         .build())
                                     .build()
                             ))
@@ -8000,10 +8017,11 @@ public class SchemaModifiers {
                     .aggregator(aggregator)
                     .datatype(type != null ? MeasureDataTypeEnum.fromValue(type) : null)
                     .measureExpression(ExpressionViewRBuilder.builder()
+                        .sql(SqlSelectQueryRBuilder.builder()
                         .sqls(List.of(SQLRBuilder.builder()
-                        	.dialect("generic")
-                            .content(expression)
-                            .build()))
+                        	.dialects(List.of("generic"))
+                            .statement(expression)
+                            .build())).build())
                         .build())
                     .build());
             }
@@ -10762,60 +10780,61 @@ public class SchemaModifiers {
                                                 .name("Name")
                                                 .column("customer_id").type(TypeEnum.NUMERIC).uniqueMembers(true)
                                                 .nameExpression(ExpressionViewRBuilder.builder()
+                                                    .sql(SqlSelectQueryRBuilder.builder()
                                                     .sqls(List.of(
                                                         SQLRBuilder.builder()
-                                                            .dialect("oracle")
-                                                            .content("\"fname\" || ' ' || \"lname\"\n")
+                                                            .dialects(List.of("oracle"))
+                                                            .statement("\"fname\" || ' ' || \"lname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("hive")
-                                                            .content("`customer`.`fullname`\n")
+                                                            .dialects(List.of("hive"))
+                                                            .statement("`customer`.`fullname`\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("hsqldb")
-                                                            .content("\"fname\" || ' ' || \"lname\"\n")
+                                                            .dialects(List.of("hsqldb"))
+                                                            .statement("\"fname\" || ' ' || \"lname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("access")
-                                                            .content("fname + ' ' + lname\n")
+                                                            .dialects(List.of("access"))
+                                                            .statement("fname + ' ' + lname\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("postgres")
-                                                            .content("\"fname\" || ' ' || \"lname\"\n")
+                                                            .dialects(List.of("postgres"))
+                                                            .statement("\"fname\" || ' ' || \"lname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("mysql")
-                                                            .content("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
+                                                            .dialects(List.of("mysql"))
+                                                            .statement("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("mssql")
-                                                            .content("fname + ' ' + lname\n")
+                                                            .dialects(List.of("mssql"))
+                                                            .statement("fname + ' ' + lname\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("derby")
-                                                            .content("\"customer\".\"fullname\"\n")
+                                                            .dialects(List.of("derby"))
+                                                            .statement("\"customer\".\"fullname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("db2")
-                                                            .content("CONCAT(CONCAT(\"customer\".\"fname\", ' '), \"customer\".\"lname\")\n")
+                                                            .dialects(List.of("db2"))
+                                                            .statement("CONCAT(CONCAT(\"customer\".\"fname\", ' '), \"customer\".\"lname\")\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("luciddb")
-                                                            .content("\"fname\" || ' ' || \"lname\"\n")
+                                                            .dialects(List.of("luciddb"))
+                                                            .statement("\"fname\" || ' ' || \"lname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("neoview")
-                                                            .content("\"customer\".\"fullname\"\n")
+                                                            .dialects(List.of("neoview"))
+                                                            .statement("\"customer\".\"fullname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("teradata")
-                                                            .content("\"fname\" || ' ' || \"lname\"\n")
+                                                            .dialects(List.of("teradata"))
+                                                            .statement("\"fname\" || ' ' || \"lname\"\n")
                                                             .build(),
                                                         SQLRBuilder.builder()
-                                                            .dialect("generic")
-                                                            .content("fullname")
+                                                            .dialects(List.of("generic"))
+                                                            .statement("fullname")
                                                             .build()
-                                                    ))
+                                                    )).build())
                                                     .build())
                                                 .properties(List.of(
                                                     PropertyRBuilder.builder().name("Gender").column("gender").build(),
@@ -12793,21 +12812,22 @@ public class SchemaModifiers {
                                         .column("store_name")
                                         .uniqueMembers(true)
                                         .ordinalExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                             .sqls(List.of(
-                                                new SQLR("Iif(store_name = 'HQ', null, store_name)", "access"),
+                                                new SQLR("Iif(store_name = 'HQ', null, store_name)", List.of("access")),
                                                 new SQLR("case \"store_name\" when 'HQ' then null else \"store_name\" end",
-                                                    "oracle"),
+                                                    List.of("oracle")),
                                                 new SQLR("case \"store_name\" when 'HQ' then null else \"store_name\" end",
-                                                    "hsqldb"),
+                                                    List.of("hsqldb")),
                                                 new SQLR("case \"store\".\"store_name\" when 'HQ' then null else \"store\".\"store_name\" end",
-                                                    "db2"),
+                                                    List.of("db2")),
                                                 new SQLR("case \"store_name\" when 'HQ' then null else \"store_name\" end",
-                                                    "luciddb"),
+                                                    List.of("luciddb")),
                                                 new SQLR("case \"store_name\" when 'HQ' then null else \"store_name\" end",
-                                                    "netezza"),
+                                                    List.of("netezza")),
                                                 new SQLR("case store_name when 'HQ' then null else store_name end",
-                                                    "generic")
-                                            ))
+                                                    List.of("generic"))
+                                            )).build())
                                             .build())
                                         .properties(List.of(
                                             PropertyRBuilder.builder()
@@ -16944,11 +16964,12 @@ public class SchemaModifiers {
                                         .uniqueMembers(true)
                                         .levelType(LevelTypeEnum.TIME_YEARS)
                                         .keyExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                             .sqls(List.of(
                                                 SQLRBuilder.builder()
-                                                    .content("cast(\"the_date\" as DATE)\n")
+                                                    .statement("cast(\"the_date\" as DATE)\n")
                                                     .build()
-                                            ))
+                                            )).build())
                                             .build())
                                         .build()
                                 ))
@@ -17045,21 +17066,22 @@ public class SchemaModifiers {
                                         .type(TypeEnum.NUMERIC)
                                         .uniqueMembers(true)
                                         .keyExpression(ExpressionViewRBuilder.builder()
+                                            .sql(SqlSelectQueryRBuilder.builder()
                                             .sqls(List.of(
                                                 SQLRBuilder.builder()
-                                                    .dialect("mysql")
-                                                    .content("cast(`store_sqft` as UNSIGNED INTEGER) + " + Integer.MAX_VALUE)
+                                                    .dialects(List.of("mysql"))
+                                                    .statement("cast(`store_sqft` as UNSIGNED INTEGER) + " + Integer.MAX_VALUE)
                                                     .build(),
                                                 SQLRBuilder.builder()
-                                                    .dialect("vertica")
-                                                    .content("cast(\"store_sqft\" as BIGINT) + " + Integer.MAX_VALUE)
+                                                    .dialects(List.of("vertica"))
+                                                    .statement("cast(\"store_sqft\" as BIGINT) + " + Integer.MAX_VALUE)
                                                     .build(),
                                                 SQLRBuilder.builder()
-                                                    .dialect("oracle")
-                                                    .content("CAST(\"store_sqft\" + 2147483647 AS NUMBER(22))")
+                                                    .dialects(List.of("oracle"))
+                                                    .statement("CAST(\"store_sqft\" + 2147483647 AS NUMBER(22))")
                                                     .build()
                                             ))
-                                            .build())
+                                            .build()).build())
                                         .build()
                                 ))
                                 .build()
@@ -17084,12 +17106,13 @@ public class SchemaModifiers {
                                 .aggregator("sum")
                                 .formatString("Standard")
                                 .measureExpression(ExpressionViewRBuilder.builder()
+                                    .sql(SqlSelectQueryRBuilder.builder()
                                     .sqls(List.of(
                                         SQLRBuilder.builder()
-                                            .dialect("vertica")
-                                            .content("CAST(\"unit_sales\" + 2147483647 AS NUMBER(22))")
+                                            .dialects(List.of("vertica"))
+                                            .statement("CAST(\"unit_sales\" + 2147483647 AS NUMBER(22))")
                                             .build()
-                                    ))
+                                    )).build())
                                     .build())
                                 .build(),
                             MeasureRBuilder.builder()

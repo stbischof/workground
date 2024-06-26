@@ -385,7 +385,7 @@ public class SqlQuery {
                 table.getSchema(),
                 table.getName(),
                 tableAlias,
-                table.getSql() == null ? null : table.getSql().content(),
+                table.getSql() == null ? null : table.getSql().statement(),
                 getHintMap(table),
                 failIfExists);
 

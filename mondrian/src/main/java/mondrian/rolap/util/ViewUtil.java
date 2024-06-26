@@ -21,7 +21,7 @@ import mondrian.rolap.sql.SqlQuery;
 
 public class ViewUtil {
     public static SqlQuery.CodeSet getCodeSet(MappingViewQuery view) {
-        return toCodeSet(view.sqls());
+        return toCodeSet(view.sql().sqls());
     }
 
 }

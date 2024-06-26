@@ -118,8 +118,8 @@ public class ObjectFactory {
         return new AggColumnNameImpl();
     }
 
-    public SQLImpl createSQL() {
-        return new SQLImpl();
+    public SqlSelectQueryImpl createSQL() {
+        return new SqlSelectQueryImpl();
     }
 
     public ExpressionViewImpl createExpressionView() {

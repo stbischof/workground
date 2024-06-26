@@ -46,6 +46,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
@@ -132,6 +133,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.RoleImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.RoleUsageImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.RowImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SQLImpl;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SqlSelectQueryImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaGrantImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ScriptImpl;
@@ -703,11 +705,18 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingSqlSelectQuery new_SQL(String content, String dialect) {
+    protected MappingSQL new_SQL(String statement, List<String> dialects) {
         SQLImpl sql = new SQLImpl();
-        sql.setContent(content);
-        sql.setDialect(dialect);
+        sql.setStatement(statement);
+        sql.setDialects(dialects);
         return sql;
+    }
+
+    @Override
+    protected MappingSqlSelectQuery new_SqlSelectQuery(List<MappingSQL> sqls) {
+        SqlSelectQueryImpl sqlSelectQuery = new SqlSelectQueryImpl();
+        sqlSelectQuery.setSqls(sqls);
+        return sqlSelectQuery;
     }
 
     @Override
@@ -727,7 +736,7 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
 
     @Override
     protected MappingTableQuery new_Table(
-            String schema, String name, String alias, List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            String schema, String name, String alias, List<MappingTableQueryOptimisationHint> hints, MappingSQL sql,
             List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     ) {
         TableImpl table = new TableImpl();
@@ -750,10 +759,10 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
     }
 
     @Override
-    protected MappingRelationQuery new_View(String alias, List<MappingSqlSelectQuery> sqls) {
+    protected MappingRelationQuery new_View(String alias, MappingSqlSelectQuery sql) {
         ViewImpl view = new ViewImpl();
         view.setAlias(alias);
-        view.setSqls(sqls);
+        view.setSql(sql);
         return view;
     }
 
@@ -937,12 +946,12 @@ public class JaxbDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier
 
     @Override
     protected MappingExpressionView new_ExpressionView(
-        List<MappingSqlSelectQuery> sqls,
+        MappingSqlSelectQuery sql,
         String table,
         String name
     ) {
         ExpressionViewImpl expressionView = new ExpressionViewImpl();
-        expressionView.setSqls(sqls);
+        expressionView.setSqls(sql);
         expressionView.setTable(table);
         expressionView.setName(name);
         return expressionView;

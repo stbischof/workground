@@ -20,8 +20,8 @@ import java.util.Objects;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -36,8 +36,8 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Table")
 public class TableImpl implements MappingTableQuery {
 
-    @XmlElement(name = "SQL", type = SQLImpl.class)
-    protected MappingSqlSelectQuery sql;
+    @XmlElement(name = "SqlSelectQuery", type = SQLImpl.class)
+    protected MappingSQL sql;
     @XmlElement(name = "AggExclude", type = AggExcludeImpl.class)
     protected List<MappingAggExclude> aggExcludes;
     @XmlElements({ @XmlElement(name = "AggName", type = AggNameImpl.class),
@@ -53,11 +53,11 @@ public class TableImpl implements MappingTableQuery {
     protected String alias;
 
     @Override
-    public MappingSqlSelectQuery getSql() {
+    public MappingSQL getSql() {
         return sql;
     }
 
-    public void setSql(MappingSqlSelectQuery value) {
+    public void setSql(MappingSQL value) {
         this.sql = value;
     }
 

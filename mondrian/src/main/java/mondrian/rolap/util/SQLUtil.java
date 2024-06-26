@@ -16,7 +16,7 @@ package mondrian.rolap.util;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 
 import mondrian.rolap.sql.SqlQuery;
 
@@ -25,23 +25,36 @@ public class SQLUtil {
      * Converts an array of SQL to a
      * {@link mondrian.rolap.sql.SqlQuery.CodeSet} object.
      */
-    public static SqlQuery.CodeSet toCodeSet(List<? extends MappingSqlSelectQuery> sqls) {
+    public static SqlQuery.CodeSet toCodeSet(List<? extends MappingSQL> sqls) {
         SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
-        for (MappingSqlSelectQuery sql : sqls) {
-            codeSet.put(sql.dialect(), sql.content());
+        for (MappingSQL sql : sqls) {
+            for (String dialect : sql.dialects()) {
+                codeSet.put(dialect, sql.statement());
+            }
         }
         return codeSet;
     }
 
-    public static int hashCode(MappingSqlSelectQuery sql) {
-        return sql.dialect().hashCode();
+    public static int hashCode(MappingSQL sql) {
+        return sql.dialects().hashCode();
     }
 
-    public boolean equals(MappingSqlSelectQuery sql, Object obj) {
-        if (!(obj instanceof MappingSqlSelectQuery that)) {
+    public boolean equals(MappingSQL sql, Object obj) {
+        if (!(obj instanceof MappingSQL that)) {
             return false;
         }
-        return sql.dialect().equals(that.dialect()) &&
-            Objects.equals(sql.content(), that.content());
+        if (sql.dialects().size() != that.dialects().size()) {
+            return false;
+        }
+        if (!sql.statement().equals(that.statement())) {
+            return false;
+        }
+
+        for (int i = 0; i < sql.dialects().size(); i++) {
+            if (sql.dialects().get(i).equals(that.dialects().get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

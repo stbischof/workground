@@ -115,6 +115,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingElementFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
@@ -185,7 +186,7 @@ class MandantoriesVerifyerTest {
     MappingAnnotation annotation = mock(MappingAnnotation.class);
     MappingRole role = mock(MappingRole.class);
     MappingCubeUsage cubeUsage = mock(MappingCubeUsage.class);
-    MappingSqlSelectQuery sql = mock(MappingSqlSelectQuery.class);
+    MappingSQL sql = mock(MappingSQL.class);
     MappingTableQueryOptimisationHint hint = mock(MappingTableQueryOptimisationHint.class);
     MappingAggTable aggTable = mock(MappingAggName.class);
     MappingAggColumnName aggColumnName = mock(MappingAggColumnName.class);

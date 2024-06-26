@@ -72,6 +72,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimens
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
@@ -271,117 +272,118 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
 	private static final PropertyR PROPERTY_5_5_D_3 = new PropertyR("Education",null, null, EDUCATION, null, null,			null, null);
 	private static final PropertyR PROPERTY_5_5_D_4 = new PropertyR(YEARLY_INCOME, null, null, YEARLY_INCOME_COLUMN, null, null,			null, null);
     private static final ExpressionViewR NAMEEXPRESSION_1 = ExpressionViewRBuilder
-        .builder()
-        .sqls(List.of(
-            SQLRBuilder.builder().dialect(ORACLE).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(H2).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(HIVE).content("`customer`.`fullname`").build(),
-            SQLRBuilder.builder().dialect(HSQLDB).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(ACCESS).content(FNAME_LNAME).build(),
-            SQLRBuilder.builder().dialect(POSTGRES).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(MYSQL).content(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-            SQLRBuilder.builder().dialect(MARIADB).content(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-            SQLRBuilder.builder().dialect(MSSQL).content(FNAME_LNAME).build(),
-            SQLRBuilder.builder().dialect(DERBY).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(DB2).content(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-            SQLRBuilder.builder().dialect(LUCIDDB).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(NEOVIEW).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(TERADATA).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(SNOWFLAKE).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(GENERIC).content(FULLNAME).build()
-        ))
+        .builder().sql(SqlSelectQueryRBuilder.builder()
+            .sqls(List.of(
+                SQLRBuilder.builder().dialects(List.of(ORACLE)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(H2)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(HIVE)).statement("`customer`.`fullname`").build(),
+                SQLRBuilder.builder().dialects(List.of(HSQLDB)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(ACCESS)).statement(FNAME_LNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(POSTGRES)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(MYSQL)).statement(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(MARIADB)).statement(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(MSSQL)).statement(FNAME_LNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(DERBY)).statement(CUSTOMER_FULLNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(DB2)).statement(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(LUCIDDB)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(NEOVIEW)).statement(CUSTOMER_FULLNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(TERADATA)).statement(FNAME_LNAME2).build(),
+                SQLRBuilder.builder().dialects(List.of(SNOWFLAKE)).statement(CUSTOMER_FULLNAME).build(),
+                SQLRBuilder.builder().dialects(List.of(GENERIC)).statement(FULLNAME).build()
+            ))
+            .build())
         .build();
     private static final ExpressionViewR ORDINAL_EXPRESSION_1 = ExpressionViewRBuilder
-        .builder()
+        .builder().sql(SqlSelectQueryRBuilder.builder()
         .sqls(List.of(
-            SQLRBuilder.builder().dialect(ORACLE).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(H2).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(HSQLDB).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(ACCESS).content(FNAME_LNAME).build(),
-            SQLRBuilder.builder().dialect(POSTGRES).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(MYSQL).content(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-            SQLRBuilder.builder().dialect(MARIADB).content(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME
+            SQLRBuilder.builder().dialects(List.of(ORACLE)).statement(FNAME_LNAME2).build(),
+            SQLRBuilder.builder().dialects(List.of(H2)).statement(FNAME_LNAME2).build(),
+            SQLRBuilder.builder().dialects(List.of(HSQLDB)).statement(FNAME_LNAME2).build(),
+            SQLRBuilder.builder().dialects(List.of(ACCESS)).statement(FNAME_LNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(POSTGRES)).statement(FNAME_LNAME2).build(),
+            SQLRBuilder.builder().dialects(List.of(MYSQL)).statement(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(MARIADB)).statement(CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME
             ).build(),
-            SQLRBuilder.builder().dialect(MSSQL).content(FNAME_LNAME).build(),
-            SQLRBuilder.builder().dialect(NEOVIEW).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(DERBY).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(DB2).content(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-            SQLRBuilder.builder().dialect(LUCIDDB).content(FNAME_LNAME2).build(),
-            SQLRBuilder.builder().dialect(SNOWFLAKE).content(CUSTOMER_FULLNAME).build(),
-            SQLRBuilder.builder().dialect(GENERIC).content(FULLNAME).build()
-        ))
+            SQLRBuilder.builder().dialects(List.of(MSSQL)).statement(FNAME_LNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(NEOVIEW)).statement(CUSTOMER_FULLNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(DERBY)).statement(CUSTOMER_FULLNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(DB2)).statement(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(LUCIDDB)).statement(FNAME_LNAME2).build(),
+            SQLRBuilder.builder().dialects(List.of(SNOWFLAKE)).statement(CUSTOMER_FULLNAME).build(),
+            SQLRBuilder.builder().dialects(List.of(GENERIC)).statement(FULLNAME).build()
+        )).build())
         .build();
     private static final ExpressionViewR MEASUREEXPRESSION_1 = ExpressionViewRBuilder
-        .builder()
+        .builder().sql(SqlSelectQueryRBuilder.builder()
         .sqls(List.of(
-            SQLRBuilder.builder().dialect(ACCESS)
-                .content("Iif(\"sales_fact_1997\".\"promotion_id\" = 0, 0, \"sales_fact_1997\".\"store_sales\")")
+            SQLRBuilder.builder().dialects(List.of(ACCESS))
+                .statement("Iif(\"sales_fact_1997\".\"promotion_id\" = 0, 0, \"sales_fact_1997\".\"store_sales\")")
                 .build(),
-            SQLRBuilder.builder().dialect(ORACLE)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(ORACLE))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(H2)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(H2))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(HSQLDB)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(HSQLDB))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(POSTGRES)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(POSTGRES))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(MYSQL)
-                .content("(case when `sales_fact_1997`.`promotion_id` = 0 then 0 else `sales_fact_1997`" +
+            SQLRBuilder.builder().dialects(List.of(MYSQL))
+                .statement("(case when `sales_fact_1997`.`promotion_id` = 0 then 0 else `sales_fact_1997`" +
                     ".`store_sales` end)")
                 .build(),
-            SQLRBuilder.builder().dialect(MARIADB)
-                .content("(case when `sales_fact_1997`.`promotion_id` = 0 then 0 else `sales_fact_1997`" +
+            SQLRBuilder.builder().dialects(List.of(MARIADB))
+                .statement("(case when `sales_fact_1997`.`promotion_id` = 0 then 0 else `sales_fact_1997`" +
                     ".`store_sales` end)")
                 .build(),
-            SQLRBuilder.builder().dialect(NEOVIEW)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(NEOVIEW))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect("infobright")
-                .content("`sales_fact_1997`.`store_sales`")
+            SQLRBuilder.builder().dialects(List.of("infobright"))
+                .statement("`sales_fact_1997`.`store_sales`")
                 .build(),
-            SQLRBuilder.builder().dialect(DERBY)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(DERBY))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(LUCIDDB)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(LUCIDDB))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(DB2)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(DB2))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect("nuodb")
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of("nuodb"))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(SNOWFLAKE)
-                .content(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
+            SQLRBuilder.builder().dialects(List.of(SNOWFLAKE))
+                .statement(CASE_WHEN_SALES_FACT_1997_PROMOTION_ID_0_THEN_0_ELSE_SALES_FACT_1997)
                 .build(),
-            SQLRBuilder.builder().dialect(GENERIC)
-                .content("(case when sales_fact_1997.promotion_id = 0 then 0 else sales_fact_1997.store_sales end)")
+            SQLRBuilder.builder().dialects(List.of(GENERIC))
+                .statement("(case when sales_fact_1997.promotion_id = 0 then 0 else sales_fact_1997.store_sales end)")
                 .build()
-        ))
+        )).build())
         .build();
     private static final ExpressionViewR MEASUREEXPRESSION_2_7 = ExpressionViewRBuilder
-        .builder()
+        .builder().sql(SqlSelectQueryRBuilder.builder()
         .sqls(List.of(
-            SQLRBuilder.builder().dialect(H2)
-                .content(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
+            SQLRBuilder.builder().dialects(List.of(H2))
+                .statement(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
                 .build(),
-            SQLRBuilder.builder().dialect(MYSQL)
-                .content(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
+            SQLRBuilder.builder().dialects(List.of(MYSQL))
+                .statement(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
                 .build(),
-            SQLRBuilder.builder().dialect(MARIADB)
-                .content(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
+            SQLRBuilder.builder().dialects(List.of(MARIADB))
+                .statement(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
                 .build(),
-            SQLRBuilder.builder().dialect("infobright")
-                .content(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
+            SQLRBuilder.builder().dialects(List.of("infobright"))
+                .statement(WAREHOUSE_SALES_INVENTORY_FACT_1997_WAREHOUSE_COST)
                 .build(),
-            SQLRBuilder.builder().dialect(GENERIC)
-                .content("&quot;warehouse_sales&quot; - &quot;inventory_fact_1997&quot;.&quot;warehouse_cost&quot;")
+            SQLRBuilder.builder().dialects(List.of(GENERIC))
+                .statement("&quot;warehouse_sales&quot; - &quot;inventory_fact_1997&quot;.&quot;warehouse_cost&quot;")
                 .build()
-        ))
+        )).build())
         .build();
     private static final ClosureR
         CLOSURE_4_7 = ClosureRBuilder
@@ -678,24 +680,25 @@ public class FoodMartRecordDbMappingSchemaProvider implements DatabaseMappingSch
         .uniqueMembers(true)
         //KeyExpressions missing
         .keyExpression(ExpressionViewRBuilder.builder()
-            .sqls(List.of(
-                SQLRBuilder.builder().dialect(ORACLE).content(FNAME_LNAME2).build(),
-                SQLRBuilder.builder().dialect(H2).content(FNAME_LNAME2).build(),
-                SQLRBuilder.builder().dialect(HSQLDB).content(FNAME_LNAME2).build(),
-                SQLRBuilder.builder().dialect(ACCESS).content(FNAME_LNAME).build(),
-                SQLRBuilder.builder().dialect(POSTGRES).content(FNAME_LNAME2).build(),
-                SQLRBuilder.builder().dialect(MYSQL).content("CONCAT(`customer`.`fname`, ' ', `customer`" +
-                    ".`lname`)").build(),
-                SQLRBuilder.builder().dialect(MARIADB).content("CONCAT(`customer`.`fname`, ' ', `customer`" +
-                    ".`lname`)").build(),
-                SQLRBuilder.builder().dialect(MSSQL).content(FNAME_LNAME).build(),
-                SQLRBuilder.builder().dialect(DERBY).content(CUSTOMER_FULLNAME).build(),
-                SQLRBuilder.builder().dialect(DB2).content(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
-                SQLRBuilder.builder().dialect(LUCIDDB).content(FNAME_LNAME2).build(),
-                SQLRBuilder.builder().dialect(NEOVIEW).content(CUSTOMER_FULLNAME).build(),
-                SQLRBuilder.builder().dialect(SNOWFLAKE).content(CUSTOMER_FULLNAME).build(),
-                SQLRBuilder.builder().dialect(GENERIC).content(FULLNAME).build()
-            ))
+            .sql(SqlSelectQueryRBuilder.builder()
+                .sqls(List.of(
+                    SQLRBuilder.builder().dialects(List.of(ORACLE)).statement(FNAME_LNAME2).build(),
+                    SQLRBuilder.builder().dialects(List.of(H2)).statement(FNAME_LNAME2).build(),
+                    SQLRBuilder.builder().dialects(List.of(HSQLDB)).statement(FNAME_LNAME2).build(),
+                    SQLRBuilder.builder().dialects(List.of(ACCESS)).statement(FNAME_LNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(POSTGRES)).statement(FNAME_LNAME2).build(),
+                    SQLRBuilder.builder().dialects(List.of(MYSQL)).statement("CONCAT(`customer`.`fname`, ' ', `customer`" +
+                        ".`lname`)").build(),
+                    SQLRBuilder.builder().dialects(List.of(MARIADB)).statement("CONCAT(`customer`.`fname`, ' ', `customer`" +
+                        ".`lname`)").build(),
+                    SQLRBuilder.builder().dialects(List.of(MSSQL)).statement(FNAME_LNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(DERBY)).statement(CUSTOMER_FULLNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(DB2)).statement(CONCAT_CONCAT_CUSTOMER_FNAME_CUSTOMER_LNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(LUCIDDB)).statement(FNAME_LNAME2).build(),
+                    SQLRBuilder.builder().dialects(List.of(NEOVIEW)).statement(CUSTOMER_FULLNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(SNOWFLAKE)).statement(CUSTOMER_FULLNAME).build(),
+                    SQLRBuilder.builder().dialects(List.of(GENERIC)).statement(FULLNAME).build()
+                )).build())
             .build())
         .properties(List.of(
             PROPERTY_5_5_D_1,

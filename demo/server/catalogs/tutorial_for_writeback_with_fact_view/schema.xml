@@ -18,9 +18,13 @@
   </Documentation>
   <Dimension name="D1">
     <Hierarchy hasAll="true" name="HierarchyWithHasAll" primaryKey="L2" primaryKeyTable="L1">
-      <Join leftKey="L2" rightKey="L2">
+      <Join>
+        <Left key="L2">
         <Table name="L1"/>
+        </Left>
+        <Right key="L2">
         <Table name="L2"/>
+        </Right>
       </Join>
       <Level name="L1" column="L1" table="L1">
         <!--Property name="Prop1" column="PROP1" type="String"/-->
@@ -33,12 +37,15 @@
 
   <Cube name="C">
     <View alias="FACT1">
-      <SQL dialect="generic">
+      <SqlSelectQuery>
+      <SQL>
+        <Dialect>generic</Dialect>
+        <Dialect>h2</Dialect>
+        <SQLStatement>
         <![CDATA[select * from FACT]]>
+        </SQLStatement>
       </SQL>
-      <SQL dialect="h2">
-        <![CDATA[select * from FACT]]>
-      </SQL>
+      </SqlSelectQuery>
     </View>
     <DimensionUsage name="D1" source="D1" foreignKey="L2"/>
     <WritebackTable name="FACTWB"  >

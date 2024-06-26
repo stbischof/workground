@@ -2348,9 +2348,6 @@ string description "✔"
 |Type|   |
 |----|---|
 |SCHEMA|Virtual Cube Dimension Cube name must be set|
-|DATABASE|Syntax error in SQL statement "[*]""fname"" || ' ' || ""lname"""; SQL statement:"fname" || ' ' || "lname" [42000-224]|
-|DATABASE|Syntax error in SQL statement "[*]""warehouse_sales"" - ""inventory_fact_1997"".""warehouse_cost"""; SQL statement:"warehouse_sales" - "inventory_fact_1997"."warehouse_cost" [42000-224]|
-|DATABASE|Syntax error in SQL statement "([*]case when ""sales_fact_1997"".""promotion_id"" = 0 then 0 else ""sales_fact_1997"".""store_sales"" end)"; expected "(, SELECT, TABLE, VALUES"; SQL statement:(case when "sales_fact_1997"."promotion_id" = 0 then 0 else "sales_fact_1997"."store_sales" end) [42001-224]|
 ## <span style='color: blue;'>WARNING</span> : 
 |Type|   |
 |----|---|

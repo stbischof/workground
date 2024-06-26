@@ -13,12 +13,10 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
-import java.util.List;
-
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 
-public record ExpressionViewR(List<MappingSqlSelectQuery> sqls,
+public record ExpressionViewR(MappingSqlSelectQuery sql,
                               String table,
                               String name) implements MappingExpressionView {
 
@@ -29,28 +27,23 @@ public record ExpressionViewR(List<MappingSqlSelectQuery> sqls,
         if (!(obj instanceof MappingExpressionView that)) {
             return false;
         }
-        if (sqls().size() != that.sqls().size()) {
+        if (sql() == null || that.sql() == null) {
             return false;
         }
-        for (int i = 0; i < sqls().size(); i++) {
-            if (! sqls().get(i).equals(that.sqls().get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return sql().equals(that.sql());
     }
 
-    public  ExpressionViewR(List<MappingSqlSelectQuery> sqls,
+    public  ExpressionViewR(MappingSqlSelectQuery sql,
             String table,
             String name)  {
-				this.sqls = sqls;
+				this.sql = sql;
 				this.table = table;
 				this.name = name;
 
     }
 
-    public List<MappingSqlSelectQuery> getSqls() {
-        return sqls;
+    public MappingSqlSelectQuery getSql() {
+        return sql;
     }
 
     public String getTable() {

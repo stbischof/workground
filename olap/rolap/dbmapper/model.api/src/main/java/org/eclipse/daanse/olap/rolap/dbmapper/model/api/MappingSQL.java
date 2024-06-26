@@ -13,8 +13,11 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-public interface MappingExpressionView extends MappingExpression {
+import java.util.List;
 
-    MappingSqlSelectQuery sql();
+public interface MappingSQL {
 
+    List<String> dialects();
+
+    String statement();
 }

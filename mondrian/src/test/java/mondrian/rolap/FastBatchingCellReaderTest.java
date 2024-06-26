@@ -43,6 +43,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsag
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ExpressionViewRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -1025,12 +1026,13 @@ class FastBatchingCellReaderTest extends BatchTestCase{
                           .aggregator("distinct count")
                           .formatString("#,##0")
                           .measureExpression(ExpressionViewRBuilder.builder()
+                              .sql(SqlSelectQueryRBuilder.builder()
                               .sqls(List.of(
                                   SQLRBuilder.builder()
-                                      .dialect("generic")
-                                      .content("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Owned')")
+                                      .dialects(List.of("generic"))
+                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Owned')")
                                       .build()
-                              ))
+                              )).build())
                               .build())
                           .build(),
                       MeasureRBuilder.builder()
@@ -1038,12 +1040,13 @@ class FastBatchingCellReaderTest extends BatchTestCase{
                           .aggregator("distinct count")
                           .formatString("#,##0")
                           .measureExpression(ExpressionViewRBuilder.builder()
+                              .sql(SqlSelectQueryRBuilder.builder()
                               .sqls(List.of(
                                   SQLRBuilder.builder()
-                                      .dialect("generic")
-                                      .content("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
+                                      .dialects(List.of("generic"))
+                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
                                       .build()
-                              ))
+                              )).build())
                               .build())
                           .build(),
                       MeasureRBuilder.builder()
@@ -1051,12 +1054,13 @@ class FastBatchingCellReaderTest extends BatchTestCase{
                           .aggregator("count")
                           .formatString("#,##0")
                           .measureExpression(ExpressionViewRBuilder.builder()
+                              .sql(SqlSelectQueryRBuilder.builder()
                               .sqls(List.of(
                                   SQLRBuilder.builder()
-                                      .dialect("generic")
-                                      .content("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
+                                      .dialects(List.of("generic"))
+                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
                                       .build()
-                              ))
+                              )).build())
                               .build())
                           .build(),
                       MeasureRBuilder.builder()
@@ -1064,12 +1068,13 @@ class FastBatchingCellReaderTest extends BatchTestCase{
                           .aggregator("distinct count")
                           .formatString("#,##0")
                           .measureExpression(ExpressionViewRBuilder.builder()
+                              .sql(SqlSelectQueryRBuilder.builder()
                               .sqls(List.of(
                                   SQLRBuilder.builder()
-                                      .dialect("generic")
-                                      .content("`store_id`+`warehouse_id`")
+                                      .dialects(List.of("generic"))
+                                      .statement("`store_id`+`warehouse_id`")
                                       .build()
-                              ))
+                              )).build())
                               .build())
                           .build(),
                       MeasureRBuilder.builder()
@@ -1077,12 +1082,13 @@ class FastBatchingCellReaderTest extends BatchTestCase{
                           .aggregator("count")
                           .formatString("#,##0")
                           .measureExpression(ExpressionViewRBuilder.builder()
+                              .sql(SqlSelectQueryRBuilder.builder()
                               .sqls(List.of(
                                   SQLRBuilder.builder()
-                                      .dialect("generic")
-                                      .content("`store_id`+`warehouse_id`")
+                                      .dialects(List.of("generic"))
+                                      .statement("`store_id`+`warehouse_id`")
                                       .build()
-                              ))
+                              )).build())
                               .build())
                           .build(),
                       MeasureRBuilder.builder()

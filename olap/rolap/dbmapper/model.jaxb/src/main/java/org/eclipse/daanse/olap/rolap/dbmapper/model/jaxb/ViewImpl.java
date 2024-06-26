@@ -17,7 +17,9 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 
@@ -28,31 +30,35 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "View", propOrder = { "sqls" })
+@XmlType(name = "View", propOrder = { "sql" })
 public class ViewImpl implements MappingViewQuery {
 
-    @XmlElement(name = "SQL", required = true, type = SQLImpl.class)
-    protected List<MappingSqlSelectQuery> sqls;
+    @XmlElement(name = "SqlSelectQuery", required = true, type = SqlSelectQueryImpl.class)
+    protected MappingSqlSelectQuery sql;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     @Override
-    public List<MappingSqlSelectQuery> sqls() {
-        if (sqls == null) {
-            sqls = new ArrayList<>();
-        }
-        return this.sqls;
+    public MappingSqlSelectQuery sql() {
+        return this.sql;
     }
 
     @Override
     public void addCode(String dialect, String code) {
-        if (sqls == null) {
-            sqls = new ArrayList<>();
+        if (sql == null) {
+            sql = new SqlSelectQueryImpl();
         }
-        SQLImpl sqlImpl = new SQLImpl();
-        sqlImpl.setDialect(dialect);
-        sqlImpl.setContent(code);
-        sqls.add(sqlImpl);
+        Optional<MappingSQL> oSql = sql.sqls().stream().filter(s -> code.equals(s.statement())).findAny();
+        if (oSql.isPresent()) {
+            MappingSQL sql = oSql.get();
+            sql.dialects().add(dialect);
+        } else {
+            SQLImpl sql = new SQLImpl();
+            List<String> ds = new ArrayList<>();
+            ds.add(dialect);
+            sql.setDialects(ds);
+            sql.setStatement(code);
+        }
     }
 
     @Override
@@ -64,9 +70,13 @@ public class ViewImpl implements MappingViewQuery {
         this.alias = value;
     }
 
+    public void setSql(MappingSqlSelectQuery sql) {
+        this.sql = sql;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(sqls, alias);
+        return Objects.hash(sql, alias);
     }
 
     @Override
@@ -75,17 +85,12 @@ public class ViewImpl implements MappingViewQuery {
             if (!Objects.equals(getAlias(), that.getAlias())) {
                 return false;
             }
-            if (sqls() == null || that.sqls() == null || sqls().size() != that.sqls().size()) {
+            if (sql() == null || that.sql() == null ||
+                sql().sqls() == null || that.sql().sqls() == null ||
+                sql().sqls().size() != that.sql().sqls().size()) {
                 return false;
             }
-            for (int i = 0; i < sqls().size(); i++) {
-                if (!Objects.equals(sqls().get(i).dialect(), that.sqls().get(i).dialect())
-                    || !Objects.equals(sqls().get(i).content(), that.sqls().get(i).content()))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return sql().equals(that.sql());
         } else {
             return false;
         }
@@ -93,10 +98,7 @@ public class ViewImpl implements MappingViewQuery {
 
     @Override
 	public String toString() {
-        return sqls.get(0).content();
+        return sql.sqls().get(0).statement();
     }
 
-    public void setSqls(List<MappingSqlSelectQuery> sqls) {
-        this.sqls = sqls;
-    }
 }

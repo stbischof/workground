@@ -45,6 +45,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
@@ -709,13 +710,13 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                     .type(TypeEnum.NUMERIC)
                                     .uniqueMembers(true)
                                     .levelType(LevelTypeEnum.TIME_YEARS)
-                                    .captionExpression(ExpressionViewRBuilder.builder()
+                                    .captionExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
                                         .sqls(List.of(
-                                            SQLRBuilder.builder().dialect("access").content("cstr(the_year) + '-12-31'").build(),
-                                            SQLRBuilder.builder().dialect("mysql").content("concat(cast(`the_year` as char(4)), '-12-31')").build(),
-                                            SQLRBuilder.builder().dialect("derby").content("'foobar'").build(),
-                                            SQLRBuilder.builder().dialect("generic").content("\"the_year\" || '-12-31'").build()
-                                        ))
+                                            SQLRBuilder.builder().dialects(List.of("access")).statement("cstr(the_year) + '-12-31'").build(),
+                                            SQLRBuilder.builder().dialects(List.of("mysql")).statement("concat(cast(`the_year` as char(4)), '-12-31')").build(),
+                                            SQLRBuilder.builder().dialects(List.of("derby")).statement("'foobar'").build(),
+                                            SQLRBuilder.builder().dialects(List.of("generic")).statement("\"the_year\" || '-12-31'").build()
+                                        )).build())
                                         .build())
                                     .build(),
                                 LevelRBuilder.builder()
@@ -923,29 +924,29 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                         LevelRBuilder.builder()
                                             .name("Name")
                                             .uniqueMembers(true)
-                                            .keyExpression(ExpressionViewRBuilder.builder()
+                                            .keyExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
                                                 .sqls(List.of(
                                                     SQLRBuilder.builder()
-                                                        .dialect("oracle")
-                                                        .content("\"fname\" || ' ' || \"lname\"\n")
+                                                        .dialects(List.of("oracle"))
+                                                        .statement("\"fname\" || ' ' || \"lname\"\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("access")
-                                                        .content("fname, ' ', lname\n")
+                                                        .dialects(List.of("access"))
+                                                        .statement("fname, ' ', lname\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("postgres")
-                                                        .content("\"fname\" || ' ' || \"lname\"\n")
+                                                        .dialects(List.of("postgres"))
+                                                        .statement("\"fname\" || ' ' || \"lname\"\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("mysql")
-                                                        .content("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
+                                                        .dialects(List.of("mysql"))
+                                                        .statement("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("mssql")
-                                                        .content("fname, ' ', lname\n")
+                                                        .dialects(List.of("mssql"))
+                                                        .statement("fname, ' ', lname\n")
                                                         .build()
-                                                ))
+                                                )).build())
                                                 .build())
                                             .properties(List.of(
                                                 PropertyRBuilder.builder()
@@ -1715,34 +1716,35 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                                         LevelRBuilder.builder()
                                             .name("Name")
                                             .uniqueMembers(true)
-                                            .keyExpression(ExpressionViewRBuilder.builder()
+                                            .keyExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder
+                                                .builder()
                                                 .sqls(List.of(
                                                     SQLRBuilder.builder()
-                                                        .dialect("oracle")
-                                                        .content("\"fname\" || ' ' || \"lname\"\n")
+                                                        .dialects(List.of("oracle"))
+                                                        .statement("\"fname\" || ' ' || \"lname\"\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("access")
-                                                        .content("fname, ' ', lname\n")
+                                                        .dialects(List.of("access"))
+                                                        .statement("fname, ' ', lname\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("postgres")
-                                                        .content("\"fname\" || ' ' || \"lname\"")
+                                                        .dialects(List.of("postgres"))
+                                                        .statement("\"fname\" || ' ' || \"lname\"")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("mysql")
-                                                        .content("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
+                                                        .dialects(List.of("mysql"))
+                                                        .statement("CONCAT(`customer`.`fname`, ' ', `customer`.`lname`)\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("mssql")
-                                                        .content("fname, ' ', lname\n")
+                                                        .dialects(List.of("mssql"))
+                                                        .statement("fname, ' ', lname\n")
                                                         .build(),
                                                     SQLRBuilder.builder()
-                                                        .dialect("generic")
-                                                        .content("\"lname\"\n")
+                                                        .dialects(List.of("generic"))
+                                                        .statement("\"lname\"\n")
                                                         .build()
 
-                                                ))
+                                                )).build())
                                                 .build())
                                             .properties(List.of(
                                                 PropertyRBuilder.builder()

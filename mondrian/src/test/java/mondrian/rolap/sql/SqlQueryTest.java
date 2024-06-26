@@ -49,6 +49,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimens
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -728,17 +729,17 @@ class SqlQueryTest  extends BatchTestCase {
                                             .type(TypeEnum.NUMERIC).uniqueMembers(true)
                                             .approxRowCount("10000000")
                                             .keyExpression(
-                                                ExpressionViewRBuilder.builder()
+                                                ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
                                                     .sqls(List.of(
                                                         SQLRBuilder.builder()
-                                                            .dialect("luciddb")
-                                                            .content("cast(cast(\"salary\" as double)*cast(1000.0 as double)/cast(3.1234567890123456 as double) as double)")
+                                                            .dialects(List.of("luciddb"))
+                                                            .statement("cast(cast(\"salary\" as double)*cast(1000.0 as double)/cast(3.1234567890123456 as double) as double)")
                                                             .build()
                                                     ))
                                                     .build()
                                             )
                                             .build()
-                                    ))
+                                    ).build()))
                                     .build()
                             ))
                             .build()

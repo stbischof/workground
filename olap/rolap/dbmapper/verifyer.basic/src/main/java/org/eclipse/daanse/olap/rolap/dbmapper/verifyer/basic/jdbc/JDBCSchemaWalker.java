@@ -31,7 +31,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackColumn;
@@ -422,14 +422,14 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSQLList(List<? extends MappingSqlSelectQuery> list) {
+    protected void checkSQLList(List<? extends MappingSQL> list) {
         if (list != null && optionalDialect.isPresent()) {
             String dialectName = optionalDialect.get().getDialectName();
-            List<? extends MappingSqlSelectQuery> sqls = list.stream().filter(sql -> dialectName.equals(sql.dialect())).toList();
+            List<? extends MappingSQL> sqls = list.stream().filter(sql -> sql.dialects().stream().anyMatch(d -> dialectName.equals(d))).toList();
             if (!sqls.isEmpty()) {
                 checkSQL(sqls.get(0));
             } else {
-                sqls = list.stream().filter(sql -> "generic".equals(sql.dialect())).toList();
+                sqls = list.stream().filter(sql -> sql.dialects().stream().anyMatch(d -> "generic".equals(d))).toList();
                 if (!sqls.isEmpty()) {
                     checkSQL(sqls.get(0));
                 }
@@ -438,12 +438,12 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
     }
 
     @Override
-    protected void checkSQL(MappingSqlSelectQuery sql) {
-    	if (sql != null && sql.content() != null) {
+    protected void checkSQL(MappingSQL sql) {
+    	if (sql != null && sql.statement() != null) {
     		try {
     			Connection con = databaseMetaData.getConnection();
     			Statement stmt = con.createStatement();
-    			ResultSet rs = stmt.executeQuery(sql.content());
+    			ResultSet rs = stmt.executeQuery(sql.statement());
     		} catch (SQLException e) {
     			results.add(new VerificationResultR(SQL, e.getMessage().replace("\n",""), ERROR, DATABASE));
     		}

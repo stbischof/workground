@@ -1233,9 +1233,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
         if (relation instanceof MappingViewQuery mv) {
             StringBuilder sb = new StringBuilder();
-            if (mv.sqls() != null) {
-                mv.sqls().stream().filter(s -> "generic".equals(s.dialect()))
-                    .findFirst().ifPresent(s -> sb.append(s.content()));
+            if (mv.sql() != null &&  mv.sql().sqls() != null) {
+                mv.sql().sqls().stream().filter(s -> s.dialects().stream().anyMatch(d -> "generic".equals(d)))
+                    .findFirst().ifPresent(s -> sb.append(s.statement()));
             }
             return sb.toString();
         }

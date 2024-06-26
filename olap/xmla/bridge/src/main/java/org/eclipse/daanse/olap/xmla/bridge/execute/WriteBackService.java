@@ -38,10 +38,12 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ViewR;
 import org.eclipse.daanse.xmla.api.UserPrincipal;
 
@@ -525,9 +527,8 @@ public class WriteBackService {
                     String alias = mappingTable.getAlias() != null ? mappingTable.getAlias() : mappingTable.getName();
                     StringBuilder sql = new StringBuilder("select * from ").append(mappingTable.getName());
                     sql.append(getWriteBackSql(dialect, writebackTable, sessionValues));
-                    List<MappingSqlSelectQuery> sqls = List.of(new SQLR(sql.toString(), "generic"), new SQLR(sql.toString(),
-                        dialect.getDialectName()));
-                    changeFact(cube, sqls, alias);
+                    List<MappingSQL> sqls = List.of(new SQLR(sql.toString(), List.of("generic", dialect.getDialectName())));
+                    changeFact(cube, new SqlSelectQueryR(sqls), alias);
                 }
                 if (fact instanceof MappingInlineTableQuery mappingInlineTable) {
                     MappingRelationQuery mappingRelation = RolapUtil.convertInlineTableToRelation(mappingInlineTable, cube.getContext().getDialect());
@@ -543,19 +544,19 @@ public class WriteBackService {
     }
 
     private void changeFact(RolapCube cube, MappingViewQuery mappingView, Dialect dialect, RolapWritebackTable writebackTable, List<Map<String, Map.Entry<Datatype, Object>>> sessionValues) {
-        if (mappingView.sqls() != null) {
-            List<MappingSqlSelectQuery> sqls = mappingView.sqls().stream()
-                .map(sql -> (MappingSqlSelectQuery) new SQLR(
-                    new StringBuilder(sql.content())
+        if (mappingView.sql() != null && mappingView.sql().sqls() != null) {
+            List<MappingSQL> sqls = mappingView.sql().sqls().stream()
+                .map(sql -> (MappingSQL)new SQLR(
+                    new StringBuilder(sql.statement())
                         .append(getWriteBackSql(dialect, writebackTable, sessionValues))
                         .toString(),
-                    sql.dialect()))
+                    sql.dialects()))
                 .toList();
-            changeFact(cube, sqls, mappingView.getAlias());
+            changeFact(cube, new SqlSelectQueryR(sqls), mappingView.getAlias());
         }
     }
 
-    private void changeFact(RolapCube cube, List<MappingSqlSelectQuery> sqls, String alias) {
+    private void changeFact(RolapCube cube, MappingSqlSelectQuery sqls, String alias) {
         cube.setFact(new ViewR(alias, sqls));
         cube.register();
     }

@@ -678,10 +678,12 @@ public class RolapUtil {
       }
       // Add SQL filter to the key
       if (!Util.isNull(table) && table != null && !Util.isNull(table.getSql())
-          && !Util.isBlank(table.getSql().content()))
+          && !Util.isBlank(table.getSql().statement()))
       {
-        rlStarKey.add(table.getSql().dialect());
-        rlStarKey.add(table.getSql().content());
+        for (String dialect : table.getSql().dialects()) {
+            rlStarKey.add(dialect);
+        }
+        rlStarKey.add(table.getSql().statement());
       }
       return Collections.unmodifiableList(rlStarKey);
     }

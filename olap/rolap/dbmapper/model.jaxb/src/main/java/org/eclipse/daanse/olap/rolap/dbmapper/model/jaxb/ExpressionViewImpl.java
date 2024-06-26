@@ -15,7 +15,6 @@
 package org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
@@ -29,22 +28,22 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ExpressionView", propOrder = { "sqls" })
+@XmlType(name = "ExpressionView", propOrder = { "sql" })
 public class ExpressionViewImpl implements MappingExpressionView {
 
-    @XmlElement(name = "SQL", required = true, type = SQLImpl.class)
-    protected List<MappingSqlSelectQuery> sqls;
+    @XmlElement(name = "SqlSelectQuery", required = true, type = SqlSelectQueryImpl.class)
+    protected MappingSqlSelectQuery sql;
     @XmlAttribute(name = "table")
     protected String table;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
     @Override
-    public List<MappingSqlSelectQuery> sqls() {
-        if (sqls == null) {
-            sqls = new ArrayList<>();
+    public MappingSqlSelectQuery sql() {
+        if (sql == null) {
+            this.sql = new SqlSelectQueryImpl(new ArrayList<>());
         }
-        return this.sqls;
+        return this.sql;
     }
 
     @Override
@@ -59,8 +58,8 @@ public class ExpressionViewImpl implements MappingExpressionView {
 
     public int hashCode(MappingExpression expression) {
             int h = 17;
-            for (int i = 0; i < ((MappingExpressionView) expression).sqls().size(); i++) {
-                h = 37 * h + ((MappingExpressionView) expression).sqls().get(i).dialect().hashCode();
+            for (int i = 0; i < ((MappingExpressionView) expression).sql().sqls().size(); i++) {
+                h = 37 * h + ((MappingExpressionView) expression).sql().sqls().get(i).statement().hashCode();
             }
             return h;
     }
@@ -70,24 +69,19 @@ public class ExpressionViewImpl implements MappingExpressionView {
         if (!(obj instanceof MappingExpressionView that)) {
             return false;
         }
-        if (sqls().size() != that.sqls().size()) {
+        if (sql() == null || that.sql() == null) {
             return false;
         }
-        for (int i = 0; i < sqls().size(); i++) {
-            if (! sqls().get(i).equals(that.sqls().get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return sql().equals(that.sql());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sqls, table, name);
+        return Objects.hash(sql, table, name);
     }
 
-    public void setSqls(List<MappingSqlSelectQuery> sqls) {
-        this.sqls = sqls;
+    public void setSqls(MappingSqlSelectQuery sql) {
+        this.sql = sql;
     }
 
     public void setTable(String table) {

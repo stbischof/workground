@@ -53,6 +53,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
@@ -1557,7 +1558,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
             }
             if (relation instanceof MappingTableQuery table) {
 
-                MappingSqlSelectQuery sql = tableSql(table);
+                MappingSQL sql = tableSql(table);
                 List<MappingAggExclude> aggExcludes = tableAggExcludes(table);
                 List<MappingAggTable> aggTables = tableAggTables(table);
                 List<MappingTableQueryOptimisationHint> hints = tableHints(table);
@@ -1566,18 +1567,26 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
                 return new_Table(schema, name, alias, hints, sql, aggExcludes, aggTables);
             }
             if (relation instanceof MappingViewQuery view) {
-                List<MappingSqlSelectQuery> sqls = viewSqls(view);
-                return new_View(alias, sqls);
+                MappingSqlSelectQuery sql = viewSql(view);
+                return new_View(alias, sql);
             }
         }
         return null;
     }
 
-    protected List<MappingSqlSelectQuery> viewSqls(MappingViewQuery view) {
-        return sqls(view.sqls());
+    protected MappingSqlSelectQuery viewSql(MappingViewQuery view) {
+        return sqlSelectQuery(view.sql());
     }
 
-    protected List<MappingSqlSelectQuery> sqls(List<MappingSqlSelectQuery> sqls) {
+    protected MappingSqlSelectQuery sqlSelectQuery(MappingSqlSelectQuery sql) {
+        if (sql != null) {
+            List<MappingSQL> sqls = sqls(sql.sqls());
+            return new_SqlSelectQuery(sqls);
+        }
+        return null;
+    }
+
+    protected List<MappingSQL> sqls(List<MappingSQL> sqls) {
         if (sqls != null) {
             return sqls.stream().map(this::sql).toList();
         }
@@ -1995,28 +2004,33 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         boolean ignorecase
     );
 
-    protected MappingSqlSelectQuery tableSql(MappingTableQuery table) {
+    protected MappingSQL tableSql(MappingTableQuery table) {
         return sql(table.getSql());
     }
 
-    protected MappingSqlSelectQuery sql(MappingSqlSelectQuery sql) {
+    protected MappingSQL sql(MappingSQL sql) {
     	if (sql != null) {
-    		String content = sqlContent(sql);
-    		String dialect = sqlDialect(sql);
-    		return new_SQL(content, dialect);
+    		String statement = sqlStatement(sql);
+    		List<String> dialects = sqlDialects(sql);
+    		return new_SQL(statement, dialects);
     	}
     	return null;
     }
 
-    protected String sqlDialect(MappingSqlSelectQuery sql) {
-        return sql.dialect();
+    protected List<String> sqlDialects(MappingSQL sql) {
+        if (sql != null && sql.dialects() != null) {
+            return sql.dialects().stream().toList();
+        }
+        return new ArrayList();
     }
 
-    protected String sqlContent(MappingSqlSelectQuery sql) {
-        return sql.content();
+    protected String sqlStatement(MappingSQL sql) {
+        return sql.statement();
     }
 
-    protected abstract MappingSqlSelectQuery new_SQL(String content, String dialect);
+    protected abstract MappingSQL new_SQL(String statement, List<String> dialects);
+
+    protected abstract MappingSqlSelectQuery new_SqlSelectQuery(List<MappingSQL> sqls);
 
     protected List<MappingInlineTableRow> inlineTableRows(MappingInlineTableQuery inlineTable) {
         return rows(inlineTable.rows());
@@ -2073,7 +2087,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected abstract MappingTableQuery new_Table(
             String schema, String name, String alias,
-            List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            List<MappingTableQueryOptimisationHint> hints, MappingSQL sql,
             List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     );
 
@@ -2107,7 +2121,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return columnDef.name();
     }
 
-    protected abstract MappingRelationQuery new_View(String alias, List<MappingSqlSelectQuery> sqls);
+    protected abstract MappingRelationQuery new_View(String alias, MappingSqlSelectQuery sql);
 
     protected abstract MappingRelationQuery new_InlineTable(
         List<MappingInlineTableColumnDefinition> columnDefs,
@@ -2863,7 +2877,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected MappingTableQuery table(MappingTableQuery table) {
         if (table != null) {
-            MappingSqlSelectQuery sql = tableSql(table);
+            MappingSQL sql = tableSql(table);
             List<MappingAggExclude> aggExcludes = tableAggExcludes(table);
             List<MappingAggTable> aggTables = tableAggTables(table);
             List<MappingTableQueryOptimisationHint> hints = tableHints(table);
@@ -2891,7 +2905,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
 
     protected MappingExpressionView expressionView(MappingExpressionView expression) {
     	if (expression != null) {
-    		List<MappingSqlSelectQuery> sqls = expressionSqls(expression);
+    		MappingSqlSelectQuery sqls = expressionSql(expression);
     		String table = expressionTable(expression);
     		String name = expressionName(expression);
     		return new_ExpressionView(sqls, table, name);
@@ -2907,12 +2921,12 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
         return expression.getTable();
     }
 
-    protected List<MappingSqlSelectQuery> expressionSqls(MappingExpressionView expression){
-        return sqls(expression.sqls());
+    protected MappingSqlSelectQuery expressionSql(MappingExpressionView expression){
+        return sqlSelectQuery(expression.sql());
     }
 
     protected abstract MappingExpressionView new_ExpressionView(
-        List<MappingSqlSelectQuery> sqls, String table, String name);
+        MappingSqlSelectQuery sql, String table, String name);
 
     protected MappingExpressionView levelOrdinalExpression(MappingLevel level) {
         return expressionView(level.ordinalExpression());

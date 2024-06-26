@@ -78,15 +78,26 @@ public class RelationUtil {
                 if (!Objects.equals(relation.getAlias(), that.getAlias())) {
                     return false;
                 }
-                if (view.sqls() == null || that.sqls() == null || view.sqls().size() != that.sqls().size()) {
+                if (view.sql() == null || that.sql() == null
+                    || view.sql().sqls() == null || that.sql().sqls() == null
+                    || view.sql().sqls().size() != that.sql().sqls().size()) {
                     return false;
                 }
-                for (int i = 0; i < view.sqls().size(); i++) {
-                    if (!Objects.equals(view.sqls().get(i).dialect(), that.sqls().get(i).dialect())
-                        || !Objects.equals(view.sqls().get(i).content(), that.sqls().get(i).content()))
+                for (int i = 0; i < view.sql().sqls().size(); i++) {
+                    if (!Objects.equals(view.sql().sqls().get(i).statement(), that.sql().sqls().get(i).statement()))
                     {
                         return false;
                     }
+                    if (view.sql().sqls().get(i).dialects() == null || that.sql().sqls().get(i).dialects() == null
+                        || view.sql().sqls().get(i).dialects().size() != that.sql().sqls().get(i).dialects().size()) {
+                        return false;
+                    }
+                    for (int j = 0; j< view.sql().sqls().get(i).dialects().size(); j++) {
+                        if (!view.sql().sqls().get(i).dialects().get(j).equals(that.sql().sqls().get(i).dialects().get(j))) {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
                 return true;
             } else {

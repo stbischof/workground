@@ -29,6 +29,6 @@ public class TableUtil {
 	}
 
     public static String getFilter(MappingTableQuery table) {
-        return (table.getSql() == null) ? null : table.getSql().content();
+        return (table.getSql() == null) ? null : table.getSql().statement();
     }
 }

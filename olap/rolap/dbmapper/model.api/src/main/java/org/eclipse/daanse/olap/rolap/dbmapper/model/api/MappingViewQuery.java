@@ -13,11 +13,9 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.api;
 
-import java.util.List;
-
 public non-sealed interface MappingViewQuery extends MappingRelationQuery {
 
-    List<MappingSqlSelectQuery> sqls();
+    MappingSqlSelectQuery sql();
 
     void addCode(String generic, String generateInline);
 }

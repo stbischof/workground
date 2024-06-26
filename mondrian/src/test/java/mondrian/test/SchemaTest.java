@@ -63,6 +63,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
@@ -81,11 +82,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggColumnNameR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggExcludeR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggMeasureR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleUsageR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
@@ -118,6 +120,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RowRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ViewRBuilder;
@@ -3414,13 +3417,13 @@ class SchemaTest {
                     .build();
 
                 MappingViewQuery v1 = ViewRBuilder.builder()
-                    .alias("FACT")
-                    .sqls(List.of(
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "oracle"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "mysql"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "infobright")
-                    ))
+                    .alias("FACT").sql(new SqlSelectQueryR(
+                    List.of(
+                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", List.of("generic")),
+                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", List.of("oracle")),
+                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", List.of("mysql")),
+                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", List.of("infobright"))
+                    )))
                     .build();
                 MappingLevel l1 = LevelRBuilder.builder()
                     .name("Warehouse ID")
@@ -3438,12 +3441,12 @@ class SchemaTest {
                     .build();
                 MappingViewQuery view = ViewRBuilder.builder()
                     .alias("FACT")
-                    .sqls(List.of(
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "oracle"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "mysql"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "infobright")
-                    ))
+                    .sql(SqlSelectQueryRBuilder.builder().sqls(List.of(
+                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", List.of("generic")),
+                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", List.of("oracle")),
+                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", List.of("mysql")),
+                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", List.of("infobright"))
+                    )).build())
                     .build();
 
                 MappingCube c = CubeRBuilder
@@ -3604,13 +3607,11 @@ class SchemaTest {
                     .build();
 
                 MappingViewQuery view = ViewRBuilder.builder()
-                    .alias("FACT")
+                    .alias("FACT").sql(SqlSelectQueryRBuilder.builder()
                     .sqls(List.of(
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "generic"),
-                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", "oracle"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "mysql"),
-                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", "infobright")
-                    ))
+                        new SQLR("select * from \"inventory_fact_1997\" as \"FOOBAR\"", List.of("generic", "oracle")),
+                        new SQLR("select * from `inventory_fact_1997` as `FOOBAR`", List.of("mysql", "infobright"))
+                    )).build())
                     .build();
 
                 MappingCube c = CubeRBuilder
@@ -3734,13 +3735,11 @@ class SchemaTest {
                     .build();
 
                 MappingViewQuery view = ViewRBuilder.builder()
-                    .alias("FACT")
+                    .alias("FACT").sql(SqlSelectQueryRBuilder.builder()
                     .sqls(List.of(
-                        new SQLR("select * from \"store\" as \"FOOBAR\"", "generic"),
-                        new SQLR("select * from \"store\" as \"FOOBAR\"", "oracle"),
-                        new SQLR("select * from `store` as `FOOBAR`", "mysql"),
-                        new SQLR("select * from `store` as `FOOBAR`", "infobright")
-                    ))
+                        new SQLR("select * from \"store\" as \"FOOBAR\"", List.of("generic", "oracle")),
+                        new SQLR("select * from `store` as `FOOBAR`", List.of("mysql", "infobright"))
+                    )).build())
                     .build();
 
                 MappingCube c = CubeRBuilder
@@ -5685,17 +5684,12 @@ class SchemaTest {
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
                 MappingViewQuery v1 = ViewRBuilder.builder()
-                    .alias("gender2")
+                    .alias("gender2").sql(SqlSelectQueryRBuilder.builder()
                     .sqls(List.of(
-                        new SQLR("SELECT * FROM customer", "generic"),
-                        new SQLR("SELECT * FROM \"customer\"", "oracle"),
-                        new SQLR("SELECT * FROM \"customer\"", "derby"),
-                        new SQLR("SELECT * FROM \"customer\"", "hsqldb"),
-                        new SQLR("SELECT * FROM \"customer\"", "luciddb"),
-                        new SQLR("SELECT * FROM \"customer\"", "neoview"),
-                        new SQLR("SELECT * FROM \"customer\"", "netezza"),
-                        new SQLR("SELECT * FROM \"customer\"", "db2")
-                    ))
+                        new SQLR("SELECT * FROM customer", List.of("generic")),
+                        new SQLR("SELECT * FROM \"customer\"",
+                            List.of("oracle", "derby", "hsqldb", "luciddb", "neoview", "netezza", "db2"))
+                    )).build())
                     .build();
 
                 MappingHierarchy h1 = HierarchyRBuilder.builder()
@@ -6876,7 +6870,7 @@ class SchemaTest {
                 MappingTableQuery table = new TableR(null, "sales_fact_1997", null,
                     null,
                     SQLRBuilder.builder()
-                        .content("`sales_fact_1997`.`store_id` in (select distinct `store_id` from `store` where `store`.`store_state` = \"CA\")")
+                        .statement("`sales_fact_1997`.`store_id` in (select distinct `store_id` from `store` where `store`.`store_state` = \"CA\")")
                         .build(),
                     null, null);
                 MappingDimensionUsage d1 = DimensionUsageRBuilder
@@ -7828,9 +7822,9 @@ class SchemaTest {
                         .name("Gender")
                         .column("gender")
                         .uniqueMembers(true)
-                        .captionExpression(ExpressionViewRBuilder.builder()
-                            .sqls(List.of(new SQLR("'foobar'", "generic")))
-                            .build())
+                        .captionExpression(ExpressionViewRBuilder.builder().sql(SqlSelectQueryRBuilder.builder()
+                            .sqls(List.of(new SQLR("'foobar'", List.of("generic"))))
+                            .build()).build())
                         .build();
 
                     MappingHierarchy h = HierarchyRBuilder.builder()
@@ -8027,13 +8021,13 @@ class SchemaTest {
                     .cache(true)
                     .enabled(true)
                     .fact(ViewRBuilder.builder()
-                        .alias("sales_fact_1997_test")
+                        .alias("sales_fact_1997_test").sql(SqlSelectQueryRBuilder.builder()
                         .sqls(List.of(
                             new SQLR("select \"product_id\", \"time_id\", \"customer_id\", \"promotion_id\", " +
                                 "\"store_id\", \"store_sales\", \"store_cost\", \"unit_sales\", (select \"store_state\" " +
  "from \"store\" where \"store_id\" = \"sales_fact_1997\".\"store_id\") as " +
-                                "\"sales_state_province\" from \"sales_fact_1997\"", "generic")
-                        ))
+                                "\"sales_state_province\" from \"sales_fact_1997\"", List.of("generic"))
+                        )).build())
                         .build())
                     .dimensionUsageOrDimensions(List.of(
                         DimensionUsageRBuilder.builder()
@@ -10502,9 +10496,11 @@ class SchemaTest {
                 result.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 if ("HR".equals(cube.name())) {
                     List<MappingPrivateDimension> dimensions = new ArrayList<>();
-                        MappingSqlSelectQuery sql = new SQLR("`position_title` + " + n,
-                            "generic");
-                        MappingExpressionView ex = ExpressionViewRBuilder.builder().sqls(List.of(sql)).build();
+                        MappingSQL sql = new SQLR("`position_title` + " + n,
+                            List.of("generic"));
+                        MappingExpressionView ex = ExpressionViewRBuilder.builder()
+                            .sql(SqlSelectQueryRBuilder.builder().sqls(List.of(sql)).build())
+                            .build();
                         MappingLevel level = LevelRBuilder.builder()
                         	.name("Position Title")
                         	.uniqueMembers(false)
@@ -10807,7 +10803,7 @@ class SchemaTest {
                             .primaryKeyTable("employee")
                             .relation(
                                 new JoinR(
-                                    new JoinedQueryElementR(null , "store_id", new TableR("employee", new SQLR("1 = 1", null))),
+                                    new JoinedQueryElementR(null , "store_id", new TableR("employee", new SQLR("1 = 1", List.of("generic")))),
                                     new JoinedQueryElementR(null , "store_id", new TableR("store"))
                                 )
                             )
@@ -11171,7 +11167,7 @@ class SchemaTest {
                     .name("CubeA")
                     .defaultMeasure("Unit Sales")
                     .fact(new TableR(null, "sales_fact_1997", "TableAlias",
-                        List.of(), new SQLR("`TableAlias`.`promotion_id` = 108", "mysql"),
+                        List.of(), new SQLR("`TableAlias`.`promotion_id` = 108", List.of("mysql")),
                         List.of(), List.of()))
                     .dimensionUsageOrDimensions(List.of(
                         DimensionUsageRBuilder.builder()
@@ -11200,7 +11196,7 @@ class SchemaTest {
                     .name("CubeB")
                     .defaultMeasure("Unit Sales")
                     .fact(new TableR(null, "sales_fact_1997", "TableAlias",
-                        List.of(), new SQLR("`TableAlias`.`promotion_id` = 112", "mysql"),
+                        List.of(), new SQLR("`TableAlias`.`promotion_id` = 112", List.of("mysql")),
                         List.of(), List.of()))
                     .dimensionUsageOrDimensions(List.of(
                         DimensionUsageRBuilder.builder()

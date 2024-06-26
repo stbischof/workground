@@ -45,6 +45,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
@@ -117,6 +118,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyGrantR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.HierarchyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
@@ -497,11 +499,16 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     @Override
-    protected MappingSqlSelectQuery new_SQL(
-        String content,
-        String dialect
+    protected MappingSQL new_SQL(
+        String statement,
+        List<String> dialects
     ) {
-        return new SQLR(content, dialect);
+        return new SQLR(statement, dialects);
+    }
+
+    @Override
+    protected MappingSqlSelectQuery new_SqlSelectQuery(List<MappingSQL> sqls) {
+        return new SqlSelectQueryR(sqls);
     }
 
     @Override
@@ -693,7 +700,7 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     @Override
     protected MappingTableQuery new_Table(
             String schema, String name, String alias,
-            List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+            List<MappingTableQueryOptimisationHint> hints, MappingSQL sql,
             List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables
     ) {
         return new TableR(schema, name, alias, hints, sql, aggExcludes, aggTables);
@@ -702,9 +709,9 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     @Override
     protected MappingRelationQuery new_View(
         String alias,
-        List<MappingSqlSelectQuery> sqls
+        MappingSqlSelectQuery sql
     ) {
-        return new ViewR(alias, sqls);
+        return new ViewR(alias, sql);
     }
 
     @Override
@@ -956,12 +963,12 @@ public class RDbMappingSchemaModifier extends AbstractDbMappingSchemaModifier {
     }
 
     protected MappingExpressionView new_ExpressionView(
-        List<MappingSqlSelectQuery> sqls,
+        MappingSqlSelectQuery sql,
         String table,
         String name
     ) {
         return new ExpressionViewR(
-            sqls,
+            sql,
             table,
             name
         );

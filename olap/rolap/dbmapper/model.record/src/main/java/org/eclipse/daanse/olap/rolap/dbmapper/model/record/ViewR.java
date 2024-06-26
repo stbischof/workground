@@ -13,42 +13,60 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 
 public record ViewR(String alias,
-                    List<MappingSqlSelectQuery> sqls)
+                    MappingSqlSelectQuery sql)
         implements MappingViewQuery {
 
     public ViewR(MappingViewQuery view, String alias) {
-        this(alias,  view.sqls());
+        this(alias,  view.sql());
+    }
+
+    public ViewR(String alias, MappingSqlSelectQuery sql) {
+        this.alias = alias;
+        this.sql = sql != null ? sql : new SqlSelectQueryR(new ArrayList<>());
     }
 
     @Override
     public void addCode(String dialect, String code) {
-        sqls.add(new SQLR(code, dialect));
+        Optional<MappingSQL> oSql = sql.sqls().stream().filter(s -> code.equals(s.statement())).findAny();
+        if (oSql.isPresent()) {
+            MappingSQL sql = oSql.get();
+            sql.dialects().add(dialect);
+        } else {
+            List<String> ds = new ArrayList<>();
+            ds.add(dialect);
+            SQLR sl = new SQLR(code, ds);
+            sql.sqls().add(sl);
+        }
+
     }
 
     @Override
-	public boolean equals(Object o) {
+    public int hashCode() {
+        return Objects.hash(sql, alias);
+    }
+
+    @Override
+    public boolean equals(Object o) {
         if (o instanceof MappingViewQuery that) {
             if (!Objects.equals(getAlias(), that.getAlias())) {
                 return false;
             }
-            if (sqls() == null || that.sqls() == null || sqls().size() != that.sqls().size()) {
+            if (sql() == null || that.sql() == null ||
+                sql().sqls() == null || that.sql().sqls() == null ||
+                sql().sqls().size() != that.sql().sqls().size()) {
                 return false;
             }
-            for (int i = 0; i < sqls().size(); i++) {
-                if (!Objects.equals(sqls().get(i).dialect(), that.sqls().get(i).dialect())
-                    || !Objects.equals(sqls().get(i).content(), that.sqls().get(i).content()))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return sql().equals(that.sql());
         } else {
             return false;
         }
@@ -58,7 +76,7 @@ public record ViewR(String alias,
         return alias;
     }
 
-    public List<MappingSqlSelectQuery> getSqls() {
-        return sqls;
+    public MappingSqlSelectQuery getSql() {
+        return sql;
     }
 }

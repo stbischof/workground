@@ -17,7 +17,7 @@ import java.util.List;
 
 public non-sealed interface MappingTableQuery extends MappingRelationQuery {
 
-    MappingSqlSelectQuery getSql();
+    MappingSQL getSql();
 
     List<MappingAggExclude> getAggExcludes();
 

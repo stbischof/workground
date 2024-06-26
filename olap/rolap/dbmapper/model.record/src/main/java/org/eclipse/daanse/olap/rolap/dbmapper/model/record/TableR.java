@@ -18,13 +18,13 @@ import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 public class TableR implements MappingTableQuery {
 
-    private MappingSqlSelectQuery sql=null;
+    private MappingSQL sql=null;
     private String alias=null;
     private List<MappingAggExclude> aggExcludes;
     private String name;
@@ -52,7 +52,7 @@ public class TableR implements MappingTableQuery {
     }
 
     public TableR(String schema, String name, String alias,
-                  List<MappingTableQueryOptimisationHint> hints, MappingSqlSelectQuery sql,
+                  List<MappingTableQueryOptimisationHint> hints, MappingSQL sql,
                   List<MappingAggExclude> aggExcludes, List<MappingAggTable> aggTables) {
         this.name = name;
         this.schema = schema;
@@ -69,12 +69,13 @@ public class TableR implements MappingTableQuery {
         // Remake the filter with the new alias
         if (tbl.getSql() != null) {
             String aliasOrName = tbl.getAlias() == null ? tbl.getName() : tbl.getAlias();
-            this.sql = new SQLR(tbl.getSql().content() != null ? tbl.getSql().content().replace(aliasOrName, possibleName) : null,
-                tbl.getSql().dialect());
+            String statement = tbl.getSql().statement();
+            this.sql = new SQLR(statement != null ?
+                statement.replace(aliasOrName, possibleName) : null, tbl.getSql().dialects());
         }
     }
 
-    public TableR(String name, MappingSqlSelectQuery sql) {
+    public TableR(String name, MappingSQL sql) {
         this.name = name;
         this.schema = null;
         this.alias = null;
@@ -97,7 +98,7 @@ public class TableR implements MappingTableQuery {
         return alias;
     }
 
-    public MappingSqlSelectQuery getSql() {
+    public MappingSQL getSql() {
         return sql;
     }
 

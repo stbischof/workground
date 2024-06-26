@@ -52,6 +52,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
@@ -193,11 +194,15 @@ public abstract class AbstractSchemaWalker {
 
     protected void checkExpressionView(MappingExpressionView measureExpression) {
         if (measureExpression != null) {
-            checkSQLList(measureExpression.sqls());
+            checkSqlSelectQuery(measureExpression.sql());
         }
     }
 
-    protected void checkSQL(MappingSqlSelectQuery sql) {
+    protected void checkSqlSelectQuery(MappingSqlSelectQuery sql) {
+        //empty
+    }
+
+    protected void checkSQL(MappingSQL sql) {
         //empty
     }
 
@@ -267,7 +272,7 @@ public abstract class AbstractSchemaWalker {
 
     protected void checkView(MappingViewQuery relationOrJoin) {
         if (relationOrJoin != null) {
-            checkSQLList(relationOrJoin.sqls());
+            checkSQLList(relationOrJoin.sql().sqls());
         }
     }
 
@@ -650,7 +655,7 @@ public abstract class AbstractSchemaWalker {
         }
     }
 
-    protected void checkSQLList(List<? extends MappingSqlSelectQuery> list) {
+    protected void checkSQLList(List<? extends MappingSQL> list) {
         if (list != null) {
             list.forEach(this::checkSQL);
         }
