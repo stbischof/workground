@@ -2137,7 +2137,7 @@ public abstract class AbstractDbMappingSchemaModifier implements DatabaseMapping
     }
 
     protected Optional<MappingWritebackTable> writebackTables(Optional<MappingWritebackTable> writebackTables) {
-        if (writebackTables != null) {
+        if (writebackTables != null && writebackTables.isPresent()) {
             return Optional.ofNullable(writebackTable(writebackTables.get()));
         }
         return Optional.empty();

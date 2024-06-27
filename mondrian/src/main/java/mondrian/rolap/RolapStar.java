@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
+import mondrian.olap.Property;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.db.dialect.api.Dialect;
@@ -1508,7 +1509,7 @@ public class RolapStar {
                         level,
                         name,
                         property.getExp(),
-                        level.getDatatype(),
+                        convertPropertyType(property.getType()),
                         level.getInternalType(),
                         nameColumn,
                         parentColumn,
@@ -1518,6 +1519,30 @@ public class RolapStar {
             }
 
             return column;
+        }
+
+        private Datatype convertPropertyType(Property.Datatype type) {
+            switch (type) {
+                case TYPE_STRING:
+                    return Datatype.STRING;
+                case TYPE_NUMERIC:
+                    return Datatype.NUMERIC;
+                case TYPE_INTEGER:
+                    return Datatype.INTEGER;
+                case TYPE_LONG:
+                    return Datatype.INTEGER;
+                case TYPE_BOOLEAN:
+                case TYPE_DATE:
+                     return Datatype.DATE;
+                case TYPE_TIME:
+                     return Datatype.TIME;
+                case TYPE_TIMESTAMP:
+                     return Datatype.TIMESTAMP;
+                case TYPE_OTHER:
+                     return Datatype.STRING;
+                default:
+                    return Datatype.STRING;
+            }
         }
 
         private Column makeColumnForLevelExpr(
