@@ -58,6 +58,7 @@ public class ViewImpl implements MappingViewQuery {
             ds.add(dialect);
             sql.setDialects(ds);
             sql.setStatement(code);
+            this.sql.sqls().add(sql);
         }
     }
 

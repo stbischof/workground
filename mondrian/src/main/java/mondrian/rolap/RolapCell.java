@@ -593,11 +593,7 @@ public class RolapCell implements Cell {
             case Property.CELL_ORDINAL_ORDINAL:
                 return result.getCellOrdinal(pos);
             case Property.VALUE_ORDINAL:
-                if (ci.valueFormatter == null) {
-                    return getValue();
-                } else {
-                	return getFormattedValue();
-                }
+                return getValue();
             case Property.FORMAT_STRING_ORDINAL:
                 if (ci.formatString == null) {
                     final Evaluator evaluator = result.getRootEvaluator();

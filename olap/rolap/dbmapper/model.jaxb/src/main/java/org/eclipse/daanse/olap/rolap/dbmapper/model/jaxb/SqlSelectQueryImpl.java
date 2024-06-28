@@ -30,7 +30,7 @@ import java.util.Objects;
 public class SqlSelectQueryImpl implements MappingSqlSelectQuery {
 
     @XmlElement(name = "SQL", type = SQLImpl.class)
-    protected List<MappingSQL> sqls;
+    protected List<MappingSQL> sqls = new ArrayList<MappingSQL>();
 
     public SqlSelectQueryImpl() {
     }
@@ -40,12 +40,12 @@ public class SqlSelectQueryImpl implements MappingSqlSelectQuery {
     }
 
     @Override
-    public List<MappingSQL> sqls() {
-        return sqls != null ? sqls : new ArrayList<>();
+    public List<MappingSQL> sqls() {    	
+        return sqls;
     }
 
-    public void setSqls(List<MappingSQL> sqls) {
-        this.sqls = sqls;
+    public void setSqls(List<MappingSQL> sqls) {    	
+        this.sqls = sqls != null ? sqls : new ArrayList<MappingSQL>();
     }
 
     @Override

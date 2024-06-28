@@ -401,7 +401,7 @@ public class MdxToQueryConverter {
 		case KeyObjectIdentifier keyObjectIdentifier:
 			return new IdImpl.KeySegment(getNameSegmentList(keyObjectIdentifier.nameObjectIdentifiers()));
 		case NameObjectIdentifier nameObjectIdentifier:
-			return new IdImpl.NameSegmentImpl(nameObjectIdentifier.name(), Quoting.UNQUOTED);
+			return new IdImpl.NameSegmentImpl(nameObjectIdentifier.name(), getQuoting(nameObjectIdentifier.quoting()));
 		}
 	}
 
