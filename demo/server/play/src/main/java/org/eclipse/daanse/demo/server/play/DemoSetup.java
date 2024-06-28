@@ -8,7 +8,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.query.component.Query;

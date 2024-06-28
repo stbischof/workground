@@ -14,12 +14,12 @@
 package org.eclipse.daanse.olap.documentation.common;
 
 import jakarta.xml.bind.JAXBException;
-import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
-import org.eclipse.daanse.common.jdbc.db.api.meta.TableDefinition;
-import org.eclipse.daanse.common.jdbc.db.api.schema.ColumnDefinition;
-import org.eclipse.daanse.common.jdbc.db.api.schema.SchemaReference;
-import org.eclipse.daanse.common.jdbc.db.api.schema.TableReference;
-import org.eclipse.daanse.common.jdbc.db.record.schema.SchemaReferenceR;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.meta.TableDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.SchemaReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
+import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
 import org.eclipse.daanse.db.jdbc.util.impl.Column;
 import org.eclipse.daanse.db.jdbc.util.impl.DBStructure;
 import org.eclipse.daanse.db.jdbc.util.impl.Table;

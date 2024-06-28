@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.eclipse.daanse.common.io.fs.watcher.api.EventKind;
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherListener;
-import org.eclipse.daanse.common.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
+import org.eclipse.daanse.io.fs.watcher.api.EventKind;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherListener;
+import org.eclipse.daanse.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
 import org.eclipse.daanse.db.jdbc.util.impl.Column;
@@ -134,7 +134,7 @@ public class OdsDataLoader  implements FileSystemWatcherListener {
 
         createTable(connection, dialect, columns, schemaName, tableName);
         StringBuilder b = new StringBuilder();
- 
+
         b.append("INSERT INTO ");
         b.append(dialect.quoteIdentifier(tableName, schemaName));
         b.append(" ( ");

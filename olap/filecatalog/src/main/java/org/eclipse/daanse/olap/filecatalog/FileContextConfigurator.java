@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherListener;
-import org.eclipse.daanse.common.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherListener;
+import org.eclipse.daanse.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
 import org.eclipse.daanse.olap.core.BasicContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;

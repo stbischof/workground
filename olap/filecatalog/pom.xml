@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.daanse</groupId>
-			<artifactId>org.eclipse.daanse.common.io.fs.watcher.api</artifactId>
+			<artifactId>org.eclipse.daanse.io.fs.watcher.api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.daanse</groupId>

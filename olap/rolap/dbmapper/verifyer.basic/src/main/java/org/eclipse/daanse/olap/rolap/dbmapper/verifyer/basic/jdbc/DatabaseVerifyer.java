@@ -13,7 +13,7 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
-import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;

@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherListener;
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
-import org.eclipse.daanse.common.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherListener;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
+import org.eclipse.daanse.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.annotations.RequireConfigurationAdmin;
@@ -47,7 +47,7 @@ public class FileContextRepositoryConfigurator implements FileSystemWatcherListe
 		String io_fs_watcher_path();
 
 	}
-	
+
 	@Activate
 	void activate(Config cgf) {
 		System.out.println("context FileContextRepositoryConfigurator");
@@ -104,7 +104,7 @@ public class FileContextRepositoryConfigurator implements FileSystemWatcherListe
 			props.put(FileSystemWatcherWhiteboardConstants.FILESYSTEM_WATCHER_PATH, path.toString());
 			props.put("name", basePath.relativize(path).toString());
 			c.update(props);
-			
+
 			catalogFolderConfigs.put(path, c);
 		} catch (IOException e) {
 			e.printStackTrace();

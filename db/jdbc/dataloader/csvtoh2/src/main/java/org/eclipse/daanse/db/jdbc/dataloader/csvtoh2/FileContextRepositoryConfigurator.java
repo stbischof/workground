@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherListener;
-import org.eclipse.daanse.common.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
-import org.eclipse.daanse.common.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
-import org.eclipse.daanse.common.jdbc.datasource.metatype.h2.api.Constants;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherListener;
+import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
+import org.eclipse.daanse.io.fs.watcher.api.propertytypes.FileSystemWatcherListenerProperties;
+import org.eclipse.daanse.jdbc.datasource.metatype.h2.api.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.annotations.RequireConfigurationAdmin;
@@ -36,7 +36,7 @@ public class FileContextRepositoryConfigurator implements FileSystemWatcherListe
 
 //	public static final String PID="org.eclipse.daanse.db.jdbc.dataloader.csvtoh2.FileContextRepositoryConfigurator";
 	public static final String PID_H2 = Constants.PID_DATASOURCE;//"org.eclipse.daanse.db.datasource.h2.H2DataSource";
-	public static final String PID_CSV = org.eclipse.daanse.common.jdbc.loader.csv.api.Constants.PID_LOADER_FILEWATCHER;
+	public static final String PID_CSV = org.eclipse.daanse.jdbc.loader.csv.api.Constants.PID_LOADER_FILEWATCHER;
 
 	@Reference
 	ConfigurationAdmin configurationAdmin;
@@ -69,8 +69,8 @@ public class FileContextRepositoryConfigurator implements FileSystemWatcherListe
 
 	@Override
 	public void handleInitialPaths(List<Path> paths) {
-		
-		
+
+
 		paths.stream().peek(System.out::println).forEach(this::addPath);
 	}
 
@@ -115,19 +115,19 @@ public class FileContextRepositoryConfigurator implements FileSystemWatcherListe
 		}
 		String pathString = path.toString();
 		String pathStringData = path.resolve("data").toString();
-		
-		
+
+
 		String matcherKey=pathString.replace("\\","-.-");;
 		try {
 			Configuration cH2 = configurationAdmin.getFactoryConfiguration(PID_H2, UUID.randomUUID().toString(), "?");
-		
+
 			Dictionary<String, Object> props = new Hashtable<>();
 			props.put(FileSystemWatcherWhiteboardConstants.FILESYSTEM_WATCHER_PATH, pathString);
 			props.put(Constants.DATASOURCE_PROPERTY_IDENTIFIER, UUID.randomUUID().toString());
             props.put(Constants.DATASOURCE_PROPERTY_PLUGABLE_FILESYSTEM, Constants.OPTION_PLUGABLE_FILESYSTEM_MEM_FS );
             props.put("file.context.matcher", matcherKey);
 			cH2.update(props);
-			
+
 			catalogFolderConfigsDS.put(path, cH2);
 
 			Configuration cCSV = configurationAdmin.getFactoryConfiguration(PID_CSV, UUID.randomUUID().toString(), "?");

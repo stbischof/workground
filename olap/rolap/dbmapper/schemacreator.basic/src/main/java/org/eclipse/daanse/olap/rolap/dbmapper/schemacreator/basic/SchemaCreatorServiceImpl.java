@@ -27,14 +27,14 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
-import org.eclipse.daanse.common.jdbc.db.api.meta.ImportedKey;
-import org.eclipse.daanse.common.jdbc.db.api.schema.ColumnDefinition;
-import org.eclipse.daanse.common.jdbc.db.api.schema.ColumnReference;
-import org.eclipse.daanse.common.jdbc.db.api.schema.TableReference;
-import org.eclipse.daanse.common.jdbc.db.record.schema.ColumnReferenceR;
-import org.eclipse.daanse.common.jdbc.db.record.schema.SchemaReferenceR;
-import org.eclipse.daanse.common.jdbc.db.record.schema.TableReferenceR;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.meta.ImportedKey;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
+import org.eclipse.daanse.jdbc.db.record.schema.ColumnReferenceR;
+import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
+import org.eclipse.daanse.jdbc.db.record.schema.TableReferenceR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;

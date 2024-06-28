@@ -42,10 +42,10 @@
 	bnd.identity;id='org.eclipse.daanse.olap.filecatalog',\
 	bnd.identity;id='org.eclipse.daanse.olap.rolap.dbmapper.provider.xml',\
 	bnd.identity;id='org.eclipse.daanse.olap.documentation.common',\
-	bnd.identity;id='org.eclipse.daanse.common.jdbc.datasource.metatype.h2',\
-	bnd.identity;id='org.eclipse.daanse.common.jdbc.loader.csv',\
-	bnd.identity;id='org.eclipse.daanse.common.jdbc.db.api',\
-	bnd.identity;id='org.eclipse.daanse.common.jdbc.db.core'
+	bnd.identity;id='org.eclipse.daanse.jdbc.datasource.metatype.h2',\
+	bnd.identity;id='org.eclipse.daanse.jdbc.loader.csv',\
+	bnd.identity;id='org.eclipse.daanse.jdbc.db.api',\
+	bnd.identity;id='org.eclipse.daanse.jdbc.db.core'
 
 
 
@@ -85,14 +85,14 @@
 	org.apache.felix.scr;version='[2.2.10,2.2.11)',\
 	org.apache.felix.webconsole;version='[5.0.0,5.0.1)',\
 	org.apache.felix.webconsole.plugins.ds;version='[2.3.0,2.3.1)',\
-	org.eclipse.daanse.common.io.fs.watcher.api;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.io.fs.watcher.watchservice;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jakarta.servlet.soap;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jdbc.datasource.metatype.h2;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jdbc.db.api;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jdbc.db.core;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jdbc.db.record;version='[0.0.1,0.0.2)',\
-	org.eclipse.daanse.common.jdbc.loader.csv;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.io.fs.watcher.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.io.fs.watcher.watchservice;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jakarta.servlet.soap;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jdbc.datasource.metatype.h2;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jdbc.db.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jdbc.db.core;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jdbc.db.record;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.jdbc.loader.csv;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.api;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.db.common;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.db.dialect.db.h2;version='[0.0.1,0.0.2)',\

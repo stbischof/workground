@@ -13,14 +13,14 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.verifyer.basic.jdbc;
 
-import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
-import org.eclipse.daanse.common.jdbc.db.api.schema.ColumnDefinition;
-import org.eclipse.daanse.common.jdbc.db.api.schema.ColumnReference;
-import org.eclipse.daanse.common.jdbc.db.api.schema.SchemaReference;
-import org.eclipse.daanse.common.jdbc.db.api.schema.TableReference;
-import org.eclipse.daanse.common.jdbc.db.record.schema.ColumnReferenceR;
-import org.eclipse.daanse.common.jdbc.db.record.schema.SchemaReferenceR;
-import org.eclipse.daanse.common.jdbc.db.record.schema.TableReferenceR;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;
+import org.eclipse.daanse.jdbc.db.api.schema.SchemaReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
+import org.eclipse.daanse.jdbc.db.record.schema.ColumnReferenceR;
+import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
+import org.eclipse.daanse.jdbc.db.record.schema.TableReferenceR;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;

@@ -4,7 +4,7 @@ package org.eclipse.daanse.xmla.server.jakarta.saaj;
 import jakarta.servlet.Servlet;
 import jakarta.xml.soap.MimeHeader;
 import jakarta.xml.soap.SOAPMessage;
-import org.eclipse.daanse.common.jakarta.servlet.soap.AbstractSoapServlet;
+import org.eclipse.daanse.jakarta.servlet.soap.AbstractSoapServlet;
 import org.eclipse.daanse.xmla.api.XmlaService;
 import org.eclipse.daanse.xmla.server.adapter.soapmessage.XmlaApiAdapter;
 import org.osgi.service.component.annotations.Activate;

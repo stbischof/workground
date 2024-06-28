@@ -19,7 +19,7 @@
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.daanse</groupId>
-		<artifactId>org.eclipse.daanse.common.jakarta.servlet.soap</artifactId>
+		<artifactId>org.eclipse.daanse.jakarta.servlet.soap</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<scope>compile</scope>
 	</dependency>

@@ -69,15 +69,15 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.common.jdbc.db.api</artifactId>
+      <artifactId>org.eclipse.daanse.jdbc.db.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.common.jdbc.db.record</artifactId>
+      <artifactId>org.eclipse.daanse.jdbc.db.record</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.common.jdbc.db.core</artifactId>
+      <artifactId>org.eclipse.daanse.jdbc.db.core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

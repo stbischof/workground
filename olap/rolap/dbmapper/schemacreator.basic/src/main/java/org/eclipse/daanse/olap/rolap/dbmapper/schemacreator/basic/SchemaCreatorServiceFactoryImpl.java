@@ -13,7 +13,7 @@
  */
 package org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.basic;
 
-import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.api.SchemaCreatorService;
 import org.eclipse.daanse.olap.rolap.dbmapper.schemacreator.api.SchemaCreatorServiceFactory;
 import org.osgi.service.component.annotations.Component;
