@@ -3003,11 +3003,17 @@ class SchemaTest {
                     .foreignKey("store_id")
                     .build();
 
+                MappingDimensionUsage d2 = DimensionUsageRBuilder.builder()
+                        .name("Time")
+                        .source("Time")
+                        .foreignKey("time_id")
+                        .build();                
+                
                 MappingCube c = CubeRBuilder
                     .builder()
                     .name("Sales Create Dimension")
                     .fact(new TableR("sales_fact_1997"))
-                    .dimensionUsageOrDimensions(List.of(d1))
+                    .dimensionUsageOrDimensions(List.of(d1, d2))
                     .measures(List.of(
                         MeasureRBuilder
                             .builder()
@@ -3030,24 +3036,7 @@ class SchemaTest {
                 return result;
             }
         }
-        /*
-        String baseSchema = TestUtil.getRawSchema(context);
-        String schema = SchemaUtil.getSchema(baseSchema,
-            null,
-
-            "<Cube name=\"Sales Create Dimension\">\n"
-            + "  <Table name=\"sales_fact_1997\"/>\n"
-            + "  <DimensionUsage name=\"Store\" source=\"Store\" foreignKey=\"store_id\"/>\n"
-            + "  <Measure name=\"Unit Sales\" column=\"unit_sales\" aggregator=\"sum\" "
-            + "   formatString=\"Standard\"/>\n"
-            + "  <Measure name=\"Store Cost\" column=\"store_cost\" aggregator=\"sum\""
-            + "   formatString=\"#,###.00\"/>\n"
-            + "</Cube>", null, null, null, null);
-        withSchema(context, schema);
-         */
         withSchema(context, TestDimensionCreationModifier::new);
-        Cube cube = context.getConnection().getSchema().lookupCube(
-            "Sales Create Dimension", true);
 
         assertQueryReturns(context.getConnection(),
             "select\n"
@@ -3058,11 +3047,6 @@ class SchemaTest {
             + "Axis #1:\n"
             + "{[Store].[USA]}\n"
             + "Row #0: 266,773\n");
-
-        String dimension =
-            "<DimensionUsage name=\"Time\" source=\"Time\" foreignKey=\"time_id\"/>";
-//        context.getConnection().getSchema().createDimension(
-//            cube, dimension);
 
         assertQueryReturns(context.getConnection(),
             "select\n"
@@ -5570,56 +5554,57 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testAggTableSupportOfSharedDims(Context context) {
-        if (Bug.BugMondrian361Fixed) {
-            class TestAggTableSupportOfSharedDimsModifier extends RDbMappingSchemaModifier {
-                public TestAggTableSupportOfSharedDimsModifier(MappingSchema mappingSchema) {
+        class TestAggTableSupportOfSharedDimsModifier extends RDbMappingSchemaModifier {
+            public TestAggTableSupportOfSharedDimsModifier(MappingSchema mappingSchema) {
                     super(mappingSchema);
-                }
-                @Override
-                protected List<MappingCube> cubes(List<MappingCube> cubes) {
-                    List<MappingCube> result = new ArrayList<>();
-
-                    MappingDimensionUsage d1 = DimensionUsageRBuilder.builder()
-                        .name("Time")
-                        .source("Time")
-                        .foreignKey("time_id")
-                        .build();
-                    MappingDimensionUsage d2 = DimensionUsageRBuilder.builder()
-                        .name("Time2")
-                        .source("Time")
-                        .foreignKey("product_id")
-                        .build();
-                    MappingDimensionUsage d3 = DimensionUsageRBuilder.builder()
-                        .name("Store")
-                        .source("Store")
-                        .foreignKey("store_id")
-                        .build();
-
-                    MappingCube c = CubeRBuilder
-                        .builder()
-                        .name("Sales Two Dimensions")
-                        .fact(new TableR("sales_fact_1997"))
-                        .dimensionUsageOrDimensions(List.of(d1, d2, d3))
-                        .measures(List.of(
-                            MeasureRBuilder.builder()
-                                .name("Unit Sales")
-                                .column("unit_sales")
-                                .aggregator("sum")
-                                .formatString("Standard")
-                                .build(),
-                            MeasureRBuilder.builder()
-                                .name("Store Cost")
-                                .column("store_cost")
-                                .aggregator("sum")
-                                .formatString("#,###.00")
-                                .build()
-                        ))
-                        .build();
-                    result.add(c);
-                    result.addAll(super.cubes(cubes));
-                    return result;
-                }
             }
+
+            @Override
+            protected List<MappingCube> cubes(List<MappingCube> cubes) {
+                 List<MappingCube> result = new ArrayList<>();
+
+                 MappingDimensionUsage d1 = DimensionUsageRBuilder.builder()
+                     .name("Time")
+                     .source("Time")
+                     .foreignKey("time_id")
+                     .build();
+                 MappingDimensionUsage d2 = DimensionUsageRBuilder.builder()
+                     .name("Time2")
+                     .source("Time")
+                     .foreignKey("product_id")
+                     .build();
+                 MappingDimensionUsage d3 = DimensionUsageRBuilder.builder()
+                     .name("Store")
+                     .source("Store")
+                     .foreignKey("store_id")
+                     .build();
+
+                 MappingCube c = CubeRBuilder
+                     .builder()
+                     .name("Sales Two Dimensions")
+                     .fact(new TableR("sales_fact_1997"))
+                     .dimensionUsageOrDimensions(List.of(d1, d2, d3))
+                     .measures(List.of(
+                         MeasureRBuilder.builder()
+                             .name("Unit Sales")
+                             .column("unit_sales")
+                             .aggregator("sum")
+                             .formatString("Standard")
+                             .build(),
+                         MeasureRBuilder.builder()
+                             .name("Store Cost")
+                             .column("store_cost")
+                             .aggregator("sum")
+                             .formatString("#,###.00")
+                             .build()
+                     ))
+                     .build();
+                 result.add(c);
+                 result.addAll(super.cubes(cubes));
+                 return result;
+             }
+        }
+        if (Bug.BugMondrian361Fixed) {
             /*
             String baseSchema = TestUtil.getRawSchema(context);
             String schema = SchemaUtil.getSchema(baseSchema,
@@ -9244,9 +9229,10 @@ class SchemaTest {
     void testDimensionUsageVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
             class TestDimensionUsageVisibilityModifier extends RDbMappingSchemaModifier {
-
-                public TestDimensionUsageVisibilityModifier(MappingSchema mappingSchema) {
+                private Boolean value;
+                public TestDimensionUsageVisibilityModifier(MappingSchema mappingSchema, Boolean value) {
                     super(mappingSchema);
+                    this.value = value;
                 }
 
                 @Override
@@ -9270,6 +9256,12 @@ class SchemaTest {
                                         ))
                                         .build()
                                 ))
+                                .build(),
+                            DimensionUsageRBuilder.builder()
+                                .name("Bar")
+                                .source("Time")
+                                .foreignKey("time_id")
+                                .visible(this.value)
                                 .build()
                         ))
                         .measures(List.of(
@@ -9302,18 +9294,15 @@ class SchemaTest {
                     null, cubeDef, null, null, null, null);
             withSchema(context, schema);
              */
-            withSchema(context, TestDimensionUsageVisibilityModifier::new);
+            RolapSchemaPool.instance().clear();
+            MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
+            TestDimensionUsageVisibilityModifier testDimensionUsageVisibilityModifier =
+            		new TestDimensionUsageVisibilityModifier(schema, testValue);
+            ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(testDimensionUsageVisibilityModifier));
+
             final Cube cube =
                 context.getConnection().getSchema()
                     .lookupCube("Foo", true);
-            String dimensionDef =
-                "<DimensionUsage name=\"Bar\" source=\"Time\" foreignKey=\"time_id\" visible=\"@REPLACE_ME@\"/>";
-            dimensionDef = dimensionDef.replace(
-                "@REPLACE_ME@",
-                String.valueOf(testValue));
-
-//            context.getConnection().getSchema().createDimension(
-//                cube, dimensionDef);
 
             Dimension dim = null;
             for (Dimension dimCheck : cube.getDimensions()) {

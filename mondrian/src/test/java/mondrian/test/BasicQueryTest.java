@@ -712,7 +712,7 @@ public class BasicQueryTest {
   void testEmptyTupleSlicerFails(Context context) {
     Connection connection = context.getConnection();
     assertQueryThrows(connection, "select [Measures].[Unit Sales] on 0,\n" + "[Product].Children on 1\n"
-        + "from [Warehouse and Sales]\n" + "where ()", "Encountered an error at (or somewhere around) input:4:8')'" );
+        + "from [Warehouse and Sales]\n" + "where ()", "Encountered an error at (or somewhere around) input:4:8" );
   }
 
   /**

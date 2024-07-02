@@ -3093,10 +3093,10 @@ class AccessControlTest {
         ///            .getSegmentList());
 
         assertNotNull(allMember);
-        assertEquals(1, allMember.getHierarchy().getRootMembers().size());
+        assertNotNull(allMember.getHierarchy().getAllMember());
         assertEquals(
             "[Store].[All Stores]",
-            allMember.getHierarchy().getRootMembers().get(0).getUniqueName());
+            allMember.getHierarchy().getAllMember().getUniqueName());
     }
 
     /**

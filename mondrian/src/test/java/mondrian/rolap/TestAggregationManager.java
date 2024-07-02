@@ -2043,9 +2043,9 @@ class TestAggregationManager extends BatchTestCase {
         RolapSchemaPool.instance().clear();
         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.TestAggregationManagerModifier2(schema, colName)));
-        assertQueryThrows(context.getConnection(),
+        assertQueryThrows(context,
             mdxQuery,
-            "ERROR_TEST_FUNCTION_NAME");
+            "error_test_function_name");
         // Run for real this time
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(

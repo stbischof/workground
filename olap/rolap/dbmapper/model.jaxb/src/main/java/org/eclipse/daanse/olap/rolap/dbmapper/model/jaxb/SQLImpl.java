@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,8 +23,8 @@ public class SQLImpl implements MappingSQL {
 
     @Override
     public List<String> dialects() {
-        if (dialects == null) {
-            dialects = new ArrayList<>();
+        if (dialects == null  || dialects.isEmpty()) {
+            dialects = Arrays.asList("generic");
         }
         return dialects;
     }

@@ -100,20 +100,25 @@ class RolapUtilTest {
   }
 
   private static String getFactTableWithSQLFilter() {
-    String fact =
-        "<Table name=\"sales_fact_1997\" alias=\"TableAlias\">\n"
-        + " <SQL dialect=\"mysql\">\n"
-        + "     `TableAlias`.`promotion_id` = 112\n"
-        + " </SQL>\n"
-        + "</Table>";
+    String fact = """
+        <Table name="sales_fact_1997" alias="TableAlias">
+    		<SqlSelectQuery>
+    		  	<Dialect>mysql</Dialect>
+                <SQLStatement>`TableAlias`.`promotion_id` = 112</SQLStatement>
+    		</SqlSelectQuery>
+        </Table>        
+    """;
     return fact;
   }
 
   private static String getFactTableWithEmptySQLFilter() {
-    String fact =
-        "<Table name=\"sales_fact_1997\" alias=\"TableAlias\">\n"
-        + " <SQL dialect=\"mysql\"/>\n"
-        + "</Table>";
+    String fact = """
+        <Table name="sales_fact_1997" alias="TableAlias">
+    		   <SqlSelectQuery>
+    			   <Dialect>mysql</Dialect>
+    		   </SqlSelectQuery>
+        </Table>        
+    	""";
     return fact;
   }
 

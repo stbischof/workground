@@ -6110,7 +6110,7 @@ public class SchemaModifiers {
                                                 .name("Product Family")
                                                 .table("product_class")
                                                 .column("product_family")
-                                                .uniqueMembers(false)
+                                                //.uniqueMembers(false)
                                                 .build()
                                         ))
                                         .build()
@@ -6139,7 +6139,7 @@ public class SchemaModifiers {
                                         .relation(
                                             new JoinR(
                                                 new JoinedQueryElementR("product", "product_class_id", new TableR(null, "product", "product", List.of())),
-                                                new JoinedQueryElementR("product", "product_class_id", new TableR(null, "product_class", "product_class", List.of()))
+                                                new JoinedQueryElementR("product_class", "product_class_id", new TableR(null, "product_class", "product_class", List.of()))
                                             )
                                         )
                                         .levels(List.of(

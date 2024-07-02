@@ -3,13 +3,18 @@ package org.eclipse.daanse.olap.rolap.dbmapper.model.record;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public record SQLR(String statement, List<String> dialects) implements MappingSQL {
 
     public SQLR(String statement, List<String> dialects) {
-        this.dialects = dialects == null ? new ArrayList<>() : dialects;
+        if (dialects == null || dialects.isEmpty()) {
+            this.dialects = Arrays.asList("generic");
+        } else {
+            this.dialects = dialects;
+        }
         this.statement = statement;
     }
 
