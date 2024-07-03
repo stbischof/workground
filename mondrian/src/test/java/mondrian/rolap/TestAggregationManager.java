@@ -2045,7 +2045,7 @@ class TestAggregationManager extends BatchTestCase {
         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.TestAggregationManagerModifier2(schema, colName)));
         assertQueryThrows(context,
             mdxQuery,
-            "error_test_function_name");
+            "ERROR_TEST_FUNCTION_NAME");
         // Run for real this time
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(

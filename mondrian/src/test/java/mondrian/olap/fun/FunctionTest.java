@@ -12971,7 +12971,7 @@ Intel platforms):
         + "on 0 from sales",
       Util.IBM_JVM
         ? "StringIndexOutOfBoundsException: null"
-        : "StringIndexOutOfBoundsException: begin 0, end -20, length 10" );
+        : "StringIndexOutOfBoundsException: Range [0, -20) out of bounds for length 10" );
   }
 
   @ParameterizedTest

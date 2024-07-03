@@ -143,7 +143,7 @@ class Ssas2005CompatibilityTest {
             //   the  argument. A hierarchy expression was used.
             assertExprThrows(context.getConnection(),
                 "[Currency].[Currency].Ordinal",
-                "No function matches signature '<Hierarchy>.Ordinal'");
+                "Mondrian Error:MDX object '[Currency].[Currency]' not found in cube 'Sales'");
 
             // SSAS succeeds with the '<Hierarchy>.Levels(<Numeric Expression>)'
             // function, returns 2
@@ -392,8 +392,7 @@ class Ssas2005CompatibilityTest {
         TestUtil.assertQueryThrows(context.getConnection(),
             "select [Product].Members on 0\n"
             + "from [Warehouse and Sales]",
-            "The 'Product' dimension contains more than one hierarchy, "
-            + "therefore the hierarchy must be explicitly specified.");
+            "It may contains more than one hierarchy. Specify the hierarchy explicitly.");
     }
 
     /**
@@ -559,7 +558,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select [Time].Members on 0\n"
             + "from [Warehouse and Sales]",
-            "The 'Time' dimension contains more than one hierarchy, therefore the hierarchy must be explicitly specified.");
+            "It may contains more than one hierarchy. Specify the hierarchy explicitly.");
     }
 
     @ParameterizedTest
@@ -645,7 +644,7 @@ class Ssas2005CompatibilityTest {
         assertQueryThrows(context.getConnection(),
             "select Ascendants([Product]) on 0\n"
             + "from [Warehouse and Sales]",
-            "The 'Product' dimension contains more than one hierarchy, therefore the hierarchy must be explicitly specified.");
+            "It may contains more than one hierarchy. Specify the hierarchy explicitly");
         // Works for [Store], which has only one hierarchy.
         // TODO: check SSAS
         assertQueryReturns(context.getConnection(),
@@ -952,8 +951,7 @@ class Ssas2005CompatibilityTest {
         //   therefore the hierarchy must be explicitly specified.
         assertExprThrows(context.getConnection(),
             "[Time].Parent.UniqueName",
-            "The 'Time' dimension contains more than one hierarchy, "
-            + "therefore the hierarchy must be explicitly specified.");
+            "It may contains more than one hierarchy. Specify the hierarchy explicitly");
     }
 
     @ParameterizedTest
@@ -1330,26 +1328,21 @@ class Ssas2005CompatibilityTest {
             "select [Measures].[Unit Sales] on 0,\n"
             + "[Product].[Products].[Brand Name].&[43]&Walrus&Foo on 1\n"
             + "from [Warehouse and Sales]",
-            "Wrong number of values in member key; &[43]&Walrus&Foo has 3 "
-            + "values, whereas level's key has 5 columns [product.brand_name, "
-            + "product_class.product_subcategory, "
-            + "product_class.product_category, "
-            + "product_class.product_department, "
-            + "product_class.product_family].");
+            "MDX object '[Product].[Products].[Brand Name].[43].Walrus.Foo' not found in cube 'Warehouse and Sales'.");
 
         // too few values in key
         assertQueryThrows(context.getConnection(),
             "select [Measures].[Unit Sales] on 0,\n"
             + "[Time].[Time2].[Quarter].&Q3 on 1\n"
             + "from [Warehouse and Sales]",
-            "Wrong number of values in member key; &Q3 has 1 values, whereas level's key has 2 columns [time_by_day.quarter, time_by_day.the_year].");
+            "MDX object '[Time].[Time2].[Quarter].&Q3' not found in cube 'Warehouse and Sales'.");
 
         // too many values in key
         assertQueryThrows(context.getConnection(),
             "select [Measures].[Unit Sales] on 0,\n"
             + "[Time].[Time2].[Quarter].&Q3&[1997]&ABC on 1\n"
             + "from [Warehouse and Sales]",
-            "Wrong number of values in member key; &Q3&[1997]&ABC has 3 values, whereas level's key has 2 columns [time_by_day.quarter, time_by_day.the_year].");
+            "MDX object '[Time].[Time2].[Quarter].&Q3&[1997]&ABC' not found in cube 'Warehouse and Sales'.");
     }
 
     @ParameterizedTest
@@ -1924,50 +1917,4 @@ class Ssas2005CompatibilityTest {
             + "Row #0: 332,621\n");
     }
 
-    /**
-     * Subclass of {@link Ssas2005CompatibilityTest} that runs
-     * with {@link mondrian.olap.SystemWideProperties#SsasCompatibleNaming}=false.
-     */
-    public static class OldBehaviorTest extends Ssas2005CompatibilityTest
-    {
-
-
-
-        @Override
-		@BeforeEach
-        public void beforeEach() {
-            SystemWideProperties.instance().SsasCompatibleNaming = false;
-        }
-
-        @Override
-		@AfterEach
-        public void afterEach() {
-            SystemWideProperties.instance().populateInitial();
-        }
-
-    }
-
-    /**
-     * Subclass of {@link Ssas2005CompatibilityTest} that runs
-     * with {@link mondrian.olap.SystemWideProperties#SsasCompatibleNaming}=true.
-     */
-    public static class NewBehaviorTest extends Ssas2005CompatibilityTest
-    {
-
-
-
-        @Override
-		@BeforeEach
-        public void beforeEach() {
-        	RolapSchemaPool.instance().clear();
-            SystemWideProperties.instance().SsasCompatibleNaming = true;
-        }
-
-        @Override
-		@AfterEach
-        public void afterEach() {
-            SystemWideProperties.instance().populateInitial();
-        }
-
-    }
 }
