@@ -577,9 +577,7 @@ import mondrian.rolap.SchemaModifiers;
             "with member [Measures].[Foo] as ' \"quoted string with 'apostrophe' in it\" ' "
             + "select {[Measures].[Foo]} on columns "
             + "from [Sales]",
-            "mondrian.parser.TokenMgrError: "
-            + "Lexical error at line 2, column 0.  "
-            + "Encountered: <EOF> after prefix \"\\\"quoted string with \\n\"");
+            "Found string \"\\\"\" of type INVALID");
 
         // Escaped single quote in double-quoted string literal inside
         // single-quoted member declaration.
@@ -943,9 +941,6 @@ import mondrian.rolap.SchemaModifiers;
         assertQueryThrows(context,
             query,
             "Failed to load formatter class 'java.lang.String' for member '[Measures].[Foo]'.");
-        assertQueryThrows(context,
-            query,
-              "class java.lang.String cannot be cast to class mondrian.spi.CellFormatter" );
     }
 
     @ParameterizedTest

@@ -1507,7 +1507,7 @@ public class RolapStar {
                     Column propertyColumn = makeColumnForPropertyExpr(
                         property,
                         level,
-                        name,
+                        property.getName(),
                         property.getExp(),
                         convertPropertyType(property.getType()),
                         level.getInternalType(),

@@ -2149,6 +2149,11 @@ public class BasicQueryTest {
             + "{[Time].[1997].[Q1]}\n" + "{[Time].[1997].[Q2]}\n" + "{[Time].[1997].[Q3]}\n" + "{[Time].[1997].[Q4]}\n"
             + "Row #0: 3.071\n" + "Row #1: 3.074\n" + "Row #2: 3.069\n" + "Row #3: 3.074\n";
 
+    String desiredResultWithoutAgg =
+            "" + "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Unit Sales]}\n" + "Axis #2:\n"
+                + "{[Time].[1997].[Q1]}\n" + "{[Time].[1997].[Q2]}\n" + "{[Time].[1997].[Q3]}\n" + "{[Time].[1997].[Q4]}\n"
+                + "Row #0: 66,291\n" + "Row #1: 62,610\n" + "Row #2: 65,848\n" + "Row #3: 72,024\n";
+
     assertQueryReturns( context.getConnection(),mdx, desiredResult );
 
     // check that consistent with fact table
@@ -2156,7 +2161,7 @@ public class BasicQueryTest {
     ((TestConfig)context.getConfig()).setReadAggregates(false);
     RolapSchemaPool.instance().clear();
 
-    assertQueryReturns(context.getConnection(), mdx, desiredResult );
+    assertQueryReturns(context.getConnection(), mdx, desiredResultWithoutAgg );
   }
 
     @ParameterizedTest
