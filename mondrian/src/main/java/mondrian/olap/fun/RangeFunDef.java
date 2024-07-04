@@ -116,7 +116,7 @@ class RangeFunDef extends AbstractFunctionDefinition {
                 }
                 if (member0.getLevel() != member1.getLevel()) {
                     throw evaluator.newEvalException(
-                        call.getFunDef(),
+                        call.getFunDef().getFunctionMetaData(),
                         "Members must belong to the same level");
                 }
                 return new UnaryTupleList(

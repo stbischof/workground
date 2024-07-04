@@ -52,7 +52,7 @@ public class NullLiteralImpl extends AbstractLiteralImpl<Object> implements Null
 	@Override
 	public Calc<?> accept(ExpressionCompiler compiler) {
 
-		return new ConstantStringCalc(StringType.INSTANCE, null);
+		return new ConstantStringCalc(NullType.INSTANCE, null);
 	}
 
 	@Override

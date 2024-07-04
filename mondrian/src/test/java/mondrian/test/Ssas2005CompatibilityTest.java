@@ -33,10 +33,12 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.opencube.junit5.ContextArgumentsProvider;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
 import org.opencube.junit5.context.TestConfig;
@@ -85,6 +87,11 @@ class Ssas2005CompatibilityTest {
      * implemented.
      */
     private static final boolean IMPLEMENTED = false;
+
+    @BeforeAll
+    public static void beforeAll() {
+        ContextArgumentsProvider.dockerWasChanged = true;
+    }
 
     @BeforeEach
     public void beforeEach() {

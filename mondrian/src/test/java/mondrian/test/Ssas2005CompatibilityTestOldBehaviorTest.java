@@ -10,7 +10,6 @@ public class Ssas2005CompatibilityTestOldBehaviorTest  extends Ssas2005Compatibi
     @Override
     @BeforeEach
     public void beforeEach() {
-        SystemWideProperties.instance().populateInitial();
         RolapSchemaPool.instance().clear();
         SystemWideProperties.instance().SsasCompatibleNaming = false;
     }

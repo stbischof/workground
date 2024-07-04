@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Proxy;
@@ -869,11 +871,9 @@ public class TestUtil {
 	     */
 	    //TODO: using stream api
 	    public static String getStackTrace( Throwable e ) {
-	      StringWriter sw = new StringWriter();
-	      PrintWriter pw = new PrintWriter( sw );
-	      e.printStackTrace( pw );
-	      pw.flush();
-	      return sw.toString();
+	    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        e.printStackTrace(new PrintStream(out));
+	        return new String(out.toByteArray());
 	    }
 
 	public static Cube cubeByName(Connection connection, String cubeName) {

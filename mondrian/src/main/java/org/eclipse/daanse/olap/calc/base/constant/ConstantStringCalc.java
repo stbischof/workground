@@ -13,6 +13,7 @@
 */
 package org.eclipse.daanse.olap.calc.base.constant;
 
+import mondrian.olap.type.NullType;
 import org.eclipse.daanse.olap.calc.api.StringCalc;
 import org.eclipse.daanse.olap.calc.base.AbstractProfilingConstantCalc;
 
@@ -23,5 +24,9 @@ public class ConstantStringCalc extends AbstractProfilingConstantCalc<String> im
 	public ConstantStringCalc(StringType type, String value) {
 		super(value, type);
 	}
+
+    public ConstantStringCalc(NullType type, String value) {
+        super(value, type);
+    }
 
 }
