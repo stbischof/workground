@@ -245,7 +245,7 @@ public abstract class RolapNativeSet extends RolapNative {
           listener.foundInCache( e );
         }
         return new DelegatingTupleList(
-          args.length, Util.<List<Member>>cast( result ) );
+          args.length, Util.<List<Member>>cast( filterInaccessibleTuples(result) ) );
       }
 
       // execute sql and store the result
