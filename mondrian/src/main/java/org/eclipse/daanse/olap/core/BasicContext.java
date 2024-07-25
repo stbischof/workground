@@ -107,7 +107,7 @@ public class BasicContext extends AbstractBasicContext {
 		activate1(CONVERTER.convert(coniguration).to(BasicContextConfig.class));
 	}
 
-    @Reference(name = REF_NAME_ROLAP_CONTEXT_MAPPING_SUPPLIER, cardinality = ReferenceCardinality.MULTIPLE, policy =
+    @Reference(name = REF_NAME_ROLAP_CONTEXT_MAPPING_SUPPLIER, cardinality = ReferenceCardinality.AT_LEAST_ONE, policy =
             ReferencePolicy.DYNAMIC)
     public void bindVerifiers(RolapContextMappingSupplier s) {
     	rolapContextSuppliers.add(s);
