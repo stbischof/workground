@@ -32,6 +32,7 @@ import org.eclipse.daanse.olap.core.BasicContextConfig;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 
 import mondrian.rolap.agg.AggregationManager;
+import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
 
 /**
  * The {@link Context} gives access to all resources and configurations that are needed
@@ -72,6 +73,9 @@ public interface Context {
      * @return {@link List} of {@link DatabaseMappingSchemaProvider}s.
      */
     List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders();
+
+    List<RolapContextMappingSupplier> getRolapContexts();
+
 
     /**
      * Gives access to a {@link QueryProvider}.

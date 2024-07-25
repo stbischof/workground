@@ -411,8 +411,14 @@
       <artifactId>org.eclipse.daanse.mdx.parser.cccx</artifactId>
       <version>${revision}</version>
       <scope>compile</scope>
-      </dependency>
-    </dependencies>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.emf.model.rolapmapping</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 	<build>
 		<!--
 

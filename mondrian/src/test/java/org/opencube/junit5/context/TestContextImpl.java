@@ -34,6 +34,7 @@ import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapResultShepherd;
 import mondrian.rolap.agg.AggregationManager;
 import mondrian.server.NopEventBus;
+import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
 
 public class TestContextImpl extends AbstractBasicContext implements TestContext {
 
@@ -101,7 +102,12 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 		return databaseMappingSchemaProviders;
 	}
 
-	public SchemaImpl read(InputStream inputStream) throws JAXBException {
+    @Override
+    public List<RolapContextMappingSupplier> getRolapContexts() {
+        return List.of();
+    }
+
+    public SchemaImpl read(InputStream inputStream) throws JAXBException {
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(SchemaImpl.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
