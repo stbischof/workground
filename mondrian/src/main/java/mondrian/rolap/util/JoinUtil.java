@@ -15,6 +15,9 @@ package mondrian.rolap.util;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.Util;
@@ -26,16 +29,16 @@ public class JoinUtil {
         // constructor
     }
 
-    public static MappingQuery left(MappingJoinQuery join) {
-        if (join != null && join.left() != null) {
-            return join.left().getQuery();
+    public static QueryMapping left(JoinQueryMapping join) {
+        if (join != null && join.getLeft() != null) {
+            return join.getLeft().getQuery();
         }
         throw new RolapRuntimeException("Join left error");
     }
 
-    public static MappingQuery right(MappingJoinQuery join) {
-        if (join != null && join.right() != null) {
-            return join.right().getQuery();
+    public static QueryMapping right(JoinQueryMapping join) {
+        if (join != null && join.getRight() != null) {
+            return join.getRight().getQuery();
         }
         throw new RolapRuntimeException("Join right error");
     }
@@ -49,12 +52,12 @@ public class JoinUtil {
      * Returns the alias of the left join key, defaulting to left's
      * alias if left is a table.
      */
-    public static String getLeftAlias(MappingJoinQuery join) {
-        if (join.left() != null && join.left().getAlias() != null) {
-            return join.left().getAlias();
+    public static String getLeftAlias(JoinQueryMapping join) {
+        if (join.getLeft() != null && join.getLeft().getAlias() != null) {
+            return join.getLeft().getAlias();
         }
-        MappingQuery left = left(join);
-        if (left instanceof MappingRelationQuery relation) {
+        QueryMapping left = left(join);
+        if (left instanceof RelationalQueryMapping relation) {
             return RelationUtil.getAlias(relation);
         }
         throw Util.newInternal(
@@ -65,15 +68,15 @@ public class JoinUtil {
      * Returns the alias of the right join key, defaulting to right's
      * alias if right is a table.
      */
-    public static String getRightAlias(MappingJoinQuery join) {
-        if (join.right() != null && join.right().getAlias() != null) {
-            return join.right().getAlias();
+    public static String getRightAlias(JoinQueryMapping join) {
+        if (join.getRight() != null && join.getRight().getAlias() != null) {
+            return join.getRight().getAlias();
         }
-        MappingQuery right = right(join);
-        if (right instanceof MappingRelationQuery relation) {
+        QueryMapping right = right(join);
+        if (right instanceof RelationalQueryMapping relation) {
             return RelationUtil.getAlias(relation);
         }
-        if (right instanceof MappingJoinQuery j) {
+        if (right instanceof JoinQueryMapping j) {
             return getLeftAlias(j);
         }
         throw Util.newInternal(

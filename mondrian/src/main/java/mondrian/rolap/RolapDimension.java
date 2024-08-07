@@ -24,6 +24,8 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,17 +104,17 @@ class RolapDimension extends DimensionBase {
     RolapDimension(
         RolapSchema schema,
         RolapCube cube,
-        MappingPrivateDimension mappingDimension,
-        MappingCubeDimension mappingCubeDimension)
+        DimensionMapping mappingDimension,
+        DimensionMapping mappingCubeDimension)
     {
         this(
             schema,
-            mappingDimension.name(),
-            mappingDimension.caption(),
-            mappingDimension.visible(),
-            mappingDimension.description(),
+            mappingDimension.getName(),
+            mappingDimension.getName(),
+            mappingDimension.isVisible(),
+            mappingDimension.getDescription(),
             DimensionTypeUtil.getDimensionType(mappingDimension),
-            RolapHierarchy.createMetadataMap(mappingDimension.annotations()));
+            RolapHierarchy.createMetadataMap(mappingDimension.getAnnotations()));
 
         Util.assertPrecondition(schema != null);
 
@@ -120,13 +122,13 @@ class RolapDimension extends DimensionBase {
             Util.assertTrue(cube.getSchema() == schema);
         }
 
-        if (!Util.isEmpty(mappingDimension.caption())) {
-            setCaption(mappingDimension.caption());
+        if (!Util.isEmpty(mappingDimension.getName())) {
+            setCaption(mappingDimension.getName());
         }
-        this.hierarchies = new RolapHierarchy[mappingDimension.hierarchies().size()];
-        for (int i = 0; i < mappingDimension.hierarchies().size(); i++) {
+        this.hierarchies = new RolapHierarchy[mappingDimension.getHierarchies().size()];
+        for (int i = 0; i < mappingDimension.getHierarchies().size(); i++) {
             RolapHierarchy hierarchy = new RolapHierarchy(
-                cube, this, mappingDimension.hierarchies().get(i), mappingCubeDimension);
+                cube, this, mappingDimension.getHierarchies().get(i), mappingCubeDimension);
             hierarchies[i] = hierarchy;
         }
 
@@ -178,7 +180,7 @@ class RolapDimension extends DimensionBase {
     /**
      * Initializes a dimension within the context of a cube.
      */
-    void init(MappingCubeDimension mappingDimension) {
+    void init(DimensionMapping mappingDimension) {
         for (int i = 0; i < hierarchies.length; i++) {
             if (hierarchies[i] != null) {
                 ((RolapHierarchy) hierarchies[i]).init(mappingDimension);

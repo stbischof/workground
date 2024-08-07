@@ -61,6 +61,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ViewR;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +145,7 @@ public class RolapStar {
     RolapStar(
         final RolapSchema schema,
         final Context context,
-        final MappingRelationQuery fact)
+        final QueryMapping fact)
     {
         this.cacheAggregations = true;
         this.schema = schema;
@@ -1244,7 +1246,7 @@ public class RolapStar {
      */
     public static class Table {
         private final RolapStar star;
-        private final MappingRelationQuery relation;
+        private final RelationalQueryMapping relation;
         private final List<Column> columnList;
         private final Table parent;
         private List<Table> children;
@@ -1253,7 +1255,7 @@ public class RolapStar {
 
         private Table(
             RolapStar star,
-            MappingRelationQuery relation,
+            RelationalQueryMapping relation,
             Table parent,
             Condition joinCondition)
         {
@@ -1389,7 +1391,7 @@ public class RolapStar {
         private SqlQuery getSqlQuery() {
             return getStar().getSqlQuery();
         }
-        public MappingRelationQuery getRelation() {
+        public RelationalQueryMapping getRelation() {
             return relation;
         }
 

@@ -30,6 +30,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +81,7 @@ public class HierarchyUsage {
      * identifies the usage, and determines which join conditions need to be
      * used.
      */
-    protected final MappingRelationQuery fact;
+    protected final RelationalQueryMapping fact;
 
     /**
      * This matches the hierarchy - may not be unique.
@@ -129,7 +132,7 @@ public class HierarchyUsage {
      * Dimension table which contains the primary key for the hierarchy.
      * (Usually the table of the lowest level of the hierarchy.)
      */
-    private MappingRelationQuery joinTable;
+    private RelationalQueryMapping joinTable;
 
     /**
      * The expression (usually a {@link mondrian.olap.MappingColumn}) by
@@ -149,7 +152,7 @@ public class HierarchyUsage {
     HierarchyUsage(
         RolapCube cube,
         RolapHierarchy hierarchy,
-        MappingCubeDimension cubeDim)
+        DimensionConnectorMapping cubeDim)
     {
         assert cubeDim != null : "precondition: cubeDim != null";
 
@@ -158,8 +161,8 @@ public class HierarchyUsage {
         // Attributes common to all Hierarchy kinds
         // name
         // foreignKey
-        this.name = cubeDim.name();
-        this.foreignKey = cubeDim.foreignKey();
+        this.name = cubeDim.getOverrideDimensionName();
+        this.foreignKey = cubeDim.getForeignKey();
 
         if (cubeDim instanceof MappingDimensionUsage du) {
             this.kind = Kind.SHARED;
@@ -215,7 +218,7 @@ public class HierarchyUsage {
         } else if (cubeDim instanceof MappingVirtualCubeDimension) {
             this.kind = Kind.VIRTUAL;
 
-            this.hierarchyName = cubeDim.name();
+            this.hierarchyName = cubeDim.getOverrideDimensionName();
             this.fullName = this.name;
 
             this.source = null;
@@ -231,7 +234,7 @@ public class HierarchyUsage {
 
             this.kind = Kind.UNKNOWN;
 
-            this.hierarchyName = cubeDim.name();
+            this.hierarchyName = cubeDim.getOverrideDimensionName();
             this.fullName = this.name;
 
             this.source = null;
@@ -291,7 +294,7 @@ public class HierarchyUsage {
         return this.usagePrefix;
     }
 
-    public MappingRelationQuery getJoinTable() {
+    public RelationalQueryMapping getJoinTable() {
         return this.joinTable;
     }
 
@@ -383,7 +386,7 @@ public class HierarchyUsage {
                 findJoinTable(hierarchy, tableName);
             this.joinExp = joinLevel.getKeyExp();
         } else if (hierarchy.getXmlHierarchy() != null
-            && hierarchy.getXmlHierarchy().primaryKey() != null)
+            && hierarchy.getXmlHierarchy().getPrimaryKey() != null)
         {
             // 2. Specify a "primaryKey" attribute of in <Hierarchy>. You must
             //    also specify the "primaryKeyTable" attribute if the hierarchy
@@ -391,11 +394,11 @@ public class HierarchyUsage {
             this.joinTable =
                 findJoinTable(
                     hierarchy,
-                    hierarchy.getXmlHierarchy().primaryKeyTable());
+                    hierarchy.getXmlHierarchy().getPrimaryKeyTable());
             this.joinExp =
                 new ColumnR(
                     getAlias(this.joinTable),
-                    hierarchy.getXmlHierarchy().primaryKey());
+                    hierarchy.getXmlHierarchy().getPrimaryKey());
         } else {
             // 3. If neither of the above, the join is assumed to be to key of
             //    the last level.
@@ -435,11 +438,11 @@ public class HierarchyUsage {
      *   has only one table
      * @return A table, never null
      */
-    private MappingRelationQuery findJoinTable(
+    private RelationalQueryMapping findJoinTable(
         RolapHierarchy hierarchy,
         String tableName)
     {
-        final MappingRelationQuery table;
+        final RelationalQueryMapping table;
         if (tableName == null) {
             table = hierarchy.getUniqueTable();
             if (table == null) {

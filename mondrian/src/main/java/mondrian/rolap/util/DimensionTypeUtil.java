@@ -13,7 +13,9 @@
  */
 package mondrian.rolap.util;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.StandardDimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TimeDimensionMapping;
 
 import mondrian.olap.DimensionType;
 
@@ -24,12 +26,14 @@ public class DimensionTypeUtil {
     }
 
     // Return the dimension's enumerated type.
-    public static DimensionType getDimensionType(MappingPrivateDimension dimension) {
-        if (dimension.type() == null) {
-            return null;
-        } else {
-            return DimensionType.fromValue(dimension.type().getValue());
+    public static DimensionType getDimensionType(DimensionMapping dimension) {
+        if (dimension instanceof StandardDimensionMapping) {
+            return DimensionType.STANDARD_DIMENSION;
         }
+        if (dimension instanceof TimeDimensionMapping) {
+        	return DimensionType.TIME_DIMENSION;
+        }
+        return null;
     }
 
 }

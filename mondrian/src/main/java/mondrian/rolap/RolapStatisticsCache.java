@@ -23,6 +23,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.server.ExecutionImpl;
@@ -46,7 +47,7 @@ public class RolapStatisticsCache {
     }
 
     public long getRelationCardinality(
-        MappingRelationQuery relation,
+        RelationalQueryMapping relation,
         String alias,
         long approxRowCount)
     {
@@ -131,7 +132,7 @@ public class RolapStatisticsCache {
     }
 
     public long getColumnCardinality(
-        MappingRelationQuery relation,
+    	RelationalQueryMapping relation,
         MappingExpression expression,
         long approxCardinality)
     {

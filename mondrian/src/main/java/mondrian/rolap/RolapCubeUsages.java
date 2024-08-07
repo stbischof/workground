@@ -13,7 +13,7 @@ package mondrian.rolap;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeConnectorMapping;
 
 /**
  * Provides the base cubes that a virtual cube uses and
@@ -24,9 +24,9 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeUsage;
  * @since Nov 22 2007
  */
 public class RolapCubeUsages {
-    private List<? extends MappingCubeUsage> cubeUsages;
+    private List<? extends CubeConnectorMapping> cubeUsages;
 
-    public RolapCubeUsages(List<? extends MappingCubeUsage> cubeUsage) {
+    public RolapCubeUsages(List<? extends CubeConnectorMapping> cubeUsage) {
         this.cubeUsages = cubeUsage;
     }
 
@@ -34,9 +34,9 @@ public class RolapCubeUsages {
         if (cubeUsages == null) {
             return false;
         }
-        for (MappingCubeUsage usage : cubeUsages) {
-            if (usage.cubeName().equals(baseCubeName)
-                && Boolean.TRUE.equals(usage.ignoreUnrelatedDimensions()))
+        for (CubeConnectorMapping usage : cubeUsages) {
+            if (usage.getCube().getName().equals(baseCubeName)
+                && Boolean.TRUE.equals(usage.isIgnoreUnrelatedDimensions()))
             {
                 return true;
             }

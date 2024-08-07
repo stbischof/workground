@@ -32,6 +32,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.SystemWideProperties;
@@ -57,7 +61,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
     private final RolapCubeLevel currentNullLevel;
     private RolapCubeMember currentNullMember;
     private RolapCubeMember currentAllMember;
-    private final MappingQuery currentRelation;
+    private final QueryMapping currentRelation;
     private final RolapCubeHierarchyMemberReader reader;
     private HierarchyUsage usage;
     private final Map<String, String> aliases = new HashMap<>();
@@ -90,7 +94,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      */
     public RolapCubeHierarchy(
         RolapCubeDimension cubeDimension,
-        MappingCubeDimension cubeDim,
+        DimensionMapping cubeDim,
         RolapHierarchy rolapHierarchy,
         String subName,
         int ordinal)
@@ -115,7 +119,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      */
     public RolapCubeHierarchy(
         RolapCubeDimension cubeDimension,
-        MappingCubeDimension cubeDim,
+        DimensionMapping cubeDim,
         RolapHierarchy rolapHierarchy,
         String subName,
         int ordinal,
@@ -239,7 +243,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * @return Caption or description, possibly prefixed by dimension role name
      */
     private static String applyPrefix(
-        MappingCubeDimension cubeDim,
+        DimensionMapping cubeDim,
         String caption)
     {
         if (caption == null) {
@@ -319,17 +323,17 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * shared between all cubes with similar structure
      */
     protected void extractNewAliases(
-        MappingQuery oldrel,
-        MappingQuery newrel)
+        QueryMapping oldrel,
+        QueryMapping newrel)
     {
         if (oldrel != null && newrel != null) {
-            if (oldrel instanceof MappingRelationQuery oldrelRelation
-                && newrel instanceof MappingRelationQuery newrelRelation) {
+            if (oldrel instanceof RelationalQueryMapping oldrelRelation
+                && newrel instanceof RelationalQueryMapping newrelRelation) {
                 aliases.put(
                     RelationUtil.getAlias(oldrelRelation),
                     RelationUtil.getAlias(newrelRelation));
-            } else if (oldrel instanceof MappingJoinQuery oldjoin
-                && newrel instanceof MappingJoinQuery newjoin) {
+            } else if (oldrel instanceof JoinQueryMapping oldjoin
+                && newrel instanceof JoinQueryMapping newjoin) {
                 extractNewAliases(left(oldjoin), left(newjoin));
                 extractNewAliases(right(oldjoin), right(newjoin));
             } else {
@@ -410,7 +414,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * @return rolap cube hierarchy relation
      */
     @Override
-	public MappingQuery getRelation() {
+	public QueryMapping getRelation() {
         return currentRelation;
     }
 
@@ -497,7 +501,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
     }
 
     @Override
-	void init(MappingCubeDimension xmlDimension) {
+	void init(DimensionMapping xmlDimension) {
         // first init shared hierarchy
         rolapHierarchy.init(xmlDimension);
         // second init cube hierarchy

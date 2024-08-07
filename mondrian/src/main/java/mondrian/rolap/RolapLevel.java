@@ -40,6 +40,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.InternalTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -352,15 +354,15 @@ public class RolapLevel extends LevelBase {
     RolapLevel(
         RolapHierarchy hierarchy,
         int depth,
-        MappingLevel mappingLevel)
+        LevelMapping mappingLevel)
     {
 
         this(
             hierarchy,
-            mappingLevel.name(),
-            mappingLevel.caption(),
-            mappingLevel.visible(),
-            mappingLevel.description(),
+            mappingLevel.getName(),
+            mappingLevel.getName(),
+            mappingLevel.isVisible(),
+            mappingLevel.getDescription(),
             depth,
             LevelUtil.getKeyExp(mappingLevel),
             LevelUtil.getNameExp(mappingLevel),
@@ -488,7 +490,7 @@ public class RolapLevel extends LevelBase {
         }
     }
 
-    void init(MappingCubeDimension xmlDimension) {
+    void init(DimensionMapping xmlDimension) {
         if (xmlClosure != null) {
             final RolapDimension dimension = ((RolapHierarchy) hierarchy)
                 .createClosedPeerDimension(this, xmlClosure);

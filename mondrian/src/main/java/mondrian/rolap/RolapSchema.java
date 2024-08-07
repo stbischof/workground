@@ -104,7 +104,11 @@ import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.NamedSetMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.ParameterMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.PhysicalCubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -488,8 +492,14 @@ public class RolapSchema implements Schema {
         // Create cubes.
         for (CubeMapping cubeMapping : mappingSchema2.getCubes()) {
             if (cubeMapping.isEnabled()) {
-                RolapCube cube = new RolapCube(this, mappingSchema2, cubeMapping, context);
-//                discard(cube);
+            	if (cubeMapping instanceof PhysicalCubeMapping physicalCubeMapping) {
+            		RolapCube cube = new RolapCube(this, mappingSchema2, physicalCubeMapping, context);
+            		//discard(cube);
+            	}
+            	if (cubeMapping instanceof VirtualCubeMapping virtualCubeMapping) {
+            		RolapCube cube = new RolapCube(this, mappingSchema2, virtualCubeMapping, context);
+            	}
+
             }
         }
 
@@ -817,7 +827,7 @@ public class RolapSchema implements Schema {
                 mappingCalcMember.getName());
         } else {
             return Util.makeFqName(
-                mappingCalcMember.getHierarchy(), mappingCalcMember.getName());
+                mappingCalcMember.getHierarchy().getName(), mappingCalcMember.getName());
     }}
 
     public List<RolapCube> getCubesWithStar(RolapStar star) {
@@ -878,14 +888,14 @@ public class RolapSchema implements Schema {
         return null;
     }
 
-    
+
 	public Role lookupRole(final AccessRoleMapping accessRoleMapping) {
         return mapNameToRole.get(accessRoleMapping);
     }
-    
+
     @Override
 	public Role lookupRole(final String roleName) {
-    	
+
     Optional<Role> oRole=	mapNameToRole.entrySet().stream().filter(e->roleName==e.getKey().getName()).findFirst().map(Entry::getValue);
         return oRole.orElse(null);
     }
@@ -1137,7 +1147,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
     }
 
  // package-local visibility for testing purposes
-    public RolapStar makeRolapStar(final MappingRelationQuery fact) {
+    public RolapStar makeRolapStar(final QueryMapping fact) {
         return new RolapStar(this, context, fact);
     }
 
@@ -1157,7 +1167,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
          * <p> {@link RolapStar.Table#addJoin} works in a similar way.
          */
         synchronized RolapStar getOrCreateStar(
-            final MappingRelationQuery fact)
+            final RelationalQueryMapping fact)
         {
             final List<String> rolapStarKey = RolapUtil.makeRolapStarKey(fact);
             RolapStar star = stars.get(rolapStarKey);

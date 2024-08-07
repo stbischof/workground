@@ -17,15 +17,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryOptimizationHintMapping;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 
 public class TableUtil {
-	public static Map<String, String> getHintMap(MappingTableQuery table) {
+	public static Map<String, String> getHintMap(TableQueryMapping table) {
 
-		if (table.getHints() != null) {
+		if (table.getOptimizationHints() == null) {
 			return Map.of();
 		}
-		return table.getHints().stream().collect(Collectors.toMap(MappingTableQueryOptimisationHint::type, MappingTableQueryOptimisationHint::content));
+		return table.getOptimizationHints().stream().collect(Collectors.toMap(TableQueryOptimizationHintMapping::getType, TableQueryOptimizationHintMapping::getValue));
 	}
 
     public static String getFilter(MappingTableQuery table) {

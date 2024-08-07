@@ -48,6 +48,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggLevelPropertyR;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +123,7 @@ public class ExplicitRules {
          */
         public static ExplicitRules.Group make(
             final RolapCube cube,
-            final org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube xmlCube)
+            final CubeMapping xmlCube)
         {
             Group group = new Group(cube);
 
