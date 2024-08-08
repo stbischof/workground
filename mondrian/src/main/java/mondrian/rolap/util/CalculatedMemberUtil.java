@@ -13,7 +13,6 @@
  */
 package mondrian.rolap.util;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
 import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberPropertyMapping;
 
@@ -22,12 +21,8 @@ public class CalculatedMemberUtil {
     private CalculatedMemberUtil() {
     }
 
-    public static String getFormula(MappingCalculatedMember calculatedMember) {
-        if (calculatedMember.formulaElement() != null) {
-            return calculatedMember.formulaElement().cdata();
-        } else {
-            return calculatedMember.formula();
-        }
+    public static String getFormula(CalculatedMemberMapping calculatedMember) {
+    	return calculatedMember.getFormula();
     }
 
     /**

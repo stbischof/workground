@@ -13,7 +13,7 @@ package mondrian.rolap.aggmatcher;
 
 import static java.util.Collections.EMPTY_LIST;
 
-import static mondrian.rolap.util.ExpressionUtil.getExpression;
+import static mondrian.rolap.util.ExpressionUtil.getExpression1;
 import static mondrian.rolap.util.ExpressionUtil.getTableAlias;
 
 import java.io.PrintWriter;
@@ -35,9 +35,8 @@ import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.rolap.agg.Aggregator;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +147,7 @@ public class AggStar {
         //    which it is OK to roll up
         for (FactTable.Measure measure : aggStarFactTable.measures) {
             if (measure.aggregator.isDistinct()
-                && measure.argument instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn column)
+                && measure.argument instanceof mondrian.rolap.Column column)
             {
                 setLevelBits(
                     measure.rollableLevelBitKey,
@@ -179,7 +178,7 @@ public class AggStar {
     private static void setLevelBits(
         final BitKey bitKey,
         Table aggTable,
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn column,
+        mondrian.rolap.Column column,
         RolapStar.Table table)
     {
         final Set<RolapStar.Column> columns = new HashSet<>();
@@ -494,12 +493,12 @@ public class AggStar {
          */
         public class JoinCondition {
             // I think this is always a Column
-            private final MappingExpression left;
-            private final MappingExpression right;
+            private final SQLExpressionMapping left;
+            private final SQLExpressionMapping right;
 
             private JoinCondition(
-                final MappingExpression left,
-                final MappingExpression right)
+                final SQLExpressionMapping left,
+                final SQLExpressionMapping right)
             {
                 if (!(left instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)) {
                     JOIN_CONDITION_LOGGER.debug("JoinCondition.left NOT Column: {}",
@@ -519,7 +518,7 @@ public class AggStar {
             /**
              * Return the left join expression.
              */
-            public MappingExpression getLeft() {
+            public SQLExpressionMapping getLeft() {
                 return this.left;
             }
 
@@ -527,13 +526,13 @@ public class AggStar {
              * Return the left join expression as string.
              */
             public String getLeft(final SqlQuery query) {
-                return getExpression(this.left, query);
+                return getExpression1(this.left, query);
             }
 
             /**
              * Return the right join expression.
              */
-            public MappingExpression getRight() {
+            public SQLExpressionMapping getRight() {
                 return this.right;
             }
 
@@ -543,9 +542,9 @@ public class AggStar {
              */
             String toString(final SqlQuery query) {
                 StringBuilder buf = new StringBuilder(64);
-                buf.append(getExpression(left, query));
+                buf.append(getExpression1(left, query));
                 buf.append(" = ");
-                buf.append(getExpression(right, query));
+                buf.append(getExpression1(right, query));
                 return buf.toString();
             }
             @Override
@@ -578,11 +577,11 @@ public class AggStar {
                         pw.print(") ");
                     }
                 }
-                pw.println(getExpression(left, sqlQueuy));
+                pw.println(getExpression1(left, sqlQueuy));
 
                 pw.print(subprefix);
                 pw.print("right=");
-                pw.println(getExpression(right, sqlQueuy));
+                pw.println(getExpression1(right, sqlQueuy));
             }
 
             /**
@@ -601,7 +600,7 @@ public class AggStar {
         public class Column {
 
             private final String name;
-            private final MappingExpression expression;
+            private final SQLExpressionMapping expression;
             private final Datatype datatype;
             /**
              * This is only used in RolapAggregationManager and adds
@@ -615,7 +614,7 @@ public class AggStar {
 
             protected Column(
                 final String name,
-                final MappingExpression expression,
+                final SQLExpressionMapping expression,
                 final Datatype datatype,
                 final int bitPosition)
             {
@@ -666,7 +665,7 @@ public class AggStar {
                 return getTable().getAggStar().getSqlQuery();
             }
 
-            public MappingExpression getExpression() {
+            public SQLExpressionMapping getExpression() {
                 return expression;
             }
 
@@ -679,12 +678,12 @@ public class AggStar {
                 String exprString;
 
                 if (usagePrefix == null) {
-                    exprString = ExpressionUtil.getExpression(getExpression(), query);
+                    exprString = ExpressionUtil.getExpression1(getExpression(), query);
                 } else {
-                    MappingExpression expressionInner = getExpression();
-                    assert expressionInner instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-                    org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn columnExpr =
-                        (org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)expressionInner;
+                    SQLExpressionMapping expressionInner = getExpression();
+                    assert expressionInner instanceof mondrian.rolap.Column;
+                    mondrian.rolap.Column columnExpr =
+                        (mondrian.rolap.Column)expressionInner;
                     String prefixedName = usagePrefix
                         + columnExpr.getName();
                     String tableName = getTableAlias(columnExpr);
@@ -735,7 +734,7 @@ public class AggStar {
 
             private ForeignKey(
                 final String name,
-                final MappingExpression expression,
+                final SQLExpressionMapping expression,
                 final Datatype datatype,
                 final int bitPosition)
             {
@@ -750,14 +749,14 @@ public class AggStar {
          */
         public final class Level extends Column {
             private final RolapStar.Column starColumn;
-            private final MappingExpression ordinalExp;
-            private final MappingExpression captionExp;
+            private final SQLExpressionMapping ordinalExp;
+            private final SQLExpressionMapping captionExp;
             private final boolean collapsed;
-            private final Map<String, MappingExpression> properties;
+            private final Map<String, SQLExpressionMapping> properties;
 
             private Level(
                 final String name,
-                final MappingExpression expression,
+                final SQLExpressionMapping expression,
                 final int bitPosition,
                 RolapStar.Column starColumn,
                 boolean collapsed)
@@ -769,13 +768,13 @@ public class AggStar {
 
             private Level(
                 final String name,
-                final MappingExpression expression,
+                final SQLExpressionMapping expression,
                 final int bitPosition,
                 RolapStar.Column starColumn,
                 boolean collapsed,
-                MappingExpression ordinalExp,
-                MappingExpression captionExp,
-                Map<String, MappingExpression> props)
+                SQLExpressionMapping ordinalExp,
+                SQLExpressionMapping captionExp,
+                Map<String, SQLExpressionMapping> props)
             {
                 super(name, expression, starColumn.getDatatype(), bitPosition);
                 this.starColumn = starColumn;
@@ -795,28 +794,28 @@ public class AggStar {
                 return collapsed;
             }
 
-            public MappingExpression getOrdinalExp() {
+            public SQLExpressionMapping getOrdinalExp() {
                 return ordinalExp;
             }
 
-            public MappingExpression getCaptionExp() {
+            public SQLExpressionMapping getCaptionExp() {
                 return captionExp;
             }
 
-            public Map<String, MappingExpression> getProperties() {
+            public Map<String, SQLExpressionMapping> getProperties() {
                 return properties == null
-                    ? Collections.<String, MappingExpression>emptyMap()
+                    ? Collections.<String, SQLExpressionMapping>emptyMap()
                     : properties;
             }
         }
 
         /** The name of the table in the database. */
         private final String name;
-        private final MappingRelationQuery relation;
+        private final RelationalQueryMapping relation;
         protected final List<Level> levels = new ArrayList<>();
         protected List<DimTable> children;
 
-        Table(final String name, final MappingRelationQuery relation) {
+        Table(final String name, final RelationalQueryMapping relation) {
             this.name = name;
             this.relation = relation;
             this.children = Collections.emptyList();
@@ -847,7 +846,7 @@ public class AggStar {
         public abstract boolean hasJoinCondition();
         public abstract Table.JoinCondition getJoinCondition();
 
-        public MappingRelationQuery getRelation() {
+        public RelationalQueryMapping getRelation() {
             return relation;
         }
 
@@ -937,10 +936,10 @@ public class AggStar {
             final Usage usage)
         {
             String tableName = rTable.getAlias();
-            MappingRelationQuery relationInner = rTable.getRelation();
+            RelationalQueryMapping relationInner = rTable.getRelation();
             RolapStar.Condition rjoinCondition = rTable.getJoinCondition();
-            MappingExpression rleft = rjoinCondition.getLeft();
-            final MappingExpression rright;
+            SQLExpressionMapping rleft = rjoinCondition.getLeft();
+            final SQLExpressionMapping rright;
             if (usage == null
                 || usage.getUsageType() != UsageType.LEVEL)
             {
@@ -949,16 +948,16 @@ public class AggStar {
                 rright = usage.level.getKeyExp();
             }
 
-            org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn left = null;
+            mondrian.rolap.Column left = null;
             if (usage != null
                 && usage.rightJoinConditionColumnName != null)
             {
-                left = new ColumnR(
+                left = new mondrian.rolap.Column(
                     getName(),
                     usage.rightJoinConditionColumnName);
             } else {
-                if (rleft instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn lcolumn) {
-                	left = new ColumnR(getName(), lcolumn.getName());
+                if (rleft instanceof mondrian.rolap.Column lcolumn) {
+                	left = new mondrian.rolap.Column(getName(), lcolumn.getName());
                 } else {
                     throw Util.newInternal("not implemented: rleft=" + rleft);
 /*
@@ -1007,7 +1006,7 @@ public class AggStar {
             // add level columns
             for (RolapStar.Column column : rTable.getColumns()) {
                 String nameInner = column.getName();
-                MappingExpression expression = column.getExpression();
+                SQLExpressionMapping expression = column.getExpression();
                 int bitPosition = column.getBitPosition();
 
                 Level level = new Level(
@@ -1079,7 +1078,7 @@ public class AggStar {
             /**
              * The fact table column which is being aggregated.
              */
-            private final MappingExpression argument;
+            private final SQLExpressionMapping argument;
             /**
              * For distinct-count measures, contains a bitKey of levels which
              * it is OK to roll up. For regular measures, this is empty, since
@@ -1089,11 +1088,11 @@ public class AggStar {
 
             private Measure(
                 final String name,
-                final MappingExpression expression,
+                final SQLExpressionMapping expression,
                 final Datatype datatype,
                 final int bitPosition,
                 final RolapAggregator aggregator,
-                final MappingExpression argument)
+                final SQLExpressionMapping argument)
             {
                 super(name, expression, datatype, bitPosition);
                 this.aggregator = aggregator;
@@ -1186,7 +1185,7 @@ public class AggStar {
 
         FactTable(
             final String name,
-            final MappingRelationQuery relation,
+            final RelationalQueryMapping relation,
             final int totalColumnSize,
             final long numberOfRows)
         {
@@ -1297,8 +1296,8 @@ public class AggStar {
                     symbolicName = name;
                 }
 
-                MappingExpression expression =
-                    new ColumnR(getName(), name);
+                SQLExpressionMapping expression =
+                    new mondrian.rolap.Column(getName(), name);
                 Datatype datatype = column.getDatatype();
                 RolapStar.Column rColumn = usage.rColumn;
                 if (rColumn == null) {
@@ -1326,16 +1325,16 @@ public class AggStar {
             Datatype datatype = column.getDatatype();
             RolapAggregator aggregator = usage.getAggregator();
 
-            MappingExpression expression;
+            SQLExpressionMapping expression;
             if (column.hasUsage(JdbcSchema.UsageType.FOREIGN_KEY)
                 && !aggregator.isDistinct())
             {
                 expression = factCountColumn.getExpression();
             } else {
-                expression = new ColumnR(getName(), name);
+                expression = new mondrian.rolap.Column(getName(), name);
             }
 
-            MappingExpression argument;
+            SQLExpressionMapping argument;
             if (aggregator.isDistinct()) {
                 argument = usage.rMeasure.getExpression();
             } else {
@@ -1370,8 +1369,8 @@ public class AggStar {
                 symbolicName = name;
             }
 
-            MappingExpression expression =
-                new ColumnR(getName(), name);
+            SQLExpressionMapping expression =
+                new mondrian.rolap.Column(getName(), name);
             Datatype datatype = usage.getColumn().getDatatype();
             int bitPosition = -1;
 
@@ -1396,8 +1395,8 @@ public class AggStar {
                 symbolicName = name;
             }
 
-            MappingExpression expression =
-                    new ColumnR(getName(), name);
+            SQLExpressionMapping expression =
+                    new mondrian.rolap.Column(getName(), name);
             Datatype datatype = usage.getColumn().getDatatype();
             int bitPosition = -1;
 
@@ -1416,8 +1415,8 @@ public class AggStar {
          */
         private void loadLevel(final JdbcSchema.Table.Column.Usage usage) {
             String name = usage.getSymbolicName();
-            MappingExpression expression =
-                new ColumnR(getName(), usage.levelColumnName);
+            SQLExpressionMapping expression =
+                new mondrian.rolap.Column(getName(), usage.levelColumnName);
 
             int bitPosition = usage.rColumn.getBitPosition();
             Level level =
@@ -1450,8 +1449,8 @@ public class AggStar {
                         new String[] {
                             getTableAlias(parentLevel.getKeyExp())},
                         new String[] {
-                            parentLevel.getKeyExp()
-                                .getName()});
+                            parentLevel.getKeyExp() instanceof mondrian.rolap.Column c ?   
+                                c.getName() : null});
                     final int bitPos = bk.nextSetBit(0);
                     if (bitPos == -1) {
                         throw new MondrianException(
@@ -1591,7 +1590,7 @@ public class AggStar {
         DimTable(
             final Table parent,
             final String name,
-            final MappingRelationQuery relation,
+            final RelationalQueryMapping relation,
             final JoinCondition joinCondition)
         {
             super(name, relation);

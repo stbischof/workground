@@ -21,13 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.olap.Util;
+import mondrian.rolap.Column;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapStar;
@@ -129,8 +128,8 @@ public class AggGen {
     }
 
     protected String getRolapStarColumnName(RolapStar.Column rColumn) {
-        MappingExpression expr = rColumn.getExpression();
-        if (expr instanceof MappingColumn cx) {
+    	SQLExpressionMapping expr = rColumn.getExpression();
+        if (expr instanceof Column cx) {
             return cx.getName();
         }
         return null;
@@ -231,8 +230,8 @@ public class AggGen {
                 }
 
 
-                MappingExpression expr = column.getExpression();
-                if (expr instanceof MappingColumn exprColumn) {
+                SQLExpressionMapping expr = column.getExpression();
+                if (expr instanceof Column exprColumn) {
                     String name = exprColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {
@@ -264,8 +263,8 @@ public class AggGen {
                 if (getLogger().isDebugEnabled()) {
                     getLogger().debug("  RolapStar.Condition: cond={}", cond);
                 }
-                MappingExpression left = cond.getLeft();
-                if (left instanceof MappingColumn leftColumn) {
+                SQLExpressionMapping left = cond.getLeft();
+                if (left instanceof Column leftColumn) {
                     String name = leftColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {

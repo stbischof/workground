@@ -33,6 +33,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +139,7 @@ public class HierarchyUsage {
      * The expression (usually a {@link mondrian.olap.MappingColumn}) by
      * which the hierarchy which is joined to the fact table.
      */
-    private MappingExpression joinExp;
+    private SQLExpressionMapping joinExp;
 
     private final Kind kind;
 
@@ -297,7 +298,7 @@ public class HierarchyUsage {
         return this.joinTable;
     }
 
-    public MappingExpression getJoinExp() {
+    public SQLExpressionMapping getJoinExp() {
         return this.joinExp;
     }
 
@@ -395,7 +396,7 @@ public class HierarchyUsage {
                     hierarchy,
                     hierarchy.getXmlHierarchy().getPrimaryKeyTable());
             this.joinExp =
-                new ColumnR(
+                new mondrian.rolap.Column(
                     getAlias(this.joinTable),
                     hierarchy.getXmlHierarchy().getPrimaryKey());
         } else {

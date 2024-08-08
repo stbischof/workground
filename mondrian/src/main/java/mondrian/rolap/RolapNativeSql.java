@@ -27,6 +27,7 @@ import org.eclipse.daanse.olap.api.query.component.LevelExpression;
 import org.eclipse.daanse.olap.api.query.component.Literal;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.mdx.HierarchyExpressionImpl;
 import mondrian.mdx.ResolvedFunCallImpl;
@@ -222,7 +223,7 @@ public class RolapNativeSql {
                         .getRollup();
                 }
             } else {
-                MappingExpression defExp =
+            	SQLExpressionMapping defExp =
                     measure.getMondrianDefExpression();
                 exprInner = (defExp == null)
                     ? "*" : getExpression(defExp, sqlQuery);
@@ -320,7 +321,7 @@ public class RolapNativeSql {
                 // We must use, in order of priority,
                 //  - caption requested: caption->name->key
                 //  - name requested: name->key
-                MappingExpression expression = useCaption
+            	SQLExpressionMapping expression = useCaption
                 ? rolapLevel.captionExp == null
                         ? rolapLevel.nameExp == null
                             ? rolapLevel.keyExp

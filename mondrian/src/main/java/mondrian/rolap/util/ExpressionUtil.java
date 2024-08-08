@@ -26,16 +26,14 @@ import mondrian.rolap.sql.SqlQuery;
 
 public class ExpressionUtil {
 
-    public static String getExpression(MappingExpression expression, final SqlQuery query) {
-        if (expression instanceof MappingColumn) {
-            return query.getDialect().quoteIdentifier(expression.getTable(), expression.getName());
+    public static String getExpression1(SQLExpressionMapping expression, final SqlQuery query) {
+        if (expression instanceof Column c) {
+            return query.getDialect().quoteIdentifier(c.getTable(), c.getName());
         }
-        if (expression instanceof MappingExpressionView expressionView) {
-            SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
-            expressionView.sql().sqls().forEach(e -> e.dialects().forEach(d ->codeSet.put(d, e.statement())));
-            return codeSet.chooseQuery(query.getDialect());
-        }
-        throw new RolapRuntimeException("getExpression error. Expression is not ExpressionView or Column");
+        
+        SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
+        expression.getSqls().forEach(e -> e.getDialects().forEach(d ->codeSet.put(d, e.getStatement())));
+        return codeSet.chooseQuery(query.getDialect());
     }
 
     public static int hashCode(MappingExpression expression) {
@@ -93,15 +91,14 @@ public class ExpressionUtil {
     	return null;
     }
 
-    public String getExpression(SQLExpressionMapping expression, SqlQuery query) {
+    public static String getExpression(SQLExpressionMapping expression, SqlQuery query) {
         return SQLUtil.toCodeSet(expression.getSqls()).chooseQuery(query.getDialect());
     }
 
     public static String getTableAlias(SQLExpressionMapping expression) {
         if (expression instanceof Column c) {
             return c.getTable();
-        }
-        if (expression instanceof MappingExpressionView) {
-            return null;
+        }        
+        return null;
     }
 }

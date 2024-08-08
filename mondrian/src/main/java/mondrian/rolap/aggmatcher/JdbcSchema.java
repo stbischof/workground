@@ -36,9 +36,9 @@ import javax.sql.DataSource;
 import mondrian.olap.MondrianException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.ConnectionProps;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -349,7 +349,7 @@ public class JdbcSchema {
                 public RolapStar.Measure rMeasure;
 
                 // hierarchy stuff
-                public MappingRelationQuery relation;
+                public RelationalQueryMapping relation;
                 public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression joinExp;
                 public String levelColumnName;
 
@@ -416,28 +416,28 @@ public class JdbcSchema {
                     return symbolicName;
                 }
 
-                public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression getOrdinalExp() {
-                    org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression ordinalExp = null;
+                public SQLExpressionMapping getOrdinalExp() {
+                	SQLExpressionMapping ordinalExp = null;
                     if (ordinalColumn != null) {
                         ordinalExp =
-                            new ColumnR(
+                            new mondrian.rolap.Column(
                                 getTable().getName(), ordinalColumn.getName());
                     }
                     return ordinalExp;
                 }
 
-                public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression getCaptionExp() {
-                    org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression captionExp = null;
+                public SQLExpressionMapping getCaptionExp() {
+                	SQLExpressionMapping captionExp = null;
                     if (captionColumn != null) {
                         captionExp =
-                            new ColumnR(
+                            new mondrian.rolap.Column(
                                 getTable().getName(), captionColumn.getName());
                     }
                     return captionExp;
                 }
 
-                public Map<String, org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression> getProperties() {
-                    Map<String, org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression> map =
+                public Map<String, SQLExpressionMapping> getProperties() {
+                    Map<String, SQLExpressionMapping> map =
                         new HashMap<>();
                     if (properties == null) {
                         return map;
@@ -447,7 +447,7 @@ public class JdbcSchema {
                     {
                         map.put(
                             entry.getKey(),
-                            new ColumnR(
+                            new mondrian.rolap.Column(
                                 getTable().getName(),
                                 entry.getValue().getName()));
                     }
@@ -522,7 +522,7 @@ public class JdbcSchema {
              */
             private boolean isNullable;
 
-            public final org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn column;
+            public final mondrian.rolap.Column column;
 
             private final List<JdbcSchema.Table.Column.Usage> usages;
 
@@ -535,7 +535,7 @@ public class JdbcSchema {
             private Column(final String name) {
                 this.name = name;
                 this.column =
-                    new ColumnR(
+                    new mondrian.rolap.Column(
                         JdbcSchema.Table.this.getName(),
                         name);
                 this.usages = new ArrayList<>();
@@ -849,7 +849,7 @@ public class JdbcSchema {
         private final String tableType;
 
         // mondriandef stuff
-        public MappingTableQuery table;
+        public TableQueryMapping table;
 
         private boolean allColumnsLoaded;
 

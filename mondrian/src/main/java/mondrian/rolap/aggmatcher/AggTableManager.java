@@ -23,6 +23,10 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimis
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryOptimizationHintMappingImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +39,7 @@ import mondrian.recorder.RecorderException;
 import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapSchema;
 import mondrian.rolap.RolapStar;
+import mondrian.rolap.util.PojoUtil;
 
 
 /**
@@ -279,11 +284,7 @@ public class AggTableManager {
                         if (makeAggStar) {
                             dbTable.setTableUsageType(
                                 JdbcSchema.TableUsageType.AGG);
-                            dbTable.table = new TableR(
-                                schemaInner,
-                                name,
-                                null, // null alias
-                                null); // don't know about table hints
+                            dbTable.table = TableQueryMappingImpl.builder().withSchema(schemaInner).withName(name).build();
                             AggStar aggStar = AggStar.makeAggStar(
                                 star,
                                 dbTable,
@@ -358,21 +359,17 @@ public class AggTableManager {
 
             dbFactTable.setTableUsageType(JdbcSchema.TableUsageType.FACT);
 
-            MappingQuery relation =
+            QueryMapping relation =
                 star.getFactTable().getRelation();
             String schemaInner = null;
-            List<MappingTableQueryOptimisationHint> tableHints = null;
-            if (relation instanceof MappingTableQuery table) {
+            List<TableQueryOptimizationHintMappingImpl> tableHints = null;
+            if (relation instanceof TableQueryMapping table) {
                 schemaInner = table.getSchema();
-                tableHints = table.getHints();
+                tableHints = PojoUtil.getOptimizationHints(table.getOptimizationHints());
             }
             String tableName = dbFactTable.getName();
             String alias = null;
-            dbFactTable.table = new TableR(
-                schemaInner,
-                tableName,
-                alias,
-                tableHints);
+            dbFactTable.table = TableQueryMappingImpl.builder().withSchema(schemaInner).withName(tableName).withAlias(alias).withOptimizationHints(tableHints).build();
 
             for (JdbcSchema.Table.Column factColumn
                 : dbFactTable.getColumns())

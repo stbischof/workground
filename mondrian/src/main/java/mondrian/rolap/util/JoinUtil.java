@@ -14,7 +14,6 @@
 package mondrian.rolap.util;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
@@ -43,9 +42,9 @@ public class JoinUtil {
         throw new RolapRuntimeException("Join right error");
     }
 
-    public static void changeLeftRight(MappingJoinQuery join, MappingQuery left, MappingQuery right) {
-        join.left().setQuery(left);
-        join.right().setQuery(right);
+    public static void changeLeftRight(JoinQueryMapping join, QueryMapping left, QueryMapping right) {
+        join.getLeft().setQuery(left);
+        join.getRight().setQuery(right);
     }
 
     /**

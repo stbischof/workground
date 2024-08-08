@@ -12,7 +12,6 @@
 package mondrian.rolap;
 
 import static mondrian.rolap.util.ExpressionUtil.getTableAlias;
-import static mondrian.rolap.util.JoinUtil.changeLeftRight;
 import static mondrian.rolap.util.JoinUtil.left;
 import static mondrian.rolap.util.JoinUtil.right;
 import static mondrian.rolap.util.LevelUtil.getKeyExp;
@@ -114,6 +113,7 @@ import mondrian.rolap.format.FormatterCreateContext;
 import mondrian.rolap.format.FormatterFactory;
 import mondrian.rolap.sql.MemberChildrenConstraint;
 import mondrian.rolap.sql.SqlQuery;
+import mondrian.rolap.util.PojoUtil;
 import mondrian.rolap.util.RelationUtil;
 import mondrian.spi.CellFormatter;
 import mondrian.util.UnionIterator;
@@ -1239,8 +1239,8 @@ public class RolapHierarchy extends HierarchyBase {
         peerHier.allLevelName = getAllLevelName();
         peerHier.sharedHierarchyName = getSharedHierarchyName();
         JoinQueryMappingImpl join = JoinQueryMappingImpl.builder()
-        		.withLeft(JoinedQueryElementMappingImpl.builder().withKey(clos.getParentColumn()).withQuery(clos.getTable()).build())
-        		.withRight(JoinedQueryElementMappingImpl.builder().withKey(clos.getChildColumn()).withQuery(relation).build())
+        		.withLeft(JoinedQueryElementMappingImpl.builder().withKey(clos.getParentColumn()).withQuery(PojoUtil.copy(clos.getTable())).build())
+        		.withRight(JoinedQueryElementMappingImpl.builder().withKey(clos.getChildColumn()).withQuery(PojoUtil.copy(relation)).build())
         		.build();
         peerHier.relation = join;
 
@@ -1251,7 +1251,7 @@ public class RolapHierarchy extends HierarchyBase {
         int index = peerHier.levels.length;
         int flags = src.getFlags() &~ RolapLevel.FLAG_UNIQUE;
         SQLExpressionMapping keyExp =
-            new Column(clos.table().getName(), clos.parentColumn());
+            new Column(clos.getTable().getName(), clos.getParentColumn());
 
         RolapLevel level =
             new RolapLevel(

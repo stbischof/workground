@@ -19,6 +19,7 @@ import static mondrian.rolap.util.JoinUtil.getRightAlias;
 import static mondrian.rolap.util.JoinUtil.left;
 import static mondrian.rolap.util.JoinUtil.right;
 import static mondrian.rolap.util.RelationUtil.getAlias;
+import static mondrian.rolap.util.PojoUtil.copy;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -183,6 +184,7 @@ import mondrian.rolap.format.FormatterCreateContext;
 import mondrian.rolap.format.FormatterFactory;
 import mondrian.rolap.util.DimensionUtil;
 import mondrian.rolap.util.NamedSetUtil;
+import mondrian.rolap.util.PojoUtil;
 import mondrian.server.LocusImpl;
 import mondrian.spi.CellFormatter;
 
@@ -551,7 +553,7 @@ public class RolapCube extends CubeBase {
                                 else {
                                     if(mappingDrillThroughAttribute.getLevel() != null && !mappingDrillThroughAttribute.getLevel().equals("")) {
                                         for(Level currentLevel: hierarchy.getLevels()) {
-                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.level())) {
+                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.getLevel())) {
                                                 level = currentLevel;
                                                 break;
                                             }
@@ -565,7 +567,7 @@ public class RolapCube extends CubeBase {
                                             if(mappingDrillThroughAttribute.getProperty() != null && !mappingDrillThroughAttribute.getProperty().equals("")) {
                                                 for(Property currentProperty: level.getProperties()) {
                                                     if(currentProperty instanceof RolapProperty rolapProperty
-                                                        &&  currentProperty.getName().equals(mappingDrillThroughAttribute.property())) {
+                                                        &&  currentProperty.getName().equals(mappingDrillThroughAttribute.getProperty())) {
                                                         property = rolapProperty;
                                                         break;
                                                     }
@@ -590,7 +592,7 @@ public class RolapCube extends CubeBase {
                 for(MeasureMapping drillThroughMeasure : mappingDrillThroughAction.getDrillThroughMeasure()) {
                         Member measure = null;
                         for(Member currntMeasure: this.getMeasures()) {
-                            if(currntMeasure.getName().equals(drillThroughMeasure.name())) {
+                            if(currntMeasure.getName().equals(drillThroughMeasure.getName())) {
                                 measure = currntMeasure;
                                 break;
                             }
@@ -623,7 +625,7 @@ public class RolapCube extends CubeBase {
                 
                     Dimension dimension = null;
                     for(Dimension currentDimension: this.getDimensions()) {
-                        if(currentDimension.getName().equals(writebackAttribute.dimension())) {
+                        if(currentDimension.getName().equals(writebackAttribute.getDimension())) {
                             dimension = currentDimension;
                             break;
                         }
@@ -700,7 +702,7 @@ public class RolapCube extends CubeBase {
                 throw new BadMeasureSourceException(
                     cubeMapping.getName(), measureMapping.getName());
             }
-            measureExp = new ColumnR(
+            measureExp = new mondrian.rolap.Column(
                 getAlias(getFact()), measureMapping.getColumn());
         } else if (measureMapping.getMeasureExpression() != null) {
             measureExp = measureMapping.getMeasureExpression();
@@ -980,7 +982,7 @@ public class RolapCube extends CubeBase {
 
         createCalcMembersAndNamedSets(
             mappingCalculatedMemberList,
-            mappingVirtualCube.namedSets(),
+            mappingVirtualCube.getNamedSets(),
             new ArrayList<>(),
             new ArrayList<>(),
             this,
@@ -1073,9 +1075,9 @@ public class RolapCube extends CubeBase {
                         .setBaseCube(calcMeasuresWithBaseCube.get(calcMeasure.getUniqueName()).getBaseCube());
             }
 
-            MappingVirtualCubeMeasure mappingMeasure = measureHash.get(calcMeasure.getUniqueName());
+            MeasureMapping mappingMeasure = measureHash.get(calcMeasure.getUniqueName());
         	if(mappingMeasure != null) {
-	            Boolean visible = mappingMeasure.visible();
+	            Boolean visible = mappingMeasure.isVisible();
 	            if(visible != null) {
 	            	calcMeasure.setProperty(
 	                        Property.VISIBLE.name,
@@ -1157,7 +1159,7 @@ public class RolapCube extends CubeBase {
         return aggGroup;
     }
 
-    void loadAggGroup(CubeMapping mappingCube) {
+    void loadAggGroup(PhysicalCubeMapping mappingCube) {
         aggGroup = ExplicitRules.Group.make(this, mappingCube);
     }
 
@@ -1392,7 +1394,7 @@ public class RolapCube extends CubeBase {
     {
         if (!nameSet.add(mappingNamedSet.getName())) {
             throw new MondrianException(MessageFormat.format(namedSetNotUnique,
-                mappingNamedSet.name(), getName()));
+                mappingNamedSet.getName(), getName()));
         }
 
         buf.append("SET ")
@@ -1484,8 +1486,8 @@ public class RolapCube extends CubeBase {
             if (dimension != null) {
                 hierarchy = dimension.getHierarchy();
             }
-        } else if (mappingCalcMember.hierarchy() != null) {
-            dimName = mappingCalcMember.hierarchy();
+        } else if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
+            dimName = mappingCalcMember.getHierarchy().getName();
             hierarchy = (Hierarchy)
                 getSchemaReader().withLocus().lookupCompound(
                     this,
@@ -2212,8 +2214,8 @@ public class RolapCube extends CubeBase {
                     // parameters:
                     //   fact table,
                     //   fact table foreign key,
-                    MappingColumn column =
-                        new ColumnR(
+                    mondrian.rolap.Column column =
+                        new mondrian.rolap.Column(
                             table.getAlias(),
                             hierarchyUsage.getForeignKey());
                     // parameters:
@@ -2241,12 +2243,12 @@ public class RolapCube extends CubeBase {
                         		.withLeft(JoinedQueryElementMappingImpl.builder()
                         				.withAlias(getRightAlias(join))
                         				.withKey(join.getRight().getKey())
-                        				.withQuery(right(join))
+                        				.withQuery(PojoUtil.copy(right(join)))
                         				.build())
                         		.withRight(JoinedQueryElementMappingImpl.builder()
                         				.withAlias(getLeftAlias(join))
                         				.withKey(join.getLeft().getKey())
-                        				.withQuery(left(join))
+                        				.withQuery(PojoUtil.copy(left(join)))
                         				.build())
                         		.build();
                         relation = newRelation;
@@ -2703,146 +2705,17 @@ public class RolapCube extends CubeBase {
             while (left(join) instanceof JoinQueryMapping leftJoin) {
                 JoinQueryMapping jleft = leftJoin;
                 changeLeftRight(join, left(jleft), new JoinR(
-                    new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), right(jleft)),
-                    new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right(join))));
-                join.right().setAlias(getRightAlias(jleft));
-                join.right().setKey(jleft.right().getKey());
-                join.left().setAlias(getLeftAlias(jleft));
-                join.left().setKey(jleft.left().getKey());
+                    new JoinedQueryElementR(getLeftAlias(join), join.getLeft().getKey(), right(jleft)),
+                    new JoinedQueryElementR(getRightAlias(join), join.getRight().getKey(), right(join))));
+                join.getRight().setAlias(getRightAlias(jleft));
+                join.getRight().setKey(jleft.getRight().getKey());
+                join.getLeft().setAlias(getLeftAlias(jleft));
+                join.getLeft().setKey(jleft.getLeft().getKey());
             }
         }
     }
 
-    /**
-     * Copies a {@link QueryMapping}.
-     *
-     * @param relation A table or a join
-     */
-    private static QueryMappingImpl copy(
-        QueryMapping relation)
-    {
-        if (relation instanceof TableQueryMapping table) {
-        	SQLMappingImpl sqlMappingImpl = getSqlWhereExpression(table.getSqlWhereExpression());
-        	List<AggregationExcludeMappingImpl> aggregationExcludes = getAggregationExcludes(table.getAggregationExcludes());
-            List<TableQueryOptimizationHintMappingImpl> optimizationHints = getOptimizationHints(table.getOptimizationHints());
-            List<AggregationTableMappingImpl> aggregationTables = getAggregationTables(table.getAggregationTables());
 
-            return TableQueryMappingImpl.builder()
-            		.withAlias(table.getAlias())
-            		.withName(table.getName())
-            		.withSchema(table.getSchema())
-            		.withSqlWhereExpression(sqlMappingImpl)
-            		.withAggregationExcludes(aggregationExcludes)
-            		.withOptimizationHints(optimizationHints)
-            		.withAggregationTables(aggregationTables)
-            		.build();
-
-        } else if (relation instanceof InlineTableQueryMapping table) {
-        	List<InlineTableColumnDefinitionMappingImpl> columnDefinitions = List.of();
-        	if (table.getColumnDefinitions() != null) {
-        		columnDefinitions = table.getColumnDefinitions().stream().map(cd -> InlineTableColumnDefinitionMappingImpl.builder()
-        				.withName(cd.getName()).withType(cd.getType()).build()).toList();
-        	}
-        	List<InlineTableRowMappingImpl> rows = List.of();
-        	if (table.getRows() != null) {
-        		rows = table.getRows().stream().map(r -> InlineTableRowMappingImpl.builder().withCells(getCells(r.getCells())).build()).toList();
-        	}
-            return InlineTableQueryMappingImpl.builder()
-            		.withAlias(table.getAlias())
-            		.withColumnDefinitions(columnDefinitions)
-            		.withRows(rows)
-            		.build();
-
-        } else if (relation instanceof JoinQueryMapping join) {
-            QueryMappingImpl left = copy(left(join));
-            QueryMappingImpl right = copy(right(join));
-            return JoinQueryMappingImpl.builder()
-            		.withLeft(JoinedQueryElementMappingImpl.builder().withAlias(getLeftAlias(join)).withKey(join.getLeft().getKey()).withQuery(left).build())
-            		.withRight(JoinedQueryElementMappingImpl.builder().withAlias(getRightAlias(join)).withKey(join.getRight().getKey()).withQuery(right).build())
-            		.build();
-        } else {
-            throw Util.newInternal(BAD_RELATION_TYPE + relation);
-        }
-    }
-
-    private static List<AggregationTableMappingImpl> getAggregationTables(
-			List<? extends AggregationTableMapping> aggregationTables) {
-		if (aggregationTables != null) {
-			return aggregationTables.stream().map(c -> getAggregationTable(c)).toList();
-		}
-		return List.of();
-	}
-
-	private static AggregationTableMappingImpl getAggregationTable(AggregationTableMapping a) {
-		//TODO
-		if (a instanceof AggregationNameMapping anm) {
-			return AggregationNameMappingImpl.builder()
-					.withApproxRowCount(anm.getApproxRowCount())
-					.withName(anm.getName())
-					.build();
-		}
-		if (a instanceof AggregationPatternMapping apm) {
-			return AggregationPatternMappingImpl.builder()
-					.withPattern(apm.getPattern())
-					.withAggregationMeasures(getAggregationMeasures(apm.getAggregationMeasures()))
-					.build();
-		}
-		return null;
-	}
-
-	private static List<AggregationMeasureMappingImpl> getAggregationMeasures(
-			List<? extends AggregationMeasureMapping> aggregationMeasures) {
-		if (aggregationMeasures != null) {
-			return aggregationMeasures.stream().map(c -> AggregationMeasureMappingImpl.builder()
-					.withColumn(c.getColumn())
-					.withName(c.getName())
-					.withRollupType(c.getRollupType())
-					.build()).toList();
-		}
-		return List.of();
-	}
-
-	private static List<TableQueryOptimizationHintMappingImpl> getOptimizationHints(
-			List<? extends TableQueryOptimizationHintMapping> optimizationHints) {
-		if (optimizationHints != null) {
-			return optimizationHints.stream().map(c -> TableQueryOptimizationHintMappingImpl.builder()
-					.withValue(c.getValue())
-					.withType(c.getType())
-					.build()).toList();
-		}
-		return List.of();
-	}
-
-	private static SQLMappingImpl getSqlWhereExpression(SQLMapping sqlWhereExpression) {
-		if (sqlWhereExpression != null) {
-			return SQLMappingImpl.builder()
-					.withDialects(sqlWhereExpression.getDialects())
-					.withStatement(sqlWhereExpression.getStatement())
-					.build();
-		}
-		return null;
-	}
-
-	private static List<AggregationExcludeMappingImpl> getAggregationExcludes(
-			List<? extends AggregationExcludeMapping> aggregationExcludes) {
-    	if (aggregationExcludes != null) {
-    		return aggregationExcludes.stream().map(a ->
-    		AggregationExcludeMappingImpl.builder()
-    		.withIgnorecase(a.isIgnorecase())
-    		.withName(a.getName())
-    		.withPattern(a.getPattern())
-    		.withId(a.getId())
-    		.build()).toList();
-    	}
-    	return List.of();
-	}
-
-	private static List<InlineTableRowCellMappingImpl> getCells(List<? extends InlineTableRowCellMapping> cells) {
-		if (cells != null) {
-			return cells.stream().map(c -> InlineTableRowCellMappingImpl.builder().withValue(c.getValue()).withColumnName(c.getColumnName()).build()).toList();
-		}
-		return List.of();
-	}
 
 	/**
      * Takes a relation in canonical form and snips off the

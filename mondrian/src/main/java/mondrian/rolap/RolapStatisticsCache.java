@@ -9,7 +9,7 @@
 
 package mondrian.rolap;
 
-import static mondrian.rolap.util.ExpressionUtil.getExpression;
+import static mondrian.rolap.util.ExpressionUtil.getExpression1;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.server.ExecutionImpl;
@@ -133,7 +134,7 @@ public class RolapStatisticsCache {
 
     public long getColumnCardinality(
     	RelationalQueryMapping relation,
-        MappingExpression expression,
+    	SQLExpressionMapping expression,
         long approxCardinality)
     {
         if (approxCardinality >= 0) {
@@ -150,7 +151,7 @@ public class RolapStatisticsCache {
         } else {
             final SqlQuery sqlQuery = star.getSqlQuery();
             sqlQuery.setDistinct(true);
-            sqlQuery.addSelect(getExpression( expression, sqlQuery), null);
+            sqlQuery.addSelect(getExpression1( expression, sqlQuery), null);
             sqlQuery.addFrom(relation, null, true);
             return getQueryCardinality(sqlQuery.toString());
         }
