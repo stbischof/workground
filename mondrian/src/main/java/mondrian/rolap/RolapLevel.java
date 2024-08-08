@@ -31,17 +31,15 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.InternalTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MemberPropertyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.ParentChildLinkMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,17 +68,17 @@ public class RolapLevel extends LevelBase {
     /**
      * The column or expression which yields the level's key.
      */
-    protected MappingExpression keyExp;
+    protected SQLExpressionMapping keyExp;
 
     /**
      * The column or expression which yields the level's ordinal.
      */
-    protected MappingExpression ordinalExp;
+    protected SQLExpressionMapping ordinalExp;
 
     /**
      * The column or expression which yields the level members' caption.
      */
-    protected MappingExpression captionExp;
+    protected SQLExpressionMapping captionExp;
 
     private final Datatype datatype;
 
@@ -104,16 +102,16 @@ public class RolapLevel extends LevelBase {
      * Ths expression which gives the name of members of this level. If null,
      * members are named using the key expression.
      */
-    protected MappingExpression nameExp;
+    protected SQLExpressionMapping nameExp;
     /** The expression which joins to the parent member in a parent-child
      * hierarchy, or null if this is a regular hierarchy. */
-    protected MappingExpression parentExp;
+    protected SQLExpressionMapping parentExp;
     /** Value which indicates a null parent in a parent-child hierarchy. */
     private final String nullParentValue;
 
     /** Condition under which members are hidden. */
     private final HideMemberCondition hideMemberCondition;
-    protected final MappingClosure xmlClosure;
+    protected final ParentChildLinkMapping xmlClosure;
     private final Map<String, Object> metadata;
     private final BestFitColumnType internalType; // may be null
 
@@ -132,13 +130,13 @@ public class RolapLevel extends LevelBase {
         boolean visible,
         String description,
         int depth,
-        MappingExpression keyExp,
-        MappingExpression nameExp,
-        MappingExpression captionExp,
-        MappingExpression ordinalExp,
-        MappingExpression parentExp,
+        SQLExpressionMapping keyExp,
+        SQLExpressionMapping nameExp,
+        SQLExpressionMapping captionExp,
+        SQLExpressionMapping ordinalExp,
+        SQLExpressionMapping parentExp,
         String nullParentValue,
-        MappingClosure mappingClosure,
+        ParentChildLinkMapping mappingClosure,
         RolapProperty[] properties,
         int flags,
         Datatype datatype,
@@ -166,27 +164,27 @@ public class RolapLevel extends LevelBase {
         this.datatype = datatype;
         this.keyExp = keyExp;
         if (nameExp != null) {
-            if (nameExp instanceof MappingColumn) {
-                checkColumn((MappingColumn) nameExp);
-            }
+            //if (nameExp instanceof MappingColumn) {
+            //    checkColumn((MappingColumn) nameExp);
+            //}
         }
         this.nameExp = nameExp;
         if (captionExp != null) {
-            if (captionExp instanceof MappingColumn) {
-                checkColumn((MappingColumn) captionExp);
-            }
+            //if (captionExp instanceof MappingColumn) {
+            //    checkColumn((MappingColumn) captionExp);
+            //}
         }
         this.captionExp = captionExp;
         if (ordinalExp != null) {
-            if (ordinalExp instanceof MappingColumn) {
-                checkColumn((MappingColumn) ordinalExp);
-            }
+            //if (ordinalExp instanceof MappingColumn) {
+            //    checkColumn((MappingColumn) ordinalExp);
+            //}
             this.ordinalExp = ordinalExp;
         } else {
             this.ordinalExp = this.keyExp;
         }
         if (parentExp instanceof MappingColumn) {
-            checkColumn((MappingColumn) parentExp);
+            //checkColumn((MappingColumn) parentExp);
         }
         this.parentExp = parentExp;
         if (parentExp != null) {
@@ -278,22 +276,22 @@ public class RolapLevel extends LevelBase {
     String getTableName() {
         String tableName = null;
 
-        MappingExpression expr = getKeyExp();
-        if (expr instanceof MappingColumn mc) {
-            tableName = ExpressionUtil.getTableAlias(mc);
-        }
+        //SQLExpressionMapping expr = getKeyExp();
+        //if (expr instanceof MappingColumn mc) {
+        //    tableName = ExpressionUtil.getTableAlias(mc);
+        //}
         return tableName;
     }
 
-    public MappingExpression getKeyExp() {
+    public SQLExpressionMapping getKeyExp() {
         return keyExp;
     }
 
-    public MappingExpression getOrdinalExp() {
+    public SQLExpressionMapping getOrdinalExp() {
         return ordinalExp;
     }
 
-    public MappingExpression getCaptionExp() {
+    public SQLExpressionMapping getCaptionExp() {
         return captionExp;
     }
 
@@ -332,13 +330,12 @@ public class RolapLevel extends LevelBase {
         return parentExp != null;
     }
 
-    public MappingExpression getParentExp() {
+    public SQLExpressionMapping getParentExp() {
         return parentExp;
     }
 
     // RME: this has to be public for two of the DrillThroughTest test.
-    public
-    MappingExpression getNameExp() {
+    public SQLExpressionMapping getNameExp() {
         return nameExp;
     }
 
@@ -362,36 +359,37 @@ public class RolapLevel extends LevelBase {
             mappingLevel.getName(),
             mappingLevel.getName(),
             mappingLevel.isVisible(),
-            mappingLevel.getDescription(),
+            //mappingLevel.getDescription(),
+            "",
             depth,
             LevelUtil.getKeyExp(mappingLevel),
             LevelUtil.getNameExp(mappingLevel),
             LevelUtil.getCaptionExp(mappingLevel),
             LevelUtil.getOrdinalExp(mappingLevel),
             LevelUtil.getParentExp(mappingLevel),
-            mappingLevel.nullParentValue(),
-            mappingLevel.closure(),
+            mappingLevel.getNullParentValue(),
+            mappingLevel.getParentChildLink(),
             createProperties(mappingLevel),
-            (mappingLevel.uniqueMembers() ? FLAG_UNIQUE : 0),
-            org.eclipse.daanse.db.dialect.api.Datatype.fromValue(mappingLevel.type().getValue()),
-            toInternalType(mappingLevel.internalType()),
-            HideMemberCondition.valueOf(mappingLevel.hideMemberIf().getValue()),
+            (mappingLevel.isUniqueMembers() ? FLAG_UNIQUE : 0),
+            org.eclipse.daanse.db.dialect.api.Datatype.fromValue(mappingLevel.getType()),
+            toInternalType(mappingLevel.getInternalType()),
+            HideMemberCondition.valueOf(mappingLevel.getHideMemberIf()),
             LevelType.fromValue(
-                mappingLevel.levelType().getValue().equals("TimeHalfYear")
+                mappingLevel.getLevelType().equals("TimeHalfYear")
                     ? "TimeHalfYears"
-                    : mappingLevel.levelType().getValue()),
-            mappingLevel.approxRowCount(),
-            RolapHierarchy.createMetadataMap(mappingLevel.annotations()));
+                    : mappingLevel.getLevelType()),
+            mappingLevel.getApproxRowCount(),
+            RolapHierarchy.createMetadataMap(mappingLevel.getAnnotations()));
 
         setLevelInProperties();
-        if (!Util.isEmpty(mappingLevel.caption())) {
-            setCaption(mappingLevel.caption());
+        if (!Util.isEmpty(mappingLevel.getName())) {
+            setCaption(mappingLevel.getName());
         }
 
         FormatterCreateContext memberFormatterContext =
             new FormatterCreateContext.Builder(getUniqueName())
-                .formatterDef(mappingLevel.memberFormatter())
-                .formatterAttr(mappingLevel.formatter())
+                .formatterDef(mappingLevel.getMemberFormatter())
+                .formatterAttr(mappingLevel.getFormatter())
                 .build();
         memberFormatter =
             FormatterFactory.instance()
@@ -408,10 +406,10 @@ public class RolapLevel extends LevelBase {
     }
 
     // helper for constructor
-    private static RolapProperty[] createProperties(MappingLevel xmlLevel)
+    private static RolapProperty[] createProperties(LevelMapping xmlLevel)
     {
         List<RolapProperty> list = new ArrayList<>();
-        final MappingExpression nameExp = LevelUtil.getNameExp(xmlLevel);
+        final SQLExpressionMapping nameExp = LevelUtil.getNameExp(xmlLevel);
 
         if (nameExp != null) {
             list.add(
@@ -420,13 +418,13 @@ public class RolapLevel extends LevelBase {
                     nameExp, null, null, null, true,
                     Property.NAME_PROPERTY.description, null));
         }
-        for (int i = 0; i < xmlLevel.properties().size(); i++) {
-            MappingProperty xmlProperty = xmlLevel.properties().get(i);
+        for (int i = 0; i < xmlLevel.getMemberProperties().size(); i++) {
+        	MemberPropertyMapping xmlProperty = xmlLevel.getMemberProperties().get(i);
 
             FormatterCreateContext formatterContext =
-                    new FormatterCreateContext.Builder(xmlProperty.name())
-                        .formatterDef(xmlProperty.propertyFormatter())
-                        .formatterAttr(xmlProperty.formatter())
+                    new FormatterCreateContext.Builder(xmlProperty.getName())
+                        .formatterDef(xmlProperty.getFormatter())
+                        .formatterAttr(xmlProperty.getFormatter())
                         .build();
             PropertyFormatter formatter =
                 FormatterFactory.instance()
@@ -434,36 +432,36 @@ public class RolapLevel extends LevelBase {
 
             list.add(
                 new RolapProperty(
-                    xmlProperty.name(),
-                    convertPropertyTypeNameToCode(xmlProperty.type()),
+                    xmlProperty.getName(),
+                    convertPropertyTypeNameToCode(xmlProperty.getType()),
                     getPropertyExp(xmlLevel, i),
                     formatter,
-                    xmlProperty.caption(),
-                    xmlLevel.properties().get(i).dependsOnLevelValue(),
+                    xmlProperty.getName(),
+                    xmlLevel.getMemberProperties().get(i).isDependsOnLevelValue(),
                     false,
-                    xmlProperty.description(), null));
+                    xmlProperty.getDescription(), null));
         }
         return list.toArray(new RolapProperty[list.size()]);
     }
 
     private static Property.Datatype convertPropertyTypeNameToCode(
-        PropertyTypeEnum type)
+        String type)
     {
-        if (type.equals(PropertyTypeEnum.STRING)) {
+        if (type.equals(PropertyTypeEnum.STRING.getValue())) {
             return Property.Datatype.TYPE_STRING;
-        } else if (type.equals(PropertyTypeEnum.NUMERIC)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.NUMERIC.getValue())) {
             return Property.Datatype.TYPE_NUMERIC;
-        } else if (type.equals(PropertyTypeEnum.INTEGER)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.INTEGER.getValue())) {
             return Property.Datatype.TYPE_INTEGER;
-        } else if (type.equals(PropertyTypeEnum.LONG)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.LONG.getValue())) {
             return Property.Datatype.TYPE_LONG;
-        } else if (type.equals(PropertyTypeEnum.BOOLEAN)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.BOOLEAN.getValue())) {
             return Property.Datatype.TYPE_BOOLEAN;
-        } else if (type.equals(PropertyTypeEnum.TIMESTAMP)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.TIMESTAMP.getValue())) {
             return Property.Datatype.TYPE_TIMESTAMP;
-        } else if (type.equals(PropertyTypeEnum.TIME)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.TIME.getValue())) {
             return Property.Datatype.TYPE_TIME;
-        } else if (type.equals(PropertyTypeEnum.DATE)) {
+        } else if (type.equalsIgnoreCase(PropertyTypeEnum.DATE.getValue())) {
             return Property.Datatype.TYPE_DATE;
         } else {
             throw Util.newError(new StringBuilder("Unknown property type '")
@@ -474,7 +472,7 @@ public class RolapLevel extends LevelBase {
     private void checkColumn(MappingColumn nameColumn) {
         final RolapHierarchy rolapHierarchy = (RolapHierarchy) hierarchy;
         if (nameColumn.getTable() == null) {
-            final MappingRelationQuery table = rolapHierarchy.getUniqueTable();
+            final RelationalQueryMapping table = rolapHierarchy.getUniqueTable();
             if (table == null) {
                 throw Util.newError(
                     new StringBuilder("must specify a table for level ").append(getUniqueName())
@@ -548,15 +546,15 @@ public class RolapLevel extends LevelBase {
             "String", BestFitColumnType.STRING,
             "long", BestFitColumnType.LONG);
 
-    private static BestFitColumnType toInternalType(InternalTypeEnum internalType) {
+    private static BestFitColumnType toInternalType(String internalType) {
         BestFitColumnType type = null;
         if(internalType!=null) {
 
-        	type=VALUES.getOrDefault( internalType.getValue(),null);
+        	type = VALUES.getOrDefault(internalType, null);
         }
         if (type == null && internalType != null) {
             throw Util.newError(
-                new StringBuilder("Invalid value '").append(internalType.getValue())
+                new StringBuilder("Invalid value '").append(internalType)
                     .append("' for attribute 'internalType' of element 'Level'. ")
                     .append("Valid values are: ")
                     .append(VALUES.keySet()).toString());
@@ -601,7 +599,7 @@ public class RolapLevel extends LevelBase {
                     keyValues.add(keyValue);
                 }
             }
-            final List<MappingExpression> keyExps = getInheritedKeyExps();
+            final List<SQLExpressionMapping> keyExps = getInheritedKeyExps();
             if (keyExps.size() != keyValues.size()) {
                 throw Util.newError(
                     new StringBuilder("Wrong number of values in member key; ")
@@ -648,11 +646,11 @@ public class RolapLevel extends LevelBase {
         return null;
     }
 
-    private List<MappingExpression> getInheritedKeyExps() {
-        final List<MappingExpression> list =
+    private List<SQLExpressionMapping> getInheritedKeyExps() {
+        final List<SQLExpressionMapping> list =
             new ArrayList<>();
         for (RolapLevel x = this;; x = (RolapLevel) x.getParentLevel()) {
-            final MappingExpression keyExp1 = x.getKeyExp();
+            final SQLExpressionMapping keyExp1 = x.getKeyExp();
             if (keyExp1 != null) {
                 list.add(keyExp1);
             }

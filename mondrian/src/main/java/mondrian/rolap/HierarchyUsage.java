@@ -162,8 +162,7 @@ public class HierarchyUsage {
         // name
         // foreignKey
         this.name = cubeDim.getOverrideDimensionName();
-        this.foreignKey = cubeDim.getForeignKey();
-
+        this.foreignKey = cubeDim.getForeignKey();        
         if (cubeDim instanceof MappingDimensionUsage du) {
             this.kind = Kind.SHARED;
 

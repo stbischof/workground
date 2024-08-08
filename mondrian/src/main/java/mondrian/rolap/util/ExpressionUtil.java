@@ -15,9 +15,11 @@ package mondrian.rolap.util;
 
 import java.util.Objects;
 
+import mondrian.rolap.Column;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.rolap.RolapRuntimeException;
 import mondrian.rolap.sql.SqlQuery;
@@ -75,39 +77,31 @@ public class ExpressionUtil {
         return expression.equals(obj);
     }
 
-    public static String genericExpression(MappingExpression expression) {
-        if (expression instanceof MappingColumn column) {
-            return column.getGenericExpression();
-        }
-        if (expression instanceof MappingExpressionView expressionView) {
-            for (int i = 0; i < expressionView.sql().sqls().size(); i++) {
-                if (expressionView.sql().sqls().get(i).dialects().stream().anyMatch(d ->  "generic".equals(d))) {
-                    return expressionView.sql().sqls().get(i).statement();
+    public static String genericExpression(SQLExpressionMapping expression) {
+            for (int i = 0; i < expression.getSqls().size(); i++) {
+                if (expression.getSqls().get(i).getDialects().stream().anyMatch(d ->  "generic".equals(d))) {
+                    return expression.getSqls().get(i).getStatement();
                 }
             }
             return ((MappingExpressionView) expression).sql().sqls().get(0).statement();
-        }
-        throw new RolapRuntimeException("genericExpression error");
     }
 
-    public static String toString(MappingExpression expression) {
-        if (expression instanceof MappingExpressionView expressionView) {
-            return expressionView.sql().sqls().get(0).statement();
-        }
-        return expression.toString();
+    public static String toString(SQLExpressionMapping expression) {
+    	if (expression != null && expression.getSqls() != null && !expression.getSqls().isEmpty()) {
+    		return expression.getSqls().get(0).getStatement();
+    	}
+    	return null;
     }
 
-    public String getExpression(MappingExpressionView expression, SqlQuery query) {
-        return SQLUtil.toCodeSet(expression.sql().sqls()).chooseQuery(query.getDialect());
+    public String getExpression(SQLExpressionMapping expression, SqlQuery query) {
+        return SQLUtil.toCodeSet(expression.getSqls()).chooseQuery(query.getDialect());
     }
 
-    public static String getTableAlias(MappingExpression expression) {
-        if (expression instanceof MappingColumn) {
-            return expression.getTable();
+    public static String getTableAlias(SQLExpressionMapping expression) {
+        if (expression instanceof Column c) {
+            return c.getTable();
         }
         if (expression instanceof MappingExpressionView) {
             return null;
-        }
-        throw new RolapRuntimeException("Expression getTableAlias error");
     }
 }
