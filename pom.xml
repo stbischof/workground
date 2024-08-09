@@ -72,14 +72,9 @@
     <java.release>21</java.release>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <sonar.organization>xmla-services</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <!-- each project cateches its data from aggregator, but we have no
-		absolut path in mvn-->
-    <sonar.coverage.jacoco.xmlReportPaths>
-      ${maven.multiModuleProjectDirectory}/aggregate-report-jacoco/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+  
 
-    <sonar.junit.reportPaths>${project.basedir}/target/test-reports/test/</sonar.junit.reportPaths>
+
     <slf4j.version>2.0.9</slf4j.version>
     <logback.classic.version>1.4.14</logback.classic.version>
     <aries.spifly.version>1.3.7</aries.spifly.version>
@@ -270,7 +265,6 @@
         <configuration>
           <source>21</source>
           <target>21</target>
-          <compilerArgs>--enable-preview</compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -613,19 +607,8 @@
         <version>4.13.2_1</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>0.8.9</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>0.8.9</version>
-        <classifier>runtime</classifier>
-        <scope>test</scope>
-      </dependency>
+
+
       <!-- Webconsole -->
       <dependency>
         <groupId>org.apache.felix</groupId>
@@ -970,12 +953,8 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jacoco</groupId>
-      <artifactId>org.jacoco.agent</artifactId>
-      <classifier>runtime</classifier>
-      <scope>test</scope>
-    </dependency>
+
+
   </dependencies>
   <modules>
     <!--module>org.eclipse.daanse.repackage.eigenbase.properties</module-->
@@ -992,7 +971,6 @@
     <module>xmla</module>
     <module>odf</module>
     <module>demo</module>
-    <module>aggregate-report-jacoco</module>
   </modules>
   <profiles>
     <profile>

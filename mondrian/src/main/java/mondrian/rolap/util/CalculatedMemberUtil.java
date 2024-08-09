@@ -13,20 +13,16 @@
  */
 package mondrian.rolap.util;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
+import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberPropertyMapping;
 
 public class CalculatedMemberUtil {
 
     private CalculatedMemberUtil() {
     }
 
-    public static String getFormula(MappingCalculatedMember calculatedMember) {
-        if (calculatedMember.formulaElement() != null) {
-            return calculatedMember.formulaElement().cdata();
-        } else {
-            return calculatedMember.formula();
-        }
+    public static String getFormula(CalculatedMemberMapping calculatedMember) {
+    	return calculatedMember.getFormula();
     }
 
     /**
@@ -34,14 +30,14 @@ public class CalculatedMemberUtil {
      * "FORMAT_STRING" first, then looking for an attribute called
      * "formatString".
      */
-    public static String getFormatString(MappingCalculatedMember calculatedMember) {
-        for (MappingCalculatedMemberProperty prop : calculatedMember.calculatedMemberProperties()) {
-            if (prop.name().equals(
+    public static String getFormatString(CalculatedMemberMapping calculatedMember) {
+        for (CalculatedMemberPropertyMapping prop : calculatedMember.getCalculatedMemberProperties()) {
+            if (prop.getName().equals(
                 mondrian.olap.Property.FORMAT_STRING.name))
             {
-                return prop.value();
+                return prop.getValue();
             }
         }
-        return calculatedMember.formatString();
+        return calculatedMember.getFormatString();
     }
 }

@@ -17,6 +17,7 @@ import mondrian.olap.exceptions.CastInvalidTypeException;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.olap.Property;
 import mondrian.olap.StringLiteralImpl;
@@ -47,7 +48,7 @@ public class RolapBaseCubeMeasure
     /**
      * For SQL generator. Column which holds the value of the measure.
      */
-    private final MappingExpression expression;
+    private final SQLExpressionMapping expression;
 
     /**
      * For SQL generator. Has values "SUM", "COUNT", etc.
@@ -89,9 +90,9 @@ public class RolapBaseCubeMeasure
         String caption,
         String description,
         String formatString,
-        MappingExpression expression,
+        SQLExpressionMapping expression,
         String aggregatorName,
-        MeasureDataTypeEnum datatype,
+        String datatype,
         Map<String, Object> metadata)
     {
         super(parentMember, level, name, null, MemberType.MEASURE);
@@ -142,19 +143,19 @@ public class RolapBaseCubeMeasure
             if (aggregator == RolapAggregator.Count
                 || aggregator == RolapAggregator.DistinctCount)
             {
-                datatype = MeasureDataTypeEnum.INTEGER;
+                datatype = MeasureDataTypeEnum.INTEGER.getValue();
             } else {
-                datatype = MeasureDataTypeEnum.NUMERIC;
+                datatype = MeasureDataTypeEnum.NUMERIC.getValue();
             }
         }
-        if (RolapBaseCubeMeasure.DataType.valueOf(datatype.getValue()) == null) {
-            throw new CastInvalidTypeException(datatype.getValue());
+        if (RolapBaseCubeMeasure.DataType.valueOf(datatype) == null) {
+            throw new CastInvalidTypeException(datatype);
         }
-        setProperty(Property.DATATYPE.name, datatype.getValue());
+        setProperty(Property.DATATYPE.name, datatype);
     }
 
     @Override
-	public MappingExpression getMondrianDefExpression() {
+	public SQLExpressionMapping getMondrianDefExpression() {
         return expression;
     }
 

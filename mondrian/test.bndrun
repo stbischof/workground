@@ -6,12 +6,7 @@
 
 -tester: biz.aQute.tester.junit-platform
 
-# JaCoCo calculates test coverage
--runpath.jacoco:\
-	org.jacoco.agent,\
-	org.jacoco.agent.rt
 
--runvm.coverage: -javaagent:${repo;org.jacoco.agent.rt}=destfile=${target-dir}/jacoco.exec
 
 
 -runsystemcapabilities: ${native_capability}

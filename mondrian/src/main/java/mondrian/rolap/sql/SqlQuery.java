@@ -35,6 +35,12 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SqlSelectQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
@@ -131,14 +137,14 @@ public class SqlQuery {
     /** Scratch buffer. Clear it before use. */
     private final StringBuilder buf;
 
-    private final Set<MappingRelationQuery> relations =
+    private final Set<RelationalQueryMapping> relations =
         new HashSet<>();
 
-    private final Map<MappingRelationQuery, MappingQuery>
+    private final Map<RelationalQueryMapping, QueryMapping>
         mapRelationToRoot =
         new HashMap<>();
 
-    private final Map<MappingQuery, List<RelInfo>>
+    private final Map<QueryMapping, List<RelInfo>>
         mapRootToRelations =
         new HashMap<>();
 
@@ -331,13 +337,13 @@ public class SqlQuery {
      * @return true, if relation *was* added to query
      */
     public boolean addFrom(
-        final MappingQuery relation,
+        final QueryMapping relation,
         final String alias,
         final boolean failIfExists)
     {
         registerRootRelation(relation);
 
-        if (relation instanceof MappingRelationQuery relation1) {
+        if (relation instanceof RelationalQueryMapping relation1) {
             if (relations.add(relation1)
                 && !SystemWideProperties.instance()
                 .FilterChildlessSnowflakeMembers)
@@ -348,11 +354,11 @@ public class SqlQuery {
                 // (If FilterChildlessSnowflakeMembers were false,
                 // this would be unnecessary. Adding a relation automatically
                 // adds all relations between it and the fact table.)
-                MappingQuery root =
+                QueryMapping root =
                     mapRelationToRoot.get(relation1);
-                List<MappingRelationQuery> relationsCopy =
+                List<RelationalQueryMapping> relationsCopy =
                     new ArrayList<>(relations);
-                for (MappingRelationQuery relation2 : relationsCopy) {
+                for (RelationalQueryMapping relation2 : relationsCopy) {
                     if (relation2 != relation1
                         && mapRelationToRoot.get(relation2) == root)
                     {
@@ -362,7 +368,7 @@ public class SqlQuery {
             }
         }
 
-        if (relation instanceof MappingViewQuery view) {
+        if (relation instanceof SqlSelectQueryMapping view) {
             final String viewAlias =
                 (alias == null)
                 ? RelationUtil.getAlias(view)
@@ -370,13 +376,13 @@ public class SqlQuery {
             final String sqlString = getCodeSet(view).chooseQuery(dialect);
             return addFromQuery(sqlString, viewAlias, false);
 
-        } else if (relation instanceof MappingInlineTableQuery) {
-            final MappingRelationQuery relation1 =
+        } else if (relation instanceof InlineTableQueryMapping inlineTableQueryMapping) {
+            final RelationalQueryMapping relation1 =
                 RolapUtil.convertInlineTableToRelation(
-                    (MappingInlineTableQuery) relation, dialect);
+                		inlineTableQueryMapping, dialect);
             return addFrom(relation1, alias, failIfExists);
 
-        } else if (relation instanceof MappingTableQuery table) {
+        } else if (relation instanceof TableQueryMapping table) {
             final String tableAlias =
                 (alias == null)
                 ? RelationUtil.getAlias(table)
@@ -385,18 +391,18 @@ public class SqlQuery {
                 table.getSchema(),
                 table.getName(),
                 tableAlias,
-                table.getSql() == null ? null : table.getSql().statement(),
+                table.getSqlWhereExpression() == null ? null : table.getSqlWhereExpression().getStatement(),
                 getHintMap(table),
                 failIfExists);
 
-        } else if (relation instanceof MappingJoinQuery join) {
+        } else if (relation instanceof JoinQueryMapping join) {
             return addJoin(
                 left(join),
                 getLeftAlias(join),
-                join.left().getKey(),
+                join.getLeft().getKey(),
                 right(join),
                 getRightAlias(join),
-                join.right().getKey(),
+                join.getRight().getKey(),
                 failIfExists);
         } else {
             throw Util.newInternal("bad relation type " + relation);
@@ -404,10 +410,10 @@ public class SqlQuery {
     }
 
     private boolean addJoin(
-        MappingQuery left,
+        QueryMapping left,
         String leftAlias,
         String leftKey,
-        MappingQuery right,
+        QueryMapping right,
         String rightAlias,
         String rightKey,
         boolean failIfExists)
@@ -435,9 +441,9 @@ public class SqlQuery {
     }
 
     private void addJoinBetween(
-        MappingQuery root,
-        MappingRelationQuery relation1,
-        MappingRelationQuery relation2)
+        QueryMapping root,
+        RelationalQueryMapping relation1,
+        RelationalQueryMapping relation2)
     {
         List<RelInfo> relations = mapRootToRelations.get(root);
         int index1 = find(relations, relation1);
@@ -463,7 +469,7 @@ public class SqlQuery {
         }
     }
 
-    private int find(List<RelInfo> relations, MappingRelationQuery relation) {
+    private int find(List<RelInfo> relations, RelationalQueryMapping relation) {
         for (int i = 0, n = relations.size(); i < n; i++) {
             RelInfo relInfo = relations.get(i);
             if (relInfo.relation.equals(relation)) {
@@ -745,7 +751,7 @@ public class SqlQuery {
         return Pair.of(toString(), types);
     }
 
-    public void registerRootRelation(MappingQuery root) {
+    public void registerRootRelation(QueryMapping root) {
         // REVIEW: In this method, we are building data structures about the
         // structure of a star schema. These should be built into the schema,
         // not constructed afresh for each SqlQuery. In mondrian-4.0,
@@ -767,23 +773,23 @@ public class SqlQuery {
 
     private void flatten(
         List<RelInfo> relations,
-        MappingQuery root,
+        QueryMapping root,
         String leftKey,
         String leftAlias,
         String rightKey,
         String rightAlias)
     {
-        if (root instanceof MappingJoinQuery join) {
+        if (root instanceof JoinQueryMapping join) {
             flatten(
-                relations, left(join), join.left().getKey(), getLeftAlias(join),
-                join.right().getKey(), getRightAlias(join));
+                relations, left(join), join.getLeft().getKey(), getLeftAlias(join),
+                join.getRight().getKey(), getRightAlias(join));
             flatten(
                 relations, right(join), leftKey, leftAlias, rightKey,
                 rightAlias);
         } else {
             relations.add(
                 new RelInfo(
-                    (MappingRelationQuery) root,
+                    (RelationalQueryMapping) root,
                     leftKey,
                     leftAlias,
                     rightKey,
@@ -1029,14 +1035,14 @@ public class SqlQuery {
     }
 
     private static class RelInfo {
-        final MappingRelationQuery relation;
+        final RelationalQueryMapping relation;
         final String leftKey;
         final String leftAlias;
         final String rightKey;
         final String rightAlias;
 
         public RelInfo(
-            MappingRelationQuery relation,
+            RelationalQueryMapping relation,
             String leftKey,
             String leftAlias,
             String rightKey,

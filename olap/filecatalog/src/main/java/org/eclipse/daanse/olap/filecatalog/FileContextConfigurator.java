@@ -90,7 +90,7 @@ public class FileContextConfigurator implements FileSystemWatcherListener {
 		props.put(BasicContext.REF_NAME_STATISTICS_PROVIDER + TARGET_EXT, "(component.name=" + PID_SATATISTICS + ")");
 		props.put(BasicContext.REF_NAME_EXPRESSION_COMPILER_FACTORY + TARGET_EXT,
 				"(component.name=" + PID_EXP_COMP_FAC + ")");
-		props.put(BasicContext.REF_NAME_DB_MAPPING_SCHEMA_PROVIDER + TARGET_EXT, contextSpecificFilter);
+		props.put(BasicContext.REF_NAME_DB_MAPPING_CATALOG_SUPPLIER + TARGET_EXT, contextSpecificFilter);
         props.put(BasicContext.REF_NAME_MDX_PARSER_PROVIDER + TARGET_EXT, "(component.name=" + PID_PARSER + ")");
 		// props.put(BasicContext.REF_NAME_QUERY_PROVIDER+ TARGET_EXT, "(qp=1)");
 

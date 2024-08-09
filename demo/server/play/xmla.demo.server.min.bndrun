@@ -1,5 +1,4 @@
 -runtrace: true
--runvm: --enable-preview ${def;argLine}
 
 -runproperties: \
     org.slf4j.simpleLogger.defaultLogLevel=error,\

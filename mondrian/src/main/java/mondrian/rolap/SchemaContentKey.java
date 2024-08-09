@@ -9,7 +9,7 @@
 
 package mondrian.rolap;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 
 import mondrian.olap.Util;
 import mondrian.util.ByteString;
@@ -32,9 +32,9 @@ public class SchemaContentKey extends StringKey {
         super(s);
     }
 
-	static SchemaContentKey create(MappingSchema mappingSchema) {
+	static SchemaContentKey create(SchemaMapping schemaMapping) {
 
-		int hash = System.identityHashCode(mappingSchema);
+		int hash = System.identityHashCode(schemaMapping);
 		return new SchemaContentKey(new ByteString(Util.digestSHA(hash + "")).toString());
 	}
 }

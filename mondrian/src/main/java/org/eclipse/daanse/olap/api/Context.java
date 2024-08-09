@@ -29,10 +29,9 @@ import org.eclipse.daanse.olap.api.query.QueryProvider;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
 import org.eclipse.daanse.olap.core.BasicContextConfig;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 
 import mondrian.rolap.agg.AggregationManager;
-import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
 
 /**
  * The {@link Context} gives access to all resources and configurations that are needed
@@ -67,14 +66,9 @@ public interface Context {
      */
     StatisticsProvider getStatisticsProvider();
 
-    /**
-     * Gives access to a {@link List} of {@link DatabaseMappingSchemaProvider}s.
-     *
-     * @return {@link List} of {@link DatabaseMappingSchemaProvider}s.
-     */
-    List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders();
 
-    List<RolapContextMappingSupplier> getRolapContexts();
+
+    CatalogMapping getCatalogMapping();
 
 
     /**

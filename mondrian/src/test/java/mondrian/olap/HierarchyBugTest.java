@@ -45,6 +45,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBui
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.AbstractMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -316,7 +318,7 @@ TestUtil.flushSchemaCache(conn);
             + "    </Hierarchy>\n"
             + "  </Dimension>";
         */
-        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends RDbMappingSchemaModifier {
+        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends PojoMappingModifier {
 
             public VerifyMemberLevelNamesIdentityOlap4jDateDimModifier(MappingSchema mappingSchema) {
                 super(mappingSchema);

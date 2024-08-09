@@ -43,7 +43,7 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.MemberExpression;
 import org.eclipse.daanse.olap.calc.api.todo.TupleIterable;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,8 +171,8 @@ public class SqlConstraintUtils {
           }
       }
 
-      Map<MappingExpression, Set<RolapMember>> mapOfSlicerMembers = null;
-      HashMap<MappingExpression, Boolean> done = new HashMap<>();
+      Map<SQLExpressionMapping, Set<RolapMember>> mapOfSlicerMembers = null;
+      HashMap<SQLExpressionMapping, Boolean> done = new HashMap<>();
 
       for (int i = 0; i < columns.length; i++) {
           final RolapStar.Column column = columns[i];
@@ -185,7 +185,7 @@ public class SqlConstraintUtils {
               mapOfSlicerMembers = getSlicerMemberMap(evaluator);
           }
 
-          final MappingExpression keyForSlicerMap = column.getExpression();
+          final SQLExpressionMapping keyForSlicerMap = column.getExpression();
 
           if (mapOfSlicerMembers.containsKey(keyForSlicerMap)) {
               if (!done.containsKey(keyForSlicerMap)) {
@@ -571,8 +571,8 @@ public class SqlConstraintUtils {
    * This map is used by addContextConstraint() to get the set of slicer members associated with each column in the cell
    * request's constrained columns array, {@link CellRequest#getConstrainedColumns}
    */
-  private static Map<MappingExpression, Set<RolapMember>> getSlicerMemberMap( Evaluator evaluator ) {
-    Map<MappingExpression, Set<RolapMember>> mapOfSlicerMembers =
+  private static Map<SQLExpressionMapping, Set<RolapMember>> getSlicerMemberMap( Evaluator evaluator ) {
+    Map<SQLExpressionMapping, Set<RolapMember>> mapOfSlicerMembers =
         new HashMap<>();
     List<Member> slicerMembers = ( (RolapEvaluator) evaluator ).getSlicerMembers();
     List<Member> expandedSlicers =
@@ -595,13 +595,13 @@ public class SqlConstraintUtils {
    * Expression.
    *
    */
-  private static void addSlicedMemberToMap( Map<MappingExpression, Set<RolapMember>> mapOfSlicerMembers,
+  private static void addSlicedMemberToMap( Map<SQLExpressionMapping, Set<RolapMember>> mapOfSlicerMembers,
       Member slicerMember ) {
     if ( slicerMember == null || slicerMember.isAll() || slicerMember.isNull() ) {
       return;
     }
     assert slicerMember instanceof RolapMember;
-    MappingExpression expression = ( (RolapLevel) slicerMember.getLevel() ).getKeyExp();
+    SQLExpressionMapping expression = ( (RolapLevel) slicerMember.getLevel() ).getKeyExp();
     mapOfSlicerMembers.computeIfAbsent(expression, k -> new LinkedHashSet<RolapMember>()).add( (RolapMember) slicerMember );
     addSlicedMemberToMap( mapOfSlicerMembers, slicerMember.getParentMember() );
   }
@@ -1388,7 +1388,7 @@ public class SqlConstraintUtils {
       }
     } else {
       assert ( aggStar == null );
-      MappingExpression exp = level.getNameExp();
+      SQLExpressionMapping exp = level.getNameExp();
       if ( exp == null ) {
         exp = level.getKeyExp();
         datatype = level.getDatatype();
@@ -1489,7 +1489,7 @@ public class SqlConstraintUtils {
    *
    * @return generated string corresponding to the expression
    */
-  public static String constrainLevel2(SqlQuery query, MappingExpression exp, Datatype datatype,
+  public static String constrainLevel2(SqlQuery query, SQLExpressionMapping exp, Datatype datatype,
                                        Comparable columnValue ) {
     String columnString = getExpression( exp, query );
     if ( columnValue == RolapUtil.sqlNullValue ) {
@@ -1673,7 +1673,7 @@ public class SqlConstraintUtils {
       assert ( aggStar == null );
       hierarchy.addToFrom( sqlQuery, level.getKeyExp() );
 
-      MappingExpression nameExp = level.getNameExp();
+      SQLExpressionMapping nameExp = level.getNameExp();
       if ( nameExp == null ) {
         nameExp = level.getKeyExp();
       }

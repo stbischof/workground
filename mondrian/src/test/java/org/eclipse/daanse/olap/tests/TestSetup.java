@@ -31,7 +31,7 @@ public class TestSetup {
                     + ".target", value = "(test.exec=%s)", templateArguments = @TemplateArgument(source = ValueSource.TestUniqueId)),
             @Property(key = BasicContext.REF_NAME_DATA_SOURCE
                     + ".target", value = "(test.exec=%s)", templateArguments = @TemplateArgument(source = ValueSource.TestUniqueId)),
-            @Property(key = BasicContext.REF_NAME_DB_MAPPING_SCHEMA_PROVIDER
+            @Property(key = BasicContext.REF_NAME_DB_MAPPING_CATALOG_SUPPLIER
                     + ".target", value = "(test.exec=%s)", templateArguments = @TemplateArgument(source = ValueSource.TestUniqueId)),
             @Property(key = BasicContext.REF_NAME_EXPRESSION_COMPILER_FACTORY
                     + ".target", value = "(test.exec=%s)", templateArguments = @TemplateArgument(source = ValueSource.TestUniqueId)) })

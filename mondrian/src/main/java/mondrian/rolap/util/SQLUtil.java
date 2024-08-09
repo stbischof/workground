@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLMapping;
 
 import mondrian.rolap.sql.SqlQuery;
 
@@ -25,11 +26,11 @@ public class SQLUtil {
      * Converts an array of SQL to a
      * {@link mondrian.rolap.sql.SqlQuery.CodeSet} object.
      */
-    public static SqlQuery.CodeSet toCodeSet(List<? extends MappingSQL> sqls) {
+    public static SqlQuery.CodeSet toCodeSet(List<? extends SQLMapping> sqls) {
         SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
-        for (MappingSQL sql : sqls) {
-            for (String dialect : sql.dialects()) {
-                codeSet.put(dialect, sql.statement());
+        for (SQLMapping sql : sqls) {
+            for (String dialect : sql.getDialects()) {
+                codeSet.put(dialect, sql.getStatement());
             }
         }
         return codeSet;

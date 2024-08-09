@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.Evaluator;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.rolap.RolapCube;
 import mondrian.rolap.RolapLevel;
@@ -30,13 +30,13 @@ import mondrian.util.Pair;
 public class MemberKeyConstraint
     implements TupleConstraint
 {
-    private final Pair<List<MappingExpression>, List<Comparable>> cacheKey;
-    private final List<MappingExpression> columnList;
+    private final Pair<List<SQLExpressionMapping>, List<Comparable>> cacheKey;
+    private final List<SQLExpressionMapping> columnList;
     private final List<Datatype> datatypeList;
     private final List<Comparable> valueList;
 
     public MemberKeyConstraint(
-        List<MappingExpression> columnList,
+        List<SQLExpressionMapping> columnList,
         List<Datatype> datatypeList,
         List<Comparable> valueList)
     {
@@ -51,7 +51,7 @@ public class MemberKeyConstraint
         SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar)
     {
         for (int i = 0; i < columnList.size(); i++) {
-            MappingExpression expression = columnList.get(i);
+        	SQLExpressionMapping expression = columnList.get(i);
             final Comparable value = valueList.get(i);
             final Datatype datatype = datatypeList.get(i);
             sqlQuery.addWhere(

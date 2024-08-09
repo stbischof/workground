@@ -15,28 +15,144 @@ package mondrian.rolap.aggmatcher;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationExcludeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationTableMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MemberPropertyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.SchemaMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TimeDimensionMappingImpl;
 
-public class AggMeasureFactCountTestModifier extends RDbMappingSchemaModifier {
+public class AggMeasureFactCountTestModifier extends PojoMappingModifier {
+	private static DimensionMappingImpl storeDimension = TimeDimensionMappingImpl.builder()
+            .withName("Store")
+            .withHierarchies(List.of(
+            	HierarchyMappingImpl.builder()
+                    .withHasAll(true)
+                    .withPrimaryKey("store_id")
+                    .withQuery(TableQueryMappingImpl.builder().withName("store").build())
+                    .withLevels(List.of(
+                    	LevelMappingImpl.builder()
+                            .withName("Store Country")
+                            .withColumn("store_country")
+                            .withUniqueMembers(true)
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Store State")
+                            .withColumn("store_state")
+                            .withUniqueMembers(true)
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Store City")
+                            .withColumn("store_city")
+                            .withUniqueMembers(false)
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Store Name")
+                            .withColumn("store_name")
+                            .withUniqueMembers(true)                            
+                            .withMemberProperties(List.of(
+                            	MemberPropertyMappingImpl.builder().withName("Store Type").withColumn("store_type").build(),
+                            	MemberPropertyMappingImpl.builder().withName("Store Manager").withColumn("store_manager").build(),
+                            	MemberPropertyMappingImpl.builder().withName("Store Sqft").withColumn("store_sqft")
+                                    .withType("Numeric").build(),
+                                MemberPropertyMappingImpl.builder().withName("Grocery Sqft").withColumn("grocery_sqft")
+                                	.withType("Numeric").build(),
+                                MemberPropertyMappingImpl.builder().withName("Frozen Sqft").withColumn("frozen_sqft")
+                                	.withType("Numeric").build(),
+                                MemberPropertyMappingImpl.builder().withName("Meat Sqft").withColumn("meat_sqft")
+                                	.withType("Numeric").build(),
+                                MemberPropertyMappingImpl.builder().withName("Has coffee bar").withColumn("coffee_bar")
+                                	.withType("Boolean").build(),
+                                MemberPropertyMappingImpl.builder().withName("Street address").withColumn("store_street_address")
+                                .withType("String").build()
+                                ))
+                            .build()
+                    ))
+                    .build()
+            ))
+			.build();
+	
+	private static DimensionMappingImpl timeDimension = TimeDimensionMappingImpl.builder()
+            .withName("Time")            
+            .withHierarchies(List.of(
+                HierarchyMappingImpl.builder()
+                    .withHasAll(false)
+                    .withPrimaryKey("time_id")
+                    .withQuery(TableQueryMappingImpl.builder().withName("time_csv").build())
+                    .withLevels(List.of(
+                        LevelMappingImpl.builder()
+                            .withName("Year")
+                            .withColumn("the_year")
+                            .withType("Numeric")
+                            .withUniqueMembers(true)
+                            .withLevelType("TimeYears")
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Quarter")
+                            .withColumn("quarter")
+                            .withUniqueMembers(false)
+                            .withLevelType("TimeQuarters")
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Month")
+                            .withColumn("month_of_year")
+                            .withUniqueMembers(false)
+                            .withType("Numeric")
+                            .withLevelType("TimeMonths")
+                            .build()
+                    ))
+                    .build(),
+                HierarchyMappingImpl.builder()
+                    .withHasAll(true)
+                    .withName("Weekly")
+                    .withPrimaryKey("time_id")
+                    .withQuery(TableQueryMappingImpl.builder().withName("time_csv").build())
+                    .withLevels(List.of(
+                        LevelMappingImpl.builder()
+                            .withName("Year")
+                            .withColumn("the_year")
+                            .withType("Numeric")
+                            .withUniqueMembers(true)
+                            .withLevelType("TimeYears")
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Week")
+                            .withColumn("week_of_year")
+                            .withType("Numeric")
+                            .withUniqueMembers(false)
+                            .withLevelType("TimeWeeks")
+                            .build(),
+                        LevelMappingImpl.builder()
+                            .withName("Day")
+                            .withColumn("day_of_month")
+                            .withType("Numeric")
+                            .withUniqueMembers(false)
+                            .withLevelType("TimeDays")
+                            .build()
+                    ))
+                    .build()
+            ))
+            .build();
+	
+	private static MeasureMappingImpl unitSales = MeasureMappingImpl.builder()
+			.withName("Unit Sales")
+			.withColumn("unit_sales")
+			.withType("avg")
+			.withFormatString("Standard")
+			.build();
 
-    public AggMeasureFactCountTestModifier(MappingSchema mappingSchema) {
-        super(mappingSchema);
+    public AggMeasureFactCountTestModifier(CatalogMapping catalogMapping) {
+        super(catalogMapping);
     }
 /*
             + "<Schema name=\"FoodMart\">\n"
@@ -97,170 +213,50 @@ public class AggMeasureFactCountTestModifier extends RDbMappingSchemaModifier {
             + "</Schema>";
 
  */
-    protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
-        return SchemaRBuilder.builder()
-            .name("FoodMart")
-            .dimensions(List.of(
-                PrivateDimensionRBuilder.builder()
-                    .name("Time")
-                    .type(DimensionTypeEnum.TIME_DIMENSION)
-                    .hierarchies(List.of(
-                        HierarchyRBuilder.builder()
-                            .hasAll(false)
-                            .primaryKey("time_id")
-                            .relation(new TableR("time_csv"))
-                            .levels(List.of(
-                                LevelRBuilder.builder()
-                                    .name("Year")
-                                    .column("the_year")
-                                    .type(TypeEnum.NUMERIC)
-                                    .uniqueMembers(true)
-                                    .levelType(LevelTypeEnum.TIME_YEARS)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Quarter")
-                                    .column("quarter")
-                                    .uniqueMembers(false)
-                                    .levelType(LevelTypeEnum.TIME_QUARTERS)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Month")
-                                    .column("month_of_year")
-                                    .uniqueMembers(false)
-                                    .type(TypeEnum.NUMERIC)
-                                    .levelType(LevelTypeEnum.TIME_MONTHS)
-                                    .build()
-                            ))
+    @Override
+    protected SchemaMapping schema(SchemaMapping mappingSchemaOriginal) {
+        return SchemaMappingImpl.builder()
+            .withName("FoodMart")
+            .withCubes(List.of(
+            	PhysicalCubeMappingImpl.builder()
+                    .withName("Sales")
+                    .withDefaultMeasure(unitSales)
+                    .withQuery(TableQueryMappingImpl.builder().withName("fact_csv_2016").withAggregationExcludes(getAggExcludes()).withAggregationTables(getAggTables()).build())
+                    .withDimensionConnectors(List.of(
+                    		DimensionConnectorMappingImpl.builder().withDimension(timeDimension).withOverrideDimensionName("Time").withForeignKey("time_id").build(),
+                    		DimensionConnectorMappingImpl.builder().withDimension(storeDimension).withOverrideDimensionName("Store").withForeignKey("store_id").build()
+                    		))
+                    .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder().withMeasures(List.of(
+                        MeasureMappingImpl.builder()
+                            .withName("Unit Sales")
+                            .withColumn("unit_sales")
+                            .withType("avg")
+                            .withFormatString("Standard")
                             .build(),
-                        HierarchyRBuilder.builder()
-                            .hasAll(true)
-                            .name("Weekly")
-                            .primaryKey("time_id")
-                            .relation(new TableR("time_csv"))
-                            .levels(List.of(
-                                LevelRBuilder.builder()
-                                    .name("Year")
-                                    .column("the_year")
-                                    .type(TypeEnum.NUMERIC)
-                                    .uniqueMembers(true)
-                                    .levelType(LevelTypeEnum.TIME_YEARS)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Week")
-                                    .column("week_of_year")
-                                    .type(TypeEnum.NUMERIC)
-                                    .uniqueMembers(false)
-                                    .levelType(LevelTypeEnum.TIME_WEEKS)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Day")
-                                    .column("day_of_month")
-                                    .type(TypeEnum.NUMERIC)
-                                    .uniqueMembers(false)
-                                    .levelType(LevelTypeEnum.TIME_DAYS)
-                                    .build()
-                            ))
-                            .build()
-                    ))
-                    .build(),
-                PrivateDimensionRBuilder.builder()
-                    .name("Store")
-                    .hierarchies(List.of(
-                        HierarchyRBuilder.builder()
-                            .hasAll(true)
-                            .primaryKey("store_id")
-                            .relation(new TableR("store"))
-                            .levels(List.of(
-                                LevelRBuilder.builder()
-                                    .name("Store Country")
-                                    .column("store_country")
-                                    .uniqueMembers(true)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Store State")
-                                    .column("store_state")
-                                    .uniqueMembers(true)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Store City")
-                                    .column("store_city")
-                                    .uniqueMembers(false)
-                                    .build(),
-                                LevelRBuilder.builder()
-                                    .name("Store Name")
-                                    .column("store_name")
-                                    .uniqueMembers(true)
-                                    .properties(List.of(
-                                        PropertyRBuilder.builder().name("Store Type").column("store_type").build(),
-                                        PropertyRBuilder.builder().name("Store Manager").column("store_manager").build(),
-                                        PropertyRBuilder.builder().name("Store Sqft").column("store_sqft")
-                                            .type(PropertyTypeEnum.NUMERIC).build(),
-                                        PropertyRBuilder.builder().name("Grocery Sqft").column("grocery_sqft")
-                                            .type(PropertyTypeEnum.NUMERIC).build(),
-                                        PropertyRBuilder.builder().name("Frozen Sqft").column("frozen_sqft")
-                                            .type(PropertyTypeEnum.NUMERIC).build(),
-                                        PropertyRBuilder.builder().name("Meat Sqft").column("meat_sqft")
-                                            .type(PropertyTypeEnum.NUMERIC).build(),
-                                        PropertyRBuilder.builder().name("Has coffee bar").column("coffee_bar")
-                                            .type(PropertyTypeEnum.BOOLEAN).build(),
-                                        PropertyRBuilder.builder().name("Street address").column("store_street_address")
-                                            .type(PropertyTypeEnum.STRING).build()
-                                        ))
-                                    .build()
-                            ))
-                            .build()
-                    ))
-                    .build()
-            ))
-            .cubes(List.of(
-                CubeRBuilder.builder()
-                    .name("Sales")
-                    .defaultMeasure("Unit Sales")
-                    .fact(new TableR("fact_csv_2016", getAggExcludes(), getAggTables()))
-                    .dimensionUsageOrDimensions(List.of(
-                        DimensionUsageRBuilder.builder()
-                            .name("Time")
-                            .source("Time")
-                            .foreignKey("time_id")
+                        MeasureMappingImpl.builder()
+                            .withName("Store Cost")
+                            .withColumn("store_cost")
+                            .withType("avg")
+                            .withFormatString("#,###.00")
                             .build(),
-                        DimensionUsageRBuilder.builder()
-                            .name("Store")
-                            .source("Store")
-                            .foreignKey("store_id")
-                            .build()
-
-                    ))
-                    .measures(List.of(
-                        MeasureRBuilder.builder()
-                            .name("Unit Sales")
-                            .column("unit_sales")
-                            .aggregator("avg")
-                            .formatString("Standard")
-                            .build(),
-                        MeasureRBuilder.builder()
-                            .name("Store Cost")
-                            .column("store_cost")
-                            .aggregator("avg")
-                            .formatString("#,###.00")
-                            .build(),
-                        MeasureRBuilder.builder()
-                            .name("Store Sales")
-                            .column("store_sales")
-                            .aggregator("avg")
-                            .formatString("#,###.00")
-                            .build()
-                    ))
-                    .build()
-            ))
-            .build();
+                        MeasureMappingImpl.builder()
+                            .withName("Store Sales")
+                            .withColumn("store_sales")
+                            .withType("avg")
+                            .withFormatString("#,###.00")
+                            .build()                    		
+                    		))
+                    .build()                    
+                    )).build()
+                    )).build();
 
     }
 
-    protected List<MappingAggTable> getAggTables() {
+    protected List<AggregationTableMappingImpl> getAggTables() {
         return List.of();
     }
 
-    protected List<MappingAggExclude> getAggExcludes() {
+    protected List<AggregationExcludeMappingImpl> getAggExcludes() {
         return List.of();
     }
 }

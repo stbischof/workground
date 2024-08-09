@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 
-import mondrian.olap.exceptions.MdxCantFindMemberException;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
@@ -47,12 +46,13 @@ import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRowCell;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableRow;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ViewImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableRowCellMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableRowMappingMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.SqlSelectQueryMappingImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +60,7 @@ import mondrian.olap.MondrianException;
 import mondrian.olap.NativeEvaluationUnsupportedException;
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
+import mondrian.olap.exceptions.MdxCantFindMemberException;
 import mondrian.olap.fun.FunUtil;
 import mondrian.rolap.RolapHierarchy.LimitedRollupMember;
 import mondrian.server.ExecutionImpl;
@@ -531,39 +532,39 @@ public class RolapUtil {
         return bestMatch;
     }
 
-    public static MappingRelationQuery convertInlineTableToRelation(
-        MappingInlineTableQuery inlineTable,
+    public static RelationalQueryMapping convertInlineTableToRelation(
+        InlineTableQueryMapping inlineTable,
         final Dialect dialect)
     {
-        ViewImpl view = new ViewImpl();
-        view.setAlias(getAlias(inlineTable));
-
-        final int columnCount = inlineTable.columnDefs().size();
+                
+        final int columnCount = inlineTable.getColumnDefinitions().size();
         List<String> columnNames = new ArrayList<>();
         List<String> columnTypes = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
-            columnNames.add(inlineTable.columnDefs().get(i).name());
-            columnTypes.add(inlineTable.columnDefs().get(i).type().getValue());
+            columnNames.add(inlineTable.getColumnDefinitions().get(i).getName());
+            columnTypes.add(inlineTable.getColumnDefinitions().get(i).getType());
         }
         List<String[]> valueList = new ArrayList<>();
-        for (MappingInlineTableRow row : inlineTable.rows()) {
+        for (InlineTableRowMappingMapping row : inlineTable.getRows()) {
             String[] values = new String[columnCount];
-            for (MappingInlineTableRowCell value : row.values()) {
-                final int columnOrdinal = columnNames.indexOf(value.column());
+            for (InlineTableRowCellMapping value : row.getCells()) {
+                final int columnOrdinal = columnNames.indexOf(value.getColumnName());
                 if (columnOrdinal < 0) {
                     throw Util.newError(
-                        new StringBuilder("Unknown column '").append(value.column()).append("'").toString());
+                        new StringBuilder("Unknown column '").append(value.getColumnName()).append("'").toString());
                 }
-                values[columnOrdinal] = value.content();
+                values[columnOrdinal] = value.getValue();
             }
             valueList.add(values);
         }
-        view.addCode(
-            "generic",
-            dialect.generateInline(
-                columnNames,
-                columnTypes,
-                valueList).toString());
+        SqlSelectQueryMappingImpl view = SqlSelectQueryMappingImpl.builder()
+        		.withAlias(getAlias(inlineTable))
+        		.withSql(List.of(
+        				SQLMappingImpl.builder()
+        				.withDialects(List.of("generic"))
+        				.withStatement(dialect.generateInline(columnNames, columnTypes, valueList).toString())
+        				.build()))
+        		.build();        
         return view;
     }
 
@@ -668,7 +669,7 @@ public class RolapUtil {
      * @return the rolap star key
      */
     public static List<String> makeRolapStarKey(
-        final MappingRelationQuery fact)
+        final RelationalQueryMapping fact)
     {
       List<String> rlStarKey = new ArrayList<>();
       MappingTableQuery table = null;

@@ -14,8 +14,9 @@ package mondrian.rolap;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Schema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 
 import mondrian.olap.DimensionType;
 import mondrian.olap.HierarchyBase;
@@ -31,7 +32,7 @@ public class RolapCubeDimension extends RolapDimension {
 
     RolapDimension rolapDimension;
     int cubeOrdinal;
-    MappingCubeDimension xmlDimension;
+    DimensionConnectorMapping xmlDimension;
 
     /**
      * Creates a RolapCubeDimension.
@@ -46,7 +47,7 @@ public class RolapCubeDimension extends RolapDimension {
     public RolapCubeDimension(
         RolapCube cube,
         RolapDimension rolapDim,
-        MappingCubeDimension cubeDim,
+        DimensionConnectorMapping cubeDim,
         String name,
         int cubeOrdinal,
         List<RolapHierarchy> hierarchyList)
@@ -54,29 +55,29 @@ public class RolapCubeDimension extends RolapDimension {
         super(
             null,
             name,
-            cubeDim.caption() != null
-                ? cubeDim.caption()
+            cubeDim.getOverrideDimensionName() != null
+                ? cubeDim.getOverrideDimensionName()
                 : rolapDim.getCaption(),
-            cubeDim.visible(),
-            cubeDim.description() != null
-                ? cubeDim.description()
+            cubeDim.isVisible(),
+            cubeDim.getDimension().getDescription() != null
+                ? cubeDim.getDimension().getDescription()
                 : rolapDim.getDescription(),
             null,
-            (cubeDim.annotations() != null && !cubeDim.annotations().isEmpty())
-                ? RolapHierarchy.createMetadataMap(cubeDim.annotations())
+            (cubeDim.getDimension().getAnnotations() != null && !cubeDim.getDimension().getAnnotations().isEmpty())
+                ? RolapHierarchy.createMetadataMap(cubeDim.getDimension().getAnnotations())
                 : rolapDim.getMetadata());
         this.xmlDimension = cubeDim;
         this.rolapDimension = rolapDim;
         this.cubeOrdinal = cubeOrdinal;
         this.cube = cube;
-        this.caption = cubeDim.caption();
+        this.caption = cubeDim.getOverrideDimensionName();
 
         // create new hierarchies
         hierarchies = new RolapCubeHierarchy[rolapDim.getHierarchies().length];
 
         RolapCube factCube = null;
         if (cube.isVirtual()) {
-          factCube = lookupFactCube(cubeDim, cube.getSchema());
+          factCube = lookupFactCube(cubeDim.getDimension(), cube.getSchema());
         }
         for (int i = 0; i < rolapDim.getHierarchies().length; i++) {
           final RolapCubeHierarchy cubeHierarchy =
@@ -93,7 +94,7 @@ public class RolapCubeDimension extends RolapDimension {
     }
 
     RolapCube lookupFactCube(
-        MappingCubeDimension cubeDim, RolapSchema schema)
+        DimensionMapping cubeDim, RolapSchema schema)
     {
       if (cubeDim instanceof MappingVirtualCubeDimension virtualCubeDim && virtualCubeDim.cubeName() != null) {
           return schema.lookupCube(virtualCubeDim.cubeName());

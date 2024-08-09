@@ -27,16 +27,14 @@ import java.util.TreeMap;
 
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.olap.MondrianException;
 import mondrian.recorder.MessageRecorder;
+import mondrian.rolap.Column;
 import mondrian.rolap.HierarchyUsage;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapCube;
@@ -652,7 +650,7 @@ public abstract class Recognizer {
                      uit.hasNext(); ) {
                     JdbcSchema.Table.Column.Usage aggUsage = uit.next();
 
-                    MappingRelationQuery rel = hierarchyUsage.getJoinTable();
+                    RelationalQueryMapping rel = hierarchyUsage.getJoinTable();
 
                     if (!aggUsageMatchesHierarchyUsage(aggUsage,
                         hierarchyUsage, levelColumnName)) {
@@ -694,7 +692,7 @@ public abstract class Recognizer {
                 aggUsage.setSymbolicName(symbolicName);
 
                 String tableAlias;
-                if (aggUsage.joinExp instanceof MappingColumn mcolumn) {
+                if (aggUsage.joinExp instanceof mondrian.rolap.Column mcolumn) {
                     tableAlias = mcolumn.getTable();
                 } else {
                     tableAlias = getAlias(aggUsage.relation);
@@ -787,7 +785,7 @@ public abstract class Recognizer {
         HierarchyUsage hierarchyUsage,
         String levelColumnName
     ) {
-        MappingRelationQuery rel = hierarchyUsage.getJoinTable();
+        RelationalQueryMapping rel = hierarchyUsage.getJoinTable();
 
         JdbcSchema.Table.Column aggColumn = aggUsage.getColumn();
         String aggColumnName = aggColumn.column.getName();
@@ -990,8 +988,8 @@ public abstract class Recognizer {
         String factCountColumnName = getFactCountColumnName(aggUsage);
 
         // we want the fact count expression
-        MappingColumn column =
-            new ColumnR(tableName, factCountColumnName);
+        mondrian.rolap.Column column =
+            new mondrian.rolap.Column(tableName, factCountColumnName);
         SqlQuery sqlQuery = star.getSqlQuery();
         return getExpression(column, sqlQuery);
     }
@@ -1034,20 +1032,13 @@ public abstract class Recognizer {
      * mondrian.olap.KeyExpression}, returns null. This
      * will result in an error.
      */
-    protected String getColumnName(MappingExpression expr) {
+    protected String getColumnName(SQLExpressionMapping expr) {
         msgRecorder.pushContextName("Recognizer.getColumnName");
 
         try {
-            if (expr instanceof MappingColumn column) {
+            if (expr instanceof Column column) {
                 return column.getName();
-            } else if (expr instanceof MappingExpressionView key) {
-                return key.toString();
-            }
-
-            String msg = MessageFormat.format(noColumnNameFromExpression,
-                expr.toString());
-            msgRecorder.reportError(msg);
-
+            } 
             return null;
         } finally {
             msgRecorder.popContextName();

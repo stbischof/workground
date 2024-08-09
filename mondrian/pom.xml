@@ -301,24 +301,6 @@
 
 		<dependency>
 			<groupId>org.eclipse.daanse</groupId>
-			<artifactId>org.eclipse.daanse.olap.rolap.dbmapper.model.api</artifactId>
-			<version>${revision}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.daanse</groupId>
-			<artifactId>org.eclipse.daanse.olap.rolap.dbmapper.model.record</artifactId>
-			<version>${revision}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.daanse</groupId>
-			<artifactId>org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb</artifactId>
-			<version>${revision}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.daanse</groupId>
 			<artifactId>org.eclipse.daanse.mdx.model.api</artifactId>
 			<version>${revision}</version>
 			<scope>compile</scope>
@@ -355,13 +337,6 @@
 		<dependency>
 			<groupId>org.eclipse.daanse</groupId>
 			<artifactId>org.eclipse.daanse.olap.rolap.dbmapper.provider.api</artifactId>
-			<version>${revision}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.daanse</groupId>
-			<artifactId>
-				org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record</artifactId>
 			<version>${revision}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -418,6 +393,13 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.daanse</groupId>
+      <artifactId>org.eclipse.daanse.rolap.mapping.modifier</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 	<build>
 		<!--

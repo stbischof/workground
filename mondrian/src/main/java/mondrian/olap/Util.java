@@ -130,6 +130,7 @@ import org.eclipse.daanse.olap.impl.KeySegment;
 import org.eclipse.daanse.olap.impl.NameSegment;
 import org.eclipse.daanse.olap.operation.api.OperationAtom;
 import org.eclipse.daanse.olap.operation.api.PlainPropertyOperationAtom;
+import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

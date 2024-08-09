@@ -41,26 +41,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
-import mondrian.olap.Property;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.element.Member;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ViewR;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SqlSelectQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.InlineTableQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinedQueryElementMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.SqlSelectQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +66,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import mondrian.olap.MondrianException;
+import mondrian.olap.Property;
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
 import mondrian.rolap.agg.Aggregation;
@@ -77,6 +76,7 @@ import mondrian.rolap.agg.CellRequest;
 import mondrian.rolap.agg.SegmentWithData;
 import mondrian.rolap.aggmatcher.AggStar;
 import mondrian.rolap.sql.SqlQuery;
+import mondrian.rolap.util.PojoUtil;
 import mondrian.rolap.util.RelationUtil;
 import mondrian.server.LocusImpl;
 import mondrian.util.Bug;
@@ -143,7 +143,7 @@ public class RolapStar {
     RolapStar(
         final RolapSchema schema,
         final Context context,
-        final MappingRelationQuery fact)
+        final RelationalQueryMapping fact)
     {
         this.cacheAggregations = true;
         this.schema = schema;
@@ -244,10 +244,10 @@ public class RolapStar {
         localBars.remove();
     }
 
-    public static String generateExprString(MappingExpression expression, SqlQuery query) {
-        if(expression instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn) {
-            return query.getDialect().quoteIdentifier(expression.getTable(),
-                expression.getName());
+    public static String generateExprString(SQLExpressionMapping expression, SqlQuery query) {
+        if(expression instanceof mondrian.rolap.Column col) {
+            return query.getDialect().quoteIdentifier(col.getTable(),
+            		col.getName());
         }
         if(expression instanceof MappingExpressionView expressionView) {
             SqlQuery.CodeSet codeSet = new SqlQuery.CodeSet();
@@ -277,13 +277,13 @@ public class RolapStar {
 
     private static class StarNetworkNode {
         private StarNetworkNode parent;
-        private MappingRelationQuery origRel;
+        private RelationalQueryMapping origRel;
         private String foreignKey;
         private String joinKey;
 
         private StarNetworkNode(
             StarNetworkNode parent,
-            MappingRelationQuery origRel,
+            RelationalQueryMapping origRel,
             String foreignKey,
             String joinKey)
         {
@@ -295,7 +295,7 @@ public class RolapStar {
 
         private boolean isCompatible(
             StarNetworkNode compatibleParent,
-            MappingRelationQuery rel,
+            RelationalQueryMapping rel,
             String compatibleForeignKey,
             String compatibleJoinKey)
         {
@@ -306,24 +306,31 @@ public class RolapStar {
         }
     }
 
-    protected MappingQuery cloneRelation(
-        MappingRelationQuery rel,
+    protected QueryMapping cloneRelation(
+        RelationalQueryMapping rel,
         String possibleName)
     {
-        if (rel instanceof MappingTableQuery tbl) {
-            return new TableR(
-                tbl,
-                possibleName);
-        } else if (rel instanceof MappingViewQuery view) {
-            return new ViewR(view, possibleName);
-        } else if (rel instanceof MappingInlineTableQuery inlineTable) {
-            return new InlineTableR(inlineTable, possibleName);
+        if (rel instanceof TableQueryMapping tbl) {
+        	return TableQueryMappingImpl.builder()        	
+        	.withAlias(possibleName)
+        	.withName(tbl.getName())
+        	.withSchema(tbl.getSchema())
+        	.withOptimizationHints(null)
+        	.build();
+        } else if (rel instanceof SqlSelectQueryMapping view) {
+            return SqlSelectQueryMappingImpl.builder().withAlias(possibleName).withSql(PojoUtil.getSqls(view.getSQL())).build();
+        } else if (rel instanceof InlineTableQueryMapping inlineTable) {
+            return InlineTableQueryMappingImpl.builder()
+            		.withAlias(possibleName)
+            		.withColumnDefinitions(PojoUtil.getColumnDefinitions(inlineTable.getColumnDefinitions()))
+            		.withRows(PojoUtil.getRows(inlineTable.getRows()))
+            		.build();
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
-    /**
+	/**
      * Generates a unique relational join to the fact table via re-aliasing
      * Relations
      *
@@ -337,8 +344,8 @@ public class RolapStar {
      * @param primaryKeyTable the join table of the relation
      * @return if necessary a new relation that has been re-aliased
      */
-    public MappingQuery getUniqueRelation(
-        MappingQuery rel,
+    public QueryMapping getUniqueRelation(
+        QueryMapping rel,
         String factForeignKey,
         String primaryKey,
         String primaryKeyTable)
@@ -347,16 +354,16 @@ public class RolapStar {
             factNode, rel, factForeignKey, primaryKey, primaryKeyTable);
     }
 
-    private MappingQuery getUniqueRelation(
+    private QueryMapping getUniqueRelation(
         StarNetworkNode parent,
-        MappingQuery relOrJoin,
+        QueryMapping relOrJoin,
         String foreignKey,
         String joinKey,
         String joinKeyTable)
     {
         if (relOrJoin == null) {
             return null;
-        } else if (relOrJoin instanceof MappingRelationQuery rel) {
+        } else if (relOrJoin instanceof RelationalQueryMapping rel) {
             int val = 0;
             String newAlias =
                 joinKeyTable != null ? joinKeyTable : RelationUtil.getAlias(rel);
@@ -364,7 +371,7 @@ public class RolapStar {
                 StarNetworkNode node = nodeLookup.get(newAlias);
                 if (node == null) {
                     if (val != 0) {
-                        rel = (MappingRelationQuery)
+                        rel = (RelationalQueryMapping)
                             cloneRelation(rel, newAlias);
                     }
                     node =
@@ -379,12 +386,12 @@ public class RolapStar {
                 }
                 newAlias = new StringBuilder(RelationUtil.getAlias(rel)).append("_").append(++val).toString();
             }
-        } else if (relOrJoin instanceof MappingJoinQuery join) {
-            if (left(join) instanceof MappingJoinQuery) {
+        } else if (relOrJoin instanceof JoinQueryMapping join) {
+            if (left(join) instanceof JoinQueryMapping) {
                 throw new MondrianException(illegalLeftDeepJoin);
             }
-            final MappingQuery left;
-            final MappingQuery right;
+            final QueryMapping left;
+            final QueryMapping right;
             if (getLeftAlias(join).equals(joinKeyTable)) {
                 // first manage left then right
                 left =
@@ -392,11 +399,11 @@ public class RolapStar {
                         parent, left(join), foreignKey,
                         joinKey, joinKeyTable);
                 parent = nodeLookup.get(
-                    RelationUtil.getAlias(((MappingRelationQuery) left)));
+                    RelationUtil.getAlias(((RelationalQueryMapping) left)));
                 right =
                     getUniqueRelation(
-                        parent, right(join), join.left().getKey(),
-                        join.right().getKey(), getRightAlias(join));
+                        parent, right(join), join.getLeft().getKey(),
+                        join.getRight().getKey(), getRightAlias(join));
             } else if (getRightAlias(join).equals(joinKeyTable)) {
                 // right side must equal
                 right =
@@ -404,11 +411,11 @@ public class RolapStar {
                         parent, right(join), foreignKey,
                         joinKey, joinKeyTable);
                 parent = nodeLookup.get(
-                    RelationUtil.getAlias(((MappingRelationQuery) right)));
+                    RelationUtil.getAlias(((RelationalQueryMapping) right)));
                 left =
                     getUniqueRelation(
-                        parent, left(join), join.right().getKey(),
-                        join.left().getKey(), getLeftAlias(join));
+                        parent, left(join), join.getRight().getKey(),
+                        join.getLeft().getKey(), getLeftAlias(join));
             } else {
                 throw new MondrianException(
                     "failed to match primary key table to join tables");
@@ -416,16 +423,19 @@ public class RolapStar {
 
             if (left(join) != left || right(join) != right) {
                 join =
-                    new JoinR(new JoinedQueryElementR(
-                        left instanceof MappingRelationQuery relation
-                            ? RelationUtil.getAlias(relation)
-                            : null,
-                        join.left().getKey(), left),
-                        new JoinedQueryElementR(
-                        right instanceof MappingRelationQuery relation
-                            ? RelationUtil.getAlias(relation)
-                            : null,
-                        join.right().getKey(), right));
+                    JoinQueryMappingImpl.builder()
+                    .withLeft(JoinedQueryElementMappingImpl.builder()
+                    		.withAlias(left instanceof RelationalQueryMapping relation ? RelationUtil.getAlias(relation) : null)
+                    		.withKey(join.getLeft().getKey())
+                    		.withQuery(PojoUtil.copy(left))
+                    		.build())
+                    
+                    .withRight(JoinedQueryElementMappingImpl.builder()
+                    		.withAlias(right instanceof RelationalQueryMapping relation ? RelationUtil.getAlias(relation) : null)
+                    		.withKey(join.getRight().getKey())
+                    		.withQuery(PojoUtil.copy(right))
+                    		.build())
+                    .build();
             }
             return join;
         }
@@ -710,7 +720,7 @@ public class RolapStar {
     public static void collectColumns(
         Collection<Column> columnList,
         Table table,
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn joinColumn)
+        mondrian.rolap.Column joinColumn)
     {
         if (joinColumn == null) {
             columnList.addAll(table.columnList);
@@ -835,7 +845,7 @@ public class RolapStar {
         };
 
         private final Table table;
-        private final MappingExpression expression;
+        private final SQLExpressionMapping expression;
         private final Datatype datatype;
         private final BestFitColumnType internalType;
         private final String name;
@@ -874,7 +884,7 @@ public class RolapStar {
         private Column(
             String name,
             Table table,
-            MappingExpression expression,
+            SQLExpressionMapping expression,
             Datatype datatype)
         {
             this(
@@ -885,7 +895,7 @@ public class RolapStar {
         private Column(
             String name,
             Table table,
-            MappingExpression expression,
+            SQLExpressionMapping expression,
             Datatype datatype,
             BestFitColumnType internalType,
             Column nameColumn,
@@ -990,7 +1000,7 @@ public class RolapStar {
             return isNameColumn;
         }
 
-        public MappingExpression getExpression() {
+        public SQLExpressionMapping getExpression() {
             return expression;
         }
 
@@ -1173,7 +1183,7 @@ public class RolapStar {
             String cubeName,
             RolapAggregator aggregator,
             Table table,
-            MappingExpression expression,
+            SQLExpressionMapping expression,
             Datatype datatype)
         {
             super(name, table, expression, datatype);
@@ -1234,7 +1244,7 @@ public class RolapStar {
      * Definition of a table in a star schema.
      *
      * <p>A 'table' is defined by a
-     * {@link MappingQuery} so may, in fact, be a
+     * {@link QueryMapping} so may, in fact, be a
      * view.
      *
      * <p>Every table in the star schema except the fact table has a parent
@@ -1244,7 +1254,7 @@ public class RolapStar {
      */
     public static class Table {
         private final RolapStar star;
-        private final MappingRelationQuery relation;
+        private final RelationalQueryMapping relation;
         private final List<Column> columnList;
         private final Table parent;
         private List<Table> children;
@@ -1253,7 +1263,7 @@ public class RolapStar {
 
         private Table(
             RolapStar star,
-            MappingRelationQuery relation,
+            RelationalQueryMapping relation,
             Table parent,
             Condition joinCondition)
         {
@@ -1353,7 +1363,7 @@ public class RolapStar {
          * Given a Expression return a column with that expression
          * or null.
          */
-        public Column lookupColumnByExpression(MappingExpression expr) {
+        public Column lookupColumnByExpression(SQLExpressionMapping expr) {
             for (Column column : getColumns()) {
                 if (column instanceof Measure) {
                     continue;
@@ -1389,7 +1399,7 @@ public class RolapStar {
         private SqlQuery getSqlQuery() {
             return getStar().getSqlQuery();
         }
-        public MappingRelationQuery getRelation() {
+        public RelationalQueryMapping getRelation() {
             return relation;
         }
 
@@ -1416,7 +1426,7 @@ public class RolapStar {
          * been given an alias.
          */
         public String getTableName() {
-            if (relation instanceof MappingTableQuery t) {
+            if (relation instanceof TableQueryMapping t) {
                 return t.getName();
             } else {
                 return null;
@@ -1548,7 +1558,7 @@ public class RolapStar {
         private Column makeColumnForLevelExpr(
             RolapLevel level,
             String name,
-            MappingExpression expr,
+            SQLExpressionMapping expr,
             Datatype datatype,
             BestFitColumnType internalType,
             Column nameColumn,
@@ -1611,7 +1621,7 @@ public class RolapStar {
             RolapProperty property,
             RolapLevel level,
             String name,
-            MappingExpression expr,
+            SQLExpressionMapping expr,
             Datatype datatype,
             BestFitColumnType internalType,
             Column nameColumn,
@@ -1679,10 +1689,10 @@ public class RolapStar {
          */
         synchronized Table addJoin(
             RolapCube cube,
-            MappingQuery relationOrJoin,
+            QueryMapping relationOrJoin,
             RolapStar.Condition joinCondition)
         {
-            if (relationOrJoin instanceof MappingRelationQuery relationInner) {
+            if (relationOrJoin instanceof RelationalQueryMapping relationInner) {
                 RolapStar.Table starTable =
                     findChild(relationInner, joinCondition);
                 if (starTable == null) {
@@ -1694,13 +1704,13 @@ public class RolapStar {
                     this.children.add(starTable);
                 }
                 return starTable;
-            } else if (relationOrJoin instanceof MappingJoinQuery join) {
+            } else if (relationOrJoin instanceof JoinQueryMapping join) {
                 RolapStar.Table leftTable =
                     addJoin(cube, left(join), joinCondition);
                 String leftAlias = getLeftAlias(join);
                 if (leftAlias == null) {
                     // REVIEW: is cast to Relation valid?
-                    leftAlias = RelationUtil.getAlias(((MappingRelationQuery) left(join)));
+                    leftAlias = RelationUtil.getAlias(((RelationalQueryMapping) left(join)));
                     if (leftAlias == null) {
                         throw Util.newError(
                             "missing leftKeyAlias in " + relationOrJoin);
@@ -1715,14 +1725,14 @@ public class RolapStar {
                     // the right relation of a join may be a join
                     // if so, we need to use the right relation join's
                     // left relation's alias.
-                    if (right(join) instanceof MappingJoinQuery joinright) {
+                    if (right(join) instanceof JoinQueryMapping joinright) {
                         // REVIEW: is cast to Relation valid?
                         rightAlias =
-                            RelationUtil.getAlias(((MappingRelationQuery) left(joinright)));
+                            RelationUtil.getAlias(((RelationalQueryMapping) left(joinright)));
                     } else {
                         // REVIEW: is cast to Relation valid?
                         rightAlias =
-                            RelationUtil.getAlias(((MappingRelationQuery) right(join)));
+                            RelationUtil.getAlias(((RelationalQueryMapping) right(join)));
                     }
                     if (rightAlias == null) {
                         throw Util.newError(
@@ -1730,8 +1740,8 @@ public class RolapStar {
                     }
                 }
                 joinCondition = new RolapStar.Condition(
-                    new ColumnR(leftAlias, join.left().getKey()),
-                    new ColumnR(rightAlias, join.right().getKey()));
+                    new mondrian.rolap.Column(leftAlias, join.getLeft().getKey()),
+                    new mondrian.rolap.Column(rightAlias, join.getRight().getKey()));
                 return leftTable.addJoin(
                     cube, right(join), joinCondition);
 
@@ -1745,7 +1755,7 @@ public class RolapStar {
          * if there is none.
          */
         public Table findChild(
-            MappingRelationQuery relation,
+            RelationalQueryMapping relation,
             Condition joinCondition)
         {
             for (Table child : getChildren()) {
@@ -1796,7 +1806,7 @@ public class RolapStar {
         }
 
         public boolean equalsTableName(String tableName) {
-            return (this.relation instanceof MappingTableQuery mt && mt.getName().equals(tableName));
+            return (this.relation instanceof TableQueryMapping mt && mt.getName().equals(tableName));
         }
 
         /**
@@ -1863,7 +1873,7 @@ public class RolapStar {
          * the child table with the matching left join condition.
          */
         public RolapStar.Table findTableWithLeftCondition(
-            final MappingExpression left)
+            final SQLExpressionMapping left)
         {
             for (Table child : getChildren()) {
                 Condition condition = child.joinCondition;
@@ -1941,7 +1951,7 @@ public class RolapStar {
          * Returns whether this table has a column with the given name.
          */
         public boolean containsColumn(String columnName) {
-            if (relation instanceof MappingRelationQuery) {
+            if (relation instanceof RelationalQueryMapping) {
                 return containsColumn(
                     RelationUtil.getAlias((relation)),
                     columnName);
@@ -1982,14 +1992,14 @@ public class RolapStar {
     public static class Condition {
         private static final Logger LOGGER = LoggerFactory.getLogger(Condition.class);
 
-        private final MappingExpression left;
-        private final MappingExpression right;
+        private final SQLExpressionMapping left;
+        private final SQLExpressionMapping right;
         // set in Table constructor
         Table table;
 
         Condition(
-            MappingExpression left,
-            MappingExpression right)
+        		SQLExpressionMapping left,
+        		SQLExpressionMapping right)
         {
             assert left != null;
             assert right != null;
@@ -2002,13 +2012,13 @@ public class RolapStar {
             this.left = left;
             this.right = right;
         }
-        public MappingExpression getLeft() {
+        public SQLExpressionMapping getLeft() {
             return left;
         }
         public String getLeft(final SqlQuery query) {
             return RolapStar.generateExprString(this.left, query);
         }
-        public MappingExpression getRight() {
+        public SQLExpressionMapping getRight() {
             return right;
         }
         public String getRight(final SqlQuery query) {
@@ -2094,15 +2104,15 @@ public class RolapStar {
                 visit(condition.right));
         }
 
-        public MappingExpression visit(MappingExpression expression) {
+        public SQLExpressionMapping visit(SQLExpressionMapping expression) {
             if (expression == null) {
                 return null;
             }
             if (newAlias.equals(oldAlias)) {
                 return expression;
             }
-            if (expression instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn column) {
-                return new ColumnR(visit(column.getTable()), column.getName());
+            if (expression instanceof mondrian.rolap.Column column) {
+                return new mondrian.rolap.Column(visit(column.getTable()), column.getName());
             } else {
                 throw Util.newInternal("need to implement " + expression);
             }

@@ -18,10 +18,12 @@ import static mondrian.rolap.util.JoinUtil.getLeftAlias;
 import static mondrian.rolap.util.JoinUtil.getRightAlias;
 import static mondrian.rolap.util.JoinUtil.left;
 import static mondrian.rolap.util.JoinUtil.right;
+import static mondrian.rolap.util.PojoUtil.copy;
 import static mondrian.rolap.util.RelationUtil.getAlias;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,9 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import mondrian.olap.exceptions.BadMeasureSourceException;
-import mondrian.olap.exceptions.CalcMemberNotUniqueException;
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
@@ -72,41 +73,36 @@ import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.impl.IdentifierNode;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
 import org.eclipse.daanse.olap.impl.ScenarioImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughAttribute;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughElement;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDrillThroughMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackAttribute;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingWritebackTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.AnnotationImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.MeasureImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.InlineTableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
+import org.eclipse.daanse.rolap.mapping.api.model.ActionMappingMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberPropertyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughActionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughAttributeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureGroupMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.NamedSetMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.PhysicalCubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.WritebackAttributeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.WritebackMeasureMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.WritebackTableMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.AnnotationMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinedQueryElementMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.QueryMappingImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,12 +121,13 @@ import mondrian.olap.RoleImpl;
 import mondrian.olap.SetBase;
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
+import mondrian.olap.exceptions.BadMeasureSourceException;
+import mondrian.olap.exceptions.CalcMemberNotUniqueException;
 import mondrian.rolap.aggmatcher.ExplicitRules;
 import mondrian.rolap.cache.SoftSmartCache;
 import mondrian.rolap.format.FormatterCreateContext;
 import mondrian.rolap.format.FormatterFactory;
-import mondrian.rolap.util.DimensionUtil;
-import mondrian.rolap.util.NamedSetUtil;
+import mondrian.rolap.util.PojoUtil;
 import mondrian.server.LocusImpl;
 import mondrian.spi.CellFormatter;
 
@@ -150,7 +147,7 @@ public class RolapCube extends CubeBase {
     private final RolapHierarchy measuresHierarchy;
 
     /** For SQL generator. Fact table. */
-    private MappingRelationQuery fact;
+    private RelationalQueryMapping fact;
 
     /** Schema reader which can see this cube and nothing else. */
     private SchemaReader schemaReader;
@@ -249,14 +246,14 @@ public class RolapCube extends CubeBase {
      */
     private RolapCube(
         RolapSchema schema,
-        MappingSchema mappingSchema,
+        SchemaMapping schemaMapping,
         String name,
         boolean visible,
         String caption,
         String description,
         boolean isCache,
-        MappingRelationQuery fact,
-        List<? extends MappingCubeDimension> dimensions,
+        RelationalQueryMapping fact,
+        List<? extends DimensionConnectorMapping> dimensions,
         Map<String, Object> metadata,
         Context context)
     {
@@ -311,19 +308,19 @@ public class RolapCube extends CubeBase {
             measuresDimension.newHierarchy(null, false, null);
         hierarchyList.add(measuresHierarchy);
 
-        if (!Util.isEmpty(mappingSchema.measuresCaption())) {
-            measuresDimension.setCaption(mappingSchema.measuresCaption());
-            this.measuresHierarchy.setCaption(mappingSchema.measuresCaption());
+        if (!Util.isEmpty(schemaMapping.getMeasuresDimensionName())) {
+            measuresDimension.setCaption(schemaMapping.getMeasuresDimensionName());
+            this.measuresHierarchy.setCaption(schemaMapping.getMeasuresDimensionName());
         }
 
         for (int i = 0; i < dimensions.size(); i++) {
-            MappingCubeDimension mappingCubeDimension = dimensions.get(i);
+        	DimensionConnectorMapping mappingCubeDimension = dimensions.get(i);
 
             // Look up usages of shared dimensions in the schema before
             // consulting the XML schema (which may be null).
             RolapCubeDimension dimension =
                 getOrCreateDimension(
-                    mappingCubeDimension, schema, mappingSchema, i + 1, hierarchyList);
+                    mappingCubeDimension, schema, schemaMapping, i + 1, hierarchyList);
             if (getLogger().isDebugEnabled()) {
                 String msg = new StringBuilder("RolapCube<init>: dimension=").append(dimension.getName()).toString();
                 getLogger().debug(msg);
@@ -357,21 +354,21 @@ public class RolapCube extends CubeBase {
      */
     RolapCube(
         RolapSchema schema,
-        MappingSchema mappingSchema,
-        MappingCube mappingCube,
+        SchemaMapping mappingSchema2,
+        PhysicalCubeMapping cubeMapping,
         Context context)
     {
         this(
             schema,
-            mappingSchema,
-            mappingCube.name(),
-            mappingCube.visible(),
-            mappingCube.caption(),
-            mappingCube.description(),
-            mappingCube.cache(),
-            mappingCube.fact(),
-            mappingCube.dimensionUsageOrDimensions(),
-            RolapHierarchy.createMetadataMap(mappingCube.annotations()), context);
+            mappingSchema2,
+            cubeMapping.getName(),
+            cubeMapping.isVisible(),
+            cubeMapping.getName(),
+            cubeMapping.getDescription(),
+            isCached(cubeMapping),
+            (RelationalQueryMapping) cubeMapping.getQuery(),
+            cubeMapping.getDimensionConnectors(),
+            RolapHierarchy.createMetadataMap(cubeMapping.getAnnotations()), context);
 
         if (getFact() == null) {
             throw Util.newError(
@@ -389,16 +386,21 @@ public class RolapCube extends CubeBase {
         // done in a common constructor.
         RolapLevel measuresLevel = this.measuresHierarchy.newMeasuresLevel();
 
-        List<RolapMember> measureList =
-            new ArrayList<>(mappingCube.measures().size());
+		List<? extends MeasureMapping> measureMappings = cubeMapping.getMeasureGroups().stream()
+				.map(MeasureGroupMapping::getMeasures).flatMap(Collection::stream).toList();
+
+		List<RolapMember> measureList = new ArrayList<>(measureMappings.size());
+
+
+		AtomicInteger ai=new AtomicInteger();
         Member defaultMeasure = null;
-        for (int i = 0; i < mappingCube.measures().size(); i++) {
+        for (MeasureMapping measureMapping:measureMappings) {
             RolapBaseCubeMeasure measure =
-                createMeasure(mappingCube, measuresLevel, i, mappingCube.measures().get(i));
+                createMeasure(cubeMapping, measuresLevel, ai.incrementAndGet(), measureMapping);
             measureList.add(measure);
 
             // Is this the default measure?
-            if (Util.equalName(measure.getName(), mappingCube.defaultMeasure())) {
+            if (measure.getName().equals( cubeMapping.getDefaultMeasure())) {
                 defaultMeasure = measure;
             }
 
@@ -417,19 +419,27 @@ public class RolapCube extends CubeBase {
         // Ensure that cube has an atomic cell count
         // measure even if the schema does not contain one.
         if (factCountMeasure == null) {
-            AnnotationImpl internalUsage = new AnnotationImpl();
-            internalUsage.setName("Internal Use");
-            internalUsage.setContent("For internal use");
-            List<MappingAnnotation> annotations = new ArrayList<>();
+            AnnotationMappingImpl internalUsage = AnnotationMappingImpl
+            		.builder()
+            		.withName("Internal Use")
+            		.withValue("For internal use")
+            		.build();
+            List<AnnotationMappingImpl> annotations = new ArrayList<>();
             annotations.add(internalUsage);
-            final MeasureImpl mappingMeasure = new MeasureImpl();
+            final MeasureMappingImpl mappingMeasure = MeasureMappingImpl
+            		.builder()
+            		.withName("Fact Count")
+            		.withType("count")
+            		.withVisible(false)
+            		.withAnnotations(annotations)
+            		.build();
             mappingMeasure.setName("Fact Count");
-            mappingMeasure.setAggregator("count");
+            mappingMeasure.setType("count");
             mappingMeasure.setVisible(false);
             mappingMeasure.setAnnotations(annotations);
             factCountMeasure =
                 createMeasure(
-                    mappingCube, measuresLevel, measureList.size(), mappingMeasure);
+                    cubeMapping, measuresLevel, measureList.size(), mappingMeasure);
             measureList.add(factCountMeasure);
         }
 
@@ -438,28 +448,27 @@ public class RolapCube extends CubeBase {
                 new MeasureMemberSource(this.measuresHierarchy, measureList)));
 
         this.measuresHierarchy.setDefaultMember(defaultMeasure);
-        init(mappingCube.dimensionUsageOrDimensions());
-        init(mappingCube, measureList);
+        init(cubeMapping.getDimensionConnectors());
+        init(cubeMapping, measureList);
 
         setMeasuresHierarchyMemberReader(
             new CacheMemberReader(
                 new MeasureMemberSource(this.measuresHierarchy, measureList)));
 
-        checkOrdinals(mappingCube.name(), measureList);
-        loadAggGroup(mappingCube);
+        checkOrdinals(cubeMapping.getName(), measureList);
+        loadAggGroup(cubeMapping);
 
-        for(MappingAction mappingAction: mappingCube.drillThroughActions()) {
-            if(mappingAction instanceof MappingDrillThroughAction mappingDrillThroughAction) {
+        for(ActionMappingMapping mappingAction: cubeMapping.getAction()) {
+            if(mappingAction instanceof DrillThroughActionMapping mappingDrillThroughAction) {
                 List<DrillThroughColumn> columns = new ArrayList<>();
 
-                for(MappingDrillThroughElement mappinmgDrillThroughColumn: mappingDrillThroughAction.drillThroughElements()) {
-                    if(mappinmgDrillThroughColumn instanceof MappingDrillThroughAttribute mappingDrillThroughAttribute) {
+                for(DrillThroughAttributeMapping mappingDrillThroughAttribute : mappingDrillThroughAction.getDrillThroughAttribute()) {
                         Dimension dimension = null;
                         Hierarchy hierarchy = null;
                         Level level = null;
                         RolapProperty property = null;
                         for(Dimension currntDimension: this.getDimensions()) {
-                            if(currntDimension.getName().equals(mappingDrillThroughAttribute.dimension())) {
+                            if(currntDimension.getName().equals(mappingDrillThroughAttribute.getDimension())) {
                                 dimension = currntDimension;
                                 break;
                             }
@@ -467,13 +476,13 @@ public class RolapCube extends CubeBase {
                         if(dimension == null) {
                             throw Util.newError(
                                     new StringBuilder("Error while creating DrillThrough  action. Dimension '")
-                                        .append(mappingDrillThroughAttribute.dimension()).append("' not found").toString());
+                                        .append(mappingDrillThroughAttribute.getDimension()).append("' not found").toString());
                         }
                         else {
-                            if(mappingDrillThroughAttribute.hierarchy() != null && !mappingDrillThroughAttribute.hierarchy().equals("")) {
+                            if(mappingDrillThroughAttribute.getHierarchy() != null && !mappingDrillThroughAttribute.getHierarchy().equals("")) {
                                 for(Hierarchy currentHierarchy: dimension.getHierarchies()) {
                                     if(currentHierarchy instanceof RolapCubeHierarchy rolapCubeHierarchy
-                                        && rolapCubeHierarchy.getSubName().equals(mappingDrillThroughAttribute.hierarchy())) {
+                                        && rolapCubeHierarchy.getSubName().equals(mappingDrillThroughAttribute.getHierarchy())) {
                                         hierarchy = currentHierarchy;
                                         break;
                                     }
@@ -481,13 +490,13 @@ public class RolapCube extends CubeBase {
                                 if(hierarchy == null) {
                                     throw Util.newError(
                                             new StringBuilder("Error while creating DrillThrough  action. Hierarchy '")
-                                                .append(mappingDrillThroughAttribute.hierarchy())
+                                                .append(mappingDrillThroughAttribute.getHierarchy())
                                                 .append("' not found").toString());
                                 }
                                 else {
-                                    if(mappingDrillThroughAttribute.level() != null && !mappingDrillThroughAttribute.level().equals("")) {
+                                    if(mappingDrillThroughAttribute.getLevel() != null && !mappingDrillThroughAttribute.getLevel().equals("")) {
                                         for(Level currentLevel: hierarchy.getLevels()) {
-                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.level())) {
+                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.getLevel())) {
                                                 level = currentLevel;
                                                 break;
                                             }
@@ -495,13 +504,13 @@ public class RolapCube extends CubeBase {
                                         if(level == null) {
                                             throw Util.newError(
                                                     new StringBuilder("Error while creating DrillThrough  action. Level '")
-                                                        .append(mappingDrillThroughAttribute.level())
+                                                        .append(mappingDrillThroughAttribute.getLevel())
                                                         .append("' not found").toString());
                                         } else {
-                                            if(mappingDrillThroughAttribute.property() != null && !mappingDrillThroughAttribute.property().equals("")) {
+                                            if(mappingDrillThroughAttribute.getProperty() != null && !mappingDrillThroughAttribute.getProperty().equals("")) {
                                                 for(Property currentProperty: level.getProperties()) {
                                                     if(currentProperty instanceof RolapProperty rolapProperty
-                                                        &&  currentProperty.getName().equals(mappingDrillThroughAttribute.property())) {
+                                                        &&  currentProperty.getName().equals(mappingDrillThroughAttribute.getProperty())) {
                                                         property = rolapProperty;
                                                         break;
                                                     }
@@ -522,11 +531,11 @@ public class RolapCube extends CubeBase {
                                 )
                         );
 
-                    }
-                    else if(mappinmgDrillThroughColumn instanceof MappingDrillThroughMeasure drillThroughMeasure) {
+                }
+                for(MeasureMapping drillThroughMeasure : mappingDrillThroughAction.getDrillThroughMeasure()) {
                         Member measure = null;
                         for(Member currntMeasure: this.getMeasures()) {
-                            if(currntMeasure.getName().equals(drillThroughMeasure.name())) {
+                            if(currntMeasure.getName().equals(drillThroughMeasure.getName())) {
                                 measure = currntMeasure;
                                 break;
                             }
@@ -534,34 +543,32 @@ public class RolapCube extends CubeBase {
                         if(measure == null) {
                             throw Util.newError(
                                     new StringBuilder("Error while creating DrillThrough  action. Measure '")
-                                            .append(drillThroughMeasure.name()).append("' not found").toString());
+                                            .append(drillThroughMeasure.getName()).append("' not found").toString());
                         }
                         columns.add(
                                 new RolapDrillThroughMeasure(measure)
                         );
-                    }
                 }
 
                 RolapDrillThroughAction rolapDrillThroughAction = new RolapDrillThroughAction(
-                        mappingDrillThroughAction.name(),
-                        mappingDrillThroughAction.caption(),
-                        mappingDrillThroughAction.description(),
-                        mappingDrillThroughAction.defaultt() != null && mappingDrillThroughAction.defaultt(),
+                        mappingDrillThroughAction.getName(),
+                        mappingDrillThroughAction.getName(),
+                        mappingDrillThroughAction.getDescription(),
+                        mappingDrillThroughAction.isDefault(),
                         columns
                 );
                 this.actionList.add(rolapDrillThroughAction);
-            }
         }
 
-        if (mappingCube.writebackTable() != null && mappingCube.writebackTable().isPresent()) {
-            MappingWritebackTable writebackTable = mappingCube.writebackTable().get();
+        if (cubeMapping.getWritebackTable() != null) {
+            WritebackTableMapping writebackTable = cubeMapping.getWritebackTable();
             List<RolapWritebackColumn> columns = new ArrayList<>();
 
-            for(MappingWritebackColumn writebackColumn: writebackTable.columns()) {
-                if(writebackColumn instanceof MappingWritebackAttribute writebackAttribute) {
+            for(WritebackAttributeMapping writebackAttribute: writebackTable.getWritebackAttribute()) {
+                
                     Dimension dimension = null;
                     for(Dimension currentDimension: this.getDimensions()) {
-                        if(currentDimension.getName().equals(writebackAttribute.dimension())) {
+                        if(currentDimension.getName().equals(writebackAttribute.getDimension())) {
                             dimension = currentDimension;
                             break;
                         }
@@ -569,21 +576,21 @@ public class RolapCube extends CubeBase {
                     if(dimension == null) {
                         throw Util.newError(
                             new StringBuilder("Error while creating `WritebackTable`. Dimension '")
-                                        .append(writebackAttribute.dimension()).append("' not found").toString());
+                                        .append(writebackAttribute.getDimension()).append("' not found").toString());
                     }
 
                     columns.add(
                             new RolapWritebackAttribute(
                                     dimension,
-                                    writebackAttribute.column()
+                                    writebackAttribute.getColumn()
                             )
                     );
 
-                }
-                else if(writebackColumn instanceof MappingWritebackMeasure writebackMeasure) {
+            }
+            for(WritebackMeasureMapping writebackMeasure: writebackTable.getWritebackMeasure()) {
                     Member measure = null;
                     for(Member currentMeasure: this.getMeasures()) {
-                        if(currentMeasure.getName().equals(writebackMeasure.name())) {
+                        if(currentMeasure.getName().equals(writebackMeasure.getName())) {
                             measure = currentMeasure;
                             break;
                         }
@@ -591,76 +598,83 @@ public class RolapCube extends CubeBase {
                     if(measure == null) {
                         throw Util.newError(
                             new StringBuilder("Error while creating DrillThrough  action. Measure '")
-                                        .append(writebackMeasure.name()).append("' not found").toString());
+                                        .append(writebackMeasure.getName()).append("' not found").toString());
                     }
                     columns.add(
                             new RolapWritebackMeasure(
                                     measure,
-                                    writebackMeasure.column())
+                                    writebackMeasure.getColumn())
                     );
-                }
             }
-
             RolapWritebackTable rolapWritebackTable = new RolapWritebackTable(
-                    writebackTable.name(),
-                    writebackTable.schema(),
+                    writebackTable.getName(),
+                    writebackTable.getSchema(),
                     columns
             );
             this.writebackTable = Optional.of(rolapWritebackTable);
         }
+        }
     }
 
-    /**
+	private static boolean isCached(CubeMapping cubeMapping) {
+
+		if (cubeMapping instanceof PhysicalCubeMapping pcm) {
+			return pcm.isCache();
+		}
+		return false;
+	}
+
+	/**
      * Creates a measure.
      *
-     * @param mappingCube XML cube
+     * @param cubeMapping XML cube
      * @param measuresLevel Member that all measures belong to
      * @param ordinal Ordinal of measure
-     * @param mappingMeasure XML measure
+     * @param measureMapping XML measure
      * @return Measure
      */
     private RolapBaseCubeMeasure createMeasure(
-        MappingCube mappingCube,
+        CubeMapping cubeMapping,
         RolapLevel measuresLevel,
         int ordinal,
-        final MappingMeasure mappingMeasure)
+        final MeasureMapping measureMapping)
     {
-        MappingExpression measureExp;
-        if (mappingMeasure.column() != null) {
-            if (mappingMeasure.measureExpression() != null) {
+    	SQLExpressionMapping measureExp;
+        if (measureMapping.getColumn() != null) {
+            if (measureMapping.getMeasureExpression() != null) {
                 throw new BadMeasureSourceException(
-                    mappingCube.name(), mappingMeasure.name());
+                    cubeMapping.getName(), measureMapping.getName());
             }
-            measureExp = new ColumnR(
-                getAlias(getFact()), mappingMeasure.column());
-        } else if (mappingMeasure.measureExpression() != null) {
-            measureExp = mappingMeasure.measureExpression();
-        } else if (mappingMeasure.aggregator().equals("count")) {
+            measureExp = new mondrian.rolap.Column(
+                getAlias(getFact()), measureMapping.getColumn());
+        } else if (measureMapping.getMeasureExpression() != null) {
+            measureExp = measureMapping.getMeasureExpression();
+        } else if (measureMapping.getType().equals("count")) {
             // it's ok if count has no expression; it means 'count(*)'
             measureExp = null;
         } else {
             throw new BadMeasureSourceException(
-                mappingCube.name(), mappingMeasure.name());
+                cubeMapping.getName(), measureMapping.getName());
         }
 
         // Validate aggregator name. Substitute deprecated "distinct count"
         // with modern "distinct-count".
-        String aggregator = mappingMeasure.aggregator();
+        String aggregator = measureMapping.getType();
         if (aggregator.equals("distinct count")) {
             aggregator = RolapAggregator.DistinctCount.getName();
         }
         final RolapBaseCubeMeasure measure =
             new RolapBaseCubeMeasure(
-                this, null, measuresLevel, mappingMeasure.name(),
-                mappingMeasure.caption(), mappingMeasure.description(),
-                mappingMeasure.formatString(), measureExp,
-                aggregator, mappingMeasure.datatype(),
-                RolapHierarchy.createMetadataMap(mappingMeasure.annotations()));
+                this, null, measuresLevel, measureMapping.getName(),
+                measureMapping.getName(), measureMapping.getDescription(),
+                measureMapping.getFormatString(), measureExp,
+                aggregator, measureMapping.getDatatype(),
+                RolapHierarchy.createMetadataMap(measureMapping.getAnnotations()));
 
         FormatterCreateContext formatterContext =
                 new FormatterCreateContext.Builder(measure.getUniqueName())
-                    .formatterDef(mappingMeasure.cellFormatter())
-                    .formatterAttr(mappingMeasure.formatter())
+                    .formatterDef(measureMapping.getCellFormatter())
+                    .formatterAttr(measureMapping.getFormatter())
                     .build();
         CellFormatter cellFormatter =
             FormatterFactory.instance()
@@ -670,28 +684,28 @@ public class RolapCube extends CubeBase {
         }
 
         // Set member's caption, if present.
-        if (!Util.isEmpty(mappingMeasure.caption())) {
+        if (!Util.isEmpty(measureMapping.getName())) {
             // there is a special caption string
             measure.setProperty(
                 Property.CAPTION.name,
-                mappingMeasure.caption());
+                measureMapping.getName());
         }
 
         // Set member's visibility, default true.
-        Boolean visible = mappingMeasure.visible();
+        Boolean visible = measureMapping.isVisible();
         if (visible == null) {
             visible = Boolean.TRUE;
         }
         measure.setProperty(Property.VISIBLE.name, visible);
 
-        measure.setProperty(Property.DISPLAY_FOLDER.name, mappingMeasure.displayFolder());
+        measure.setProperty(Property.DISPLAY_FOLDER.name, measureMapping.getDisplayFolder());
 
-        measure.setProperty(Property.BACK_COLOR.name, mappingMeasure.backColor());
+        measure.setProperty(Property.BACK_COLOR.name, measureMapping.getBackColor());
 
         List<String> propNames = new ArrayList<>();
         List<String> propExprs = new ArrayList<>();
         validateMemberProps(
-            mappingMeasure.calculatedMemberProperties(), propNames, propExprs, mappingMeasure.name());
+            measureMapping.getCalculatedMemberProperty(), propNames, propExprs, measureMapping.getName());
         for (int j = 0; j < propNames.size(); j++) {
             String propName = propNames.get(j);
             final Object propExpr = propExprs.get(j);
@@ -732,21 +746,21 @@ public class RolapCube extends CubeBase {
      */
     RolapCube(
         RolapSchema schema,
-        MappingSchema mappingSchema,
-        MappingVirtualCube mappingVirtualCube,
+        SchemaMapping mappingSchema,
+        VirtualCubeMapping mappingVirtualCube,
         Context context)
     {
         this(
             schema,
             mappingSchema,
-            mappingVirtualCube.name(),
-            mappingVirtualCube.visible(),
-            mappingVirtualCube.caption(),
-            mappingVirtualCube.description(),
+            mappingVirtualCube.getName(),
+            mappingVirtualCube.isVisible(),
+            mappingVirtualCube.getName(),
+            mappingVirtualCube.getDescription(),
             true,
             null,
-            mappingVirtualCube.virtualCubeDimensions(),
-            RolapHierarchy.createMetadataMap(mappingVirtualCube.annotations()),
+            mappingVirtualCube.getDimensionConnectors(),
+            RolapHierarchy.createMetadataMap(mappingVirtualCube.getAnnotations()),
             context);
 
         // Since Measure and VirtualCubeMeasure cannot
@@ -758,37 +772,41 @@ public class RolapCube extends CubeBase {
         // incorrect dimensional ordinals for the virtual cube.
         List<RolapVirtualCubeMeasure> origMeasureList =
             new ArrayList<>();
-        List<MappingCalculatedMember> origCalcMeasureList =
+        List<CalculatedMemberMapping> origCalcMeasureList =
             new ArrayList<>();
         CubeComparator cubeComparator = new CubeComparator();
-        Map<RolapCube, List<MappingCalculatedMember>>
+        Map<RolapCube, List<CalculatedMemberMapping>>
             calculatedMembersMap =
             new TreeMap<>(
                 cubeComparator);
         Member defaultMeasure = null;
 
-        this.cubeUsages = new RolapCubeUsages(mappingVirtualCube.cubeUsages());
+        this.cubeUsages = new RolapCubeUsages(mappingVirtualCube.getCubeUsages());
 
-        HashMap<String, MappingVirtualCubeMeasure> measureHash = new HashMap<>();
+        HashMap<String, MeasureMapping> measureHash = new HashMap<>();
 
-        for (MappingVirtualCubeMeasure mappingMeasure
-            : mappingVirtualCube.virtualCubeMeasures())
+        for (MeasureGroupMapping measureGroup
+            : mappingVirtualCube.getMeasureGroups())
         {
-        	measureHash.put(mappingMeasure.name(), mappingMeasure);
+            for (MeasureMapping mappingMeasure : measureGroup.getMeasures()) {
+        	measureHash.put(mappingMeasure.getName(), mappingMeasure);
 
             // Lookup a measure in an existing cube.
-            RolapCube cube = schema.lookupCube(mappingMeasure.cubeName());
+        	Optional<CubeMapping> oCube = lookupCube(mappingVirtualCube.getCubeUsages(), mappingMeasure);
+        	if (oCube.isPresent()) {
+            RolapCube cube = schema.lookupCube(oCube.get().getName());
             if (cube == null) {
                 throw Util.newError(
-                    new StringBuilder("Cube '").append(mappingMeasure.cubeName()).append("' not found").toString());
+                    new StringBuilder("Cube '").append(oCube.get().getName()).append("' not found").toString());
             }
+        	
             List<Member> cubeMeasures = cube.getMeasures();
             boolean found = false;
             boolean isDefaultMeasureFound = false;
             for (Member cubeMeasure : cubeMeasures) {
-                if (cubeMeasure.getUniqueName().equals(mappingMeasure.name())) {
+                if (cubeMeasure.getUniqueName().equals(mappingMeasure.getName())) {
                     if (cubeMeasure.getName().equalsIgnoreCase(
-                            mappingVirtualCube.defaultMeasure()))
+                            mappingVirtualCube.getDefaultMeasure() != null ? mappingVirtualCube.getDefaultMeasure().getName() : null ))
                     {
                       defaultMeasure = cubeMeasure;
                       isDefaultMeasureFound = true;
@@ -801,16 +819,16 @@ public class RolapCube extends CubeBase {
                         // relative to its base cube.  We're using a treeMap
                         // to store the mapping to ensure a deterministic
                         // order for the members.
-                        MappingCalculatedMember calcMember =
+                        CalculatedMemberMapping calcMember =
                             schema.lookupXmlCalculatedMember(
-                                mappingMeasure.name(), mappingMeasure.cubeName());
+                                mappingMeasure.getName(), oCube.get().getName());
                         if (calcMember == null) {
                             throw Util.newInternal(
                                 new StringBuilder("Could not find XML Calculated Member '")
-                                .append(mappingMeasure.name()).append("' in XML cube '")
-                                .append(mappingMeasure.cubeName()).append("'").toString());
+                                .append(mappingMeasure.getName()).append("' in XML cube '")
+                                .append(oCube.get().getName()).append("'").toString());
                         }
-                        List<MappingCalculatedMember> memberList =
+                        List<CalculatedMemberMapping> memberList =
                             calculatedMembersMap.get(cube);
                         if (memberList == null) {
                             memberList =
@@ -829,10 +847,10 @@ public class RolapCube extends CubeBase {
                                 measuresLevel,
                                 (RolapStoredMeasure) cubeMeasure,
                                 RolapHierarchy.createMetadataMap(
-                                    mappingMeasure.annotations()));
+                                    mappingMeasure.getAnnotations()));
 
                         // Set member's visibility, default true.
-                        Boolean visible = mappingMeasure.visible();
+                        Boolean visible = mappingMeasure.isVisible();
                         if (visible == null) {
                             visible = Boolean.TRUE;
                         }
@@ -855,13 +873,17 @@ public class RolapCube extends CubeBase {
             }
             if (!found) {
                 throw Util.newInternal(
-                    new StringBuilder("could not find measure '").append(mappingMeasure.name())
-                    .append("' in cube '").append(mappingMeasure.cubeName()).append("'").toString());
+                    new StringBuilder("could not find measure '").append(mappingMeasure.getName())
+                    .append("' in cube '").append(oCube.get().getName()).append("'").toString());
             }
+        } else {
+            throw Util.newInternal("measure not found in cube usages");	
+        }        	
+        }
         }
 
         // Must init the dimensions before dealing with calculated members
-        init(mappingVirtualCube.virtualCubeDimensions());
+        init(mappingVirtualCube.getDimensionConnectors());
 
         // Loop through the base cubes containing calculated members
         // referenced by this virtual cube.  Resolve those members relative
@@ -869,14 +891,14 @@ public class RolapCube extends CubeBase {
         // cube so the correct dimension ordinals are used
         List<RolapVirtualCubeMeasure> modifiedMeasureList =
             new ArrayList<>(origMeasureList);
-        for (Map.Entry<RolapCube, List<MappingCalculatedMember>> entry : calculatedMembersMap.entrySet()) {
+        for (Map.Entry<RolapCube, List<CalculatedMemberMapping>> entry : calculatedMembersMap.entrySet()) {
             RolapCube baseCube = entry.getKey();
-            List<MappingCalculatedMember> mappingCalculatedMemberList =
+            List<CalculatedMemberMapping> mappingCalculatedMemberList =
                 calculatedMembersMap.get(baseCube);
             Query queryExp =
                 resolveCalcMembers(
                     mappingCalculatedMemberList,
-                    Collections.<MappingNamedSet>emptyList(),
+                    Collections.<NamedSetMapping>emptyList(),
                     baseCube,
                     false);
             MeasureFinder measureFinder =
@@ -887,15 +909,15 @@ public class RolapCube extends CubeBase {
 
         // Add the original calculated members from the base cubes to our
         // list of calculated members
-        List<MappingCalculatedMember> mappingCalculatedMemberList =
+        List<CalculatedMemberMapping> mappingCalculatedMemberList =
             new ArrayList<>();
-        for (Map.Entry<RolapCube, List<MappingCalculatedMember>> entry : calculatedMembersMap.entrySet()) {
+        for (Map.Entry<RolapCube, List<CalculatedMemberMapping>> entry : calculatedMembersMap.entrySet()) {
             RolapCube baseCube = entry.getKey();
             mappingCalculatedMemberList.addAll(
                 calculatedMembersMap.get(baseCube));
         }
         mappingCalculatedMemberList.addAll(
-            mappingVirtualCube.calculatedMembers());
+            mappingVirtualCube.getCalculatedMembers());
 
 
         // Resolve all calculated members relative to this virtual cube,
@@ -909,7 +931,7 @@ public class RolapCube extends CubeBase {
 
         createCalcMembersAndNamedSets(
             mappingCalculatedMemberList,
-            mappingVirtualCube.namedSets(),
+            mappingVirtualCube.getNamedSets(),
             new ArrayList<>(),
             new ArrayList<>(),
             this,
@@ -920,18 +942,18 @@ public class RolapCube extends CubeBase {
         // set it appropriate rolap calculated measure
         Map<String, RolapHierarchy.RolapCalculatedMeasure> calcMeasuresWithBaseCube =
                 new HashMap<>();
-        for (Map.Entry<RolapCube, List<MappingCalculatedMember>> entry : calculatedMembersMap.entrySet()) {
+        for (Map.Entry<RolapCube, List<CalculatedMemberMapping>> entry : calculatedMembersMap.entrySet()) {
             RolapCube rolapCube = entry.getKey();
-            List<MappingCalculatedMember> calculatedMembers =
+            List<CalculatedMemberMapping> calculatedMembers =
                     calculatedMembersMap.get(rolapCube);
-            for (MappingCalculatedMember calculatedMember
+            for (CalculatedMemberMapping calculatedMember
                     : calculatedMembers)
             {
                 List<Member> measures = rolapCube.getMeasures();
                 for (Member measure : measures) {
                     if (measure instanceof RolapHierarchy.RolapCalculatedMeasure calculatedMeasure &&
                         calculatedMember
-                            .name().equals(calculatedMeasure.getKey()))
+                            .getName().equals(calculatedMeasure.getKey()))
                     {
                         calculatedMeasure.setBaseCube(rolapCube);
                         calcMeasuresWithBaseCube.put(calculatedMeasure.getUniqueName(),
@@ -951,8 +973,8 @@ public class RolapCube extends CubeBase {
 
         this.measuresHierarchy.setDefaultMember(defaultMeasure);
 
-        List<? extends MappingCalculatedMember> mappingVirtualCubeCalculatedMemberList =
-                mappingVirtualCube.calculatedMembers();
+        List<? extends CalculatedMemberMapping> mappingVirtualCubeCalculatedMemberList =
+                mappingVirtualCube.getCalculatedMembers();
         if (!vcHasAllCalcMembers(
                 origCalcMeasureList, mappingVirtualCubeCalculatedMemberList))
         {
@@ -979,7 +1001,7 @@ public class RolapCube extends CubeBase {
 
         for (Formula calcMember : calculatedMemberList) {
             if (calcMember.getName().equalsIgnoreCase(
-                    mappingVirtualCube.defaultMeasure()))
+                    mappingVirtualCube.getDefaultMeasure().getName()))
             {
                 this.measuresHierarchy.setDefaultMember(
                     calcMember.getMdxMember());
@@ -1002,9 +1024,9 @@ public class RolapCube extends CubeBase {
                         .setBaseCube(calcMeasuresWithBaseCube.get(calcMeasure.getUniqueName()).getBaseCube());
             }
 
-            MappingVirtualCubeMeasure mappingMeasure = measureHash.get(calcMeasure.getUniqueName());
+            MeasureMapping mappingMeasure = measureHash.get(calcMeasure.getUniqueName());
         	if(mappingMeasure != null) {
-	            Boolean visible = mappingMeasure.visible();
+	            Boolean visible = mappingMeasure.isVisible();
 	            if(visible != null) {
 	            	calcMeasure.setProperty(
 	                        Property.VISIBLE.name,
@@ -1022,9 +1044,28 @@ public class RolapCube extends CubeBase {
         // Note: virtual cubes do not get aggregate
     }
 
-    private boolean vcHasAllCalcMembers(
-        List<? extends MappingCalculatedMember> origCalcMeasureList,
-        List<? extends MappingCalculatedMember> mappingVirtualCubeCalculatedMemberList)
+	private Optional<CubeMapping> lookupCube(List<? extends CubeConnectorMapping> cubeUsages,
+			MeasureMapping mappingMeasure) {
+		if (cubeUsages != null) {
+			for (CubeConnectorMapping cubeConnectorMapping : cubeUsages) {
+				if (cubeConnectorMapping.getCube().getMeasureGroups() != null) {
+					for (MeasureGroupMapping measureGroupMapping : cubeConnectorMapping.getCube().getMeasureGroups()) {
+						if (measureGroupMapping.getMeasures() != null) {
+							Optional<? extends MeasureMapping> oMeasure = measureGroupMapping.getMeasures().stream().filter(m -> m.equals(mappingMeasure)).findAny();
+							if (oMeasure.isPresent()) {
+								return Optional.of(cubeConnectorMapping.getCube()); 
+							}
+						}						
+					}
+				}
+			}
+		}
+		return Optional.empty();
+	}
+
+	private boolean vcHasAllCalcMembers(
+        List<? extends CalculatedMemberMapping> origCalcMeasureList,
+        List<? extends CalculatedMemberMapping> mappingVirtualCubeCalculatedMemberList)
     {
         return calculatedMemberList.size()
             == (origCalcMeasureList.size()
@@ -1033,31 +1074,31 @@ public class RolapCube extends CubeBase {
 
     private boolean findOriginalMembers(
         Formula formula,
-        List<? extends MappingCalculatedMember> mappingCalcMembers,
+        List<? extends CalculatedMemberMapping> mappingCalcMembers,
         List<Formula> calcMembers)
     {
-        for (MappingCalculatedMember mappingCalcMember : mappingCalcMembers) {
+        for (CalculatedMemberMapping mappingCalcMember : mappingCalcMembers) {
             Hierarchy hierarchy = null;
-            if (mappingCalcMember.dimension() != null) {
+            if (mappingCalcMember.getDimensionConector() != null) {
                 Dimension dimension =
                     lookupDimension(
                         new IdImpl.NameSegmentImpl(
-                            mappingCalcMember.dimension(),
+                            mappingCalcMember.getDimensionConector().getDimension().getName(),
                             Quoting.UNQUOTED));
                 if (dimension != null
                     && dimension.getHierarchy() != null)
                 {
                     hierarchy = dimension.getHierarchy();
                 }
-            } else if (mappingCalcMember.hierarchy() != null) {
+            } else if (mappingCalcMember.getHierarchy() != null) {
                 hierarchy =
                     lookupHierarchy(
                         new IdImpl.NameSegmentImpl(
-                            mappingCalcMember.hierarchy(),
+                            mappingCalcMember.getHierarchy().getName(),
                             Quoting.UNQUOTED),
                         true);
             }
-            if (formula.getName().equals(mappingCalcMember.name())
+            if (formula.getName().equals(mappingCalcMember.getName())
                 && formula.getMdxMember().getHierarchy().equals(
                     hierarchy))
             {
@@ -1086,7 +1127,7 @@ public class RolapCube extends CubeBase {
         return aggGroup;
     }
 
-    void loadAggGroup(MappingCube mappingCube) {
+    void loadAggGroup(PhysicalCubeMapping mappingCube) {
         aggGroup = ExplicitRules.Group.make(this, mappingCube);
     }
 
@@ -1103,25 +1144,23 @@ public class RolapCube extends CubeBase {
      * @return A dimension
      */
     private RolapCubeDimension getOrCreateDimension(
-        MappingCubeDimension mappingCubeDimension,
+    	DimensionConnectorMapping mappingCubeDimension,
         RolapSchema schema,
-        MappingSchema mappingSchema,
+        SchemaMapping mappingSchema,
         int dimensionOrdinal,
         List<RolapHierarchy> cubeHierarchyList)
     {
         RolapDimension dimension = null;
-        if (mappingCubeDimension instanceof MappingDimensionUsage usage) {
-            final RolapHierarchy sharedHierarchy =
-                schema.getSharedHierarchy(usage.source());
-            if (sharedHierarchy != null) {
-                dimension =
-                    (RolapDimension) sharedHierarchy.getDimension();
-            }
+        
+        final RolapHierarchy sharedHierarchy = schema.getSharedHierarchy(mappingCubeDimension.getDimension().getName());
+        if (sharedHierarchy != null) {
+            dimension =
+                (RolapDimension) sharedHierarchy.getDimension();
         }
+        
 
         if (dimension == null) {
-            MappingPrivateDimension mappingDimension =
-                DimensionUtil.getDimension(mappingSchema, mappingCubeDimension);
+            DimensionMapping mappingDimension = mappingCubeDimension.getDimension();
             dimension =
                 new RolapDimension(
                     schema, this, mappingDimension, mappingCubeDimension);
@@ -1131,7 +1170,7 @@ public class RolapCube extends CubeBase {
         // rolap cube dimension object
         return new RolapCubeDimension(
             this, dimension, mappingCubeDimension,
-            mappingCubeDimension.name(), dimensionOrdinal,
+            mappingCubeDimension.getOverrideDimensionName(), dimensionOrdinal,
             cubeHierarchyList);
     }
 
@@ -1140,7 +1179,7 @@ public class RolapCube extends CubeBase {
      * constructor.
      */
     private void init(
-        MappingCube mappingCube,
+        CubeMapping mappingCube,
         final List<RolapMember> memberList)
     {
         // Load calculated members and named sets.
@@ -1149,8 +1188,8 @@ public class RolapCube extends CubeBase {
         // set in the cube at this point.)
         List<Formula> formulaList = new ArrayList<>();
         createCalcMembersAndNamedSets(
-            mappingCube.calculatedMembers(),
-            mappingCube.namedSets(),
+            mappingCube.getCalculatedMembers(),
+            mappingCube.getNamedSets(),
             memberList,
             formulaList,
             this,
@@ -1187,7 +1226,7 @@ public class RolapCube extends CubeBase {
      * Adds a collection of calculated members and named sets to this cube.
      * The members and sets can refer to each other.
      *
-     * @param mappingCalcMembers XML objects representing members
+     * @param list XML objects representing members
      * @param mappingNamedSets Array of XML definition of named set
      * @param memberList Output list of {@link org.eclipse.daanse.olap.api.element.Member} objects
      * @param formulaList Output list of {@link mondrian.olap.FormulaImpl} objects
@@ -1195,8 +1234,8 @@ public class RolapCube extends CubeBase {
      * @param errOnDups throws an error if a duplicate member is found
      */
     private void createCalcMembersAndNamedSets(
-        List<? extends MappingCalculatedMember> mappingCalcMembers,
-        List<? extends MappingNamedSet> mappingNamedSets,
+    	List<? extends CalculatedMemberMapping> list,
+        List<? extends NamedSetMapping> mappingNamedSets,
         List<RolapMember> memberList,
         List<Formula> formulaList,
         RolapCube cube,
@@ -1204,7 +1243,7 @@ public class RolapCube extends CubeBase {
     {
         final Query queryExp =
             resolveCalcMembers(
-                mappingCalcMembers,
+                list,
                 mappingNamedSets,
                 cube,
                 errOnDups);
@@ -1215,25 +1254,25 @@ public class RolapCube extends CubeBase {
         // Now pick through the formulas.
         Util.assertTrue(
             queryExp.getFormulas().length
-            == mappingCalcMembers.size() + mappingNamedSets.size());
-        for (int i = 0; i < mappingCalcMembers.size(); i++) {
-            postCalcMember(mappingCalcMembers, i, queryExp, memberList);
+            == list.size() + mappingNamedSets.size());
+        for (int i = 0; i < list.size(); i++) {
+            postCalcMember(list, i, queryExp, memberList);
         }
         for (int i = 0; i < mappingNamedSets.size(); i++) {
             postNamedSet(
-                mappingNamedSets, mappingCalcMembers.size(), i, queryExp, formulaList);
+                mappingNamedSets, list.size(), i, queryExp, formulaList);
         }
     }
 
     private Query resolveCalcMembers(
-        List<? extends MappingCalculatedMember> mappingCalcMembers,
-        List<? extends MappingNamedSet> mappingNamedSets,
+    	List<? extends CalculatedMemberMapping> list,
+        List<? extends NamedSetMapping> mappingNamedSets,
         RolapCube cube,
         boolean errOnDups)
     {
         // If there are no objects to create, our generated SQL will be so
         // silly, the parser will laugh.
-        if (mappingCalcMembers.isEmpty() && mappingNamedSets.isEmpty()) {
+        if (list.isEmpty() && mappingNamedSets.isEmpty()) {
             return null;
         }
 
@@ -1242,8 +1281,8 @@ public class RolapCube extends CubeBase {
 
         // Check the members individually, and generate SQL.
         final Set<String> fqNames = new LinkedHashSet<>();
-        for (int i = 0; i < mappingCalcMembers.size(); i++) {
-            preCalcMember(mappingCalcMembers, i, buf, cube, errOnDups, fqNames);
+        for (int i = 0; i < list.size(); i++) {
+            preCalcMember(list, i, buf, cube, errOnDups, fqNames);
         }
 
         // Check the named sets individually (for uniqueness) and generate SQL.
@@ -1251,7 +1290,7 @@ public class RolapCube extends CubeBase {
         for (Formula namedSet : namedSetList) {
             nameSet.add(namedSet.getName());
         }
-        for (MappingNamedSet mappingNamedSet : mappingNamedSets) {
+        for (NamedSetMapping mappingNamedSet : mappingNamedSets) {
             preNamedSet(mappingNamedSet, nameSet, buf);
         }
 
@@ -1279,66 +1318,66 @@ public class RolapCube extends CubeBase {
     }
 
     private void postNamedSet(
-        List<? extends MappingNamedSet> mappingNamedSets,
+        List<? extends NamedSetMapping> mappingNamedSets,
         final int offset,
         int i,
         final Query queryExp,
         List<Formula> formulaList)
     {
-        MappingNamedSet mappingNamedSet = mappingNamedSets.get(i);
+        NamedSetMapping mappingNamedSet = mappingNamedSets.get(i);
 //        discard(xmlNamedSet);
         Formula formula = queryExp.getFormulas()[offset + i];
         final SetBase namedSet = (SetBase) formula.getNamedSet();
-        if (mappingNamedSet.caption() != null
-            && mappingNamedSet.caption().length() > 0)
+        if (mappingNamedSet.getName() != null
+            && mappingNamedSet.getName().length() > 0)
         {
-            namedSet.setCaption(mappingNamedSet.caption());
+            namedSet.setCaption(mappingNamedSet.getName());
         }
 
-        if (mappingNamedSet.description() != null
-            && mappingNamedSet.description().length() > 0)
+        if (mappingNamedSet.getDescription() != null
+            && mappingNamedSet.getDescription().length() > 0)
         {
-            namedSet.setDescription(mappingNamedSet.description());
+            namedSet.setDescription(mappingNamedSet.getDescription());
         }
 
-        if (mappingNamedSet.displayFolder() != null
-                && mappingNamedSet.displayFolder().length() > 0)
+        if (mappingNamedSet.getDisplayFolder() != null
+                && mappingNamedSet.getDisplayFolder().length() > 0)
         {
-            namedSet.setDisplayFolder(mappingNamedSet.displayFolder());
+            namedSet.setDisplayFolder(mappingNamedSet.getDisplayFolder());
         }
 
         namedSet.setMetadata(
-            RolapHierarchy.createMetadataMap(mappingNamedSet.annotations()));
+            RolapHierarchy.createMetadataMap(mappingNamedSet.getAnnotations()));
 
         namedSetList.add(formula);
         formulaList.add(formula);
     }
 
     private void preNamedSet(
-        MappingNamedSet mappingNamedSet,
+        NamedSetMapping mappingNamedSet,
         Set<String> nameSet,
         StringBuilder buf)
     {
-        if (!nameSet.add(mappingNamedSet.name())) {
+        if (!nameSet.add(mappingNamedSet.getName())) {
             throw new MondrianException(MessageFormat.format(namedSetNotUnique,
-                mappingNamedSet.name(), getName()));
+                mappingNamedSet.getName(), getName()));
         }
 
         buf.append("SET ")
-            .append(Util.makeFqName(mappingNamedSet.name()))
+            .append(Util.makeFqName(mappingNamedSet.getName()))
             .append(Util.NL)
             .append(" AS ");
-        Util.singleQuoteString(NamedSetUtil.getFormula(mappingNamedSet), buf);
+        Util.singleQuoteString(mappingNamedSet.getFormula(), buf);
         buf.append(Util.NL);
     }
 
     private void postCalcMember(
-        List<? extends MappingCalculatedMember> mappingCalcMembers,
+        List<? extends CalculatedMemberMapping> mappingCalcMembers,
         int i,
         final Query queryExp,
         List<RolapMember> memberList)
     {
-        MappingCalculatedMember mappingCalcMember = mappingCalcMembers.get(i);
+        CalculatedMemberMapping mappingCalcMember = mappingCalcMembers.get(i);
 
         final Formula formula = queryExp.getFormulas()[i];
 
@@ -1346,26 +1385,26 @@ public class RolapCube extends CubeBase {
 
         final RolapMember member = (RolapMember) formula.getMdxMember();
 
-        Boolean visible = mappingCalcMember.visible();
+        Boolean visible = mappingCalcMember.isVisible();
         if (visible == null) {
             visible = Boolean.TRUE;
         }
         member.setProperty(Property.VISIBLE.name, visible);
 
-        member.setProperty(Property.DISPLAY_FOLDER.name, mappingCalcMember.displayFolder());
+        member.setProperty(Property.DISPLAY_FOLDER.name, mappingCalcMember.getDisplayFolder());
 
-        if (mappingCalcMember.caption() != null
-            && mappingCalcMember.caption().length() > 0)
+        if (mappingCalcMember.getName() != null
+            && mappingCalcMember.getName().length() > 0)
         {
             member.setProperty(
-                Property.CAPTION.name, mappingCalcMember.caption());
+                Property.CAPTION.name, mappingCalcMember.getName());
         }
 
-        if (mappingCalcMember.description() != null
-            && mappingCalcMember.description().length() > 0)
+        if (mappingCalcMember.getDescription() != null
+            && mappingCalcMember.getDescription().length() > 0)
         {
             member.setProperty(
-                Property.DESCRIPTION_PROPERTY.name, mappingCalcMember.description());
+                Property.DESCRIPTION_PROPERTY.name, mappingCalcMember.getDescription());
         }
 
         if (getFormatString(mappingCalcMember) != null
@@ -1377,44 +1416,44 @@ public class RolapCube extends CubeBase {
 
         final RolapMember member1 = RolapUtil.strip(member);
         ((RolapCalculatedMember) member1).setMetadata(
-            RolapHierarchy.createMetadataMap(mappingCalcMember.annotations()));
+            RolapHierarchy.createMetadataMap(mappingCalcMember.getAnnotations()));
 
         memberList.add(member);
     }
 
     private void preCalcMember(
-        List<? extends MappingCalculatedMember> mappingCalcMembers,
+    	List<? extends CalculatedMemberMapping> list,
         int j,
         StringBuilder buf,
         RolapCube cube,
         boolean errOnDup,
         Set<String> fqNames)
     {
-        MappingCalculatedMember mappingCalcMember = mappingCalcMembers.get(j);
+        CalculatedMemberMapping mappingCalcMember = list.get(j);
 
-        if (mappingCalcMember.hierarchy() != null
-            && mappingCalcMember.dimension() != null)
+        if (mappingCalcMember.getHierarchy() != null
+            && mappingCalcMember.getDimensionConector() != null)
         {
             throw  new MondrianException(MessageFormat.format(
                 calcMemberHasBothDimensionAndHierarchy,
-                    mappingCalcMember.name(), getName()));
+                    mappingCalcMember.getName(), getName()));
         }
 
         // Lookup dimension
         Hierarchy hierarchy = null;
         String dimName = null;
-        if (mappingCalcMember.dimension() != null) {
-            dimName = mappingCalcMember.dimension();
+        if (mappingCalcMember.getDimensionConector() != null) {
+            dimName = mappingCalcMember.getDimensionConector().getOverrideDimensionName();
             final Dimension dimension =
                 lookupDimension(
                     new IdImpl.NameSegmentImpl(
-                        mappingCalcMember.dimension(),
+                        mappingCalcMember.getDimensionConector().getDimension().getName(),
                         Quoting.UNQUOTED));
             if (dimension != null) {
                 hierarchy = dimension.getHierarchy();
             }
-        } else if (mappingCalcMember.hierarchy() != null) {
-            dimName = mappingCalcMember.hierarchy();
+        } else if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
+            dimName = mappingCalcMember.getHierarchy().getName();
             hierarchy = (Hierarchy)
                 getSchemaReader().withLocus().lookupCompound(
                     this,
@@ -1424,13 +1463,13 @@ public class RolapCube extends CubeBase {
         }
         if (hierarchy == null) {
             throw new MondrianException(MessageFormat.format(calcMemberHasBadDimension,
-                dimName, mappingCalcMember.name(), getName()));
+                dimName, mappingCalcMember.getName(), getName()));
         }
 
         // Root of fully-qualified name.
         String parentFqName;
-        if (mappingCalcMember.parent() != null) {
-            parentFqName = mappingCalcMember.parent();
+        if (mappingCalcMember.getParent() != null) {
+            parentFqName = mappingCalcMember.getParent();
         } else {
             parentFqName = hierarchy.getUniqueNameSsas();
         }
@@ -1448,13 +1487,13 @@ public class RolapCube extends CubeBase {
             if (parent == null) {
                 throw new MondrianException(MessageFormat.format(
                     calcMemberHasUnknownParent,
-                        parentFqName, mappingCalcMember.name(), getName()));
+                        parentFqName, mappingCalcMember.getName(), getName()));
             }
 
             if (parent.getHierarchy() != hierarchy) {
                 throw  new MondrianException(MessageFormat.format(
                 calcMemberHasDifferentParentAndHierarchy,
-                    mappingCalcMember.name(), getName(), hierarchy.getUniqueName()));
+                    mappingCalcMember.getName(), getName(), hierarchy.getUniqueName()));
             }
         }
 
@@ -1463,10 +1502,10 @@ public class RolapCube extends CubeBase {
         // referenced in another measure; in that case, remove it from the
         // list, since we'll add it back in later; otherwise, in the
         // non-virtual cube case, throw an exception
-        final String fqName = Util.makeFqName(parentFqName, mappingCalcMember.name());
+        final String fqName = Util.makeFqName(parentFqName, mappingCalcMember.getName());
         for (int i = 0; i < calculatedMemberList.size(); i++) {
             Formula formula = calculatedMemberList.get(i);
-            if (formula.getName().equals(mappingCalcMember.name())
+            if (formula.getName().equals(mappingCalcMember.getName())
                 && formula.getMdxMember().getHierarchy().equals(
                     hierarchy))
             {
@@ -1487,12 +1526,12 @@ public class RolapCube extends CubeBase {
             throw new CalcMemberNotUniqueException(fqName, getName());
         }
 
-        final List<? extends MappingCalculatedMemberProperty> mappingProperties =
-                mappingCalcMember.calculatedMemberProperties();
+        final List<? extends CalculatedMemberPropertyMapping> mappingProperties =
+                mappingCalcMember.getCalculatedMemberProperties();
         List<String> propNames = new ArrayList<>();
         List<String> propExprs = new ArrayList<>();
         validateMemberProps(
-            mappingProperties, propNames, propExprs, mappingCalcMember.name());
+            mappingProperties, propNames, propExprs, mappingCalcMember.getName());
 
         final int measureCount =
             cube.measuresHierarchy.getMemberReader().getMemberCount();
@@ -1505,23 +1544,25 @@ public class RolapCube extends CubeBase {
             .append("  AS ");
         Util.singleQuoteString(getFormula(mappingCalcMember), buf);
 
-        if (mappingCalcMember.cellFormatter() != null) {
-            if (mappingCalcMember.cellFormatter().className() != null) {
+        if (mappingCalcMember.getCellFormatter() != null) {
+            if (mappingCalcMember.getCellFormatter().getRef() != null) {
                 propNames.add(Property.CELL_FORMATTER.name);
                 propExprs.add(
-                    Util.quoteForMdx(mappingCalcMember.cellFormatter().className()));
+                    Util.quoteForMdx(mappingCalcMember.getCellFormatter().getRef()));
             }
-            if (mappingCalcMember.cellFormatter().script() != null) {
-                if (mappingCalcMember.cellFormatter().script().language() != null) {
-                    propNames.add(Property.CELL_FORMATTER_SCRIPT_LANGUAGE.name);
-                    propExprs.add(
-                        Util.quoteForMdx(
-                            mappingCalcMember.cellFormatter().script().language()));
-                }
-                propNames.add(Property.CELL_FORMATTER_SCRIPT.name);
-                propExprs.add(
-                    Util.quoteForMdx(mappingCalcMember.cellFormatter().script().cdata()));
-            }
+
+            //no scripting
+//            if (mappingCalcMember.getCellFormatter().script() != null) {
+//                if (mappingCalcMember.getCellFormatter().script().language() != null) {
+//                    propNames.add(Property.CELL_FORMATTER_SCRIPT_LANGUAGE.name);
+//                    propExprs.add(
+//                        Util.quoteForMdx(
+//                            mappingCalcMember.getCellFormatter().script().language()));
+//                }
+//                propNames.add(Property.CELL_FORMATTER_SCRIPT.name);
+//                propExprs.add(
+//                    Util.quoteForMdx(mappingCalcMember.getCellFormatter().script().cdata()));
+//            }
         }
 
         assert propNames.size() == propExprs.size();
@@ -1572,7 +1613,7 @@ public class RolapCube extends CubeBase {
     }
 
     void processFormatStringAttribute(
-        MappingCalculatedMember mappingCalcMember,
+        CalculatedMemberMapping mappingCalcMember,
         StringBuilder buf)
     {
         if (getFormatString(mappingCalcMember) != null) {
@@ -1588,35 +1629,35 @@ public class RolapCube extends CubeBase {
      * Validates an array of member properties, and populates a list of names
      * and expressions, one for each property.
      *
-     * @param mappingProperties Array of property definitions.
+     * @param list Array of property definitions.
      * @param propNames Output array of property names.
      * @param propExprs Output array of property expressions.
      * @param memberName Name of member which the properties belong to.
      */
     private void validateMemberProps(
-        final List<? extends MappingCalculatedMemberProperty> mappingProperties,
+        final List<? extends CalculatedMemberPropertyMapping> list,
         List<String> propNames,
         List<String> propExprs,
         String memberName)
     {
-        if (mappingProperties == null) {
+        if (list == null) {
             return;
         }
-        for (MappingCalculatedMemberProperty mappingProperty : mappingProperties) {
-            if (mappingProperty.expression() == null && mappingProperty.value() == null) {
+        for (CalculatedMemberPropertyMapping mappingProperty : list) {
+            if (mappingProperty.getExpression() == null && mappingProperty.getValue() == null) {
                 throw  new MondrianException(MessageFormat.format(
                     neitherExprNorValueForCalcMemberProperty,
-                        mappingProperty.name(), memberName, getName()));
+                        mappingProperty.getName(), memberName, getName()));
             }
-            if (mappingProperty.expression() != null && mappingProperty.value() != null) {
+            if (mappingProperty.getExpression() != null && mappingProperty.getValue() != null) {
                 throw new MondrianException(
-                    MessageFormat.format(exprAndValueForMemberProperty, mappingProperty.name(), memberName, getName()));
+                    MessageFormat.format(exprAndValueForMemberProperty, mappingProperty.getName(), memberName, getName()));
             }
-            propNames.add(mappingProperty.name());
-            if (mappingProperty.expression() != null) {
-                propExprs.add(mappingProperty.expression());
+            propNames.add(mappingProperty.getName());
+            if (mappingProperty.getExpression() != null) {
+                propExprs.add(mappingProperty.getExpression());
             } else {
-                propExprs.add(Util.quoteForMdx(mappingProperty.value()));
+                propExprs.add(Util.quoteForMdx(mappingProperty.getValue()));
             }
         }
     }
@@ -1663,12 +1704,12 @@ public class RolapCube extends CubeBase {
         }
     }
 
-    MappingCubeDimension lookup(
-        List<? extends MappingCubeDimension> mappingDimensions,
+    DimensionConnectorMapping lookup(
+        List<? extends DimensionConnectorMapping> mappingDimensions,
         String name)
     {
-        for (MappingCubeDimension cd : mappingDimensions) {
-            if (name.equals(cd.name())) {
+        for (DimensionConnectorMapping cd : mappingDimensions) {
+            if (name.equals(cd.getOverrideDimensionName())) {
                 return cd;
             }
         }
@@ -1676,7 +1717,7 @@ public class RolapCube extends CubeBase {
         return null;
     }
 
-    private void init(List<? extends MappingCubeDimension> mappingDimensions) {
+    private void init(List<? extends DimensionConnectorMapping> mappingDimensions) {
         for (Dimension dimension1 : dimensions) {
             final RolapDimension dimension = (RolapDimension) dimension1;
             dimension.init(lookup(mappingDimensions, dimension.getName()));
@@ -1771,7 +1812,7 @@ public class RolapCube extends CubeBase {
 
     private void createUsages(
         RolapCubeDimension dimension,
-        MappingCubeDimension mappingCubeDimension)
+        DimensionConnectorMapping mappingCubeDimension)
     {
         // RME level may not be in all hierarchies
         // If one uses the DimensionUsage attribute "level", which level
@@ -1827,7 +1868,7 @@ public class RolapCube extends CubeBase {
 
     synchronized void createUsage(
         RolapCubeHierarchy hierarchy,
-        MappingCubeDimension cubeDim)
+        DimensionConnectorMapping cubeDim)
     {
         HierarchyUsage usage = new HierarchyUsage(this, hierarchy, cubeDim);
         if (LOGGER.isDebugEnabled()) {
@@ -2006,7 +2047,7 @@ public class RolapCube extends CubeBase {
         for (Hierarchy hierarchy1 : hierarchies) {
             RolapHierarchy hierarchy = (RolapHierarchy) hierarchy1;
 
-            MappingQuery relation = hierarchy.getRelation();
+            QueryMapping relation = hierarchy.getRelation();
             if (relation == null) {
                 continue; // e.g. [Measures] hierarchy
             }
@@ -2049,10 +2090,10 @@ public class RolapCube extends CubeBase {
                 // a Join, i.e., the dimension is not a snowflake,
                 // there is a single dimension table, then this is currently
                 // an unsupported configuation and all bets are off.
-                if (relation instanceof MappingJoinQuery) {
+                if (relation instanceof JoinQueryMapping) {
                     // RME
                     // take out after things seem to be working
-                    MappingQuery relationTmp1 = relation;
+                    QueryMapping relationTmp1 = relation;
 
                     relation = reorder(relation, levels);
 
@@ -2065,7 +2106,7 @@ public class RolapCube extends CubeBase {
                     }
                 }
 
-                MappingQuery relationTmp2 = relation;
+                QueryMapping relationTmp2 = relation;
 
                 if (levelName != null) {
                     // When relation is a table, this does nothing. Otherwise
@@ -2095,7 +2136,7 @@ public class RolapCube extends CubeBase {
                     // If the child level is null, then the DimensionUsage
                     // level attribute was simply set to the default, lowest
                     // level and we do nothing.
-                    if (relation instanceof MappingJoinQuery) {
+                    if (relation instanceof JoinQueryMapping) {
                         RolapLevel childLevel =
                             (RolapLevel) level.getChildLevel();
                         if (childLevel != null) {
@@ -2139,8 +2180,8 @@ public class RolapCube extends CubeBase {
                     // parameters:
                     //   fact table,
                     //   fact table foreign key,
-                    MappingColumn column =
-                        new ColumnR(
+                    mondrian.rolap.Column column =
+                        new mondrian.rolap.Column(
                             table.getAlias(),
                             hierarchyUsage.getForeignKey());
                     // parameters:
@@ -2153,20 +2194,27 @@ public class RolapCube extends CubeBase {
 
                     if (hierarchy.getXmlHierarchy() != null
                             && hierarchy.getXmlHierarchy()
-                            .primaryKeyTable() != null
-                            && relation instanceof MappingJoinQuery join
-                            && right(join) instanceof MappingTableQuery
-                            && getAlias(((MappingTableQuery)
-                            right(((MappingJoinQuery) relation)))) != null
-                            && getAlias(((MappingTableQuery)
-                            right(((MappingJoinQuery) relation))))
+                            .getPrimaryKeyTable() != null
+                            && relation instanceof JoinQueryMappingImpl join
+                            && right(join) instanceof TableQueryMapping tqm
+                            && getAlias(tqm) != null
+                            && getAlias(tqm)
                             .equals(
                                 hierarchy.getXmlHierarchy()
-                              .primaryKeyTable()))
+                              .getPrimaryKeyTable()))
                     {
-                        MappingJoinQuery newRelation = new JoinR(
-                            new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right(join)),
-                            new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), left(join)));
+                        JoinQueryMapping newRelation = JoinQueryMappingImpl.builder()
+                        		.withLeft(JoinedQueryElementMappingImpl.builder()
+                        				.withAlias(getRightAlias(join))
+                        				.withKey(join.getRight().getKey())
+                        				.withQuery(PojoUtil.copy(right(join)))
+                        				.build())
+                        		.withRight(JoinedQueryElementMappingImpl.builder()
+                        				.withAlias(getLeftAlias(join))
+                        				.withKey(join.getLeft().getKey())
+                        				.withQuery(PojoUtil.copy(left(join)))
+                        				.build())
+                        		.build();
                         relation = newRelation;
                     }
 
@@ -2270,23 +2318,23 @@ public class RolapCube extends CubeBase {
     // and snowflake dimensions only.
 
     /**
-     * Formats a {@link MappingQuery}, indenting
+     * Formats a {@link QueryMapping}, indenting
      * joins for readability.
      *
      * @param relation A table or a join
      */
-    private static String format(MappingQuery relation) {
+    private static String format(QueryMapping relation) {
         StringBuilder buf = new StringBuilder();
         format(relation, buf, "");
         return buf.toString();
     }
 
     private static void format(
-        MappingQuery relation,
+        QueryMapping relation,
         StringBuilder buf,
         String indent)
     {
-        if (relation instanceof MappingTableQuery table) {
+        if (relation instanceof TableQueryMapping table) {
             buf.append(indent);
             buf.append(table.getName());
             if (table.getAlias() != null) {
@@ -2296,17 +2344,17 @@ public class RolapCube extends CubeBase {
             }
             buf.append(Util.NL);
         } else {
-            MappingJoinQuery join = (MappingJoinQuery) relation;
+            JoinQueryMapping join = (JoinQueryMapping) relation;
             String subindent = new StringBuilder(indent).append("  ").toString();
 
             buf.append(indent);
             buf.append(getLeftAlias(join));
             buf.append('.');
-            buf.append(join.left().getKey());
+            buf.append(join.getLeft().getKey());
             buf.append('=');
             buf.append(getRightAlias(join));
             buf.append('.');
-            buf.append(join.right().getKey());
+            buf.append(join.getRight().getKey());
             buf.append(Util.NL);
             format(left(join), buf, subindent);
             format(right(join), buf, indent);
@@ -2359,11 +2407,11 @@ public class RolapCube extends CubeBase {
          * @param map Names of tables and {@link RelNode} pairs
          */
         private static RelNode lookup(
-            MappingRelationQuery table,
+            RelationalQueryMapping table,
             Map<String, RelNode> map)
         {
             RelNode relNode;
-            if (table instanceof MappingTableQuery t) {
+            if (table instanceof TableQueryMapping t) {
                 relNode = map.get(t.getName());
                 if (relNode != null) {
                     return relNode;
@@ -2374,7 +2422,7 @@ public class RolapCube extends CubeBase {
 
         private int depth;
         private String alias;
-        private MappingRelationQuery table;
+        private RelationalQueryMapping table;
 
         RelNode(String alias, int depth) {
             this.alias = alias;
@@ -2383,7 +2431,7 @@ public class RolapCube extends CubeBase {
     }
 
     /**
-     * Attempts to transform a {@link MappingQuery}
+     * Attempts to transform a {@link QueryMapping}
      * into the "canonical" form.
      *
      * <p>What is the canonical form? It is only relevant
@@ -2492,8 +2540,8 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      * @param levels Levels in hierarchy
      */
-    private static MappingQuery reorder(
-        MappingQuery relation,
+    private static QueryMapping reorder(
+        QueryMapping relation,
         RolapLevel[] levels)
     {
         // Need at least two levels, with only one level theres nothing to do.
@@ -2523,15 +2571,15 @@ public class RolapCube extends CubeBase {
         if (! validateNodes(relation, nodeMap)) {
             return relation;
         }
-        relation = copy(relation);
+        QueryMappingImpl relationImpl = copy(relation);
 
         // Put lower levels to the left of upper levels
-        leftToRight(relation, nodeMap);
+        leftToRight(relationImpl, nodeMap);
 
         // Move joins to the right side
-        topToBottom(relation);
+        topToBottom(relationImpl);
 
-        return relation;
+        return relationImpl;
     }
 
     /**
@@ -2543,14 +2591,14 @@ public class RolapCube extends CubeBase {
      * @param map Names of tables and {@link RelNode} pairs
      */
     private static boolean validateNodes(
-        MappingQuery relation,
+        QueryMapping relation,
         Map<String, RelNode> map)
     {
-        if (relation instanceof MappingRelationQuery table) {
+        if (relation instanceof RelationalQueryMapping table) {
             RelNode relNode = RelNode.lookup(table, map);
             return (relNode != null);
 
-        } else if (relation instanceof MappingJoinQuery join) {
+        } else if (relation instanceof JoinQueryMapping join) {
             return validateNodes(left(join), map)
                 && validateNodes(right(join), map);
 
@@ -2568,10 +2616,10 @@ public class RolapCube extends CubeBase {
      * @param map Names of tables and {@link RelNode} pairs
      */
     private static int leftToRight(
-        MappingQuery relation,
+        QueryMappingImpl relation,
         Map<String, RelNode> map)
     {
-        if (relation instanceof MappingRelationQuery table) {
+        if (relation instanceof RelationalQueryMapping table) {
             RelNode relNode = RelNode.lookup(table, map);
             // Associate the table with its RelNode!!!! This is where this
             // happens.
@@ -2579,21 +2627,22 @@ public class RolapCube extends CubeBase {
 
             return relNode.depth;
 
-        } else if (relation instanceof MappingJoinQuery join) {
-            int leftDepth = leftToRight(left(join), map);
-            int rightDepth = leftToRight(right(join), map);
+        } else if (relation instanceof JoinQueryMappingImpl join) {
+            int leftDepth = leftToRight((QueryMappingImpl)left(join), map);
+            int rightDepth = leftToRight((QueryMappingImpl)right(join), map);
 
             // we want the right side to be less than the left
             if (rightDepth > leftDepth) {
                 // switch
                 String leftAlias = getLeftAlias(join);
-                String leftKey = join.left().getKey();;
-                MappingQuery left = left(join);
-                join.left().setAlias(getRightAlias(join));
-                join.left().setKey(join.right().getKey());
-                changeLeftRight(join, right(join), left);
-                join.right().setAlias(leftAlias);
-                join.right().setKey(leftKey);
+                String leftKey = join.getLeft().getKey();;
+                QueryMappingImpl left = copy(left(join));
+                QueryMappingImpl right = copy(right(join));
+                join.getLeft().setAlias(getRightAlias(join));
+                join.getLeft().setKey(join.getRight().getKey());
+                changeLeftRight(join, right, left);
+                join.getRight().setAlias(leftAlias);
+                join.getRight().setKey(leftKey);
             }
             // Does not currently matter which is returned because currently we
             // only support structures where the left and right depth values
@@ -2613,52 +2662,30 @@ public class RolapCube extends CubeBase {
      *
      * @param relation A table or a join
      */
-    private static void topToBottom(MappingQuery relation) {
+    private static void topToBottom(QueryMappingImpl relation) {
         if (relation instanceof MappingTableQuery) {
             // nothing
 
-        } else if (relation instanceof MappingJoinQuery join) {
-            while (left(join) instanceof MappingJoinQuery leftJoin) {
-                MappingJoinQuery jleft = leftJoin;
-                changeLeftRight(join, left(jleft), new JoinR(
-                    new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), right(jleft)),
-                    new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right(join))));
-                join.right().setAlias(getRightAlias(jleft));
-                join.right().setKey(jleft.right().getKey());
-                join.left().setAlias(getLeftAlias(jleft));
-                join.left().setKey(jleft.left().getKey());
+        } else if (relation instanceof JoinQueryMappingImpl join) {
+            while (left(join) instanceof JoinQueryMapping leftJoin) {
+                JoinQueryMapping jleft = leftJoin;
+                changeLeftRight(join, copy(left(jleft)), JoinQueryMappingImpl.builder()
+                		.withLeft(JoinedQueryElementMappingImpl.builder().withAlias(getLeftAlias(join)).withKey(join.getLeft().getKey()).withQuery(PojoUtil.copy(right(jleft))).build())
+                		.withRight(JoinedQueryElementMappingImpl.builder().withAlias(getRightAlias(join)).withKey(join.getRight().getKey()).withQuery(PojoUtil.copy(right(join))).build())
+                		.build());
+                JoinedQueryElementMappingImpl right = join.getRight();
+                JoinedQueryElementMappingImpl left = join.getLeft();
+                right.setAlias(getRightAlias(jleft));
+                right.setKey(jleft.getRight().getKey());
+                left.setAlias(getLeftAlias(jleft));
+                left.setKey(jleft.getLeft().getKey());
             }
         }
     }
 
-    /**
-     * Copies a {@link MappingQuery}.
-     *
-     * @param relation A table or a join
-     */
-    private static MappingQuery copy(
-        MappingQuery relation)
-    {
-        if (relation instanceof MappingTableQuery table) {
-            return new TableR(table);
 
-        } else if (relation instanceof MappingInlineTableQuery table) {
-            return new InlineTableR(table);
 
-        } else if (relation instanceof MappingJoinQuery join) {
-            MappingQuery left = copy(left(join));
-            MappingQuery right = copy(right(join));
-
-            return new JoinR(
-                new JoinedQueryElementR(getLeftAlias(join), join.left().getKey(), left),
-                new JoinedQueryElementR(getRightAlias(join), join.right().getKey(), right));
-
-        } else {
-            throw Util.newInternal(BAD_RELATION_TYPE + relation);
-        }
-    }
-
-    /**
+	/**
      * Takes a relation in canonical form and snips off the
      * the tables with the given tableName (or table alias). The matching table
      * only appears once in the relation.
@@ -2666,11 +2693,11 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      * @param tableName Table name in relation
      */
-    private static MappingQuery snip(
-        MappingQuery relation,
+    private static QueryMapping snip(
+        QueryMapping relation,
         String tableName)
     {
-        if (relation instanceof MappingTableQuery table) {
+        if (relation instanceof TableQueryMapping table) {
             // Return null if the table's name or alias matches tableName
             if ((table.getAlias() != null) && table.getAlias().equals(tableName)) {
                 return null;
@@ -2678,9 +2705,9 @@ public class RolapCube extends CubeBase {
                 return table.getName().equals(tableName) ? null : table;
             }
 
-        } else if (relation instanceof MappingJoinQuery join) {
+        } else if (relation instanceof JoinQueryMapping join) {
             // snip left
-            MappingQuery left = snip(left(join), tableName);
+            QueryMapping left = snip(left(join), tableName);
             if (left == null) {
                 // left got snipped so return the right
                 // (the join is no longer a join).
@@ -2688,10 +2715,10 @@ public class RolapCube extends CubeBase {
 
             } else {
                 // whatever happened on the left, save it
-                changeLeftRight(join, left, right(join));
+                changeLeftRight((JoinQueryMappingImpl)copy(join), copy(left), copy(right(join)));
 
                 // snip right
-                MappingQuery right = snip(right(join), tableName);
+                QueryMapping right = snip(right(join), tableName);
                 if (right == null) {
                     // right got snipped so return the left.
                     return left(join);
@@ -2699,7 +2726,7 @@ public class RolapCube extends CubeBase {
                 } else {
                     // save the right, join still has right and left children
                     // so return it.
-                    changeLeftRight(join, left(join), right);
+                    changeLeftRight((JoinQueryMappingImpl)copy(join), copy(left(join)), copy(right));
                     return join;
                 }
             }
@@ -2784,11 +2811,11 @@ public class RolapCube extends CubeBase {
     /**
      * Returns this cube's fact table, null if the cube is virtual.
      */
-    public MappingRelationQuery getFact() {
+    public RelationalQueryMapping getFact() {
         return fact;
     }
 
-    public void setFact(MappingRelationQuery fact) {
+    public void setFact(RelationalQueryMapping fact) {
         this.fact = fact;
     }
 
@@ -2920,8 +2947,8 @@ public class RolapCube extends CubeBase {
     }
 
     RolapCubeDimension createDimension(
-        MappingCubeDimension mappingCubeDimension,
-        MappingSchema mappingSchema)
+    	DimensionConnectorMapping mappingCubeDimension,
+        SchemaMapping mappingSchema)
     {
         RolapCubeDimension dimension =
             getOrCreateDimension(
@@ -3425,13 +3452,13 @@ public class RolapCube extends CubeBase {
                             virtualCube.measuresHierarchy,
                             Util.<RolapMember>cast(measuresFound))));
 
-                MappingCalculatedMember mappingCalcMember =
+                CalculatedMemberMapping mappingCalcMember =
                     schema.lookupXmlCalculatedMember(
                         calcMember.getUniqueName(),
-                        baseCube.name);
+                        baseCube.getName());
                 createCalcMembersAndNamedSets(
                     Collections.singletonList(mappingCalcMember),
-                    Collections.<MappingNamedSet>emptyList(),
+                    Collections.<NamedSetMapping>emptyList(),
                     new ArrayList<>(),
                     new ArrayList<>(),
                     virtualCube,

@@ -16,12 +16,13 @@ package mondrian.rolap.util;
 import static mondrian.rolap.util.SQLUtil.toCodeSet;
 
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.SqlSelectQueryMapping;
 
 import mondrian.rolap.sql.SqlQuery;
 
 public class ViewUtil {
-    public static SqlQuery.CodeSet getCodeSet(MappingViewQuery view) {
-        return toCodeSet(view.sql().sqls());
+    public static SqlQuery.CodeSet getCodeSet(SqlSelectQueryMapping view) {
+        return toCodeSet(view.getSQL());
     }
 
 }

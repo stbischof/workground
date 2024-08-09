@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ public class RolapSchemaPool {
                 context.getDataSource(),
                 connectionKey);
         //TODO: schema name
-        MappingSchema schemaMapping=context.getDatabaseMappingSchemaProviders().get(0).get();
+        SchemaMapping schemaMapping=context.getCatalogMapping().getSchemas().get(0);
 
         final SchemaContentKey schemaContentKey =
             SchemaContentKey.create(schemaMapping);

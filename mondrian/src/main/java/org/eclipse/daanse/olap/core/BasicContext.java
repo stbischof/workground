@@ -14,10 +14,8 @@
 package org.eclipse.daanse.olap.core;
 
 import java.sql.Connection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Semaphore;
 
 import javax.sql.DataSource;
@@ -26,20 +24,19 @@ import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
-import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ConnectionProps;
+import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.function.FunctionService;
 import org.eclipse.daanse.olap.api.result.Scenario;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
-import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.osgi.namespace.unresolvable.UnresolvableNamespace;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
@@ -63,7 +60,7 @@ public class BasicContext extends AbstractBasicContext {
 	public static final String REF_NAME_STATISTICS_PROVIDER = "statisticsProvider";
 	public static final String REF_NAME_DATA_SOURCE = "dataSource";
 //	public static final String REF_NAME_QUERY_PROVIDER = "queryProvier";
-	public static final String REF_NAME_DB_MAPPING_SCHEMA_PROVIDER = "databaseMappingSchemaProviders";
+	public static final String REF_NAME_DB_MAPPING_CATALOG_SUPPLIER = "databaseMappingCatalogSuppier";
     public static final String REF_NAME_ROLAP_CONTEXT_MAPPING_SUPPLIER = "rolapContextMappingSuppliers";
     public static final String REF_NAME_MDX_PARSER_PROVIDER = "mdxParserProvider";
 	public static final String REF_NAME_EXPRESSION_COMPILER_FACTORY = "expressionCompilerFactory";
@@ -82,10 +79,9 @@ public class BasicContext extends AbstractBasicContext {
 	@Reference(name = REF_NAME_STATISTICS_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
 	private StatisticsProvider statisticsProvider = null;
 
-	@Reference(name = REF_NAME_DB_MAPPING_SCHEMA_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER, cardinality = ReferenceCardinality.AT_LEAST_ONE)
-	private List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders;
+	@Reference(name = REF_NAME_DB_MAPPING_CATALOG_SUPPLIER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER, cardinality = ReferenceCardinality.MANDATORY)
+	private CatalogMappingSupplier catalogMappingSupplier;
     
-    private List<RolapContextMappingSupplier> rolapContextSuppliers = new CopyOnWriteArrayList<>();;
 
     @Reference(name = REF_NAME_EXPRESSION_COMPILER_FACTORY, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
 	private ExpressionCompilerFactory expressionCompilerFactory = null;
@@ -107,17 +103,6 @@ public class BasicContext extends AbstractBasicContext {
 		activate1(CONVERTER.convert(coniguration).to(BasicContextConfig.class));
 	}
 
-    @Reference(name = REF_NAME_ROLAP_CONTEXT_MAPPING_SUPPLIER, cardinality = ReferenceCardinality.AT_LEAST_ONE, policy =
-            ReferencePolicy.DYNAMIC)
-    public void bindVerifiers(RolapContextMappingSupplier s) {
-    	rolapContextSuppliers.add(s);
-    }
-
-    public void unbindVerifiers(RolapContextMappingSupplier s) {
-	    rolapContextSuppliers.remove(s);
-    }
-
-        
 	public void activate1(BasicContextConfig configuration) throws Exception {
 
         this.config = configuration;
@@ -191,14 +176,10 @@ public class BasicContext extends AbstractBasicContext {
 		return Optional.ofNullable(config.description());
 	}
 
-	@Override
-	public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
-		return databaseMappingSchemaProviders;
-	}
 
     @Override
-    public List<RolapContextMappingSupplier> getRolapContexts() {
-        return rolapContextSuppliers;
+    public CatalogMapping getCatalogMapping() {
+        return catalogMappingSupplier.get();
     }
 
 //
