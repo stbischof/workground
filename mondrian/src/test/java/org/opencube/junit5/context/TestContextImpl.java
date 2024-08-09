@@ -1,6 +1,5 @@
 package org.opencube.junit5.context;
 
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
@@ -23,20 +22,15 @@ import org.eclipse.daanse.olap.calc.base.compiler.BaseExpressionCompilerFactory;
 import org.eclipse.daanse.olap.core.AbstractBasicContext;
 import org.eclipse.daanse.olap.core.BasicContextConfig;
 import org.eclipse.daanse.olap.function.core.FunctionServiceImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import mondrian.rolap.RolapConnection;
 import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapResultShepherd;
 import mondrian.rolap.agg.AggregationManager;
 import mondrian.server.NopEventBus;
-
-import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
-import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
-import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 
 public class TestContextImpl extends AbstractBasicContext implements TestContext {
 
@@ -45,7 +39,7 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 	private DataSource dataSource;
 
 	private ExpressionCompilerFactory expressionCompilerFactory = new BaseExpressionCompilerFactory();
-	private CatalogMappingSupplier databaseMappingSchemaProviders;
+	private CatalogMappingSupplier catalogMappingSupplier;
 	private String name;
 	private Optional<String> description = Optional.empty();
     private TestConfig testConfig;
@@ -66,11 +60,6 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 	@Override
 	public void setDialect(Dialect dialect) {
 		this.dialect = dialect;
-	}
-
-	@Override
-	public void setDatabaseMappingSchemaProviders(List<CatalogMappingSupplier> databaseMappingSchemaProviders) {
-		this.databaseMappingSchemaProviders = databaseMappingSchemaProviders;
 	}
 
 	@Override
@@ -101,17 +90,9 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 
 	@Override
 	public CatalogMapping getCatalogMapping() {
-		return databaseMappingSchemaProviders.get();
+		return catalogMappingSupplier.get();
 	}
 
-
-    public SchemaImpl read(InputStream inputStream) throws JAXBException {
-
-		JAXBContext jaxbContext = JAXBContext.newInstance(SchemaImpl.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		return (SchemaImpl) jaxbUnmarshaller.unmarshal(inputStream);
-
-	}
 
 	@Override
 	public ExpressionCompilerFactory getExpressionCompilerFactory() {
@@ -232,4 +213,10 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 			return dataSource.getClass().getPackageName();
 		}
     }
+
+	@Override
+	public void setCatalogMappingSupplier(CatalogMappingSupplier catalogMappingSupplier) {
+		this.catalogMappingSupplier = catalogMappingSupplier;		
+	}
+
 }

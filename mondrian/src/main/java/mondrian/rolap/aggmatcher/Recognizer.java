@@ -27,11 +27,6 @@ import java.util.TreeMap;
 
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
@@ -697,7 +692,7 @@ public abstract class Recognizer {
                 aggUsage.setSymbolicName(symbolicName);
 
                 String tableAlias;
-                if (aggUsage.joinExp instanceof MappingColumn mcolumn) {
+                if (aggUsage.joinExp instanceof mondrian.rolap.Column mcolumn) {
                     tableAlias = mcolumn.getTable();
                 } else {
                     tableAlias = getAlias(aggUsage.relation);

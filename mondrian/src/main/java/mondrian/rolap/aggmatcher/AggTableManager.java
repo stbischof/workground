@@ -19,10 +19,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.eclipse.daanse.olap.api.ConnectionProps;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQueryOptimisationHint;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;

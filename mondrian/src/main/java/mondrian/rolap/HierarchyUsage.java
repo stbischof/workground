@@ -20,23 +20,18 @@ import static mondrian.rolap.util.RelationUtil.getAlias;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import mondrian.olap.MondrianException;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import mondrian.olap.MondrianException;
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
 
