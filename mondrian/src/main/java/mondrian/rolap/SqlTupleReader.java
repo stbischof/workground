@@ -13,7 +13,6 @@
 package mondrian.rolap;
 
 import static mondrian.olap.fun.sort.Sorter.hierarchizeTupleList;
-
 import static mondrian.rolap.util.ExpressionUtil.getExpression;
 
 import java.sql.ResultSet;
@@ -29,11 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import mondrian.server.ExecutionImpl;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Evaluator;
@@ -44,8 +41,7 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.monitor.event.SqlStatementEvent;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +63,7 @@ import mondrian.rolap.sql.MemberListCrossJoinArg;
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.rolap.sql.TupleConstraint;
 import mondrian.rolap.util.ExpressionUtil;
+import mondrian.server.ExecutionImpl;
 import mondrian.server.LocusImpl;
 import mondrian.util.CancellationChecker;
 import mondrian.util.Pair;
@@ -1311,15 +1308,15 @@ public TupleList readTuples(
         continue;
       }
 
-      Map<MappingExpression, MappingExpression>
+      Map<SQLExpressionMapping, SQLExpressionMapping>
         targetExp = getLevelTargetExpMap( currLevel, aggStar );
-      MappingExpression keyExp =
+      SQLExpressionMapping keyExp =
         targetExp.get( currLevel.getKeyExp() );
-      MappingExpression ordinalExp =
+      SQLExpressionMapping ordinalExp =
         targetExp.get( currLevel.getOrdinalExp() );
-      MappingExpression captionExp =
+      SQLExpressionMapping captionExp =
         targetExp.get( currLevel.getCaptionExp() );
-      MappingExpression parentExp = currLevel.getParentExp();
+      SQLExpressionMapping parentExp = currLevel.getParentExp();
 
       if ( parentExp != null ) {
         if ( !levelCollapsed ) {
@@ -1417,10 +1414,10 @@ public TupleList readTuples(
 
       RolapProperty[] properties = currLevel.getProperties();
       for ( RolapProperty property : properties ) {
-        final MappingExpression propExp =
+        final SQLExpressionMapping propExp =
           targetExp.get( property.getExp() );
         final String propSql;
-        if ( propExp instanceof MappingColumn column) {
+        if ( propExp instanceof mondrian.rolap.Column column) {
           // When dealing with a column, we must use the same table
           // alias as the one used by the level. We also assume that
           // the property lives in the same table as the level.
@@ -1451,8 +1448,8 @@ public TupleList readTuples(
    * (like ordinal). If the targetExp map has any targets not on the agg table then we need to join.
    */
   private boolean requiresJoinToDim(
-    Map<MappingExpression, MappingExpression> targetExp ) {
-    for ( Map.Entry<MappingExpression, MappingExpression> entry
+    Map<SQLExpressionMapping, SQLExpressionMapping> targetExp ) {
+    for ( Map.Entry<SQLExpressionMapping, SQLExpressionMapping> entry
       : targetExp.entrySet() ) {
       if ( entry.getKey() != null
         && entry.getKey().equals( entry.getValue() ) ) {
@@ -1469,9 +1466,9 @@ public TupleList readTuples(
    * corresponding target expression to be used.  If there's no aggStar available then we'll just return an identity
    * map. If an AggStar is present the target Expression may be on the aggregate table.
    */
-  private Map<MappingExpression, MappingExpression> getLevelTargetExpMap( RolapLevel level,
+  private Map<SQLExpressionMapping, SQLExpressionMapping> getLevelTargetExpMap( RolapLevel level,
                                                                                     AggStar aggStar ) {
-    Map<MappingExpression, MappingExpression> map =
+    Map<SQLExpressionMapping, SQLExpressionMapping> map =
       initializeIdentityMap( level );
     if ( aggStar == null ) {
       return Collections.unmodifiableMap( map );
@@ -1509,8 +1506,8 @@ public TupleList readTuples(
    * Creates a map of the expressions from a RolapLevel to themselves.  This is the starting assumption of what the
    * target expression is.
    */
-  private Map<MappingExpression, MappingExpression> initializeIdentityMap( RolapLevel level ) {
-    Map<MappingExpression, MappingExpression> map = new HashMap<>();
+  private Map<SQLExpressionMapping, SQLExpressionMapping> initializeIdentityMap( RolapLevel level ) {
+    Map<SQLExpressionMapping, SQLExpressionMapping> map = new HashMap<>();
     map.put( level.getKeyExp(), level.getKeyExp() );
     map.put( level.getOrdinalExp(), level.getOrdinalExp() );
     map.put( level.getCaptionExp(), level.getCaptionExp() );

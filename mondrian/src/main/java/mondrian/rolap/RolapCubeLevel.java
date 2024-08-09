@@ -13,15 +13,13 @@ package mondrian.rolap;
 
 import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.MemberFormatter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 
 import mondrian.olap.Util;
 import mondrian.rolap.agg.CellRequest;
@@ -85,7 +83,7 @@ public class RolapCubeLevel extends RolapLevel {
         if (parentCubeLevel != null) {
             parentCubeLevel.childCubeLevel = this;
         }
-        MappingQuery hierarchyRel = cubeHierarchy.getRelation();
+        QueryMapping hierarchyRel = cubeHierarchy.getRelation();
         keyExp = convertExpression(level.getKeyExp(), hierarchyRel);
         nameExp = convertExpression(level.getNameExp(), hierarchyRel);
         captionExp = convertExpression(level.getCaptionExp(), hierarchyRel);
@@ -95,7 +93,7 @@ public class RolapCubeLevel extends RolapLevel {
     }
 
     @Override
-	void init(MappingCubeDimension xmlDimension) {
+	void init(DimensionConnectorMapping xmlDimension) {
         if (isAll()) {
             this.levelReader = new AllLevelReaderImpl();
         } else if (getLevelType() == LevelType.NULL) {
@@ -140,7 +138,7 @@ public class RolapCubeLevel extends RolapLevel {
 
     private RolapProperty[] convertProperties(
         RolapProperty[] properties,
-        MappingQuery rel)
+        QueryMapping rel)
     {
         if (properties == null) {
             return new RolapProperty[0];
@@ -172,28 +170,28 @@ public class RolapCubeLevel extends RolapLevel {
      * @param rel the parent relation
      * @return returns the converted expression
      */
-    private MappingExpression convertExpression(
-        MappingExpression exp,
-        MappingQuery rel)
+    private SQLExpressionMapping convertExpression(
+    	SQLExpressionMapping exp,
+        QueryMapping rel)
     {
         if (getHierarchy().isUsingCubeFact()) {
             // no conversion necessary
             return exp;
         } else if (exp == null || rel == null) {
             return null;
-        } else if (exp instanceof MappingColumn col) {
-            if (rel instanceof MappingTableQuery table) {
-                return new ColumnR(
+        } else if (exp instanceof mondrian.rolap.Column col) {
+            if (rel instanceof TableQueryMapping table) {
+                return new mondrian.rolap.Column(
                     RelationUtil.getAlias(table),
                     col.getName());
-            } else if (rel instanceof MappingJoinQuery
+            } else if (rel instanceof JoinQueryMapping
                 || rel instanceof MappingRelationQuery)
             {
                 // need to determine correct name of alias for this level.
                 // this may be defined in level
                 // col.table
                 String alias = getHierarchy().lookupAlias(ExpressionUtil.getTableAlias(col));
-                return new ColumnR(alias, col.getName());
+                return new mondrian.rolap.Column(alias, col.getName());
             }
         } else if (exp instanceof MappingExpressionView) {
             // this is a limitation, in the future, we may need

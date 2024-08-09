@@ -350,7 +350,7 @@ public class JdbcSchema {
 
                 // hierarchy stuff
                 public RelationalQueryMapping relation;
-                public org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression joinExp;
+                public SQLExpressionMapping joinExp;
                 public String levelColumnName;
 
                 // level stuff

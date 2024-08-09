@@ -57,24 +57,11 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleListCalc;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantCalcs;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.operation.api.InternalOperationAtom;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAnnotation;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingClosure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinQueryImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.JoinedQueryElementImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ColumnR;
 import org.eclipse.daanse.rolap.mapping.api.model.AnnotationMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
@@ -275,7 +262,7 @@ public class RolapHierarchy extends HierarchyBase {
         RolapCube cube,
         RolapDimension dimension,
         HierarchyMapping xmlHierarchy,
-        DimensionMapping xmlCubeDimension)
+        DimensionConnectorMapping xmlCubeDimension)
     {
         this(
             dimension,
@@ -480,7 +467,7 @@ public class RolapHierarchy extends HierarchyBase {
     /**
      * Initializes a hierarchy within the context of a cube.
      */
-    void init(DimensionMapping xmlDimension) {
+    void init(DimensionConnectorMapping xmlDimension) {
         // first create memberReader
         if (this.memberReader == null) {
             this.memberReader = getRolapSchema().createMemberReader(

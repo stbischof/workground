@@ -49,14 +49,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import mondrian.olap.exceptions.RoleUnionGrantsException;
-import mondrian.olap.exceptions.UnknownRoleException;
 import org.eclipse.daanse.olap.api.CacheControl;
+import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.DataType;
 import org.eclipse.daanse.olap.api.Parameter;
 import org.eclipse.daanse.olap.api.Quoting;
-import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.Syntax;
@@ -75,22 +73,7 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchyGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMemberGrant;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchemaGrant;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.ParameterTypeEnum;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessCubeGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessDimensionGrantMapping;
@@ -100,12 +83,10 @@ import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessSchemaGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.NamedSetMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.ParameterMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.PhysicalCubeMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
@@ -117,6 +98,8 @@ import mondrian.olap.IdImpl;
 import mondrian.olap.MondrianException;
 import mondrian.olap.RoleImpl;
 import mondrian.olap.Util;
+import mondrian.olap.exceptions.RoleUnionGrantsException;
+import mondrian.olap.exceptions.UnknownRoleException;
 import mondrian.olap.fun.UdfResolver;
 import mondrian.olap.type.MemberType;
 import mondrian.olap.type.NumericType;
@@ -1147,7 +1130,7 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
     }
 
  // package-local visibility for testing purposes
-    public RolapStar makeRolapStar(final QueryMapping fact) {
+    public RolapStar makeRolapStar(final RelationalQueryMapping fact) {
         return new RolapStar(this, context, fact);
     }
 

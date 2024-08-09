@@ -23,6 +23,8 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.PrivateDimensionImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.VirtualCubeDimensionImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -35,8 +37,8 @@ class RolapCubeDimensionTest {
     RolapDimension rolapDim = mock(TestPublicRolapDimension.class);
     Hierarchy[] rolapDim_hierarchies = new Hierarchy[]{};
     doReturn(rolapDim_hierarchies).when(rolapDim).getHierarchies();
-
-    PrivateDimensionImpl cubeDim = new PrivateDimensionImpl();
+    
+    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
     cubeDim.setCaption("StubCubeDimCaption");
     cubeDim.setDescription("StubCubeDimDescription");
     cubeDim.setVisible(true);
@@ -63,7 +65,7 @@ class RolapCubeDimensionTest {
   @Test
   void testLookupCube_notVirtual() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
-    PrivateDimensionImpl cubeDim = new PrivateDimensionImpl();
+    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
     RolapSchema schema = mock(RolapSchema.class);
 
     assertEquals(null, rcd.lookupFactCube(cubeDim, schema));
@@ -74,8 +76,7 @@ class RolapCubeDimensionTest {
   @Test
   void testLookupCube_noSuchCube() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
-    VirtualCubeDimensionImpl cubeDim =
-        new VirtualCubeDimensionImpl();
+    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
     RolapSchema schema = mock(RolapSchema.class);
     final String cubeName = "TheCubeName";
     cubeDim.setCubeName(cubeName);

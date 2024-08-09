@@ -44,7 +44,7 @@ public class PojoUtil {
 	private PojoUtil() {
         // constructor
     }
-	
+
 	public static List<SQLMappingImpl> getSqls(List<? extends SQLMapping> sqls) {
 		if (sqls != null) {
 			sqls.stream().map(s -> getSql(s)).toList();
@@ -61,7 +61,7 @@ public class PojoUtil {
 		}
 		return null;
 	}
-	
+
     /**
      * Copies a {@link QueryMapping}.
      *
@@ -86,7 +86,7 @@ public class PojoUtil {
             		.withAggregationTables(aggregationTables)
             		.build();
 
-        } else if (relation instanceof InlineTableQueryMapping table) {        	
+        } else if (relation instanceof InlineTableQueryMapping table) {
             return InlineTableQueryMappingImpl.builder()
             		.withAlias(table.getAlias())
             		.withColumnDefinitions(getColumnDefinitions(table.getColumnDefinitions()))
@@ -105,9 +105,9 @@ public class PojoUtil {
         }
     }
 
-    
+
     public static List<InlineTableColumnDefinitionMappingImpl> getColumnDefinitions(
-			List<? extends InlineTableColumnDefinitionMapping> columnDefinitions) {    	
+			List<? extends InlineTableColumnDefinitionMapping> columnDefinitions) {
     	if (columnDefinitions != null) {
     		return columnDefinitions.stream().map(cd -> InlineTableColumnDefinitionMappingImpl.builder()
     				.withName(cd.getName()).withType(cd.getType()).build()).toList();

@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
-import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.olap.api.MatchType;
@@ -32,9 +30,8 @@ import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.InternalTypeEnum;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MemberPropertyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.ParentChildLinkMapping;
@@ -48,6 +45,8 @@ import mondrian.olap.IdImpl;
 import mondrian.olap.LevelBase;
 import mondrian.olap.Property;
 import mondrian.olap.Util;
+import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
+import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import mondrian.rolap.format.FormatterCreateContext;
 import mondrian.rolap.format.FormatterFactory;
 import mondrian.rolap.util.ExpressionUtil;
@@ -389,7 +388,7 @@ public class RolapLevel extends LevelBase {
         FormatterCreateContext memberFormatterContext =
             new FormatterCreateContext.Builder(getUniqueName())
                 .formatterDef(mappingLevel.getMemberFormatter())
-                .formatterAttr(mappingLevel.getFormatter())
+                .formatterAttr(null)
                 .build();
         memberFormatter =
             FormatterFactory.instance()
@@ -424,7 +423,7 @@ public class RolapLevel extends LevelBase {
             FormatterCreateContext formatterContext =
                     new FormatterCreateContext.Builder(xmlProperty.getName())
                         .formatterDef(xmlProperty.getFormatter())
-                        .formatterAttr(xmlProperty.getFormatter())
+                        .formatterAttr(null)
                         .build();
             PropertyFormatter formatter =
                 FormatterFactory.instance()
@@ -488,7 +487,7 @@ public class RolapLevel extends LevelBase {
         }
     }
 
-    void init(DimensionMapping xmlDimension) {
+    void init(DimensionConnectorMapping xmlDimension) {
         if (xmlClosure != null) {
             final RolapDimension dimension = ((RolapHierarchy) hierarchy)
                 .createClosedPeerDimension(this, xmlClosure);

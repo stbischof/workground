@@ -9,11 +9,8 @@
 */
 package mondrian.rolap.format;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingElementFormatter;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.rolap.mapping.api.model.CellFormatterMapping;
-
-import mondrian.olap.Util;
+import org.eclipse.daanse.rolap.mapping.api.model.FormatterMapping;
 
 /**
  * Context data to create a formatter for the element.
@@ -74,12 +71,12 @@ public class FormatterCreateContext {
          * Data from Mondrian xml schema file to create
          * a custom implementation of a requested formatter.
          */
-        public Builder formatterDef(CellFormatterMapping cellFormatterMapping) {
+        public Builder formatterDef(FormatterMapping cellFormatterMapping) {
             if (cellFormatterMapping != null) {
 
                 formatterAsElement = true;
                 formatterClassName = cellFormatterMapping.getRef();
-                return script(cellFormatterMapping.script());
+                return script(null);
             }
             return this;
         }

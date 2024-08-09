@@ -29,14 +29,10 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
 
 import mondrian.olap.SystemWideProperties;
 import mondrian.olap.Util;
@@ -94,7 +90,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      */
     public RolapCubeHierarchy(
         RolapCubeDimension cubeDimension,
-        DimensionMapping cubeDim,
+        DimensionConnectorMapping cubeDim,
         RolapHierarchy rolapHierarchy,
         String subName,
         int ordinal)
@@ -119,7 +115,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      */
     public RolapCubeHierarchy(
         RolapCubeDimension cubeDimension,
-        DimensionMapping cubeDim,
+        DimensionConnectorMapping cubeDim,
         RolapHierarchy rolapHierarchy,
         String subName,
         int ordinal,
@@ -243,7 +239,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
      * @return Caption or description, possibly prefixed by dimension role name
      */
     private static String applyPrefix(
-        DimensionMapping cubeDim,
+    	DimensionConnectorMapping cubeDim,
         String caption)
     {
         if (caption == null) {
@@ -501,7 +497,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
     }
 
     @Override
-	void init(DimensionMapping xmlDimension) {
+	void init(DimensionConnectorMapping xmlDimension) {
         // first init shared hierarchy
         rolapHierarchy.init(xmlDimension);
         // second init cube hierarchy

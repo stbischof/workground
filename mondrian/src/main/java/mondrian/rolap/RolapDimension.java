@@ -14,16 +14,11 @@ package mondrian.rolap;
 
 import java.util.Map;
 
-import mondrian.olap.MondrianException;
-import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
-import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Schema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.slf4j.Logger;
@@ -32,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import mondrian.olap.DimensionBase;
 import mondrian.olap.DimensionType;
 import mondrian.olap.Util;
+import mondrian.olap.exceptions.NonTimeLevelInTimeHierarchyException;
+import mondrian.olap.exceptions.TimeLevelInNonTimeHierarchyException;
 import mondrian.rolap.util.DimensionTypeUtil;
 
 /**
@@ -105,7 +102,7 @@ class RolapDimension extends DimensionBase {
         RolapSchema schema,
         RolapCube cube,
         DimensionMapping mappingDimension,
-        DimensionMapping mappingCubeDimension)
+        DimensionConnectorMapping mappingCubeDimension)
     {
         this(
             schema,
@@ -180,7 +177,7 @@ class RolapDimension extends DimensionBase {
     /**
      * Initializes a dimension within the context of a cube.
      */
-    void init(DimensionMapping mappingDimension) {
+    void init(DimensionConnectorMapping mappingDimension) {
         for (int i = 0; i < hierarchies.length; i++) {
             if (hierarchies[i] != null) {
                 ((RolapHierarchy) hierarchies[i]).init(mappingDimension);
