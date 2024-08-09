@@ -23,7 +23,6 @@ import org.eclipse.daanse.olap.calc.base.compiler.BaseExpressionCompilerFactory;
 import org.eclipse.daanse.olap.core.AbstractBasicContext;
 import org.eclipse.daanse.olap.core.BasicContextConfig;
 import org.eclipse.daanse.olap.function.core.FunctionServiceImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.SchemaImpl;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 
 import jakarta.xml.bind.JAXBContext;
@@ -34,7 +33,10 @@ import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapResultShepherd;
 import mondrian.rolap.agg.AggregationManager;
 import mondrian.server.NopEventBus;
+
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.RolapContextMappingSupplier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 
 public class TestContextImpl extends AbstractBasicContext implements TestContext {
 
@@ -43,7 +45,7 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 	private DataSource dataSource;
 
 	private ExpressionCompilerFactory expressionCompilerFactory = new BaseExpressionCompilerFactory();
-	private List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders;
+	private CatalogMappingSupplier databaseMappingSchemaProviders;
 	private String name;
 	private Optional<String> description = Optional.empty();
     private TestConfig testConfig;
@@ -67,7 +69,7 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 	}
 
 	@Override
-	public void setDatabaseMappingSchemaProviders(List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders) {
+	public void setDatabaseMappingSchemaProviders(List<CatalogMappingSupplier> databaseMappingSchemaProviders) {
 		this.databaseMappingSchemaProviders = databaseMappingSchemaProviders;
 	}
 
@@ -98,14 +100,10 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 	}
 
 	@Override
-	public List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviders() {
-		return databaseMappingSchemaProviders;
+	public CatalogMapping getCatalogMapping() {
+		return databaseMappingSchemaProviders.get();
 	}
 
-    @Override
-    public List<RolapContextMappingSupplier> getCatalogMapping() {
-        return List.of();
-    }
 
     public SchemaImpl read(InputStream inputStream) throws JAXBException {
 

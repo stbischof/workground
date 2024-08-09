@@ -641,8 +641,9 @@ public class ExplicitRules {
          */
         private static void handleNameColumn(AggregationLevelMapping aggLevel) {
         	AggregationLevelPropertyMapping nameProp =
-        			AggregationLevelPropertyMappingImpl.builder().withName(Property.NAME_PROPERTY.getName()).withColumn(aggLevel.getNameColumn()).build(); 
-            aggLevel.getAggregationLevelProperties().add(nameProp);
+        			AggregationLevelPropertyMappingImpl.builder().withName(Property.NAME_PROPERTY.getName()).withColumn(aggLevel.getNameColumn()).build();
+        	//TODO
+            //aggLevel.getAggregationLevelProperties().add(nameProp);
         }
 
         private static void addTo(

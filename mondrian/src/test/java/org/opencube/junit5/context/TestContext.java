@@ -13,13 +13,14 @@ import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompilerFactory;
 import org.eclipse.daanse.olap.core.BasicContextConfig;
 import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 
 public interface TestContext extends Context{
 
 
 	void setDialect(Dialect dialect);
 	void setDataSource(DataSource dialect);
-	void setDatabaseMappingSchemaProviders(List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders);
+	void setDatabaseMappingSchemaProviders(List<CatalogMappingSupplier> databaseMappingSchemaProviders);
 	void setName(String name);
 	void setDescription(Optional<String> description);
 	void setExpressionCompilerFactory(ExpressionCompilerFactory expressionCompilerFactory);
